@@ -33,7 +33,7 @@ class Colorpicker extends React.Component {
                   id={item}
                   start={127}
                   connect={[true, false]}
-                  orientation="horizontal"
+                  orientation="vertical"
                   range={{
                      min: 0,
                      max: 255,

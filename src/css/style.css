@@ -533,7 +533,7 @@ button,
   border-style: none; }
 
 textarea {
-  resize: auto; }
+  resize: vertical; }
 
 fieldset {
   min-width: 0;
@@ -5036,12 +5036,6 @@ textarea.form-control-lg {
 
 .d-flex {
   display: flex !important; }
-
-.m-flex {
-  display: flex !important; 
-  border: 1px solid lightblue;
-  border-radius: 10px;
-}
 
 .d-inline-flex {
   display: inline-flex !important; }

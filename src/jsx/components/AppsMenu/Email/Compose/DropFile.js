@@ -22,8 +22,8 @@ const DropFile = () => {
          // getUploadParams={getUploadParams}
          onChangeStatus={handleChangeStatus}
          onSubmit={handleSubmit}
-         inputContent=<h3><i className="bi bi-cloud-upload">"Choose file to upload or drag and drop"</i></h3>
-         accept="image/*,audio/*,video/*,zip/*"
+         inputContent="Drop files here to upload"
+         accept="image/*,audio/*,video/*"
          styles={{
             dropzone: {
                minHeight: 200,

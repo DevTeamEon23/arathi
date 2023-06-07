@@ -14,11 +14,10 @@ export const LOGIN_FAILED_ACTION = '[login action] failed login';
 export const LOADING_TOGGLE_ACTION = '[Loading action] toggle loading';
 export const LOGOUT_ACTION = '[Logout action] logout action';
 
-export function signupAction(username, email, password, confPassword,role, history) {
+export function signupAction(email, password, history) {
     return (dispatch) => {
-        signUp(username, email, password, confPassword,role)
+        signUp(email, password)
         .then((response) => {
-            console.log("response",response.data);
             saveTokenInLocalStorage(response.data);
             runLogoutTimer(
                 dispatch,
@@ -26,7 +25,7 @@ export function signupAction(username, email, password, confPassword,role, histo
                 history,
             );
             dispatch(confirmedSignupAction(response.data));
-            history.push('/login');
+            history.push('/dashboard');
         })
         .catch((error) => {
             const errorMessage = formatError(error.response.data);
@@ -44,25 +43,20 @@ export function logout(history) {
 }
 
 export function loginAction(email, password, history) {
-    console.log("email",email,"password",password,history)
     return (dispatch) => {
         login(email, password)
             .then((response) => {
-                console.log("check res",response,response.data);
                 saveTokenInLocalStorage(response.data);
                 runLogoutTimer(
                     dispatch,
                     response.data.expiresIn * 1000,
                     history,
                 );
-                console.log("loginAction")
                 dispatch(loginConfirmedAction(response.data));
-				history.push('/dashboard');  
-                console.log("end")
-
+				history.push('/dashboard');                
             })
             .catch((error) => {
-				console.log("error in login action",error);
+				//console.log(error);
                 const errorMessage = formatError(error.response.data);
                 dispatch(loginFailedAction(errorMessage));
             });
@@ -77,25 +71,10 @@ export function loginFailedAction(data) {
 }
 
 export function loginConfirmedAction(data) {
-    const loginData = {
-        email: data[0].email,
-        idToken: true,
-        localId: data[0].id,
-        expiresIn: data.expireDate,
-        refreshToken: data[0].refresh_token,
-        confPassword:data[0].confPassword,
-        id:data[0].id,
-        username: data[0].username,
-        password: data[0].password,
-        // refresh_token: data[0].refresh_token,
-        returnSecureToken: data[0].returnSecureToken,
-        role: data[0].role,
-      };
-      console.log("data Obj ", data[0].email);
-      return {
+    return {
         type: LOGIN_CONFIRMED_ACTION,
-        payload: loginData,
-      };
+        payload: data,
+    };
 }
 
 export function confirmedSignupAction(payload) {

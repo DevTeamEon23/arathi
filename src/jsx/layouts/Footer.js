@@ -8,9 +8,9 @@ const Footer = () => {
 			<div className="copyright">
 				<p>Copyright © Designed &amp; Developed by{" "}
 					<a href="http://dexignzone.com/" target="_blank"  rel="noreferrer">
-						Eon Learnings Pvt.Ltd
+						DexignZone
 					</a>{" "}
-					2023
+					2022
 				</p>
 			</div>
 		</div>

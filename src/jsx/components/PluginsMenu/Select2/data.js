@@ -1,25 +1,16 @@
 export const colourOptions = [
-   { value: "english", label: "English", isFixed: true },
-   { value: "spanish", label: "Spanish"},
-   { value: "dutch", label: "Dutch"},
-   { value: "portugish", label: "Portugish"},
-   { value: "french", label: "French"},
-   { value: "german", label: "German"},
-   { value: "hindi", label: "Hindi", isFixed: true },
-   { value: "japanese", label: "Japanese"},
-   { value: "russian", label: "Russian"},
+   { value: "ocean", label: "Ocean", color: "#00B8D9", isFixed: true },
+   { value: "blue", label: "Blue", color: "#0052CC", isDisabled: true },
+   { value: "purple", label: "Purple", color: "#5243AA" },
+   { value: "red", label: "Red", color: "#FF5630", isFixed: true },
+   { value: "orange", label: "Orange", color: "#FF8B00" },
+   { value: "yellow", label: "Yellow", color: "#FFC400" },
+   { value: "green", label: "Green", color: "#36B37E" },
+   { value: "forest", label: "Forest", color: "#00875A" },
+   { value: "slate", label: "Slate", color: "#253858" },
+   { value: "silver", label: "Silver", color: "#666666" },
 ];
-export const languageOptions = [
-   { value: "english", label: "English", isFixed: true },
-   { value: "spanish", label: "Spanish"},
-   { value: "dutch", label: "Dutch"},
-   { value: "portugish", label: "Portugish"},
-   { value: "french", label: "French"},
-   { value: "german", label: "German"},
-   { value: "hindi", label: "Hindi", isFixed: true },
-   { value: "japanese", label: "Japanese"},
-   { value: "russian", label: "Russian"},
-];
+
 export const flavourOptions = [
    { value: "vanilla", label: "Vanilla", rating: "safe" },
    { value: "chocolate", label: "Chocolate", rating: "good" },
@@ -119,10 +110,6 @@ export const groupedOptions = [
    {
       label: "Group Name",
       options: colourOptions,
-   },
-   {
-      label: "Second Group Name",
-      options: languageOptions,
    },
    {
       label: "Another Group Name",

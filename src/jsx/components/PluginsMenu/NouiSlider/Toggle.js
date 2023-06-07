@@ -7,7 +7,7 @@ class Toggle extends React.Component {
       return (
          <Nouislider
             id="slider-toggle"
-            orientation="horizontal"
+            orientation="vertical"
             start={0}
             range={{
                min: [0, 1],

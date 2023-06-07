@@ -1,3 +1,7 @@
 module.exports = {
-    resolve: { fallback: { 'process/browser': require.resolve('process/browser'), }, },
+    resolve:{
+        fallback:{
+            process:require.resolve('process/browser')
+        },
+    },
 };

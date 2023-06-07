@@ -1,6 +1,5 @@
 import React from 'react';
 import {Dropdown} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 
 export default function DropDownBlog(){
 	return(
@@ -12,8 +11,8 @@ export default function DropDownBlog(){
 					</svg>
 				</Dropdown.Toggle>
 				<Dropdown.Menu className="dropdown-menu dropdown-menu-end" align='right'>
-					<Dropdown.Item><i class="bi bi-x-circle">  &nbsp;</i>Delete</Dropdown.Item>
-					<Dropdown.Item><i class="bi bi-pencil-square">  &nbsp;</i><Link to={"/dashboard"}></Link>Edit</Dropdown.Item>
+					<Dropdown.Item>Delete</Dropdown.Item>
+					<Dropdown.Item>Edit</Dropdown.Item>
 				</Dropdown.Menu>
 			</Dropdown>
 		</>

@@ -19,7 +19,7 @@ class LearningActivityChart extends React.Component {
 			options: {
 				chart: {
 					type: 'area',
-					height: 600,
+					height: 300,
 					toolbar: {
 						show: false,
 					},
@@ -33,7 +33,7 @@ class LearningActivityChart extends React.Component {
 				},
 				stroke: {
 				  width: [3, 3, 3],
-				  colors:['#1ec577','#e84848'],
+				  colors:['var(--secondary)','var(--primary)'],
 				  curve: 'straight'
 				},
 				legend: {
@@ -42,7 +42,7 @@ class LearningActivityChart extends React.Component {
 						return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
 					},
 					markers: {
-						fillColors:['#1ec577','#e84848'],
+						fillColors:['var(--secondary)','var(--primary)'],
 						width: 16,
 						height: 16,
 						strokeWidth: 0,
@@ -55,7 +55,7 @@ class LearningActivityChart extends React.Component {
 					strokeColors: ['#fff','#fff'],
 					border:2,
 					radius: 2,
-					colors:['#1ec577','#e84848','#fff'],
+					colors:['var(--secondary)','var(--primary)','#fff'],
 					hover: {
 						size: 10,
 					}
@@ -89,7 +89,7 @@ class LearningActivityChart extends React.Component {
 					},
 				},
 				fill: {
-					colors:['#fff','#e84848'],
+					colors:['#fff','#FF9432'],
 					type:'gradient',
 					opacity: 1,
 					gradient: {
@@ -116,12 +116,12 @@ class LearningActivityChart extends React.Component {
 						  [
 							{
 							  offset: 0,
-							  color: '#e84848',
+							  color: 'var(--primary)',
 							  opacity: .4
 							},
 							{
 							  offset: 50,
-							  color: '#e84848',
+							  color: 'var(--primary)',
 							  opacity: 0.25
 							},
 							{
@@ -134,7 +134,7 @@ class LearningActivityChart extends React.Component {
 
 					},
 				},
-				colors:['#1EA7C5','#e84848'],
+				colors:['#1EA7C5','#FF9432'],
 				grid: {
 					borderColor: '#f1f1f1',
 					xaxis: {

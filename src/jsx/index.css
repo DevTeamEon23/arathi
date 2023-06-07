@@ -20,14 +20,6 @@
   + label::after {
   background-color: rgba(1, 1, 1, 0) !important;
 }
-/*/// Import Users Style for Drag Zone////*/
-.import-users__body--dragzone {
-  text-align: center;
-  padding: 20px;
-  border: 3px blue dashed;
-  width: 60%;
-  margin: auto;
-}
 /* ////////////////////////fixed */
 .element-right-round button#dropdown-button-drop-dwon {
   border-radius: 0 0.75rem 0.75rem 0;

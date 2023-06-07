@@ -3,9 +3,12 @@ import React, { useState, Fragment } from "react";
 import   DatePicker  from "react-datepicker";
 //import { DatePicker } from "@y0c/react-datepicker";
 //import   RangeDatePicker  from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 import DateRangePicker from "react-bootstrap-daterangepicker";
+import "bootstrap-daterangepicker/daterangepicker.css";
+
 import TimePicker from './TimePicker';
 
 ///
@@ -97,13 +100,13 @@ const Pickers = () => {
 						<p className="mb-1">Complex mode</p>
 						<TimePicker />			
 					</div>
-        </div> 
+                </div> 
 				<div className="col-md-6 col-xl-3 col-xxl-6 mb-3">
 					<div className="color-time-picker style-1">
 						<p className="mb-1">Auto close Clock Picker</p>
 						<TimePicker />			
 					</div>
-        </div>
+                </div>
 				<div className="col-md-6 col-xl-3 col-xxl-6 mb-3">
 					<div className="color-time-picker">
 						<p className="mb-1">Now time</p>

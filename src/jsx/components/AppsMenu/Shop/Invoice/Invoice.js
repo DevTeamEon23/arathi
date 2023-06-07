@@ -5,36 +5,16 @@ import qrcode from "../../../../../images/qr.png";
 import logoText from "../../../../..//images/logo-text.png";
 import PageTitle from "../../../../layouts/PageTitle";
 
-// import {PageTitle} from 'react-bootstrap';
-
-// To Set Current Date & Time for Invoice with user name as hard code
-// import React from "react";
-// import ReactDOM from "react-dom";
-
-// const name = "Flash";
-// const currDate = new Date().toLocaleDateString();
-// const currTime = new Date().toLocaleTimeString();
-
-// ReactDOM.render(
-// <>
-// <h1>My name is {name}</h1>
-// <p> Current Date is = {currDate} </p>
-// <p> Curremt Time is = {currTime} </p> 
-// </>,
-// document.getElementById("root"));
-
 const Invoice = () => {
-  const currDate = new Date().toLocaleDateString();
-
-
   return (
     <Fragment>
+      <PageTitle activeMenu="Blank" motherMenu="Layout" />
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
               {" "}
-               <strong>Tax Invoice &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current Date:- {currDate}</strong>{" "}
+              Invoice <strong>01/01/01/2018</strong>{" "}
               <span className="float-right">
                 <strong>Status:</strong> Pending
               </span>{" "}
@@ -45,7 +25,7 @@ const Invoice = () => {
                   <h6>From:</h6>
                   <div>
                     {" "}
-                    <strong>Eon Learning</strong>{" "}
+                    <strong>Webz Poland</strong>{" "}
                   </div>
                   <div>Madalinskiego 8</div>
                   <div>71-101 Szczecin, Poland</div>

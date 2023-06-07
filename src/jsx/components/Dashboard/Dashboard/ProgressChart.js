@@ -11,7 +11,7 @@ class ProgressChart extends React.Component {
 					type: 'radialBar',
 					height: 200,
 				},
-				colors:["#e84848"],
+				colors:["var(--primary)"],
 				plotOptions: {
 					radialBar: {
 						startAngle: -180,

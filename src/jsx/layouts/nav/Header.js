@@ -15,7 +15,6 @@ import RightSideBar from './RightSideBar';
 
 import LogoutPage from './Logout';
 
-import Indian from "../../../images/Indian.png";
 import United from "../../../images/United.png";
 import avatar from "../../../images/avatar/1.jpg";
 import profile from "../../../images/profile/pic1.jpg";
@@ -104,12 +103,11 @@ const Header = ({ onNote }) => {
 					className="dashboard_bar"
 					style={{ textTransform: "capitalize" }}
 				  >
-					{/* {finalName.join(" ").length === 0
+					{finalName.join(" ").length === 0
 					  ? "Dashboard"
 					  : finalName.join(" ") === "dashboard dark"
 					  ? "Dashboard"
-					  : finalName.join(" ")} */}
-					  LMS Dashboard
+					  : finalName.join(" ")}
 				</div>
             </div>
 			<div className="navbar-nav header-right">
@@ -124,13 +122,13 @@ const Header = ({ onNote }) => {
 				</div>
 				<div className="dlab-side-menu">
 					<div className="search-coundry d-flex align-items-center">
-						<img src={Indian} alt="" className='mx-2'/>						
+						<img src={United} alt="" className='mx-2'/>						
 						<Dropdown className='sidebar-dropdown me-2 mt-2'>
 							<Dropdown.Toggle as='div' className='i-false sidebar-select'>{rightSelect} <i className="fa-solid fa-angle-down ms-2" /></Dropdown.Toggle>
 							<Dropdown.Menu>
 								<Dropdown.Item onClick={()=>setRightSelect("Eng")}>Eng</Dropdown.Item>
-								<Dropdown.Item onClick={()=>setRightSelect("Hindi")}>Hindi</Dropdown.Item>
-								<Dropdown.Item onClick={()=>setRightSelect("Marathi")}>Marathi</Dropdown.Item>
+								<Dropdown.Item onClick={()=>setRightSelect("Af")}>Af</Dropdown.Item>
+								<Dropdown.Item onClick={()=>setRightSelect("Al")}>Al</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
 					</div>

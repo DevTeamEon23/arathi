@@ -204,7 +204,7 @@ const Message = () =>{
 									</svg>
 
 								</button>
-								<button type="button" className="btn btn-primary rounded text-white">
+								<button type="button" className="btn btn-secondary rounded text-white">
 									<svg className="" width="20" height="20" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M3.58106 13.6267L10.5819 12.2265C11.2071 12.1016 11.2071 11.8984 10.5819 11.7735L3.58106 10.3732C3.16406 10.29 2.75793 9.88348 2.67468 9.46686L1.27443 2.46599C1.14918 1.84049 1.51781 1.54986 2.09718 1.81724L23.4606 11.6771C23.8464 11.8552 23.8464 12.1447 23.4606 12.3229L2.09718 22.1827C1.51781 22.4501 1.14918 22.1595 1.27443 21.534L2.67468 14.5331C2.75793 14.1165 3.16406 13.71 3.58106 13.6267Z" fill="white"/>
 									</svg>

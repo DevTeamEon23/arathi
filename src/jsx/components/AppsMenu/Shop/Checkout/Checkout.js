@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import { Form } from "react-bootstrap";
 import PageTitle from "../../../../layouts/PageTitle";
-import { Link } from "react-router-dom";
 
 const Checkout = () => {
    return (
       <Fragment>
+         <PageTitle activeMenu="Checkout" motherMenu="Shop" />
 
          <div className="row">
             <div className="col-xl-12">
@@ -360,13 +360,12 @@ const Checkout = () => {
                                  </div>
                               </div>
                               <hr className="mb-4" />
-                              <Link to="/ecom-invoice"><button
+                              <button
                                  className="btn btn-primary btn-lg btn-block"
                                  type="submit"
                               >
                                  Continue to checkout
                               </button>
-                              </Link>
                            </form>
                         </div>
                      </div>

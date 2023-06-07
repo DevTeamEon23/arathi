@@ -36,7 +36,7 @@ class ScoreActivityChart extends React.Component {
 						filter: 'none',
 					}
 				},
-				colors:['var(--primary)', '1ec577'],
+				colors:['var(--primary)', 'var(--secondary)'],
 				dataLabels: {
 					enabled: false,
 				},
@@ -104,7 +104,7 @@ class ScoreActivityChart extends React.Component {
 				},
 				fill: {
 					opacity: 1,
-					colors:['#1ec577','#4e87f2'],
+					colors:['var(--secondary)', 'var(--primary)'],
 				},
 					tip: {
 					y: {

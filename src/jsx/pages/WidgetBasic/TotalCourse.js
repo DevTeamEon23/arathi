@@ -51,11 +51,11 @@ export default class TotalCourse extends PureComponent {
     return (
       <div
         style={{
-          height: "50px",
-          width: "50%",
+          height: "150px",
+          width: "100%",
         }}
       >
-        <ResponsiveContainer width={"50%"} height={"50%"}>
+        <ResponsiveContainer width={"100%"} height={"100%"}>
           <BarChart
             data={data}
             margin={{

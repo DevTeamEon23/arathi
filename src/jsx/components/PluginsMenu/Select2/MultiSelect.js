@@ -24,7 +24,7 @@ const ClearIndicator = (props) => {
 const ClearIndicatorStyles = (base, state) => ({
    ...base,
    cursor: "pointer",
-   color: state.isFocused ? "english" : "black",
+   color: state.isFocused ? "blue" : "black",
 });
 
 export default function CustomClearIndicator() {

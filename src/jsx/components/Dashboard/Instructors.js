@@ -62,7 +62,7 @@ const Instructors = () =>{
 								</div>
 							</div>
 							<div className="card-footer pt-0 border-0">
-								<Link to={"./instructor-liveclass"} className="btn btn-primary  btn-block">View Class</Link>
+								<Link to={"./instructor-liveclass"} className="btn btn-secondary  btn-block">View Class</Link>
 							</div>
 						</div>
 					</div>

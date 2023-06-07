@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import {Tab, Nav, Button} from 'react-bootstrap';
+import {Tab, Nav} from 'react-bootstrap';
 
 import DropDownBlog from './../Dashboard/DropDownBlog';
 //import DonutChart from './Instructor/DonutChart';
@@ -169,12 +169,7 @@ const InstructorCourses = () =>{
 							<div className="card">
 								<div className="card-header border-0 pb-0">
 									<h4>Popular Class</h4>
-									<DropDownBlog />&nbsp;&nbsp;&nbsp;
-									<div>
-										<Link to="/add-courses">
-										<Button variant="primary">ADD COURSES</Button>
-										</Link>
-									</div>
+									<DropDownBlog />
 								</div>
 								<div className="card-body">
 									<PopularClassChart />

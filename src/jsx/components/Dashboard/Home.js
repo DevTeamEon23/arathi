@@ -66,7 +66,7 @@ const Home = () => {
 									<ul className="d-flex">
 										<li>
 											<svg className="me-2" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-											<rect x="1.5" y="1.5" width="9" height="9" rx="4.5" fill="white" stroke="#e84848" strokeWidth="3"/>
+											<rect x="1.5" y="1.5" width="9" height="9" rx="4.5" fill="white" stroke="var(--primary)" strokeWidth="3"/>
 											</svg>
 											Last Month
 										</li>
@@ -94,7 +94,7 @@ const Home = () => {
 									<ul className="d-flex">
 										<li>
 											<svg className="me-2" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-											<rect x="1.5" y="1.5" width="9" height="9" rx="4.5" fill="white" stroke="#1ec577" strokeWidth="3"/>
+											<rect x="1.5" y="1.5" width="9" height="9" rx="4.5" fill="white" stroke="var(--primary)" strokeWidth="3"/>
 											</svg>
 											Last Month
 										</li>
@@ -143,6 +143,8 @@ const Home = () => {
 						</div>
 					</div>
 				</div>
+				
+				
 			</div>	
 		</>
 	)

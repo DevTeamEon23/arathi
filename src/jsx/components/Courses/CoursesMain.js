@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React  from 'react';
 import {Link} from 'react-router-dom';
 import { Swiper, SwiperSlide } from "swiper/react";
-import axios from 'axios';
 import "swiper/css";
 
 //images
@@ -23,77 +22,21 @@ const widgetData = [
 	{ image: microscope, title:'Science', },
 ];
 
-// const cardInfoBlog = [
-// 	{title:'Fullstack Developer',	subtitle: 'Karen Hope ', image: course1},
-// 	{title:'UI Design Beginner', 	subtitle: 'Jack and Sally', image: course2},
-// 	{title:'How to be Freelancer', 	subtitle: 'Cahaya Hikari', image: course3},
-// 	{title:'UX Research', 			subtitle: 'Johnny Ahmad', image: course4},
-// 	{title:'Basic Web Design',		subtitle: 'Jordan Nico', image: course5},
-// 	{title:'3D Character Design',	subtitle: 'Samantha William ', image: course6},
-// ];
+const cardInfoBlog = [
+	{title:'Fullstack Developer',	subtitle: 'Karen Hope ', image: course1},
+	{title:'UI Design Beginner', 	subtitle: 'Jack and Sally', image: course2},
+	{title:'How to be Freelancer', 	subtitle: 'Cahaya Hikari', image: course3},
+	{title:'UX Research', 			subtitle: 'Johnny Ahmad', image: course4},
+	{title:'Basic Web Design',		subtitle: 'Jordan Nico', image: course5},
+	{title:'3D Character Design',	subtitle: 'Samantha William ', image: course6},
+];
 
-const CoursesMain = () => {
-	const [courses, setCourses] = useState([]);
-	const [file, setFile] = useState([]);
-	const getCourses = async () => {
-		const requestOptions = {
-		  method:"GET",
-		  headers: {
-			"Content-Type": "application/json",
-		  },
-		};
-		const response = await fetch("/api", requestOptions);
-		const data = await response.json();
-	
-		console.log(data);
-	  };
-	// var base64String = btoa(
-	// 	String.fromCharCode(...new Uint8Array(file[0]?.courses.data))
-	//   );
-	//   setFile(base64String);
-	
-	const [data, setData] = useState([]);
-	const [query, setQuery] = useState("");
-	const fetchData = () => {
-		fetch(`http://localhost:8000/courses`, {
-			responseType: 'blob'
-		  }).then((res) => res.json())
-		   .then((data) => {
-			  console.log(data);
-			  setData(data);
-			})
-			.catch((err) => {
-			  console.log(err.message);
-			});
-		};
-		// const fetchImage = () => {
-		// 	fetch(`http://localhost:8000/photo`)
-		//  };
-	  
-		useEffect( async () => {
-		  fetchData();
-		}, []);
-
-		// fetch('http://localhost:8000/media/${id}', {
-		// 	method: 'GET',
-		// })
-		// .then(response => response.blob())
-		// .then(blob => {
-		// 	var blobURL = URL.createObjectURL(blob);
-		// 	var image = document.getElementById("myImage");
-		// 	image.onload = function(){
-		// 		URL.revokeObjectURL(this.src); // release the blob URL once the image is loaded
-		// 	}
-		// 	image.src = blobURL;
-		// })
-		// .catch(error => {
-		// 	console.error(error);
-		// });
+function CoursesMain(){
 	return(
 		<>
 			<div className="widget-heading d-flex justify-content-between align-items-center">
 				<h3 className="m-0">Popular This Week</h3>
-				<Link to={"./course-details-1"} className="btn btn-primary btn-sm">View all</Link>
+				<Link to={"./courses"} className="btn btn-primary btn-sm">View all</Link>
 			</div>
 			<div className="row">
 				<Swiper className="swiper course-slider"	
@@ -138,26 +81,23 @@ const CoursesMain = () => {
 				</Swiper>			
 			</div>
 			<div className="widget-heading d-flex justify-content-between align-items-center">
-				<h3 className="m-0">Course Store & Course Catalog</h3>
-				<Link to={"./course-details-1"} className="btn btn-primary btn-sm">View all</Link>
+				<h3 className="m-0">All Courses</h3>
+				<Link to={"./courses"} className="btn btn-primary btn-sm">View all</Link>
 			</div>
 			<div className="row">
-			{data?.map((item, index) => {
-               return (
+				{cardInfoBlog.map((data, index)=>(
 					<div className="col-xl-4 col-md-6" key={index}>
 						<div className="card all-crs-wid">
 							<div className="card-body">
 								<div className="courses-bx">
-									<div>
-									{/* {"media/Famous-Fort-Maharashtra.png;base64,${data.file[0]}"} */}
-										{/* <img src="http://localhost:8000/media/" width="250" height="250" id="file" name="file"/> */}
-										<p>{item.file} </p>
+									<div className="dlab-media">
+										<img src={data.image} alt="" />
 									</div>
 									<div className="dlab-info">
 										<div className="dlab-title d-flex justify-content-between">
 											<div>
-												<h4><Link to={"./course-details-1"}>{item.coursename}</Link></h4>
-												<p className="m-0">{item.coursecode}
+												<h4><Link to={"./course-details-1"}>{data.title}</Link></h4>
+												<p className="m-0">{data.subtitle}
 													<svg className="ms-1" width="4" height="5" viewBox="0 0 4 5" fill="none" xmlns="http://www.w3.org/2000/svg">
 														<circle cx="2" cy="2.5" r="2" fill="#DBDBDB"/>
 													</svg>
@@ -167,7 +107,7 @@ const CoursesMain = () => {
 													</span>
 												</p>
 											</div>	
-											<h4 className="text-primary"><span>$</span>{item.price}</h4>
+											<h4 className="text-primary"><span>$</span>50.99</h4>
 										</div>
 										<div className="d-flex justify-content-between content align-items-center">
 											<span>
@@ -176,25 +116,25 @@ const CoursesMain = () => {
 												</svg>
 												110+ Content
 											</span>
-											<Link to={"./course-details-1"} className="btn btn-primary btn-sm">View all</Link>
+											<Link to={"./courses"} className="btn btn-primary btn-sm">View all</Link>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-               );
-                })}
+				))}
 				
 			</div>	
 			<div className="pagination-down">
 				<div className="d-flex align-items-center justify-content-between flex-wrap">
 					<h4 className="sm-mb-0 mb-3">Showing <span>1-6 </span>from <span>100 </span>data</h4>
 					<ul>
-						<li><Link to={"./courses"} className="active">1</Link></li>
-						<li><Link to={"./course-details-1"}>2</Link></li>
-						<li><Link to={"./course-details-2"}>3</Link></li>
-						<li><Link to={"./course-details-1"}><i className="fas fa-chevron-right"></i></Link></li>
+						<li><Link to={"#"}><i className="fas fa-chevron-left"></i></Link></li>
+						<li><Link to={"#"} className="active">1</Link></li>
+						<li><Link to={"#"}>2</Link></li>
+						<li><Link to={"#"}>3</Link></li>
+						<li><Link to={"#"}><i className="fas fa-chevron-right"></i></Link></li>
 					</ul>
 				</div>
 			</div>
