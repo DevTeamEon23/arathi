@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+              "@context/*": ["./src/context/*"],
+              "@vendor/*": ["./src/theme/vendor/*"],
+              "@images/*": ["./src/theme/images/*"]
+        }
+      }
+}

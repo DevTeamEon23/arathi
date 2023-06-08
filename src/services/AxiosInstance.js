@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { store } from '../store/store';
+import { store } from '@store/store';
 
 const axiosInstance = axios.create({
     baseURL: `https://react-course-b798e-default-rtdb.firebaseio.com/`,

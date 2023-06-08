@@ -4,7 +4,7 @@ import {
     getPosts,
     deletePost,
     updatePost,
-} from '../../services/PostsService';
+} from '@services/PostsService';
 import {
     CONFIRMED_CREATE_POST_ACTION,
     CONFIRMED_DELETE_POST_ACTION,

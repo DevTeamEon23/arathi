@@ -1,22 +1,22 @@
 import { lazy, Suspense, useEffect } from 'react';
 
 /// Components
-import Index from "./jsx";
+import Index from "./main";
 import { connect, useDispatch } from 'react-redux';
 import {  Route, Switch, withRouter } from 'react-router-dom';
 // action
-import { checkAutoLogin } from './services/AuthService';
-import { isAuthenticated } from './store/selectors/AuthSelectors';
+import { checkAutoLogin } from '@services/AuthService';
+import { isAuthenticated } from '@store/selectors/AuthSelectors';
 /// Style
-import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
-import "./css/style.css";
+import "@vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
+import "./theme/css/style.css";
 
 
-const SignUp = lazy(() => import('./jsx/pages/Registration'));
-const ForgotPassword = lazy(() => import('./jsx/pages/ForgotPassword'));
+const SignUp = lazy(() => import('./main/pages/Registration'));
+const ForgotPassword = lazy(() => import('./main/pages/ForgotPassword'));
 const Login = lazy(() => {
     return new Promise(resolve => {
-    setTimeout(() => resolve(import('./jsx/pages/Login')), 500);
+    setTimeout(() => resolve(import('./main/pages/Login')), 500);
   });
 });
 

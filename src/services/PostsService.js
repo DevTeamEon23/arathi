@@ -1,4 +1,4 @@
-import axiosInstance from '../services/AxiosInstance';
+import axiosInstance from '@services/AxiosInstance';
 
 export function getPosts() {
     return axiosInstance.get(`posts.json`);
