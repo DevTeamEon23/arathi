@@ -4,12 +4,14 @@ import { Link, withRouter } from 'react-router-dom';
 
 import { logout } from '@store/actions/AuthActions';
 import { isAuthenticated } from '@store/selectors/AuthSelectors';
+import jwtService from 'src/auth/authService/jwtService';
 
 function LogoutPage(props){
     const dispatch = useDispatch();
 
     function onLogout() {
-       dispatch(logout(props.history));
+        jwtService.logout();
+    //    dispatch(logout(props.history));
        // window.location.reload();
     }
     return(

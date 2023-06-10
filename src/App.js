@@ -5,11 +5,12 @@ import Index from "./main";
 import { connect, useDispatch } from 'react-redux';
 import {  Route, Switch, withRouter } from 'react-router-dom';
 // action
-import { checkAutoLogin } from '@services/AuthService';
-import { isAuthenticated } from '@store/selectors/AuthSelectors';
+import { checkAutoLogin } from './services/AuthService';
+import { isAuthenticated } from './store/selectors/AuthSelectors';
 /// Style
-import "@vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
+import "./theme/vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./theme/css/style.css";
+import { useAuth } from './auth/AuthContext';
 
 
 const SignUp = lazy(() => import('./main/pages/Registration'));
@@ -22,9 +23,15 @@ const Login = lazy(() => {
 
 function App (props) {
     const dispatch = useDispatch();
+    const { isAuthenticated } = useAuth()
     useEffect(() => {
-        checkAutoLogin(dispatch, props.history);
-    }, [dispatch, props.history]);
+        // checkAutoLogin(dispatch, props.history);
+        if (isAuthenticated) {
+            props.history.push('/dashboard')
+        } else {
+            props.history.push("/login");
+        }
+    }, [dispatch, props.history, isAuthenticated]);
     
     let routes = (  
         <Switch>
@@ -33,7 +40,7 @@ function App (props) {
             <Route path='/page-forgot-password' component={ForgotPassword} />
         </Switch>
     );
-    if (props.isAuthenticated) {
+    if (isAuthenticated) {
 		return (
 			<>
                 <Suspense fallback={

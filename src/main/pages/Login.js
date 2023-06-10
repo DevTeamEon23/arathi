@@ -8,12 +8,13 @@ import { loadingToggleAction,loginAction,
 import loginbg from '@images/bg-1.jpg'
 import logo from '@images/log.png'
 import logofull from '@images/logo-full.png';
+import jwtService from 'src/auth/authService/jwtService';
 
 function Login (props) {
-    const [email, setEmail] = useState('demo@example.com');
+    const [email, setEmail] = useState('testuser@gmail.com');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
-    const [password, setPassword] = useState('123456');
+    const [password, setPassword] = useState('string');
     const dispatch = useDispatch();
 
     function onLogin(e) {
@@ -32,8 +33,11 @@ function Login (props) {
         if (error) {
 			return ;
 		}
-		dispatch(loadingToggleAction(true));	
-        dispatch(loginAction(email, password, props.history));
+		// dispatch(loadingToggleAction(true));	
+        // dispatch(loginAction(email, password, props.history));
+		jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {
+			// Sign in successfull
+		  });
     }
 
   return (
