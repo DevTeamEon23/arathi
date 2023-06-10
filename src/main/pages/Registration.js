@@ -1,14 +1,15 @@
 import React,{useState} from "react";
-import { Link } from "react-router-dom";
-import { connect, useDispatch } from 'react-redux';
-import {
-    loadingToggleAction,
-    signupAction,
-} from '@store/actions/AuthActions';
+import { Link, withRouter } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+
 // image
 import logo from "@images/logo-full.png";
+import jwtService from "src/auth/authService/jwtService";
+
+// Add sweet alert
 
 function Register(props) {
+	const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
@@ -30,8 +31,17 @@ function Register(props) {
         }
         setErrors(errorObj);
         if (error) return;
-        dispatch(loadingToggleAction(true));
-        dispatch(signupAction(email, password, props.history));
+		jwtService.createUser({
+			fullname: userName,
+			password,
+			email,
+			generate_token: true,
+		  }).then((res) => {
+			props.history.push("/login");
+		  });
+
+        // dispatch(loadingToggleAction(true));
+        // dispatch(signupAction(email, password, props.history));
     }
 	return (
 		<div className="authincation h-100 p-meddle">
@@ -63,13 +73,16 @@ function Register(props) {
 												<label className="mb-1 ">
 													<strong>Username</strong>
 												</label>
-												<input type="text" className="form-control" placeholder="username"/>
+												<input type="text" className="form-control" placeholder="username"
+												value={userName}
+												onChange={(e) => setUserName(e.target.value)}
+												/>
 											</div>
 											<div className="form-group mb-3">
 												<label className="mb-1 ">
 												  <strong>Email</strong>
 												</label>
-												<input value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="hello@example.com"/>
+												<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="hello@example.com"/>
 											</div>
 											{errors.email && <div>{errors.email}</div>}
 											<div className="form-group mb-3">
@@ -77,12 +90,12 @@ function Register(props) {
 													<strong>Password</strong>
 												</label>
 												<input
+													type="password"
 													value={password}
 													onChange={(e) =>
 														setPassword(e.target.value)
 													}
 												  className="form-control"
-												  defaultValue="Password"
 												/>
 											</div>
 											{errors.password && <div>{errors.password}</div>}
@@ -109,13 +122,5 @@ function Register(props) {
 	);
 };
 
-const mapStateToProps = (state) => {
-    return {
-        errorMessage: state.auth.errorMessage,
-        successMessage: state.auth.successMessage,
-        showLoading: state.auth.showLoading,
-    };
-};
-
-export default connect(mapStateToProps)(Register);
+export default withRouter(Register);
 

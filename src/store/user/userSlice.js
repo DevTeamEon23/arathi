@@ -5,7 +5,6 @@ import history from '../../@history'
 export const setUser = createAsyncThunk(
   "user/setUser",
   async (user, { dispatch, getState }) => {
-    console.log(user);
     // set userrole in arr or null
     return { role: [user.role], data: user.data };
   }

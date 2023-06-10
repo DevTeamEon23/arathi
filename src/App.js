@@ -2,11 +2,9 @@ import { lazy, Suspense, useEffect } from 'react';
 
 /// Components
 import Index from "./main";
-import { connect, useDispatch } from 'react-redux';
-import {  Route, Switch, withRouter } from 'react-router-dom';
-// action
-import { checkAutoLogin } from './services/AuthService';
-import { isAuthenticated } from './store/selectors/AuthSelectors';
+import { useDispatch } from 'react-redux';
+import { Route, Switch, withRouter } from 'react-router-dom';
+
 /// Style
 import "./theme/vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./theme/css/style.css";
@@ -78,11 +76,6 @@ function App (props) {
 	}
 };
 
-const mapStateToProps = (state) => {
-    return {
-        isAuthenticated: isAuthenticated(state),
-    };
-};
 
-export default withRouter(connect(mapStateToProps)(App)); 
+export default withRouter(App); 
 

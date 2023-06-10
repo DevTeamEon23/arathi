@@ -73,7 +73,7 @@ function AuthProvider({ children }) {
       setIsAuthenticated(false);
     }
   }, [dispatch]);
-  console.log(isAuthenticated)
+
   return (
     <AuthContext.Provider value={{ isAuthenticated }}>
       {children}

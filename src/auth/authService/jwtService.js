@@ -38,7 +38,7 @@ class JwtService extends Utils.EventEmitter {
 
   handleAuthentication = () => {
     const access_token = this.getAccessToken();
-    console.log(access_token);
+
     if (!access_token) {
       this.emit("onNoAccessToken");
 
@@ -75,7 +75,6 @@ class JwtService extends Utils.EventEmitter {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log(response.data.data.user);
           // handle wrong password or email response
           if (response.data.data.user) {
             this.setSession(response.data.token);
@@ -113,7 +112,6 @@ class JwtService extends Utils.EventEmitter {
           headers: { ["auth-token"]: this.getAccessToken() },
         })
         .then((response) => {
-          console.log(response);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             resolve(response.data.data.user);

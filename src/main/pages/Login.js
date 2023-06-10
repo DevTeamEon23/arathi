@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
 import { connect, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
-import { loadingToggleAction,loginAction,
-} from '@store/actions/AuthActions';
 
-//
 import loginbg from '@images/bg-1.jpg'
 import logo from '@images/log.png'
 import logofull from '@images/logo-full.png';
@@ -116,11 +113,4 @@ function Login (props) {
     )
 }
 
-const mapStateToProps = (state) => {
-    return {
-        errorMessage: state.auth.errorMessage,
-        successMessage: state.auth.successMessage,
-        showLoading: state.auth.showLoading,
-    };
-};
-export default connect(mapStateToProps)(Login);
+export default Login;

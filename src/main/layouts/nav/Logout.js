@@ -2,8 +2,6 @@ import React  from 'react';
 import {connect, useDispatch } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 
-import { logout } from '@store/actions/AuthActions';
-import { isAuthenticated } from '@store/selectors/AuthSelectors';
 import jwtService from 'src/auth/authService/jwtService';
 
 function LogoutPage(props){
@@ -31,10 +29,6 @@ function LogoutPage(props){
         </>
     )
 } 
-const mapStateToProps = (state) => {
-    return {
-        isAuthenticated: isAuthenticated(state),
-    };
-};
 
-export default withRouter(connect(mapStateToProps)(LogoutPage));
+
+export default withRouter(LogoutPage);
