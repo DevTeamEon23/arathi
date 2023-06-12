@@ -96,14 +96,16 @@ class JwtService extends Utils.EventEmitter {
     });
   };
   logout = () => {
-    axiosInstance.post(
-      jwtServiceConfig.logout,
-      {},
-      { headers: { ["auth-token"]: this.getAccessToken() } }
-    ).then(() => {
+    axiosInstance
+      .post(
+        jwtServiceConfig.logout,
+        {},
+        { headers: { ["auth-token"]: this.getAccessToken() } }
+      )
+      .then(() => {
         this.setSession(null);
         this.emit("onLogout", "Logged out");
-    })
+      });
   };
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
