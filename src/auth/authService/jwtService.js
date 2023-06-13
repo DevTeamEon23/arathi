@@ -1,11 +1,14 @@
 import jwtServiceConfig from "./jwtServiceConfig";
 import Utils from "../../utils";
 import axios from "axios";
+import Url from "./Url";
 
 /* eslint-disable camelcase */
 
+const liveUrl = Url();
+
 const axiosInstance = axios.create({
-  baseURL: `https://v1.eonlearning.tech/`,
+  baseURL: liveUrl,
 });
 
 class JwtService extends Utils.EventEmitter {

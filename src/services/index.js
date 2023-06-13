@@ -1,8 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Url from "src/auth/authService/Url";
 
 // Use as per your requirement
-
-// const liveUrl = url();
 
 // const baseQuery = fetchBaseQuery({
 //   baseUrl: liveUrl,
@@ -27,10 +26,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 //   return result;
 // };
 
+const liveUrl = Url();
+
 
 const apiSlice = createApi({
   reducerPath: "appApi",
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com' }), // only for demo
+  // baseQuery: fetchBaseQuery({ baseUrl: liveUrl }), // Uncomment before start development
   endpoints: (builder) => ({}),
 });
 
