@@ -88,9 +88,10 @@ class JwtService extends Utils.EventEmitter {
           }
         })
         .catch(({ response }) => {
-          // if (response.data.status === "failure") {
-          //   reject(new Error('Email or Password invaild.'));
-          // }
+          console.log(response);
+          if (response.data.status === "failure") {
+            reject(new Error('Email or Password invaild.'));
+          }
           reject(response.data);
           //   if (!response.data.verified) {
           //     reject(new Error({ verified: response.data.verified }));

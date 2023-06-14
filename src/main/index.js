@@ -14,6 +14,7 @@ import Footer from "./layouts/Footer";
 import ScrollToTop from "./layouts/ScrollToTop";
 /// Dashboard
 import Home from "./components/Dashboard/Home";
+import DashboardDark from "./components/Dashboard/DashboardDark";
 import Login from "./pages/Login";
 import Registration from "./pages/Registration";
 import Error400 from "./pages/Error400";
@@ -29,6 +30,7 @@ const Markup = () => {
     /// Dashboard
     { url: "", component: Home },
     { url: "dashboard", component: Home },
+    { url: "dashboard-dark", component: DashboardDark },
     { url: "page-login", component: Login },
     { url: "page-register", component: Registration },
     { url: "page-error-400", component: Error400 },
