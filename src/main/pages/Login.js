@@ -8,10 +8,10 @@ import logofull from '@images/logo-full.png';
 import jwtService from 'src/auth/authService/jwtService';
 
 function Login (props) {
-    const [email, setEmail] = useState('testuser@gmail.com');
+    const [email, setEmail] = useState('');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
-    const [password, setPassword] = useState('string');
+    const [password, setPassword] = useState('');
     const dispatch = useDispatch();
 
     function onLogin(e) {
