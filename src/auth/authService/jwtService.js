@@ -6,7 +6,7 @@ import Url from "./Url";
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
-console.log("live Url",liveUrl);
+console.log("live Url", liveUrl);
 
 const axiosInstance = axios.create({
   baseURL: liveUrl,
@@ -61,15 +61,16 @@ class JwtService extends Utils.EventEmitter {
   createUser = (data) => {
     return new Promise((resolve, reject) => {
       axiosInstance.post(jwtServiceConfig.signUp, data).then((response) => {
+        console.log(response);
         resolve();
-        // if (response.data.user) {
-        //   this.setSession(response.data.access_token);
-        //   resolve(response.data.user);
+        if (response.data.user) {
+          this.setSession(response.data.access_token);
+          resolve(response.data.user);
 
-        //   this.emit("onLogin", response.data.user);
-        // } else {
-        //   reject(response.data.error);
-        // }
+          this.emit("onLogin", response.data.user);
+        } else {
+          reject(response.data.error);
+        }
       });
     });
   };
@@ -91,7 +92,7 @@ class JwtService extends Utils.EventEmitter {
         .catch(({ response }) => {
           console.log(response);
           if (response.data.status === "failure") {
-            reject(new Error('Email or Password invaild.'));
+            reject(new Error("Email or Password invaild."));
           }
           reject(response.data);
           //   if (!response.data.verified) {
