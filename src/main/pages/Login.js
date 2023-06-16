@@ -91,14 +91,21 @@ function Login (props) {
 																<label className="form-check-label" htmlFor="basic_checkbox_1">Remember my preference</label>
 															</div>
 														</div>
-														<div className="mb-3">
-															<Link to="./page-register">Sign up</Link>
-														</div>
+														
 													</div>
 													<div className="text-center">
 														<button type="submit" className="btn btn-primary btn-block">Sign Me In</button>
 													</div>
+													<div className="mt-3">
+															<Link to="./page-register">Sign up</Link>
+														</div>
+													<div className="mb-2 mt-1">
+															<Link to="./page-forgot-password">
+																Forgot Password
+															</Link>
+														</div>
 												</form>
+												
 											</div>
 										</div>
 									</div>

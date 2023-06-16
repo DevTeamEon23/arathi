@@ -69,9 +69,8 @@ function App(props) {
             </div>
           }
         >
-          {/* {routes} */}
+          {routes}
         </Suspense>
-        <Index />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import Url from "./Url";
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
+console.log("live Url",liveUrl);
 
 const axiosInstance = axios.create({
   baseURL: liveUrl,
