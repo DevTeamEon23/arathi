@@ -11,6 +11,7 @@ import jwtService from "src/auth/authService/jwtService";
 function Register(props) {
 	const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
+	const [role, setRole] = useState('Learner');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('');
@@ -35,8 +36,10 @@ function Register(props) {
 			fullname: userName,
 			password,
 			email,
+			role,
 			generate_token: true,
 		  }).then((res) => {
+			console.log("check res in sign up",res);
 			props.history.push("/login");
 		  });
 
@@ -99,6 +102,15 @@ function Register(props) {
 												/>
 											</div>
 											{errors.password && <div>{errors.password}</div>}
+											<div className="form-group mb-3">
+												<label className="mb-1 ">
+													<strong>Role</strong>
+												</label>
+												<input type="text" className="form-control" 
+												value={role} disabled={true} style={{cursor:"not-allowed"}}
+												onChange={(e) => setRole(e.target.value)}
+												/>
+											</div>
 											<div className="text-center mt-4">
 												<button type="submit" className="btn btn-primary btn-block">Sign me up</button>
 											</div>

@@ -102,12 +102,7 @@ const Header = ({ onNote }) => {
 				<div
 					className="dashboard_bar"
 					style={{ textTransform: "capitalize" }}
-				  >
-					{finalName.join(" ").length === 0
-					  ? "Dashboard"
-					  : finalName.join(" ") === "dashboard dark"
-					  ? "Dashboard"
-					  : finalName.join(" ")}
+				  >LMS Dashboard
 				</div>
             </div>
 			<div className="navbar-nav header-right">

@@ -6,6 +6,7 @@ import Url from "./Url";
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
+console.log("live Url",liveUrl);
 
 const axiosInstance = axios.create({
   baseURL: liveUrl,
@@ -88,9 +89,10 @@ class JwtService extends Utils.EventEmitter {
           }
         })
         .catch(({ response }) => {
-          // if (response.data.status === "failure") {
-          //   reject(new Error('Email or Password invaild.'));
-          // }
+          console.log(response);
+          if (response.data.status === "failure") {
+            reject(new Error('Email or Password invaild.'));
+          }
           reject(response.data);
           //   if (!response.data.verified) {
           //     reject(new Error({ verified: response.data.verified }));
@@ -99,14 +101,16 @@ class JwtService extends Utils.EventEmitter {
     });
   };
   logout = () => {
-    axiosInstance.post(
-      jwtServiceConfig.logout,
-      {},
-      { headers: { ["auth-token"]: this.getAccessToken() } }
-    ).then(() => {
+    axiosInstance
+      .post(
+        jwtServiceConfig.logout,
+        {},
+        { headers: { ["auth-token"]: this.getAccessToken() } }
+      )
+      .then(() => {
         this.setSession(null);
         this.emit("onLogout", "Logged out");
-    })
+      });
   };
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
