@@ -29,9 +29,9 @@ const AdExportUser = () => {
             });
         };
       
-        useEffect(() => {
-          fetchData();
-        }, []);
+        // useEffect(() => {
+        //   fetchData();
+        // }, []);
         const handleExport = () => {
             const headings = [[
                 'id',

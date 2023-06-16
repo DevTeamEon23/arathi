@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 // images
-import qrcode from "../../../../assets/qr.png";
+import qrcode from "@images/qr.png";
 //import logo from "../../../../../images/logo.png";
-import logoText from "../../../../assets/logo-text.png";
+import logoText from "@images/logo-text.png";
 // import PageTitle from "../../../../layouts/PageTitle";
 
 // import {PageTitle} from 'react-bootstrap';

@@ -7,7 +7,7 @@ import {Tab, Nav, Button, Dropdown} from 'react-bootstrap';
 import DropDownBlog  from '../Dashboard/DropDownBlog';
 import LearningActivityChart from "../Dashboard/Dashboard/LearningActivityChart";
 
-import courses8 from './../../assets/courses/pic8.jpg';
+import courses8 from '@images/courses/pic8.jpg';
 
 const ProgressChart = loadable(() =>
 	pMinDelay(import("../Dashboard/Dashboard/ProgressChart"), 1000)

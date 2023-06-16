@@ -7,9 +7,9 @@ import 'react-modal-video/css/modal-video.min.css';
 import {AboutTabContent} from './CourseDetail1'; 
 import DropDownBlog from './../Dashboard/DropDownBlog';
 //Images
-import videoimg from './../../assets/courses/video-img.jpg';
-import pic3 from './../../assets/courses/pic3.jpg';
-import pic4 from './../../assets/courses/pic4.jpg';
+import videoimg from '@images/courses/video-img.jpg';
+import pic3 from '@images/courses/pic3.jpg';
+import pic4 from '@images/courses/pic4.jpg';
 
 const reviewsData = [
 	{image: pic3, title:'Jordan Nico ', commentTime:'2 Month Ago',},

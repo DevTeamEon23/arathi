@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import pic1 from '../../assets/Users/Groupsvg.svg'
+import pic1 from '@images/Users/Groupsvg.svg'
 
 import {
     Dropdown,

@@ -13,7 +13,7 @@ import {Tab, Nav, Button, Dropdown} from 'react-bootstrap';
 // import TotalCourse from "../../pages/WidgetBasic/TotalCourse";
 
 // import courses8 from './../../../images/courses/pic-2.jpg';
-import pic1 from '../../assets/Users/Selectquestion.svg';
+import pic1 from '@images/Users/Selectquestion.svg';
 
 const ProgressChart = loadable(() =>
 	pMinDelay(import("../Dashboard/Dashboard/ProgressChart"), 1000)

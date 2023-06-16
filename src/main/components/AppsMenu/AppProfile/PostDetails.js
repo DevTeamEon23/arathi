@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 /// Image
-import profile01 from "../../../assets/profile/1.jpg";
+import profile01 from "@images/profile/1.jpg";
 // import profile02 from "../../../../images/profile/2.jpg";
 // import profile03 from "../../../../images/profile/3.jpg";
 // import profile04 from "../../../../images/profile/4.jpg";
-import profile05 from "../../../assets/profile/5.jpg";
-import profile06 from "../../../assets/profile/6.jpg";
-import profile07 from "../../../assets/profile/7.jpg";
-import profile08 from "../../../assets/profile/8.jpg";
-import profile from "../../../assets/profile/profile.png";
+import profile05 from "@images/profile/5.jpg";
+import profile06 from "@images/profile/6.jpg";
+import profile07 from "@images/profile/7.jpg";
+import profile08 from "@images/profile/8.jpg";
+import profile from "@images/profile/profile.png";
 import { Dropdown, Button, Modal } from "react-bootstrap";
 // import { SRLWrapper } from "simple-react-lightbox";
 

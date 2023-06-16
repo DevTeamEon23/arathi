@@ -28,7 +28,6 @@ import Url from "src/auth/authService/Url";
 
 const liveUrl = Url();
 
-
 const apiSlice = createApi({
   reducerPath: "appApi",
   baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com' }), // only for demo

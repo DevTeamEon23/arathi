@@ -42,9 +42,9 @@ const Conferences = () => {
         });
   };
 
-  useEffect( async () => {
-    fetchData();
-  }, []);
+  // useEffect( async () => {
+  //   fetchData();
+  // }, []);
 
   async function deleteOperation(id)
   {

@@ -6,7 +6,7 @@ import pMinDelay from "p-min-delay";
 import { read, utils, writeFile } from 'xlsx';
 import {Tab, Nav, Button, Dropdown} from 'react-bootstrap';
 
-import pic1 from '../../assets/Users/Selectquestion.svg';
+import pic1 from '@images/Users/Selectquestion.svg';
 
 const ProgressChart = loadable(() =>
 	pMinDelay(import("../Dashboard/Dashboard/ProgressChart"), 1000)

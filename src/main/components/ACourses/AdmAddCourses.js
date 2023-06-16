@@ -106,9 +106,9 @@ const fetchCategory = () => {
         });
     };
     
-useEffect(() => {
-    fetchCategory();
-}, []);
+// useEffect(() => {
+//     fetchCategory();
+// }, []);
 const [selected, setSelected] = useState("");
 
 const Handlechange = (event) => {

@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { read, utils, writeFile } from 'xlsx';
 import {Tab, Nav, Button, Dropdown} from 'react-bootstrap';
-import courses8 from './../../assets/courses/pic-2.jpg';
+import courses8 from '@images/courses/pic-2.jpg';
 
 const ProgressChart = loadable(() =>
 	pMinDelay(import("../Dashboard/Dashboard/ProgressChart"), 1000)

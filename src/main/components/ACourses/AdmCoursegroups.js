@@ -16,9 +16,9 @@ import {
 } from "react-bootstrap";
 
 /// imge
-import avatar1 from "../../assets/avatar/1.jpg";
-import avatar2 from "../../assets/avatar/2.jpg";
-import avatar3 from "../../assets/avatar/3.jpg";
+// import avatar1 from "@images/avatar/1.jpg";
+// import avatar2 from "@images/avatar/2.jpg";
+// import avatar3 from "@images/avatar/3.jpg";
 
 const AdmCoursegroups = () => {
     const [sendMessage, setSendMessage] = useState(false);

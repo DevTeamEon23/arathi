@@ -4,9 +4,9 @@ import {Link} from 'react-router-dom';
 import InstructorCalendar from './Instructor/InstructorCalendar';
 
 import pic8 from '@images/courses/pic8.jpg';
-import pic7 from '@images/assets/courses/pic7.jpg';
-import pic6 from '@images/assets/courses/pic6.jpg';
-import pic5 from '@images/assets/courses/pic5.jpg';
+import pic7 from '@images/courses/pic7.jpg';
+import pic6 from '@images/courses/pic6.jpg';
+import pic5 from '@images/courses/pic5.jpg';
 
 const cardSchedule = [
 	{image:pic8,  cardClass:'bg-primary'},

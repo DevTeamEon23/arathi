@@ -10,9 +10,9 @@ import {
   ProgressBar,
 } from "react-bootstrap";
 
-import Check from './../../assets/vector/check.png';
-import Bookmarks from './../../assets/vector/bookmarks.png';
-import Bulb from './../../assets/vector/bulb.png';
+import Check from '@images/vector/check.png';
+import Bookmarks from '@images/vector/bookmarks.png';
+import Bulb from '@images/vector/bulb.png';
 
 import { Link } from "react-router-dom";
 

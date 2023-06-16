@@ -16,11 +16,11 @@ import ScrollToTop from "./layouts/ScrollToTop";
 /// Dashboard
 import Home from "./components/Dashboard/Home";
 import DashboardDark from "./components/Dashboard/DashboardDark";
-import Instructors from "../components/Dashboard/Instructors";
-import Activity from "../components/Dashboard/Activity";
-import Message from "../components/Dashboard/Message";
-import Schedule from "../components/Dashboard/Schedule";
-import Profile from "../components/Dashboard/Profile";
+import Instructors from "./components/Dashboard/Instructors";
+import Activity from "./components/Dashboard/Activity";
+import Message from "./components/Dashboard/Message";
+import Schedule from "./components/Dashboard/Schedule";
+import Profile from "./components/Dashboard/Profile";
 
 //Instructor----
 import Inst from "./components/Instructon/Inst";
@@ -29,32 +29,32 @@ import Inst from "./components/Instructon/Inst";
 import Learn from "./components/Learner/Learn";
 
 //Learner----
-import LearnerCourse from "../components/Learn/LearnCourse/LearnerCourse";
+import LearnerCourse from "./components/Learn/LearnCourse/LearnerCourse";
 
 //Learn
-import LearnerFiles from "../components/Learn/LearnFiles/LearnerFiles";
+import LearnerFiles from "./components/Learn/LearnFiles/LearnerFiles";
 
 //Learner Groups
-import Lgroups from "../components/LGroups/Lgroups";
+import Lgroups from "./components/LGroups/Lgroups";
 
 // Learn Certificate
-import LearnerCertificate from "../components/Learn/LearnCertificate/LearnerCertificate";
+import LearnerCertificate from "./components/Learn/LearnCertificate/LearnerCertificate";
 
 //Learner Training
-import Lclassroom from "../components/LTrainings/Lclassroom";
-import Lconference from "../components/LTrainings/Lconference";
-import Lvirtualtraining from "../components/LTrainings/Lvirtualtraining";
+import Lclassroom from "./components/LTrainings/Lclassroom";
+import Lconference from "./components/LTrainings/Lconference";
+import Lvirtualtraining from "./components/LTrainings/Lvirtualtraining";
 
 //Learn Timeline
-import LearnerTimeline from "../components/Learn/LearnTimeline/LearnerTimeline";
+import LearnerTimeline from "./components/Learn/LearnTimeline/LearnerTimeline";
 
 //Users----
 import Users from "./components/Users/Users";
 import AddUser from "./components/Users/AddUser";
-import EditUser from "../components/Users/EditUser";
+import EditUser from "./components/Users/EditUser";
 import UserTypes from "./components/Users/UserTypes";
 import AddUserType from "./components/Users/AddUserType";
-import EditUserType from "../components/Users/EditUserType";
+import EditUserType from "./components/Users/EditUserType";
 import ImportUser from "./components/Users/ImportUser";
 import ExportUser from "./components/Users/ExportUser";
 import UserFiles from "./components/Users/UserFiles";
@@ -187,11 +187,11 @@ import InstGroupCourses from "./components/IGroups/InstGroupCourses";
 import InstGroupFiles from "./components/IGroups/InstGroupFiles";
 
 //Events Engine----
-import Events from "../components/EventsEngine/Events";
-import AddNotification from "../components/EventsEngine/AddNotification";
-import EditNotification from "../components/EventsEngine/EditNotification";
-import CustomizeNotification from "../components/EventsEngine/CustomizeNotification";
-import PendingNotification from "../components/EventsEngine/PendingNotification";
+import Events from "./components/EventsEngine/Events";
+import AddNotification from "./components/EventsEngine/AddNotification";
+import EditNotification from "./components/EventsEngine/EditNotification";
+import CustomizeNotification from "./components/EventsEngine/CustomizeNotification";
+import PendingNotification from "./components/EventsEngine/PendingNotification";
 
 //Admin Events Engine----
 import AdmEvents from "./components/AdmEventsEngine/AdmEvents";
@@ -284,51 +284,51 @@ import AddDiscussion from "./components/Discussion/AddDiscussions";
 import UserDiscussion from "./components/Discussion/UserDiscussion";
 
 //Learner Discussions-----
-import LearnDiscussions from "../components/LDiscussion/LearnDiscussion";
-import LearnAddDiscussion from "../components/LDiscussion/LearnAddDiscussions";
-import LearnUserDiscussion from "../components/LDiscussion/LearnUserDiscussion";
+import LearnDiscussions from "./components/LDiscussion/LearnDiscussion";
+import LearnAddDiscussion from "./components/LDiscussion/LearnAddDiscussions";
+import LearnUserDiscussion from "./components/LDiscussion/LearnUserDiscussion";
 
 /// App
-import AppProfile from "../components/AppsMenu/AppProfile/AppProfile";
-import Compose from "../components/AppsMenu/Email/Compose/Compose";
-import Inbox from "../components/AppsMenu/Email/Inbox/Inbox";
-import Read from "../components/AppsMenu/Email/Read/Read";
-import Calendar from "../components/AppsMenu/Calendar/Calendar";
-import PostDetails from "../components/AppsMenu/AppProfile/PostDetails";
+import AppProfile from "./components/AppsMenu/AppProfile/AppProfile";
+import Compose from "./components/AppsMenu/Email/Compose/Compose";
+import Inbox from "./components/AppsMenu/Email/Inbox/Inbox";
+import Read from "./components/AppsMenu/Email/Read/Read";
+import Calendar from "./components/AppsMenu/Calendar/Calendar";
+import PostDetails from "./components/AppsMenu/AppProfile/PostDetails";
 
  /// Product List
-import Checkout from "../components/AppsMenu/Shop/Checkout/Checkout";
-import Invoice from "../components/AppsMenu/Shop/Invoice/Invoice";
+// import Checkout from "../components/AppsMenu/Shop/Checkout/Checkout";
+import Invoice from "./components/AppsMenu/Shop/Invoice/Invoice";
 
 /// Charts
-import SparklineChart from "../components/charts/Sparkline";
-import Chartist from "../components/charts/chartist";
-import RechartJs from "../components/charts/rechart";
-import ApexChart from "../components/charts/apexcharts";
+import SparklineChart from "./components/charts/Sparkline";
+import Chartist from "./components/charts/chartist";
+import RechartJs from "./components/charts/rechart";
+import ApexChart from "./components/charts/apexcharts";
 
 /// Plugins
-import Select2 from "../components/PluginsMenu/Select2/Select2";
-import Toastr from "../components/PluginsMenu/Toastr/Toastr";
+import Select2 from "./components/PluginsMenu/Select2/Select2";
+import Toastr from "./components/PluginsMenu/Toastr/Toastr";
 
 /// Form
-import SummerNote from "../components/Forms/Summernote/SummerNote";
+import SummerNote from "./components/Forms/Summernote/SummerNote";
 
 // Scorms
-import CoursesScorm from "../components/scorm/CoursesScorm";
+import CoursesScorm from "./components/scorm/CoursesScorm";
 
 /// Pages
 import Registration from "./pages/Registration";
-import Login from "../pages/Login";
-import ForgotPassword from "../pages/ForgotPassword";
-import LockScreen from "../pages/LockScreen";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import LockScreen from "./pages/LockScreen";
 import Error400 from "./pages/Error400";
 import Error403 from "./pages/Error403";
 import Error404 from "./pages/Error404";
 import Error500 from "./pages/Error500";
 import Error503 from "./pages/Error503";
 import { ThemeContext } from "@context/ThemeContext";
-import PrivateAddress from "../components/Calender/PrivateAddress";
-import Reset from "../pages/Reset";
+import PrivateAddress from "./components/Calender/PrivateAddress";
+import Reset from "./pages/Reset";
 
 const Markup = () => {
   const { menuToggle } = useContext(ThemeContext);

@@ -5,11 +5,11 @@ import {Tab, Nav} from 'react-bootstrap';
 
 import 'react-modal-video/css/modal-video.min.css';
 
-import pic1 from '../../assets/courses/pic1.jpg';
-import pic2 from '../../assets/courses/pic2.jpg';
-import pic3 from '../../assets/courses/pic3.jpg';
-import pic4 from '../../assets/courses/pic4.jpg';
-import course1 from '../../assets/courses/course1.jpg';
+import pic1 from '@images/courses/pic1.jpg';
+import pic2 from '@images/courses/pic2.jpg';
+import pic3 from '@images/courses/pic3.jpg';
+import pic4 from '@images/courses/pic4.jpg';
+import course1 from '@images/courses/course1.jpg';
 
 
 function AboutTabContent({title}){

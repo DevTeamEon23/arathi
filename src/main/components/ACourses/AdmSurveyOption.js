@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import TimePickerPicker from 'react-time-picker';
-import profile from "./../../assets/profile/profile.png";
+
 import {
   Dropdown,
   DropdownButton,
