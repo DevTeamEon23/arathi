@@ -1,12 +1,12 @@
 import React,{useState} from "react";
 import { Link, withRouter } from "react-router-dom";
-import { useDispatch } from 'react-redux';
 
 // image
 import logo from "@images/logo-full.png";
 import jwtService from "src/auth/authService/jwtService";
 
 // Add sweet alert
+import Swal from "sweetalert2";
 
 function Register(props) {
 	const [userName, setUserName] = useState('');
@@ -15,8 +15,6 @@ function Register(props) {
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('');
-
-    const dispatch = useDispatch();
 
     function onSignUp(e) {
         e.preventDefault();
@@ -38,13 +36,18 @@ function Register(props) {
 			email,
 			role,
 			generate_token: true,
-		  }).then((res) => {
-			console.log("check res in sign up",res);
-			props.history.push("/login");
+		  }).then((response) => {
+			Swal.fire({
+				title: "Success",
+				text: "Registration successfully Done",
+				icon: "success",
+				confirmButtonText: "OK",
+			  }).then(function () {
+				// Redirect the user to login page
+				props.history.push("/login");
+			  });
 		  });
 
-        // dispatch(loadingToggleAction(true));
-        // dispatch(signupAction(email, password, props.history));
     }
 	return (
 		<div className="authincation h-100 p-meddle">
