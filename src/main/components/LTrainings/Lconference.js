@@ -55,7 +55,7 @@ const Lconference = () => {
       });
       result=await result.json();
       console.warn(result)
-      fetchData();
+      // fetchData();
     }
   }
   const chackbox = document.querySelectorAll(".bs_exam_topper input");

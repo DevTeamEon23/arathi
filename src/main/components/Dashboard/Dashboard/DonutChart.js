@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Doughnut } from "react-chartjs-2";
+import {Chart, ArcElement} from 'chart.js'
+Chart.register(ArcElement);
 
 class DonutChart extends Component {
   render() {
@@ -19,16 +21,18 @@ class DonutChart extends Component {
     };
 
     const options = {
-      width: 100,
-      cutout: '75%',
-      responsive: false,
-      maintainAspectRatio: true,
-      tooltips: { enabled: false },
-      hover: { mode: null },
+		width: 100,
+		cutout: '60%',
+		plugins:{
+			tooltip: { enabled: false },  
+		},
+		responsive: false,
+		maintainAspectRatio: true,
+		hover: { mode: null },
     };
     return (
       <div className="donught-chart" style={{ marginTop: "-10px" }}>
-        <Doughnut data={data} options={options} height={110} width={110} />
+			<Doughnut data={data} options={options} height={60} width={60} />
       </div>
     );
   }

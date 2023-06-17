@@ -9,6 +9,7 @@ import {
   Filler,
   Tooltip,
   Legend,
+  ArcElement
 } from 'chart.js';
 //import { Radar } from 'react-chartjs-2';
 
@@ -18,7 +19,8 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 const data = {

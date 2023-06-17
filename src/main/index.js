@@ -648,7 +648,7 @@ const Markup = () => {
     /// pages
     { url: "page-register", component: Registration },
     { url: "page-lock-screen", component: LockScreen },
-    { url: "page-login", component: Login },
+    { url: "login", component: Login },
     { url: "page-forgot-password", component: ForgotPassword },
     { url: "page-reset-password", component: Reset },
     { url: "page-error-400", component: Error400 },
