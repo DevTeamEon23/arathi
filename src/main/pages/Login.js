@@ -148,10 +148,10 @@ function Login(props) {
                               Sign Me In
                             </button>
                           </div>
-                          <div className="mt-3">
+                          <div className="text-primary mt-3">
                             <Link to="./page-register">Sign up</Link>
                           </div>
-                          <div className="mb-2 mt-1">
+                          <div className="text-primary mb-2 mt-1">
                             <Link to="./page-forgot-password">
                               Forgot Password
                             </Link>
