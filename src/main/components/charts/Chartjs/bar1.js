@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement
 } from 'chart.js';
 //import { Bar } from 'react-chartjs-2';
 //import faker from 'faker';
@@ -18,7 +19,8 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ArcElement
 );
 
 class BarChart1 extends Component {

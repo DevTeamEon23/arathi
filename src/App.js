@@ -24,6 +24,7 @@ function App(props) {
   useEffect(() => {
     // checkAutoLogin(dispatch, props.history);
     if (isAuthenticated) {
+      console.log("inside app.js");
       props.history.push("/dashboard");
     } else {
       props.history.push("/login");
@@ -38,6 +39,7 @@ function App(props) {
     </Switch>
   );
   if (isAuthenticated) {
+    console.log("inside app.js@@@@@@@@@@@@@@@@@@@@");
     return (
       <>
         <Suspense
