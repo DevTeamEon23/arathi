@@ -10,28 +10,20 @@ import Swal from "sweetalert2";
 
 function Register(props) {
   const [userName, setUserName] = useState("");
+  const [nameErrorMsg, setNameErrorMsg] = useState('');
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Learner");
-  let errorsObj = { email: "", password: "" };
-  const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
   const [error, setError] = useState('');
 
   function onSignUp(e) {
     e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (email === "") {
-      errorObj.email = "Email is Required";
-      error = true;
-    }
-    if (password === "") {
-      errorObj.password = "Password is Required";
-      error = true;
-    }
-    setErrors(errorObj);
-    if (error) return;
-	if (password.length < 5) {
+    if (userName.length < 3 ) {
+      setNameErrorMsg('Full name must contain at least 3 characters');
+      } else {
+      setNameErrorMsg('');
+      }
+if (password.length < 5) {
 		setError('Password must be at least 5 characters long');
 	  } else {
 		setError('');
@@ -46,16 +38,18 @@ function Register(props) {
         generate_token: true,
       })
       .then((response) => {
-        Swal.fire({
-          title: "Success",
-          text: "Registration successfully Done",
-          icon: "success",
-          confirmButtonText: "OK",
-        }).then(function () {
-          // Redirect the user to login page
-          props.history.push("/login");
-        });
       });
+  }
+
+  const validateName=()=>{
+    // Validate full name
+    if (!/^[a-zA-Z\s]+$/.test(userName)) {
+      console.log(userName.length);
+      setNameErrorMsg('Please enter a valid full name');
+    } else {
+      setNameErrorMsg('');
+      // Perform further actions or submit the form
+    }
   }
   return (
     <div className="authincation h-100 p-meddle">
@@ -88,8 +82,11 @@ function Register(props) {
                           className="form-control"
                           placeholder="Enter Full name"
                           value={userName}
+                          onBlur={validateName}
                           onChange={(e) => setUserName(e.target.value)}
+                          required
                         />
+                      {nameErrorMsg && <span className="text-danger fs-14 m-2">{nameErrorMsg}</span>}
                       </div>
                       <div className="form-group mb-3">
                         <label className="mb-1 ">
@@ -101,9 +98,9 @@ function Register(props) {
                           onChange={(e) => setEmail(e.target.value)}
                           className="form-control"
                           placeholder="hello@example.com"
+                          required
                         />
                       </div>
-                      {errors.email && <div id="name">{errors.email}</div>}
                       <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Password</strong>
@@ -113,10 +110,10 @@ function Register(props) {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="form-control"
+                          required
                         />
 						{error && <div>{error}</div>}
                       </div>
-                      {errors.password && <div>{errors.password}</div>}
                       <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Role</strong>
