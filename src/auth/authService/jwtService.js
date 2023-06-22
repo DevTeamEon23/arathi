@@ -108,7 +108,7 @@ createUser = (data) => {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done", response.data.status,response.data.data.user,response.data.token,response.data.data.user,response.data.error);
+          console.log("login done token",response.data.token);
           if (response.data.status === "success") {
             Swal.fire({
               title: "Success!",
