@@ -39,8 +39,9 @@ const langtype = [
 const AddUser = () => {
   const [id, setId] = useState("");
   const [eid, setEid] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
+  const [userName, setUserName] = useState("");
+  // const [firstname, setFirstname] = useState("");
+  // const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [dept, setDept] = useState("");
   const [adhr, setAdhr] = useState("");
@@ -59,8 +60,9 @@ const AddUser = () => {
     const data = {
       id,
       eid,
-      firstname,
-      lastname,
+      userName,
+      // firstname,
+      // lastname,
       email,
       dept,
       adhr,
@@ -161,7 +163,7 @@ const AddUser = () => {
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      {/* <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-username"
@@ -179,8 +181,8 @@ const AddUser = () => {
                             onChange={(e) => setFirstname(e.target.value)}
                           />
                         </div>
-                      </div>
-                      <div className="form-group mb-3 row">
+                      </div> */}
+                      {/* <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-username"
@@ -198,6 +200,20 @@ const AddUser = () => {
                             onChange={(e) => setLastname(e.target.value)}
                           />
                         </div>
+                      </div> */}
+                      <div className="form-group mb-3 row">
+                        <label className="col-lg-4 col-form-label"
+                          htmlFor="val-username">Full Name
+                          <span className="text-danger">*</span>
+                        </label><div className="col-lg-6">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Enter Full name"
+                          value={userName}
+                          onChange={(e) => setUserName(e.target.value)}
+                          required
+                        /> </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label

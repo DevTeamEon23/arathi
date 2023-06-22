@@ -3,7 +3,6 @@ import Utils from "../../utils";
 import axios from "axios";
 import Url from "./Url";
 import Swal from "sweetalert2";
-
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
@@ -59,22 +58,29 @@ class JwtService extends Utils.EventEmitter {
     }
   };
 
+//Sign up function
 createUser = (data) => {
+  console.log(data);
   return new Promise((resolve, reject) => {
     axiosInstance.post(jwtServiceConfig.signUp, data)
       .then((response) => {
+      console.log("signup function",response.data.user,response.data.error);
         if (response.data.status === "success") {
           Swal.fire({
             title: "Success!",
             text: "Registration Done Successfully",
             icon: "success",
             confirmButtonText: "OK",
+          }).then(() => {
+            // Redirect to the login page
+            window.location.href = "/login";
           });
         }
-        if (response.data.data.user) {
-          this.setSession(response.data.token);
-          this.emit("onLogin", response.data.data.user);
-          resolve(response.data.data.user);
+        resolve();
+        if (response.data.user) {
+          this.setSession(response.data.access_token);
+          resolve(response.data.user);
+          this.emit("onLogin", response.data.user);
         } else {
           reject(response.data.error);
         }
@@ -102,8 +108,7 @@ createUser = (data) => {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done", response.data.status);
-          console.log("login not done", response);
+          console.log("login done", response.data.status,response.data.data.user,response.data.token,response.data.data.user,response.data.error);
           if (response.data.status === "success") {
             Swal.fire({
               title: "Success!",

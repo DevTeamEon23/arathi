@@ -10,6 +10,7 @@ export default function Url() {
   } else {
     // Hear put your local address for local devlopment
     liveUrl = "http://localhost:8000/";
+    //  liveUrl = "https://v1.eonlearning.tech/";
   }
   return liveUrl;
 }
