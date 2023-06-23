@@ -3,7 +3,6 @@ import Utils from "../../utils";
 import axios from "axios";
 import Url from "./Url";
 import Swal from "sweetalert2";
-
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
@@ -59,32 +58,49 @@ class JwtService extends Utils.EventEmitter {
     }
   };
 
-  createUser = (data) => {
-    return new Promise((resolve, reject) => {
-      axiosInstance.post(jwtServiceConfig.signUp, data).then((response) => {
-        console.log(response,response.data);
-        console.log("check response3@@", response.status);
-        console.log("check response4@@", response.detail);
-         if (response.data.data.user) {
-            this.setSession(response.data.token);
-            this.emit("onLogin", response.data.data.user);
-            resolve(response.data.data.user);
-          } else {
-            reject(response.data.error);
-          }
-        })
-        .catch(({ response }) => {
-          console.log(response,response.data.status);
-          if (response.data.status === "failure") {
-            reject(new Error("Email or Password invaild."));
-          }
-          reject(response.data);
-          //   if (!response.data.verified) {
-          //     reject(new Error({ verified: response.data.verified }));
-          //   }
-        });
+//Sign up function
+createUser = (data) => {
+  console.log(data);
+  return new Promise((resolve, reject) => {
+    axiosInstance.post(jwtServiceConfig.signUp, data)
+      .then((response) => {
+      console.log("signup function",response.data.user,response.data.error);
+        if (response.data.status === "success") {
+          Swal.fire({
+            title: "Success!",
+            text: "Registration Done Successfully",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            // Redirect to the login page
+            window.location.href = "/login";
+          });
+        }
+        resolve();
+        if (response.data.user) {
+          this.setSession(response.data.access_token);
+          resolve(response.data.user);
+          this.emit("onLogin", response.data.user);
+        } else {
+          reject(response.data.error);
+        }
+      })
+      .catch((error) => {
+        console.log(error,error.response);
+        if (error.response && error.response.data && error.response.data.status === "failure") {
+          Swal.fire({
+            title: "Something went wrong!",
+            text: "User Already Exists",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          reject(new Error("Email or Password invalid."));
+        } else {
+          reject(error);
+        }
       });
-  };
+  });
+};
 
   // login function
   signInWithEmailAndPassword = (data) => {
@@ -92,8 +108,7 @@ class JwtService extends Utils.EventEmitter {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done", response.data.status);
-          console.log("login not done", response);
+          console.log("login done token",response.data.token);
           if (response.data.status === "success") {
             Swal.fire({
               title: "Success!",
