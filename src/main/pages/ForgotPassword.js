@@ -1,89 +1,97 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { CircularProgress } from "@material-ui/core";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // image
 import logo from "@images/Asset.png";
 // import Reset from "./Reset";
 import axios from "axios";
+import Reset from "./Reset";
 
-function ForgotPassword(props) {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState('');
-  // const [otp, setOtp] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [otpReceived, setOtpReceived] = useState();
   const history = useHistory();
-  const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
+  // const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
   const [otp, setOtp] = useState(new Array(4).fill("")); //for otp
   const [isShown, setIsShown] = useState(false);
-  const [disableBtn, setDisableBtn] = useState(false);
-
-  // const handleInputEmail = (e) => {
-  //   console.log("inside handleInputEmail");
-  //   setEmail(e.target.value);
-  //   // axios.post("http://localhost:5000/verifymail",{
-  //   //   email: email,
-  //   // }).then(()=>console.log("api done"))
-  // };
+  const [disabled, setDisabled] = useState(false);
+  const [btnLoader, setBtnLoader] = useState(false);
+  const [resendDisabled, setResendDisabled] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [resetPg, setResetPg] = useState(false)
 
   const onSubmit = (e) => {
     e.preventDefault();
+    setBtnLoader(true);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
+      setEmailError("Please enter a valid email address");
     } else {
-      setEmailError('');
+      setEmailError("");
+      axios
+        .post("http://localhost:8000/auth/send_mail", {
+          email: [email],
+        })
+        .then((res) => {
+          console.log(res, res.data.OTP, res.data.status);
+          setOtpReceived(res.data.OTP);
+          setIsShown(true);
+          setBtnLoader(false);
+          setDisabled(true);
+        })
+        .catch((error) => {
+          console.log(error, error.response, error.response.status);
+          toast.error("Invalid credentials!", {
+            position: toast.POSITION.TOP_CENTER,
+            className: "toast-message",
+          });
+          setBtnLoader(false);
+        });
+    }
+  };
+
+  // Function to start the resend OTP timer
+  const startResendTimer = () => {
+    setResendDisabled(true); // Disable the resend button initially
+    setResendTimer(60); // Set the initial timer value in seconds
+
+    // Update the timer every second
+    const timerInterval = setInterval(() => {
+      setResendTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    // Stop the timer after 60 seconds
+    setTimeout(() => {
+      clearInterval(timerInterval);
+      setResendDisabled(false); // Enable the resend button after the timer expires
+    }, 60000);
+  };
+
+  // Function to handle resend OTP
+  const handleResendOTP = () => {
+    startResendTimer(); // Start the resend OTP timer
+    // Make the API call to resend the OTP
     axios
       .post("http://localhost:8000/auth/send_mail", {
         email: [email],
       })
       .then((res) => {
-        console.log(res);
-        // if (res.data.emailExists === true) {
-        //   console.log("user present");
-        //   // document.getElementById('checkinputemail').innerHTML = 'User present'
-        // } else console.log("user doesn't present");
-        // // document.getElementById('checkinputemail').innerHTML = 'User not present'
-        // alert('User not present')
-        // if (res.data.emailExists === false) {
-        //   alert("User not present");
-        // }
-        handleOtp(e)
+        console.log(res, res.data.OTP, res.data.status);
+        setOtpReceived(res.data.OTP);
+        setIsShown(true);
       })
-      .catch((res) => {
-        console.log(res);
-      });
-      // handleOtp(e)
-    }
-    // setIsShown((current) => !current);
-    // setDisableBtn(true);
-    // dispatch(loadingToggleAction(true));
-    // dispatch(loginAction(email, props.history));
-    // history.push("/login"); //change navigation
-  };
-
-  const validateEmail = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
-    } else {
-      setEmailError('');
-    }
-  };
-  
-  const handleOtp=(e)=>{
-    console.log("inside handleOtp");
-    if (email) {
-      const OTP = Math.floor(Math.random() * 9000 + 1000);
-      console.log(OTP);
-      setOtp(OTP);
-      axios
-        .post("http://localhost:5000/send_recovery_email", { 
-          OTP,
-          recipient_email: email,
-        }).catch((err) => {
-          console.log(err);
+      .catch((error) => {
+        console.log(error, error.response, error.response.status);
+        toast.error("Invalid credentials!", {
+          position: toast.POSITION.TOP_CENTER,
+          className: "toast-message",
         });
-    
-  }}
+      });
+  };
 
   const handleChange = (element, index) => {
     console.log("inside handleChange", index);
@@ -101,13 +109,22 @@ function ForgotPassword(props) {
       "inside handleVerifyOtp",
       otp.length,
       otp.length - 1,
-      otp.join("")
+      otp.join(""),
+      otpReceived
     );
-    history.push("/page-reset-password"); //change route here redirect to reset page
-    // if (otp.length===otp.length-1){
-    // console.log("enter password")
-    // }
-    // alert("Entered OTP is " + otp.join(""))
+    if (otpReceived === otp.join("")) {
+      console.log("inside if verify otp");
+      // return <Reset mail={email}/>
+      // setResetPg(true)
+      localStorage.setItem("email", email);
+      history.push("/page-reset-password");
+    } else {
+      console.log("inside error");
+      toast.error("Incorrect OTP! Please try again...", {
+        position: toast.POSITION.TOP_CENTER,
+        className: "toast-message",
+      });
+    }
   };
 
   return (
@@ -140,17 +157,30 @@ function ForgotPassword(props) {
                           // onBlur={validateEmail}
                           required
                         />
-                         {emailError && <span className="text-danger fs-14 m-2">{emailError}</span>}
+                        {emailError && (
+                          <span className="text-danger fs-14 m-2">
+                            {emailError}
+                          </span>
+                        )}
                         {/* {email && <div id="checkinputemail" className=''></div>} */}
                       </div>
                       <div className="text-center mt-2">
                         <button
                           type="submit"
                           className="btn btn-primary btn-block"
-                          disabled={disableBtn}
-                          // style={{disableBtn ?<> cursor: 'not-allowed'</> : cursor: 'pointer'}}
+                          disabled={disabled}
                         >
-                          SUBMIT
+                          {btnLoader ? (
+                            <CircularProgress
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                color: "#fff",
+                              }}
+                            />
+                          ) : (
+                            "SUBMIT"
+                          )}
                         </button>
                       </div>
                     </form>
@@ -198,7 +228,17 @@ function ForgotPassword(props) {
                               <p className="fs-16">
                                 OTP Entered - {otp.join("")}
                               </p>
-                              <div className="d-flex justify-content-around">
+                              <div className="align-items-center">
+                              <button className="btn btn-link"
+                                onClick={handleResendOTP}
+                                disabled={resendDisabled}
+                              >
+                                Resend OTP
+                              </button>
+                              {resendDisabled && (
+                                <p className="">Resend OTP in {resendTimer} seconds</p>
+                              )}</div>
+                              <div className="d-flex justify-content-around mb-2">
                                 <button
                                   className="btn btn-secondary btn-block-half"
                                   onClick={(e) =>
@@ -220,7 +260,7 @@ function ForgotPassword(props) {
                       </form>
                     )}
 
-                    <div className=" mt-2">
+                    <div className=" mt-3">
                       <p className="">
                         Want To Create an Account?{" "}
                         <Link className="text-primary" to="/page-register">
@@ -235,9 +275,10 @@ function ForgotPassword(props) {
           </div>
         </div>
       </div>
+      <ToastContainer />
+      {resetPg?<Reset/>:""}
     </div>
   );
 }
 
-
-export default ForgotPassword
+export default ForgotPassword;

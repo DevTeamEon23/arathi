@@ -112,7 +112,7 @@ if (password.length < 5) {
                           className="form-control"
                           required
                         />
-						{error && <div>{error}</div>}
+						{error && <div className="text-danger fs-12">{error}</div>}
                       </div>
                       <div className="form-group mb-3">
                         <label className="mb-1 ">

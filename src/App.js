@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect } from "react";
-
 /// Components
 import Index from "./main";
 import { useDispatch } from "react-redux";
@@ -12,6 +11,7 @@ import { useAuth } from "./auth/AuthContext";
 
 const SignUp = lazy(() => import("./main/pages/Registration"));
 const ForgotPassword = lazy(() => import("./main/pages/ForgotPassword"));
+const Reset =lazy(()=>import("./main/pages/Reset"));
 const Login = lazy(() => {
   return new Promise((resolve) => {
     setTimeout(() => resolve(import("./main/pages/Login")), 500);
@@ -36,6 +36,7 @@ function App(props) {
       <Route path="/login" component={Login} />
       <Route path="/page-register" component={SignUp} />
       <Route path="/page-forgot-password" component={ForgotPassword} />
+      <Route path="/page-reset-password" component={Reset} />
     </Switch>
   );
   if (isAuthenticated) {

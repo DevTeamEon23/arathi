@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { connect, useDispatch } from 'react-redux';
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
@@ -6,30 +6,48 @@ import { useHistory } from "react-router-dom";
 // } from '../store/actions/AuthActions';
 // image
 import logo from "@images/Asset.png";
+import axios from 'axios';
 
-const Reset = (props) => {
+const Reset = () => {
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
-  let errorsObj = { email: ''};
-  const [errors, setErrors] = useState(errorsObj);
+  const [email, setEmail] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
+  const [error, setError] = useState('');
 
   const onSubmit = (e) => {
     e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (password === '') {
-        errorObj.password = 'Password is Required';
-        error = true;
-    }
-    setErrors(errorObj);
-    if (error) return;
-    history.push("/login");
-    // dispatch(loadingToggleAction(true));
-    // dispatch(loginAction(email, props.history));
+    if (password.length < 5) {
+      console.log(password.length);
+      setError('Password must be at least 5 characters long');
+      } else {
+      setError('');
+      }
+      const requestData = {
+        email: email,
+        password: password
+      };
+  
+      // Make the POST request using Axios
+      axios.post('http://localhost:8000/auth/change-user-password', requestData)
+        .then(response => {
+          console.log('Password changed successfully!');
+          // Additional code for handling successful response
+        })
+        .catch(error => {
+          console.error('Error changing password:', error);
+          // Additional code for handling error
+        });
+    // history.push("/login");
   };
 
+  useEffect(() => {
+  let email=window.localStorage.getItem("email");
+  setEmail(email)
+  console.log(email);
+  }, [email])
+  
   return (
     <div className="authincation h-100 p-meddle">
     <div className="container h-100">
@@ -59,12 +77,7 @@ const Reset = (props) => {
                               onChange={(e) => setPassword(e.target.value)}
                               required
                             />
-                            
-                            {errors.password && (
-                              <div className="text-danger fs-12">
-                                {errors.password}
-                              </div>
-                            )}
+                            {error && <div className="text-danger fs-12">{error}</div>}
                           </div>
 
                           <div className="mb-3">
@@ -79,11 +92,6 @@ const Reset = (props) => {
                               required
                             />
                             
-                            {errors.password && (
-                              <div className="text-danger fs-12">
-                                {errors.password}
-                              </div>
-                            )}
                           </div>
                     </div>
                     <div className="text-center">

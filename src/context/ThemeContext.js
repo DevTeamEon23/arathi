@@ -9,7 +9,7 @@ const ThemeContextProvider = (props) => {
     const [headerposition, setHeaderposition] = useState({ value: "fixed", label: "Fixed", });
     const [sidebarLayout, setSidebarLayout] = useState({ value: "vertical", label: "Vertical",});
 	const [direction, setDirection] = useState({ value: "ltr", label: "LTR" });
-	const [primaryColor, setPrimaryColor] = useState("color_1");
+	const [primaryColor, setPrimaryColor] = useState("color_6");
 	const [secondaryColor, setSecondaryColor] = useState("color_1");
 	const [navigationHader, setNavigationHader] = useState("color_1");
 	const [haderColor, setHaderColor] = useState("color_1");
@@ -217,12 +217,12 @@ const ThemeContextProvider = (props) => {
     body.setAttribute("data-typography", "poppins");
     body.setAttribute("data-theme-version", "light");
     body.setAttribute("data-layout", "vertical");
-    body.setAttribute("data-primary", "color_1");
-    body.setAttribute("data-nav-headerbg", "color_1");
-    body.setAttribute("data-headerbg", "color_1");
+    body.setAttribute("data-primary", "color_6");
+    body.setAttribute("data-nav-headerbg", "color_6");
+    body.setAttribute("data-headerbg", "color_6");
     body.setAttribute("data-sidebar-style", "overlay");
     body.setAttribute("data-sibebarbg", "color_1");
-	body.setAttribute("data-secondary", "color_1");
+	body.setAttribute("data-secondary", "color_5");
     body.setAttribute("data-sidebar-position", "fixed");
     body.setAttribute("data-header-position", "fixed");
     body.setAttribute("data-container", "wide");
@@ -291,5 +291,3 @@ const ThemeContextProvider = (props) => {
 };
 
 export default ThemeContextProvider;
-
-
