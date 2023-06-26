@@ -144,6 +144,7 @@ createUser = (data) => {
         });
     });
   };
+
   logout = () => {
     axiosInstance
       .post(
@@ -156,6 +157,7 @@ createUser = (data) => {
         this.emit("onLogout", "Logged out");
       });
   };
+
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
       axiosInstance
@@ -163,6 +165,7 @@ createUser = (data) => {
           headers: { ["auth-token"]: this.getAccessToken() },
         })
         .then((response) => {
+        console.log(response);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             resolve(response.data.data.user);
@@ -172,6 +175,7 @@ createUser = (data) => {
           }
         })
         .catch((error) => {
+          console.log(error.response);
           this.logout();
           reject(new Error("Failed to login with token."));
         });

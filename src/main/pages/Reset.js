@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 // image
 import logo from "@images/Asset.png";
 import axios from 'axios';
+import Swal from "sweetalert2";
 
 const Reset = () => {
   const [password, setPassword] = useState("");
@@ -15,32 +16,61 @@ const Reset = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [error, setError] = useState('');
+  const [pwdError, setPwdError] = useState('');
 
   const onSubmit = (e) => {
     e.preventDefault();
+  if(password !== confPassword){
+  setPwdError("Password and Confirm password should be same");
+}else {
+  setPwdError('');
+  const requestData = {
+    email: email,
+    password: password
+  };
+  // Make the POST request using Axios
+  axios.post('http://localhost:8000/auth/change-user-password', requestData)
+    .then(response => {
+      console.log('Password changed successfully!',response);
+      if (response.data.status === "success") {
+        Swal.fire({
+          title: "Password changed successfully!!",
+          text: "Please Login with new password...",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Redirect to the login page
+          window.location.href = "/login";
+        });
+      }
+      localStorage.removeItem("email");
+    })
+    .catch((error) => {
+      console.log(error,error.response);
+      if (error.response && error.response.data && error.response.data.status === "failure") {
+        Swal.fire({
+          title: "Error changing password!",
+          text: "Please try again later...",
+          icon: "error",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Redirect to the login page
+          window.location.href = "/login";
+        });
+      }})
+  }
+    
+     
+  };
+
+  const validatePwd=()=>{
     if (password.length < 5) {
       console.log(password.length);
       setError('Password must be at least 5 characters long');
       } else {
       setError('');
       }
-      const requestData = {
-        email: email,
-        password: password
-      };
-  
-      // Make the POST request using Axios
-      axios.post('http://localhost:8000/auth/change-user-password', requestData)
-        .then(response => {
-          console.log('Password changed successfully!');
-          // Additional code for handling successful response
-        })
-        .catch(error => {
-          console.error('Error changing password:', error);
-          // Additional code for handling error
-        });
-    // history.push("/login");
-  };
+  }
 
   useEffect(() => {
   let email=window.localStorage.getItem("email");
@@ -75,9 +105,10 @@ const Reset = () => {
                               className="form-control"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
+                              onBlur={validatePwd}
                               required
                             />
-                            {error && <div className="text-danger fs-12">{error}</div>}
+                            {error && <div className="text-danger fs-14">{error}</div>}
                           </div>
 
                           <div className="mb-3">
@@ -91,7 +122,7 @@ const Reset = () => {
                               onChange={(e) =>setConfPassword (e.target.value)}
                               required
                             />
-                            
+                            {pwdError && <div className="text-danger fs-14">{pwdError}</div>} 
                           </div>
                     </div>
                     <div className="text-center">

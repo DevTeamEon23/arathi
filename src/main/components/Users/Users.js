@@ -46,7 +46,7 @@ const Users = () => {
     };
     // Make the Axios GET request
     axios
-      .get("http://127.0.0.1:8000/lms-service/users", config)
+      .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
         // Handle the successful response
         console.log(response, response.data, response.data.data); // Do something with the user details

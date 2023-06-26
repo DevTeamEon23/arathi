@@ -17,9 +17,10 @@ function ForgotPassword() {
   const history = useHistory();
   // const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
   const [otp, setOtp] = useState(new Array(4).fill("")); //for otp
-  const [isShown, setIsShown] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const [btnLoader, setBtnLoader] = useState(false);
+  const [isShown, setIsShown] = useState(false);//OTP UI
+  const [disabled, setDisabled] = useState(false);//btn disabled
+  const [btnLoader, setBtnLoader] = useState(false);//Loader
+  const [verifyBtnLoader, setVerifyBtnLoader] = useState(false);//Loader
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [resetPg, setResetPg] = useState(false)
@@ -105,6 +106,7 @@ function ForgotPassword() {
 
   const handleVerifyOtp = (e) => {
     e.preventDefault();
+    setVerifyBtnLoader(true)
     console.log(
       "inside handleVerifyOtp",
       otp.length,
@@ -117,6 +119,7 @@ function ForgotPassword() {
       // return <Reset mail={email}/>
       // setResetPg(true)
       localStorage.setItem("email", email);
+      setVerifyBtnLoader(false)
       history.push("/page-reset-password");
     } else {
       console.log("inside error");
@@ -154,7 +157,6 @@ function ForgotPassword() {
                           onChange={(e) => setEmail(e.target.value)}
                           className="form-control"
                           placeholder="hello@example.com"
-                          // onBlur={validateEmail}
                           required
                         />
                         {emailError && (
@@ -189,7 +191,17 @@ function ForgotPassword() {
                       <form onSubmit={handleVerifyOtp}>
                         <div className="text-center">
                           <div className="mt-3">
-                            <strong>Verify your Identity</strong>
+                            <strong>{verifyBtnLoader? (
+                            <CircularProgress
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                color: "#fff",
+                              }}
+                            />
+                          ) : (
+                            "Verify your Identity"
+                          )}</strong>
                           </div>
                           <div className="fs-18">
                             <p>
