@@ -46,7 +46,7 @@ const Users = () => {
     };
     // Make the Axios GET request
     axios
-      .get("https://v1.eonlearning.tech/lms-service/users", config)
+      .get("http://localhost:8000/lms-service/users", config)
       .then((response) => {
         // Handle the successful response
         console.log(response, response.data, response.data.data); // Do something with the user details
@@ -239,7 +239,7 @@ const Users = () => {
                     const amPm = hours >= 12 ? "PM" : "AM";
                     hours = hours % 12 || 12;
                     const formattedTime = `${hours}:${minutes} ${amPm}`;
-                    console.log(data.length)
+                    console.log(data)
                     return (
                       <tr key={index}>
                         <td>
@@ -258,7 +258,7 @@ const Users = () => {
                           <center>{item.email}</center>
                         </td>
                         <td>
-                          <center>{item.categorytype}</center>
+                          <center>{item.role}</center>
                         </td>
                         <td>
                           <center>{formattedDate}</center>

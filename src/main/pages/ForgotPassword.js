@@ -8,7 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import logo from "@images/Asset.png";
 // import Reset from "./Reset";
 import axios from "axios";
-import Reset from "./Reset";
+// import Reset from "./Reset";
+import jwtService from "src/auth/authService/jwtService";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,8 @@ function ForgotPassword() {
   const [verifyBtnLoader, setVerifyBtnLoader] = useState(false);//Loader
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  const [resetPg, setResetPg] = useState(false)
+  // const [resetPg, setResetPg] = useState(false)
+  
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -33,25 +35,38 @@ function ForgotPassword() {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
-      axios
-        .post("http://localhost:8000/auth/send_mail", {
-          email: [email],
-        })
-        .then((res) => {
-          console.log(res, res.data.OTP, res.data.status);
-          setOtpReceived(res.data.OTP);
+      // axios
+      //   .post("http://localhost:8000/auth/send_mail", {
+      //     email: [email],
+      //   })
+      //   .then((res) => {
+      //     console.log(res, res.data.OTP, res.data.status);
+      //     setOtpReceived(res.data.OTP);
+      //     setIsShown(true);
+      //     setBtnLoader(false);
+      //     setDisabled(true);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error, error.response, error.response.status);
+      //     toast.error("Invalid credentials!", {
+      //       position: toast.POSITION.TOP_CENTER,
+      //       className: "toast-message",
+      //     });
+      //     setBtnLoader(false);
+      //   });
+      jwtService
+      .forgotPassword({
+      email:[email]
+      // generate_token: true
+      })
+      .then((response) => {
+        console.log(response, response.data.OTP, response.data.status);
+          setOtpReceived(response.data.OTP);
           setIsShown(true);
-          setBtnLoader(false);
-          setDisabled(true);
-        })
-        .catch((error) => {
-          console.log(error, error.response, error.response.status);
-          toast.error("Invalid credentials!", {
-            position: toast.POSITION.TOP_CENTER,
-            className: "toast-message",
-          });
-          setBtnLoader(false);
-        });
+           setBtnLoader(false);
+           setDisabled(true);
+      });
+    
     }
   };
 
@@ -288,7 +303,7 @@ function ForgotPassword() {
         </div>
       </div>
       <ToastContainer />
-      {resetPg?<Reset/>:""}
+      {/* {resetPg?<Reset/>:""} */}
     </div>
   );
 }

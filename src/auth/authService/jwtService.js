@@ -108,7 +108,8 @@ createUser = (data) => {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done token",response.data.token);
+          console.log("login done token",response.data.token,response.data.data.user.role);
+          localStorage.setItem("role", response.data.data.user.role);
           if (response.data.status === "success") {
             Swal.fire({
               title: "Success!",
@@ -117,7 +118,7 @@ createUser = (data) => {
               confirmButtonText: "OK",
             });
           }
-          // handle wrong password or email response
+          // handled wrong password or email response
           if (response.data.data.user) {
             this.setSession(response.data.token);
             this.emit("onLogin", response.data.data.user);
@@ -155,9 +156,81 @@ createUser = (data) => {
       .then(() => {
         this.setSession(null);
         this.emit("onLogout", "Logged out");
+        localStorage.removeItem("role");
       });
   };
 
+  // forgot password function
+  forgotPassword = (email) => {
+  console.log(email)
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .post(jwtServiceConfig.forgotPassword, email)
+        .then((response) => {
+          console.log(response) 
+          if (response.data.status === "success") {
+            Swal.fire({
+              title: "Success!",
+              text: "Password reset email sent",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+          }
+          resolve(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          if (error.response && error.response.data && error.response.data.status === "failure") {
+            Swal.fire({
+              title: "Failed!",
+              text: "Failed to send password reset email",
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+            reject(new Error("Failed to send password reset email."));
+          } else {
+            reject(error);
+          }
+        });
+    });
+  };
+
+   // Reset password function
+resetPassword = (email, password) => {
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .post(jwtServiceConfig.resetPassword, { email, password})
+        .then((response) => {
+          console.log("resetPassword response",response, response.data);
+          if (response.data.status === "success") {
+            Swal.fire({
+              title: "Success!",
+              text: "Password reset successful",
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+          }
+          resolve();
+        })
+        .catch((error) => {
+          console.log(error.response);
+  
+          if (error.response.data.status === "failure") {
+            Swal.fire({
+              title: "Failed!",
+              text: "Failed to reset password",
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+  
+            reject(new Error("Failed to reset password"));
+          } else {
+            reject(error);
+          }
+        });
+    });
+  };
+  
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
       axiosInstance
@@ -165,7 +238,7 @@ createUser = (data) => {
           headers: { ["auth-token"]: this.getAccessToken() },
         })
         .then((response) => {
-        console.log(response);
+        console.log(response,response.data.data.user);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             resolve(response.data.data.user);
