@@ -3,6 +3,7 @@ import React, { Fragment } from "react";
 import { Row, Col, Card, Table, Button, Nav } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useGetUsersQuery } from "../../../services/authApi"
 
 const Users = () => {
   const [id, setId] = useState("");
@@ -19,7 +20,8 @@ const Users = () => {
   const [isActive, setIsActive] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState([]);
-  const [data, setData] = useState([]);
+  const [userData, setUserData] = useState([]);
+const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
 
   const getUsers = async () => {
     const requestOptions = {
@@ -35,7 +37,7 @@ const Users = () => {
   };
 
   //User List Api
-  const getAllUsers = () => {
+  const getAllUsers1 = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     console.log(jwtToken);
     // Create the Axios request configuration
@@ -50,7 +52,7 @@ const Users = () => {
       .then((response) => {
         // Handle the successful response
         console.log(response, response.data, response.data.data); // Do something with the user details
-        setData(response.data.data);
+        setUserData(response.data.data);
       })
       .catch((error) => {
         // Handle the error
@@ -92,7 +94,8 @@ const Users = () => {
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     console.log(token);
-    getAllUsers();
+    getAllUsers({token})
+    // getAllUsers();
   }, []);
 
   async function deleteOperation(id) {
@@ -102,7 +105,7 @@ const Users = () => {
       });
       result = await result.json();
       console.warn(result);
-      getAllUsers();
+      // getAllUsers();
     }
   }
 
@@ -207,8 +210,8 @@ const Users = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody>{data.length ===0?<strong> No User Found !</strong>:<>
-                  {data.map((item, index) => {
+                <tbody>{userData.length ===0?<strong> No User Found !</strong>:<>
+                  {userData.map((item, index) => {
                     const dateTimeString = item.created_at;//1
                     const date = new Date(dateTimeString);
                     const day = date.getDate();
@@ -239,7 +242,7 @@ const Users = () => {
                     const amPm = hours >= 12 ? "PM" : "AM";
                     hours = hours % 12 || 12;
                     const formattedTime = `${hours}:${minutes} ${amPm}`;
-                    console.log(data)
+                    console.log(userData)
                     return (
                       <tr key={index}>
                         <td>
