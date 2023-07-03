@@ -23930,6 +23930,15 @@ button {
   display: block;
   width: 100%; }
 
+.btn-block-half {
+    display: block;
+    width: 40%; }
+
+.toast-message {
+      font-size: 22px;
+      width: 34vw;
+      padding: 20px 10px;
+  }
 .light.tp-btn {
   background-color: transparent; }
 

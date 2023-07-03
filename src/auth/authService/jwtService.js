@@ -102,48 +102,94 @@ createUser = (data) => {
   });
 };
 
+signInWithEmailAndPassword = (data) => {
+  return new Promise((resolve, reject) => {
+    axiosInstance
+      .post(jwtServiceConfig.signIn, { ...data })
+      .then((response) => {
+        console.log("login done token",response.data.token,response.data.data.user.role);
+        localStorage.setItem("role", response.data.data.user.role);
+        if (response.data.status === "success") {
+          Swal.fire({
+            title: "Success!",
+            text: "Login successful",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        }
+        // handled wrong password or email response
+        if (response.data.data.user) {
+          this.setSession(response.data.token);
+          this.emit("onLogin", response.data.data.user);
+          resolve(response.data.data.user);
+        } else {
+          reject(response.data.error);
+        }
+      })
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.data.status === "failure") {
+          Swal.fire({
+            title: "Failed!",
+            text: "Email or Password invaild.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          reject(new Error("Email or Password invaild."));
+        }
+        reject(response.data);
+        //   if (!response.data.verified) {
+        //     reject(new Error({ verified: response.data.verified }));
+        //   }
+      });
+  });
+};
+
   // login function
-  signInWithEmailAndPassword = (data) => {
-    return new Promise((resolve, reject) => {
-      axiosInstance
-        .post(jwtServiceConfig.signIn, { ...data })
-        .then((response) => {
-          console.log("login done token",response.data.token);
-          if (response.data.status === "success") {
-            Swal.fire({
-              title: "Success!",
-              text: "Login successful",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-          }
-          // handle wrong password or email response
-          if (response.data.data.user) {
-            this.setSession(response.data.token);
-            this.emit("onLogin", response.data.data.user);
-            resolve(response.data.data.user);
-          } else {
-            reject(response.data.error);
-          }
-        })
-        .catch(({ response }) => {
-          console.log(response);
-          if (response.data.status === "failure") {
-            Swal.fire({
-              title: "Failed!",
-              text: "Email or Password invaild.",
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-            reject(new Error("Email or Password invaild."));
-          }
-          reject(response.data);
-          //   if (!response.data.verified) {
-          //     reject(new Error({ verified: response.data.verified }));
-          //   }
-        });
-    });
-  };
+  // signInWithEmailAndPassword = (data) => {
+  //   return new Promise((resolve, reject) => {
+  //     axiosInstance
+  //       .post(jwtServiceConfig.signIn, { ...data })
+  //       .then((response) => {
+  //         console.log("login done token",response.data.token);
+  //         if (response.data.status === "success") {
+  //           Swal.fire({
+  //             title: "Success!",
+  //             text: "Login successful",
+  //             icon: "success",
+  //             confirmButtonText: "OK",
+  //           });
+  //         }
+  //         // handle wrong password or email response
+  //         if (response.data.data.user) {
+  //           this.setSession(response.data.token);
+  //           this.emit("onLogin", response.data.data.user);
+  //           resolve(response.data.data.user);
+  //         } else {
+  //           reject(response.data.error);
+  //         }
+  //       })
+  //       .catch(({ response }) => {
+  //         console.log(response);
+  //         if (response.data.status === "failure") {
+  //           Swal.fire({
+  //             title: "Failed!",
+  //             text: "Email or Password invaild.",
+  //             icon: "error",
+  //             confirmButtonText: "OK",
+  //           });
+  //           reject(new Error("Email or Password invaild."));
+  //         }
+  //         reject(response.data);
+  //         //   if (!response.data.verified) {
+  //         //     reject(new Error({ verified: response.data.verified }));
+  //         //   }
+  //       });
+  //   });
+  // };
+
+
+
   logout = () => {
     axiosInstance
       .post(
@@ -156,6 +202,43 @@ createUser = (data) => {
         this.emit("onLogout", "Logged out");
       });
   };
+
+  // forgot password function
+  forgotPassword = (email) => {
+    console.log(email)
+      return new Promise((resolve, reject) => {
+        axiosInstance
+          .post(jwtServiceConfig.forgotPassword, email)
+          .then((response) => {
+            console.log(response) 
+            if (response.data.status === "success") {
+              Swal.fire({
+                title: "Success!",
+                text: "Password reset email sent",
+                icon: "success",
+                confirmButtonText: "OK",
+              });
+            }
+            resolve(response.data);
+          })
+          .catch((error) => {
+            console.log(error.response);
+            if (error.response && error.response.data && error.response.data.status === "failure") {
+              Swal.fire({
+                title: "Failed!",
+                text: "Failed to send password reset email",
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+              reject(new Error("Failed to send password reset email."));
+            } else {
+              reject(error);
+            }
+          });
+      });
+    };
+
+    
   signInWithToken = () => {
     return new Promise((resolve, reject) => {
       axiosInstance

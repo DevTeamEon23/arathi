@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 function Register(props) {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("Learner");
+  // const [role, setRole] = useState("");
   let errorsObj = { email: "", password: "" };
   const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
@@ -42,7 +42,6 @@ function Register(props) {
         fullname: userName,
         password,
         email,
-        role,
         generate_token: true,
       })
       .then((response) => {
@@ -114,10 +113,10 @@ function Register(props) {
                           onChange={(e) => setPassword(e.target.value)}
                           className="form-control"
                         />
-						{error && <div>{error}</div>}
+						{error && <div className="text-danger fs-12">{error}</div>}
                       </div>
                       {errors.password && <div>{errors.password}</div>}
-                      <div className="form-group mb-3">
+                      {/* <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Role</strong>
                         </label>
@@ -129,7 +128,7 @@ function Register(props) {
                           style={{ cursor: "not-allowed" }}
                           onChange={(e) => setRole(e.target.value)}
                         />
-                      </div>
+                      </div> */}
                       <div className="text-center mt-4">
                         <button
                           type="submit"
