@@ -59,21 +59,21 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700");
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600,700");
-@import url("@icons/simple-line-icons/css/simple-line-icons.css");
-@import url("@icons/fontawesome6/css/all.min.css");
-@import url("@icons/fontawesome/css/all.min.css");
-@import url("@icons/material-design-iconic-font/css/materialdesignicons.min.css");
-@import url("@icons/themify-icons/css/themify-icons.css");
-@import url("@icons/line-awesome/css/line-awesome.min.css");
-@import url("@icons/avasta/css/style.css");
-@import url("@icons/flaticon/flaticon.css");
-@import url("@icons/flaticon_1/flaticon_1.css");
-@import url("@icons/icomoon/icomoon.css");
-@import url("@icons/bootstrap-icons/font/bootstrap-icons.css");
-@import url(@vendor/animate/animate.min.css);
-@import url(@vendor/aos/css/aos.min.css);
-@import url(@vendor/perfect-scrollbar/css/perfect-scrollbar.css);
-@import url(@vendor/metismenu/css/metisMenu.min.css);
+@import url("./../icons/simple-line-icons/css/simple-line-icons.css");
+@import url("./../icons/fontawesome6/css/all.min.css");
+@import url("./../icons/fontawesome/css/all.min.css");
+@import url("./../icons/material-design-iconic-font/css/materialdesignicons.min.css");
+@import url("./../icons/themify-icons/css/themify-icons.css");
+@import url("./../icons/line-awesome/css/line-awesome.min.css");
+@import url("./../icons/avasta/css/style.css");
+@import url("./../icons/flaticon/flaticon.css");
+@import url("./../icons/flaticon_1/flaticon_1.css");
+@import url("./../icons/icomoon/icomoon.css");
+@import url("./../icons/bootstrap-icons/font/bootstrap-icons.css");
+@import url(./../vendor/animate/animate.min.css);
+@import url(./../vendor/aos/css/aos.min.css);
+@import url(./../vendor/perfect-scrollbar/css/perfect-scrollbar.css);
+@import url(./../vendor/metismenu/css/metisMenu.min.css);
 :root {
   --primary: #FF6A59;
   --secondary: #4CBC9A;
@@ -533,7 +533,7 @@ button,
   border-style: none; }
 
 textarea {
-  resize: vertical; }
+  resize: auto; }
 
 fieldset {
   min-width: 0;
@@ -5036,6 +5036,12 @@ textarea.form-control-lg {
 
 .d-flex {
   display: flex !important; }
+
+.m-flex {
+  display: flex !important; 
+  border: 1px solid lightblue;
+  border-radius: 10px;
+}
 
 .d-inline-flex {
   display: inline-flex !important; }
@@ -13574,7 +13580,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   .sidebar-right [for="sidebar_color_1"],
   .sidebar-right .bg-label-pattern {
     background: transparent;
-    background-image: url("@images/pattern/pattern5.png");
+    background-image: url("../images/pattern/pattern5.png");
     background-size: 130%; }
   .sidebar-right .bootstrap-select {
     height: 3rem;
@@ -20327,7 +20333,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 .photo-content {
   position: relative; }
   .photo-content .cover-photo {
-    background: url(@images/profile/cover.jpg);
+    background: url(../images/profile/cover.jpg);
     background-size: cover;
     background-position: center;
     min-height: 15.625rem;
@@ -21593,7 +21599,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 .check-switch {
   padding-left: 2.5rem;
   /* .form-check-input:checked ~ .form-check-label::after{
-		background-image:url('@images/svg/check.svg');
+		background-image:url('../images/svg/check.svg');
 	} */ }
   .check-switch .form-check-label {
     line-height: 1.875rem;
@@ -23934,11 +23940,6 @@ button {
     display: block;
     width: 40%; }
 
-.toast-message {
-      font-size: 22px;
-      width: 34vw;
-      padding: 20px 10px;
-  }
 .light.tp-btn {
   background-color: transparent; }
 
@@ -24801,6 +24802,14 @@ button {
   right: 30px;
   transform: translateY(-50%); }
 
+  .eye-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
 .carousel-custom-prev {
   position: absolute;
   top: 50%;
@@ -27194,7 +27203,7 @@ table.dataTable.display tbody td {
   width: 220px; }
 
 .welcome-content {
-  background: url("@images/1.jpg");
+  background: url("./../images/1.jpg");
   background-size: cover;
   background-position: center;
   height: 100%;
@@ -27269,7 +27278,7 @@ table.dataTable.display tbody td {
   width: 60px;
   height: 60px;
   display: inline-block;
-  background: url("@images/like.png");
+  background: url("../images/like.png");
   cursor: pointer;
   margin: -25px -15px; }
 
@@ -27289,7 +27298,7 @@ table.dataTable.display tbody td {
     content: "";
     top: 1.2rem;
     left: 1rem;
-    background-image: url(@images/vector.png);
+    background-image: url(../images/vector.png);
     background-repeat: no-repeat;
     height: 3rem;
     width: 3rem; }
@@ -27395,7 +27404,7 @@ table.dataTable.display tbody td {
     position: absolute;
     bottom: 0;
     right: 0;
-    background-image: url(@images/vector/ellipse.png);
+    background-image: url(../images/vector/ellipse.png);
     height: 100%;
     width: 100%;
     z-index: -1;

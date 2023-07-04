@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, withRouter } from "react-router-dom";
 
 // image
-import logo from "@images/logo-full.png";
+import logo from "@images/Asset.png";
 import jwtService from "src/auth/authService/jwtService";
 
 // Add sweet alert
@@ -12,7 +12,7 @@ function Register(props) {
   const [userName, setUserName] = useState("");
   const [nameErrorMsg, setNameErrorMsg] = useState('');
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("Learner");
+  // const [role, setRole] = useState("Learner");
   const [password, setPassword] = useState("");
   const [error, setError] = useState('');
 
@@ -34,7 +34,6 @@ if (password.length < 5) {
         fullname: userName,
         password,
         email,
-        role,
         generate_token: true,
       })
       .then((response) => {
@@ -62,7 +61,7 @@ if (password.length < 5) {
                   <div className="auth-form">
                     <div className="text-center mb-3">
                       <Link to="/login">
-                        <img src={logo} alt="" />
+                        <img width="300" height="50" src={logo} alt="" />
                       </Link>
                     </div>
                     <h4 className="text-center mb-4 ">Sign up your account</h4>
@@ -114,7 +113,7 @@ if (password.length < 5) {
                         />
 						{error && <div className="text-danger fs-12">{error}</div>}
                       </div>
-                      <div className="form-group mb-3">
+                      {/* <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Role</strong>
                         </label>
@@ -126,7 +125,7 @@ if (password.length < 5) {
                           style={{ cursor: "not-allowed" }}
                           onChange={(e) => setRole(e.target.value)}
                         />
-                      </div>
+                      </div> */}
                       <div className="text-center mt-4">
                         <button
                           type="submit"

@@ -65,7 +65,7 @@ createUser = (data) => {
     axiosInstance.post(jwtServiceConfig.signUp, data)
       .then((response) => {
       console.log("signup function",response.data.user,response.data.error);
-        if (response.data.status === "success") {
+        if (response.data.status === "Success") {
           Swal.fire({
             title: "Success!",
             text: "Registration Done Successfully",

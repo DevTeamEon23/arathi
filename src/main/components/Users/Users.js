@@ -21,7 +21,7 @@ const Users = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState([]);
   const [userData, setUserData] = useState([]);
-const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
+// const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
 
   const getUsers = async () => {
     const requestOptions = {
@@ -37,7 +37,7 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
   };
 
   //User List Api
-  const getAllUsers1 = () => {
+  const getAllUsers = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     console.log(jwtToken);
     // Create the Axios request configuration
@@ -94,8 +94,8 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     console.log(token);
-    getAllUsers({token})
-    // getAllUsers();
+    // getAllUsers({token})
+    getAllUsers();
   }, []);
 
   async function deleteOperation(id) {

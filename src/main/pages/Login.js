@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import loginbg from "@images/bg-1.jpg";
 import logo from "@images/log.png";
-import logofull from "@images/logo-full.png";
+import logofull from "@images/Asset.png";
 import jwtService from "src/auth/authService/jwtService";
 
 function Login(props) {
@@ -11,7 +11,7 @@ function Login(props) {
   let errorsObj = { email: "", password: "" };
   const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
 
   function onLogin(e) {
     e.preventDefault();
@@ -35,6 +35,9 @@ function Login(props) {
       // Sign in successfull
     });
   }
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div
@@ -55,7 +58,7 @@ function Login(props) {
                       <div>
                         <div className="text-center my-5">
                           <Link to="/dashboard">
-                            <img width="200" src={logofull} alt="" />
+                            <img width="300" height="50" src={logofull} alt="" />
                           </Link>
                         </div>
                         <img src={logo} alt="Logo" className="education-img"></img>
@@ -112,7 +115,8 @@ function Login(props) {
                               <strong>Password</strong>
                             </label>
                             <input
-                              type="password"
+                              // type="password"
+                              type={showPassword ? 'text' : 'password'}
                               className="form-control"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
