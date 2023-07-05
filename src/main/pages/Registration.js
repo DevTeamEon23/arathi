@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, withRouter } from "react-router-dom";
+import showPwdImg from "@images/eye.svg";
+import hidePwdImg from "@images/eye-slash.svg";
 
 // image
 import logo from "@images/Asset.png";
@@ -10,24 +12,25 @@ import Swal from "sweetalert2";
 
 function Register(props) {
   const [userName, setUserName] = useState("");
-  const [nameErrorMsg, setNameErrorMsg] = useState('');
+  const [nameErrorMsg, setNameErrorMsg] = useState("");
   const [email, setEmail] = useState("");
   // const [role, setRole] = useState("Learner");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [isRevealPwd, setIsRevealPwd] = useState(false);
 
   function onSignUp(e) {
     e.preventDefault();
-    if (userName.length < 3 ) {
-      setNameErrorMsg('Full name must contain at least 3 characters');
-      } else {
-      setNameErrorMsg('');
-      }
-if (password.length < 5) {
-		setError('Password must be at least 5 characters long');
-	  } else {
-		setError('');
-	  }
+    if (userName.length < 3) {
+      setNameErrorMsg("Full name must contain at least 3 characters");
+    } else {
+      setNameErrorMsg("");
+    }
+    if (password.length < 5) {
+      setError("Password must be at least 5 characters long");
+    } else {
+      setError("");
+    }
 
     jwtService
       .createUser({
@@ -36,20 +39,19 @@ if (password.length < 5) {
         email,
         generate_token: true,
       })
-      .then((response) => {
-      });
+      .then((response) => {});
   }
 
-  const validateName=()=>{
+  const validateName = () => {
     // Validate full name
     if (!/^[a-zA-Z\s]+$/.test(userName)) {
       console.log(userName.length);
-      setNameErrorMsg('Please enter a valid full name');
+      setNameErrorMsg("Please enter a valid full name");
     } else {
-      setNameErrorMsg('');
+      setNameErrorMsg("");
       // Perform further actions or submit the form
     }
-  }
+  };
   return (
     <div className="authincation h-100 p-meddle">
       <div className="container h-100">
@@ -85,7 +87,11 @@ if (password.length < 5) {
                           onChange={(e) => setUserName(e.target.value)}
                           required
                         />
-                      {nameErrorMsg && <span className="text-danger fs-14 m-2">{nameErrorMsg}</span>}
+                        {nameErrorMsg && (
+                          <span className="text-danger fs-14 m-2">
+                            {nameErrorMsg}
+                          </span>
+                        )}
                       </div>
                       <div className="form-group mb-3">
                         <label className="mb-1 ">
@@ -100,19 +106,32 @@ if (password.length < 5) {
                           required
                         />
                       </div>
-                      <div className="form-group mb-3">
-                        <label className="mb-1 ">
+                      <div
+                        className="form-group mb-3"
+                        style={{ position: "relative" }}
+                      >
+                        <label className="mb-1">
                           <strong>Password</strong>
                         </label>
                         <input
-                          type="password"
+                          type={isRevealPwd ? "text" : "password"}
+                          className="form-control"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="form-control"
                           required
                         />
-						{error && <div className="text-danger fs-12">{error}</div>}
+                        <img
+                          src={isRevealPwd ? showPwdImg : hidePwdImg}
+                          onClick={() =>
+                            setIsRevealPwd((prevState) => !prevState)
+                          }
+                          alt="eyebtn"
+                          className="password-toggle"
+                        />
                       </div>
+                      {error && (
+                        <div className="text-danger fs-12">{error}</div>
+                      )}
                       {/* <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Role</strong>

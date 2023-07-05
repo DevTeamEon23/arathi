@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import loginbg from "@images/bg-1.jpg";
 import logo from "@images/log.png";
 import logofull from "@images/Asset.png";
 import jwtService from "src/auth/authService/jwtService";
+import showPwdImg from "@images/eye.svg";
+import hidePwdImg from "@images/eye-slash.svg";
 
 function Login(props) {
   const [email, setEmail] = useState("");
   let errorsObj = { email: "", password: "" };
   const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [isRevealPwd, setIsRevealPwd] = useState(false);
 
   function onLogin(e) {
     e.preventDefault();
@@ -35,9 +36,6 @@ function Login(props) {
       // Sign in successfull
     });
   }
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
 
   return (
     <div
@@ -58,10 +56,19 @@ function Login(props) {
                       <div>
                         <div className="text-center my-5">
                           <Link to="/dashboard">
-                            <img width="300" height="50" src={logofull} alt="" />
+                            <img
+                              width="300"
+                              height="50"
+                              src={logofull}
+                              alt=""
+                            />
                           </Link>
                         </div>
-                        <img src={logo} alt="Logo" className="education-img"></img>
+                        <img
+                          src={logo}
+                          alt="Logo"
+                          className="education-img"
+                        ></img>
                       </div>
                     </div>
                     <div className="col-xl-6 col-md-6">
@@ -110,24 +117,35 @@ function Login(props) {
                               </div>
                             )}
                           </div>
-                          <div className="mb-3">
-                            <label className="mb-1">
-                              <strong>Password</strong>
-                            </label>
+                          <div
+                            className="mb-3"
+                            style={{ position: "relative" }}
+                          >
+                          <label className="mb-1">
+                            <strong>Password</strong>
+                          </label>
                             <input
-                              // type="password"
-                              type={showPassword ? 'text' : 'password'}
+                              type={isRevealPwd ? "text" : "password"}
                               className="form-control"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
+                              required
                             />
-                            {errors.password && (
+                            <img
+                              src={isRevealPwd ? showPwdImg : hidePwdImg}
+                              onClick={() =>
+                                setIsRevealPwd((prevState) => !prevState)
+                              }
+                              alt="eyebtn"
+                              className="password-toggle"
+                            />
+                          </div>
+                          {errors.password && (
                               <div className="text-danger fs-12">
                                 {errors.password}
                               </div>
                             )}
-                          </div>
-                        
+
                           <div className="text-center">
                             <button
                               type="submit"
