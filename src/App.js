@@ -9,9 +9,12 @@ import "./theme/vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./theme/css/style.css";
 import { useAuth } from "./auth/AuthContext";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const SignUp = lazy(() => import("./main/pages/Registration"));
 const ForgotPassword = lazy(() => import("./main/pages/ForgotPassword"));
-const Reset =lazy(()=>import("./main/pages/Reset"));
+const Reset = lazy(() => import("./main/pages/Reset"));
 const Login = lazy(() => {
   return new Promise((resolve) => {
     setTimeout(() => resolve(import("./main/pages/Login")), 500);
@@ -54,6 +57,15 @@ function App(props) {
             </div>
           }
         >
+          <ToastContainer  position='top-center'
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover/>
           <Index />
         </Suspense>
       </>

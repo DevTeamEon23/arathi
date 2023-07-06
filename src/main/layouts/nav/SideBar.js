@@ -1063,7 +1063,7 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Instructor Dashboard Options************************************ */}
-          {(roleType === "Admin" || roleType === "Instructor") && (
+          {(roleType === "Admin" || roleType === "Instructor" || roleType === "Superadmin") && (
             <>
               <li
                 className={`${
