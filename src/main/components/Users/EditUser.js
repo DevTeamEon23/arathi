@@ -1,9 +1,8 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useParams, useHistory } from "react-router-dom";
 import Select from "react-select";
-import * as Yup from "yup";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 import {
   Dropdown,
   DropdownButton,
@@ -50,8 +49,8 @@ const langtype = [
 const EditUser = () => {
   const [id, setId] = useState('');
   const [eid, setEid] = useState('');
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
+  const [userName, setUserName] = useState(""); //Full name
+    const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [email, setEmail] = useState('');
   const [dept, setDept] = useState('');
   const [adhr, setAdhr] = useState('');
@@ -70,6 +69,37 @@ const EditUser = () => {
   const [data, setData] = useState([]);
   const [users, setUsers] = useState([]);
   // const [user_id, setUserId] = useState(null);
+   const [userData, setUserData] = useState([]); //user list data
+    const [token, setToken] = useState(); //auth token
+    const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
+
+
+ //User List Api
+  const getAllUsers = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    console.log(jwtToken);
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken, // Attach the JWT token in the Authorization header
+      },
+    };
+    axios
+      .get("http://127.0.0.1:8000/lms-service/users", config)
+      .then((response) => {
+        console.log("inside edit user page",response, response.data, response.data.data);
+        setUserData(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Failed to fetch users!"); // Handle the error
+      });
+  }; 
+
+ useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getAllUsers();
+  }, []);
 
   // useEffect(() => {
   //   getUsers();
@@ -87,27 +117,11 @@ const EditUser = () => {
   function selectUser(id)
   {
     let item=users[id-1];
-    setFirstname(item.firstname)
+    // setFirstname(item.firstname)
   }
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    const data = {id, eid, firstname, lastname, email, dept, adhr, file, bio, username, password, isActive};
 
-    fetch('https://localhost:8000/users/{id}'+ data, {
-      method: 'POST',
-    })
-    .then((data) => {
-      console.log(data);
-        })
-    // .then((data) => {
-    //   console.log('new user updated')
-    //   alert("✔️ User Updated Successfully");
-    //   setUsers(data);
-    // })
-    .catch((err) => {
-       console.log(err.message);
-    });
     }
 
 
@@ -115,6 +129,28 @@ const EditUser = () => {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
 }
+
+const validateName = () => {
+    if (!/^[a-zA-Z\s]+$/.test(userName)) {
+      setNameErrorMsg("Please enter a valid full name");
+    } else {
+      setNameErrorMsg("");
+    }
+    if (userName.length < 3) {
+      setNameErrorMsg("Must contain at least 3 characters");
+    } else {
+      setNameErrorMsg("");
+    }
+  };
+
+   const handleAadhaarNo = () => {
+    const regexp =/^\d{12}$/;
+    if (!regexp.test(adhr)) {
+      setAadharNoErrorMsg("Please enter Valid Aadhar no.");
+    } else {
+      setAadharNoErrorMsg("");
+    }
+  };
 
   return (
     <Fragment>
@@ -135,28 +171,9 @@ const EditUser = () => {
             </div>
             <div className="card-body">
               <div className="form-validation">
-                <form action="https://localhost:8000/users/${id}" method="PUT" encType="multipart/form-data">
+                <form onSubmit={handleSubmit}>
                   <div className="row">
                     <div className="col-xl-6">
-                    <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
-                          Id
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="id"
-                            name="id"
-                            placeholder="e.g. John Doe"
-                            onChange={(e) => setId(e.target.value)}
-                          />
-                        </div>
-                      </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -169,50 +186,38 @@ const EditUser = () => {
                             type="text"
                             className="form-control"
                             id="eid"
-                            name="eid"
+                            value={eid}
                             placeholder="e.g. jd001"
                             onChange={(e) => setEid(e.target.value)}
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+
+                    <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-username"
                         >
-                          First Name
-                          <span className="text-danger">*</span>
+                          Full Name <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
                             type="text"
                             className="form-control"
-                            id="firstname"
-                            name="firstname"
-                            placeholder="e.g. John Doe"
-                            onChange={(e) => setFirstname(e.target.value)}
+                            placeholder="Enter Full name"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            onBlur={validateName}
+                            required
                           />
+                          {nameErrorMsg && (
+                            <span className="text-danger fs-14 m-2">
+                              {nameErrorMsg}
+                            </span>
+                          )}{" "}
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
-                          Last Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="lastname"
-                            name="lastname"
-                            placeholder="e.g. John Doe"
-                            onChange={(e) => setLastname(e.target.value)}
-                          />
-                        </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -225,18 +230,19 @@ const EditUser = () => {
                             type="email"
                             className="form-control"
                             id="email"
-                            name="email"
+                          value={email}
                             placeholder="e.g. jdoe@example.com"
                             onChange={(e) => setEmail(e.target.value)}
                           />
                         </div>
                       </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Department <span className="text-danger">*</span>
+                          Department 
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -244,94 +250,117 @@ const EditUser = () => {
                             className="form-control"
                             id="dept"
                             name="dept"
+                            value={dept}
                             placeholder="e.g. Information Technology"
                             onChange={(e) => setDept(e.target.value)}
                           />
                         </div>
                       </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Aadhar Card No. <span className="text-danger">*</span>
+                          Aadhar Card No. 
                         </label>
                         <div className="col-lg-6">
                           <input
                             type="text"
                             className="form-control"
                             id="adhr"
-                            name="adhr"
+                            value={adhr}
                             placeholder="e.g. 0123 3456 6789"
                             onChange={(e) => setAdhr(e.target.value)}
+                            onBlur={handleAadhaarNo}
                           />
+                            {aadharNoErrorMsg && (
+                            <span className="text-danger fs-14 m-2">
+                              {aadharNoErrorMsg}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <label className="text-label">Username</label>
-                        <div className="input-group">
-                            <span className="input-group-text">
-                              <i className="fa fa-user" />{" "}
-                            </span>
+                       <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="val-username"
+                        >
+                          Username <span className="text-danger">*</span>
+                        </label>
+                        <div className="input-group col-lg-6">
+                          <span className="input-group-text">
+                            <i className="fa fa-user" />{" "}
+                          </span>
                           <input
                             type="text"
                             className="form-control"
                             id="username"
+                            value={username}
                             placeholder="Enter Username"
-                            name="username"
                             onChange={(e) => setUsername(e.target.value)}
+                            required
                           />
-                          </div>
-                          <label className="text-label">Password *</label>
-                        <div className="input-group transparent-append mb-2">
-                          
-                            <span className="input-group-text">
-                              {" "}
-                              <i className="fa fa-lock" />{" "}
-                            </span>
-                          
+                        </div>
+                      </div>
+     <div className="form-group mb-3 row">
+                        <label className="col-lg-4 col-form-label">
+                          Password <span className="text-danger">*</span>
+                        </label>
+                        <div className="input-group col-lg-6">
+                          <span className="input-group-text">
+                            {" "}
+                            <i className="fa fa-lock" />{" "}
+                          </span>
+
                           <input
                             type={`${showPassword ? "text" : "password"}`}
                             className="form-control"
                             id="password"
-                            name="password"
+                            value={password}
                             placeholder="Enter Password"
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                           />
                           <div
                             className="input-group-text "
                             onClick={() => setShowPassword(!showPassword)}
                           >
-
-                              {" "}
-								  {showPassword === false ? (<i className="fa fa-eye-slash" />) : (<i className="fa fa-eye" />)}
-                            
+                            {" "}
+                            {showPassword === false ? (
+                              <i className="fa fa-eye-slash" />
+                            ) : (
+                              <i className="fa fa-eye" />
+                            )}
                           </div>
-                          </div>
-                      <div className="form-group mb-3 row">
+                        </div>
+                      </div>
+                    
+                
 
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-suggestions"
                         >
-                          Bio <span className="text-danger">*</span>
+                          Bio 
                         </label>
-                        <div className="col-lg-10">
+                        <div className="col-lg-8">
                           <textarea
                             className="form-control"
                             id="bio"
-                            name="bio"
+                            value={bio}
                             rows="5"
-                            placeholder="Short Description about user.."
+                            placeholder="Short Description about user..."
                             onChange={(e) => setBio(e.target.value)}
                           ></textarea>
                         </div>
                       </div>
-                      <div className="col-lg-04">
-                        </div><br />
+                      <br />
+
                       <div className="form-group mb-3 row">
                     </div>
-                    </div>
+                    
                     </div>
                     <div className="col-xl-6">
                       <div className="form-group mb-3 row">
@@ -491,3 +520,22 @@ const EditUser = () => {
 };
 
 export default EditUser;
+
+
+    
+    // const data = {id, eid, firstname, lastname, email, dept, adhr, file, bio, username, password, isActive};
+
+    // fetch('https://localhost:8000/users/{id}'+ data, {
+    //   method: 'POST',
+    // })
+    // .then((data) => {
+    //   console.log(data);
+    //     })
+    // // .then((data) => {
+    // //   console.log('new user updated')
+    // //   alert("✔️ User Updated Successfully");
+    // //   setUsers(data);
+    // // })
+    // .catch((err) => {
+    //    console.log(err.message);
+    // });

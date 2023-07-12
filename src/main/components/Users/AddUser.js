@@ -129,7 +129,7 @@ const AddUser = () => {
   };
 
   const handleAadhaarNo = () => {
-    const regexp = /^[2-9]{1}[0-9]{3}\s{1}[0-9]{4}\s{1}[0-9]{4}$/;
+    const regexp =/^\d{12}$/;
     if (!regexp.test(adhr)) {
       setAadharNoErrorMsg("Please enter Valid Aadhar no.");
     } else {
@@ -362,7 +362,7 @@ const AddUser = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                   
                         <div className="form-group mb-3 row">
                           <label
                             className="col-lg-4 col-form-label"
@@ -373,7 +373,6 @@ const AddUser = () => {
                           <div className="col-lg-8">
                             <textarea
                               className="form-control"
-                              style={{ marginLeft: "7px" }}
                               id="bio"
                               value={bio}
                               rows="5"
@@ -384,7 +383,7 @@ const AddUser = () => {
                           </div>
                         </div>
                         <br />
-                      </div>
+                    
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
