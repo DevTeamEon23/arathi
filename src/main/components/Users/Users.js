@@ -272,10 +272,10 @@ const Users = () => {
                         return (
                           <tr key={index}>
                             <td>
-                              <center>{item.id}</center>
+                              <center>{item.eid}</center>
                             </td>
                             <td>
-                              <center>{item.username}</center>
+                              <center>{item.sid}</center>
                             </td>
                             <td>
                               <center>{item.full_name}</center>
