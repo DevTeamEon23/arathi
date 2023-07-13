@@ -32,7 +32,7 @@ function Login(props) {
     }
     // dispatch(loadingToggleAction(true));
     // dispatch(loginAction(email, password, props.history));
-    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {
+    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {console.log(res,"inside login page");
       // Sign in successfull
     });
   }

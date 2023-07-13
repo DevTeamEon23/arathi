@@ -35,7 +35,7 @@ const Users = () => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/lms-service/users", config)
+      .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
         console.log(response, response.data, response.data.data);
         setUserData(response.data.data);
@@ -100,7 +100,7 @@ const Users = () => {
     };
     // Make the Axios DELETE request
     axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_user`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_user`, {
         ...config,
         data: requestBody,
       })

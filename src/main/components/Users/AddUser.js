@@ -1,16 +1,11 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState ,useRef} from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-
 import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
   Nav,
   Button,
-  FormCheck,
 } from "react-bootstrap";
 
 //select dropdown
@@ -44,6 +39,7 @@ const AddUser = () => {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState();
+  const fileRef = useRef(null);
   const [file, setFile] = useState(null);
   const [isActive, setIsActive] = useState(true);
   const [isDeactive, setIsDeactive] = useState(false);
@@ -58,7 +54,11 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(selectedOptionRole.value,selectedOptionLang.value,selectedOptionTimeZone.value)
+    // const originalString = selectedOptionLang.value;
 
+    // const modifiedString = originalString.replace(/['"]/g, '');
+    // console.log(modifiedString);
     const formData = new FormData();
     formData.append("eid", eid);
     formData.append("sid", eid);
@@ -69,16 +69,16 @@ const AddUser = () => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", selectedOptionRole);
-    formData.append("timezone", selectedOptionTimeZone);
-    formData.append("langtype", selectedOptionLang);
+    formData.append("role", selectedOptionRole.value);
+    formData.append("timezone", selectedOptionTimeZone.value);
+    formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
     formData.append("deactive", isDeactive);
     formData.append("exclude_from_email", excludeFromEmail);
     formData.append("generate_token", true);
     formData.append("file", file);
 
-    const url = "http://127.0.0.1:8000/lms-service/addusers";
+    const url = "https://v1.eonlearning.tech/lms-service/addusers";
     const authToken = window.localStorage.getItem("jwt_access_token");
 
     axios
@@ -91,11 +91,9 @@ const AddUser = () => {
       .then((response) => {
         console.log(response.data);
         toast.success("User added successfully!!!");
-        setIsActive(false);
         clearAllState();
       })
       .catch((error) => {
-        // Handle error
         console.error(error);
         toast.error("Failed !!! Unable to add user...");
       });
@@ -138,7 +136,6 @@ const AddUser = () => {
   };
 
   const clearAllState = () => {
-    console.log("inside clear function");
     setEid("");
     setUserName("");
     setEmail("");
@@ -148,7 +145,8 @@ const AddUser = () => {
     setUsername("");
     setPassword("");
     setFile(null);
-    setIsActive(true);
+    fileRef.current.value ="";
+    setIsActive(false);
     setIsDeactive(false);
     setExcludeFromEmail(false);
     setShowPassword(false);
@@ -394,11 +392,12 @@ const AddUser = () => {
                         </label>
                         <div className="col-lg-6">
                           <Select
-                            defaultValue={selectedOptionRole}
-                            onChange={(selectedValue) =>
-                              setSelectedOptionRole(selectedValue.value)
-                            }
+                            value={selectedOptionRole} 
                             options={categorytype}
+                            onChange={(selectedOptionRole) =>
+                              setSelectedOptionRole(selectedOptionRole)
+                            }
+                           
                             name="categorytype"
                             required
                           ></Select>
@@ -408,12 +407,8 @@ const AddUser = () => {
                             style={{ display: "block" }}
                           ></div>
                         </div>
-                        <div
-                          id="val-username1-error"
-                          className="invalid-feedback animated fadeInUp"
-                          style={{ display: "block" }}
-                        />
                       </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -423,10 +418,10 @@ const AddUser = () => {
                         </label>
                         <div className="col-lg-6">
                           <Select
-                            defaultValue={selectedOptionTimeZone}
+                            value={selectedOptionTimeZone}
                             options={timezonetype}
-                            onChange={(timezonetype) =>
-                              setSelectedOptionTimeZone(timezonetype.value)
+                            onChange={(selectedOptionTimeZone) =>
+                              setSelectedOptionTimeZone(selectedOptionTimeZone)
                             }
                             name="timezonetype"
                           ></Select>
@@ -441,9 +436,9 @@ const AddUser = () => {
                         </label>
                         <div className="col-lg-6">
                           <Select
-                            defaultValue={selectedOptionLang}
-                            onChange={(langtype) =>
-                              setSelectedOptionLang(langtype.value)
+                            value={selectedOptionLang}
+                            onChange={(selectedOptionLang) =>
+                              setSelectedOptionLang(selectedOptionLang)
                             }
                             options={langtype}
                             name="langtype"
@@ -480,6 +475,7 @@ const AddUser = () => {
                             <input
                               type="file"
                               name="file"
+                              ref={fileRef}
                               accept=".jpeg, .png, .jpg"
                               onChange={handleChange}
                               required
@@ -490,48 +486,50 @@ const AddUser = () => {
                     </div>
 
                     <div className="form-group mb-3 row ">
-                      <div className="col-lg-4 d-flex mt-3">
+                      <div className="col-lg-2 d-flex mt-3">
                         <input
                           type="checkbox"
                           className="form-check-input"
                           id="isActive"
                           name="isActive"
-                          value={isActive}
-                          onChange={(e) => setIsActive(e.target.value)}
+                          checked={isActive}
+                          onChange={(e) => setIsActive(e.target.checked)}
                           required
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox"
+                          className="form-check css-control-primary css-checkbox mt-1"
                           htmlFor="val-terms"
                         >
                           Active <span className="text-danger">*</span>
                         </label>
                       </div>
-                      <div className="col-lg-4 d-flex mt-3">
+                      <div className="col-lg-2 d-flex mt-3">
                         <input
                           type="checkbox"
                           className="form-check-input"
                           id="isDeactive"
                           name="isDeactive"
-                          onChange={(e) => setIsDeactive(e.target.value)}
+                          checked={isDeactive}
+                          onChange={(e) => setIsDeactive(e.target.checked)}
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox"
+                          className="form-check css-control-primary css-checkbox mt-1"
                           htmlFor="val-terms"
                         >
                           Deactive
                         </label>
                       </div>
-                      <div className="col-lg-4 d-flex mt-3">
+                      <div className="col-lg-2 d-flex mt-3">
                         <input
                           type="checkbox"
                           className="form-check-input"
                           id="isExcludefromEmail"
                           name="isExcludefromEmail"
-                          onChange={(e) => setExcludeFromEmail(e.target.value)}
+                          checked={excludeFromEmail}
+                          onChange={(e) => setExcludeFromEmail(e.target.checked)}
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox"
+                          className="form-check css-control-primary css-checkbox mt-1"
                           htmlFor="val-terms"
                         >
                           Exclude from Email

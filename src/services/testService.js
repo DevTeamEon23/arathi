@@ -5,7 +5,7 @@ export const testApi = apiSlice.injectEndpoints({
     // Get
     getUsers: builder.query({
         query: () => ({
-            url: '/users/',
+            url: '/lms-service/users',
             method: 'Get',
         }),
     }),
