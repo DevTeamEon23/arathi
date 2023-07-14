@@ -41,7 +41,7 @@ const AddUser = () => {
   const [password, setPassword] = useState();
   const fileRef = useRef(null);
   const [file, setFile] = useState(null);
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [showPassword, setShowPassword] = useState(false);
@@ -49,8 +49,8 @@ const AddUser = () => {
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
-  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState(null); // timezone
-  const [selectedOptionLang, setSelectedOptionLang] = useState(null); // Language
+  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
+  const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,7 +79,7 @@ const AddUser = () => {
 
     const url = "https://v1.eonlearning.tech/lms-service/addusers";
     const authToken = window.localStorage.getItem("jwt_access_token");
-
+    
     axios
       .post(url, formData, {
         headers: {
@@ -98,6 +98,7 @@ const AddUser = () => {
       });
   };
 
+  // To set img file
   function handleChange(e) {
     console.log(e.target.files);
     setFile(e.target.files[0]);
@@ -294,7 +295,7 @@ const AddUser = () => {
                             className="form-control"
                             id="adhr"
                             value={adhr}
-                            placeholder="e.g. 0123 3456 6789"
+                            placeholder="e.g. 369934566789"
                             onChange={(e) => setAdhr(e.target.value)}
                             onBlur={handleAadhaarNo}
                           />
