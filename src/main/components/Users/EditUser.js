@@ -360,25 +360,7 @@ const validateName = () => {
 
                       <div className="form-group mb-3 row">
                     </div>
-                    
-                    </div>
-                    <div className="col-xl-6">
-                      <div className="form-group mb-3 row">
-                      <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
-                          Add Photo<span className="text-danger">*</span>
-                        </label>
-                        <div className="profile-info">
-                          <div className="profile-photo">
-                          <input type="file" name="file" accept='.jpeg, .png, .jpg' onChange={handleChange}/>
-                          <br/><br/> 
-                          <img src={file} width="250" height="250" alt="file" />
-                        </div>
-                        </div>
-                        </div>
-                      <div className="form-group mb-3 row">
+                    <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-username"
@@ -386,7 +368,7 @@ const validateName = () => {
                           User Type
                           <span className="text-danger">*</span>
                         </label>
-                      <div className="col-lg-12">
+                      <div className="col-lg-6">
                       <Select
                           defaultValue={categorytype}
                           onChange={categorytype}
@@ -407,7 +389,7 @@ const validateName = () => {
                           style={{ display: "block" }}
                         />
                       </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -444,7 +426,28 @@ const validateName = () => {
                         </Select>
                         </div>
                       </div>
-                        <div className="form-group mb-3 row">
+                    
+                    </div>
+                    <div className="col-xl-6">
+                      <div className="form-group mb-3 row">
+                      <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="val-suggestions"
+                        >
+                          Add Photo<span className="text-danger">*</span>
+                        </label>
+                        <div className="profile-info">
+                          <div className="profile-photo">
+                          <input type="file" name="file" accept='.jpeg, .png, .jpg' onChange={handleChange}/>
+                          <br/><br/> 
+                          <img src={file} width="250" height="250" alt="file" />
+                        </div>
+                        </div>
+                        </div>
+                      </div>
+                     
+                      <div className="form-group mb-3 row ">
+                        <div className="form-group mb-3 row d-flex mt-3">
                           <div className="col-lg-2">
                       <br/>
                       <br/>
@@ -491,7 +494,7 @@ const validateName = () => {
                             />Exclude from Email
                         </label>
                         </div>
-                        </div>
+                        </div></div>
                         <div className="form-group mb-3 row">
                         <div className="col-lg-8 ms-auto">
                           <br/>
