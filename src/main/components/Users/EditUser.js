@@ -46,7 +46,7 @@ const langtype = [
   { value: "marathi", label: "Marathi" },
 ];
 
-const EditUser = () => {
+const EditUser = (props) => {
   const [id, setId] = useState('');
   const [eid, setEid] = useState('');
   const [userName, setUserName] = useState(""); //Full name
@@ -61,10 +61,9 @@ const EditUser = () => {
   // const [status, setStatus] = useState();
   const [file, setFile] = useState(null);
   // const [selectedOption, setSelectedOption] = useState(null);
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
-  // const [isExcludefromEmail, setIsExcludefromEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   // const [selectedFile, setSelectedFile] = useState(null);
   // const [isFilePicked, setIsFilePicked] = useState(false);
@@ -99,10 +98,43 @@ const EditUser = () => {
       });
   }; 
 
+  const getUsersById = async (id, authToken) => {
+    console.log("inside get user by id",id, authToken);
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/lms-service/users_by_onlyid', {
+        headers: {
+          'Auth-Token': authToken
+        },
+        params: {
+          id: id
+        }
+      });
+      console.log(response.data);
+      const res = response.data 
+      setEid(res.id)
+      setUserName(res.full_name)
+      setEmail(res.email)
+      setDept(res.dept)
+      setAdhr(res.adhr)
+      setBio(res.bio)
+      setUsername(res.username)
+      setSelectedOptionRole(res.role)
+      setFile(res.file)
+    } catch (error) {
+      console.error(error); 
+    }
+  };
+
  useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    getAllUsers();
+    // getAllUsers();
+    console.log("edit page",props.userId);
+    if(props.userId !== undefined){
+    setId(props.userId)
+    getUsersById(props.userId,token)
+
+    }
   }, []);
 
   // useEffect(() => {
@@ -198,7 +230,11 @@ const validateName = () => {
             <div className="card-body">
               <div className="form-validation">
                 <form onSubmit={handleSubmit}>
+               
                   <div className="row">
+                  {/* {userData.map((item, index)=>{
+                    console.log(item)
+                    return(<><div key={index}> */}
                     <div className="col-xl-6">
                       <div className="form-group mb-3 row">
                         <label
@@ -268,7 +304,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Department 
+                          Department <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -288,7 +324,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Aadhar Card No. 
+                          Aadhar Card No. <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -369,7 +405,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-suggestions"
                         >
-                          Bio 
+                          Bio <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-8">
                           <textarea
@@ -540,7 +576,9 @@ const validateName = () => {
                           Exclude from Email
                         </label>
                       </div>
-                    </div>             
+                    </div>
+                    {/* </div> </>)})} */}
+                                
 
 
 

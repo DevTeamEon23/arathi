@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import EditUser from "./EditUser";
+import { useHistory } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
 const Users = () => {
   const [id, setId] = useState("");
@@ -21,9 +24,11 @@ const Users = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [uid, setUId] = useState(); //user id save for delete
   const [token, setToken] = useState(); //auth token
-  const [userId, setUserId] = useState([]);
   const [userData, setUserData] = useState([]); //user list data
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [editUserID, setEditUserID] = useState("");
+  const [editUser, setEditUser] = useState(false);
+  const history = useHistory();
 
   //User List Api
   const getAllUsers = () => {
@@ -44,6 +49,13 @@ const Users = () => {
         console.log(error);
         toast.error("Failed to fetch users!"); // Handle the error
       });
+  };
+
+  const handleEdit = (id) => {
+    console.log("inside user handle edit page", id);
+    setEditUserID(id);
+    setEditUser(true);
+    // history.push("/edit-user");
   };
 
   // function selectUser(userId)
@@ -107,18 +119,18 @@ const Users = () => {
       .then((response) => {
         setShowModal(false);
         console.log(response.data.status);
-        getAllUsers()
+        getAllUsers();
         toast.success("User deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       })
-    .catch((error) => {
-      // Handle the error
-      console.error(error);
-      toast.error("Failed to delete user!", {
-        position: toast.POSITION.TOP_RIGHT,
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+        toast.error("Failed to delete user!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
-    });
   };
 
   return (
@@ -153,6 +165,7 @@ const Users = () => {
             </Link>
           </Nav.Item>
         </Nav>
+
         <Row>
           <Col lg={12}>
             <Card>
@@ -223,6 +236,15 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
+                  {userData === null && userData === [] &&(
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="96"
+                      visible={true}
+                    />
+                  )}
                   {userData.length === 0 ? (
                     <tr>
                       <td
@@ -300,12 +322,20 @@ const Users = () => {
                             <td>
                               <center>
                                 {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
-                                <Link
+                                {/* <Link
                                   to="/edit-user"
                                   className="btn btn-primary shadow btn-xs sharp me-1"
+                                ></Link> */}
+                                <div
+                                  // to="/edit-user"
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
                                 >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </Link>
+                                  <i
+                                    className="fas fa-pencil-alt"
+                                    onClick={(e) => handleEdit(item.id)}
+                                  ></i>
+                                </div>
+
                                 <Link
                                   href="#"
                                   className="btn btn-danger shadow btn-xs sharp"
@@ -341,12 +371,15 @@ const Users = () => {
             </Card>
           </Col>
         </Row>
+        {/* {editUser?<EditUser userId={editUserID}/>:""} */}
       </Fragment>
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-      <Modal.Header closeButton>
+        <Modal.Header closeButton>
           <Modal.Title>Delete User</Modal.Title>
         </Modal.Header>
-        <Modal.Body><strong>Are you sure you want to delete User?</strong></Modal.Body>
+        <Modal.Body>
+          <strong>Are you sure you want to delete User?</strong>
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="danger light" onClick={() => setShowModal(false)}>
             Close
