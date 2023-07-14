@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, withRouter } from "react-router-dom";
+import showPwdImg from "@images/eye.svg";
+import hidePwdImg from "@images/eye-slash.svg";
 
 // image
-import logo from "@images/logo-full.png";
+import logo from "@images/Asset.png";
 import jwtService from "src/auth/authService/jwtService";
 
 // Add sweet alert
@@ -10,32 +12,25 @@ import Swal from "sweetalert2";
 
 function Register(props) {
   const [userName, setUserName] = useState("");
+  const [nameErrorMsg, setNameErrorMsg] = useState("");
   const [email, setEmail] = useState("");
-  // const [role, setRole] = useState("");
-  let errorsObj = { email: "", password: "" };
-  const [errors, setErrors] = useState(errorsObj);
+  // const [role, setRole] = useState("Learner");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [isRevealPwd, setIsRevealPwd] = useState(false);
 
   function onSignUp(e) {
     e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (email === "") {
-      errorObj.email = "Email is Required";
-      error = true;
+    if (userName.length < 3) {
+      setNameErrorMsg("Full name must contain at least 3 characters");
+    } else {
+      setNameErrorMsg("");
     }
-    if (password === "") {
-      errorObj.password = "Password is Required";
-      error = true;
+    if (password.length < 5) {
+      setError("Password must be at least 5 characters long");
+    } else {
+      setError("");
     }
-    setErrors(errorObj);
-    if (error) return;
-	if (password.length < 5) {
-		setError('Password must be at least 5 characters long');
-	  } else {
-		setError('');
-	  }
 
     jwtService
       .createUser({
@@ -44,18 +39,19 @@ function Register(props) {
         email,
         generate_token: true,
       })
-      .then((response) => {
-        Swal.fire({
-          title: "Success",
-          text: "Registration successfully Done",
-          icon: "success",
-          confirmButtonText: "OK",
-        }).then(function () {
-          // Redirect the user to login page
-          props.history.push("/login");
-        });
-      });
+      .then((response) => {});
   }
+
+  const validateName = () => {
+    // Validate full name
+    if (!/^[a-zA-Z\s]+$/.test(userName)) {
+      console.log(userName.length);
+      setNameErrorMsg("Please enter a valid full name");
+    } else {
+      setNameErrorMsg("");
+      // Perform further actions or submit the form
+    }
+  };
   return (
     <div className="authincation h-100 p-meddle">
       <div className="container h-100">
@@ -67,7 +63,7 @@ function Register(props) {
                   <div className="auth-form">
                     <div className="text-center mb-3">
                       <Link to="/login">
-                        <img src={logo} alt="" />
+                        <img width="300" height="50" src={logo} alt="" />
                       </Link>
                     </div>
                     <h4 className="text-center mb-4 ">Sign up your account</h4>
@@ -89,6 +85,11 @@ function Register(props) {
                           value={userName}
                           onChange={(e) => setUserName(e.target.value)}
                         />
+                        {nameErrorMsg && (
+                          <span className="text-danger fs-14 m-2">
+                            {nameErrorMsg}
+                          </span>
+                        )}
                       </div>
                       <div className="form-group mb-3">
                         <label className="mb-1 ">
@@ -102,20 +103,32 @@ function Register(props) {
                           placeholder="hello@example.com"
                         />
                       </div>
-                      {errors.email && <div id="name">{errors.email}</div>}
-                      <div className="form-group mb-3">
-                        <label className="mb-1 ">
+                      <div
+                        className="form-group mb-3"
+                        style={{ position: "relative" }}
+                      >
+                        <label className="mb-1">
                           <strong>Password</strong>
                         </label>
                         <input
-                          type="password"
+                          type={isRevealPwd ? "text" : "password"}
+                          className="form-control"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="form-control"
+                          required
                         />
-						{error && <div className="text-danger fs-12">{error}</div>}
+                        <img
+                          src={isRevealPwd ? showPwdImg : hidePwdImg}
+                          onClick={() =>
+                            setIsRevealPwd((prevState) => !prevState)
+                          }
+                          alt="eyebtn"
+                          className="password-toggle"
+                        />
                       </div>
-                      {errors.password && <div>{errors.password}</div>}
+                      {error && (
+                        <div className="text-danger fs-12">{error}</div>
+                      )}
                       {/* <div className="form-group mb-3">
                         <label className="mb-1 ">
                           <strong>Role</strong>

@@ -6,7 +6,7 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 
 import LogoutPage from './Logout';
 
-import United from "@images/United.png";
+import India from "@images/Indian.png";
 import avatar from "@images/avatar/1.jpg";
 import profile from "@images/profile/pic1.jpg";
 
@@ -54,7 +54,7 @@ const RightSideBar = ({onNote}) =>{
 		<>
 			<div className="dlab-side-menu">
 				<div className="search-coundry d-flex align-items-center">
-					<img src={United} alt="" />						
+					<img src={India} alt="" />						
 					<Dropdown className='sidebar-dropdown me-2 mt-2'>
 						<Dropdown.Toggle as='div' className='i-false sidebar-select'>{rightSelect} <i className="fa-solid fa-angle-down ms-2" /></Dropdown.Toggle>
 						<Dropdown.Menu>

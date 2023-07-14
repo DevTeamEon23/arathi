@@ -35,37 +35,37 @@ function ForgotPassword() {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
-      axios
-        .post("http://localhost:8000/auth/send_mail", {
-          email: [email],
-        })
-        .then((res) => {
-          console.log(res, res.data.OTP, res.data.status);
-          setOtpReceived(res.data.OTP);
-          setIsShown(true);
-          setBtnLoader(false);
-          setDisabled(true);
-        })
-        .catch((error) => {
-          console.log(error, error.response, error.response.status);
-          toast.error("Invalid credentials!", {
-            position: toast.POSITION.TOP_CENTER,
-            className: "toast-message",
-          });
-          setBtnLoader(false);
-        });
-      // jwtService
-      // .forgotPassword({
-      // email:[email]
-      // // generate_token: true
-      // })
-      // .then((response) => {
-      //   console.log(response, response.data.OTP, response.data.status);
-      //     setOtpReceived(response.data.OTP);
+      // axios
+      //   .post("http://localhost:8000/auth/send_mail", {
+      //     email: [email],
+      //   })
+      //   .then((res) => {
+      //     console.log(res, res.data.OTP, res.data.status);
+      //     setOtpReceived(res.data.OTP);
       //     setIsShown(true);
-      //      setBtnLoader(false);
-      //      setDisabled(true);
-      // });
+      //     setBtnLoader(false);
+      //     setDisabled(true);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error, error.response, error.response.status);
+      //     toast.error("Invalid credentials!", {
+      //       position: toast.POSITION.TOP_CENTER,
+      //       className: "toast-message",
+      //     });
+      //     setBtnLoader(false);
+      //   });
+      jwtService
+      .forgotPassword({
+      email:[email]
+      // generate_token: true
+      })
+      .then((response) => {
+        console.log(response, response.data.OTP, response.data.status);
+          setOtpReceived(response.data.OTP);
+          setIsShown(true);
+           setBtnLoader(false);
+           setDisabled(true);
+      });
     
     }
   };
@@ -302,7 +302,7 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {/* {resetPg?<Reset/>:""} */}
     </div>
   );

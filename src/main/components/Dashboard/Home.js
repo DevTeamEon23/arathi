@@ -5,7 +5,7 @@ import pMinDelay from "p-min-delay";
 import {Dropdown} from 'react-bootstrap';
 
 // sample 
-// import { useGetUsersQuery } from '../../../services/testService';
+import { useGetUsersQuery } from '../../../services/testService';
 
 //Import Components
 import { ThemeContext } from "@context/ThemeContext";
@@ -32,7 +32,7 @@ const ProgressChart = loadable(() =>
 const Home = () => {
 	
 	// Smaple 
-	// const { data, isLoading, isError, isFetching, isSuccess } = useGetUsersQuery();
+	const { data, isLoading, isError, isFetching, isSuccess } = useGetUsersQuery();
 
 	const { changeBackground } = useContext(ThemeContext);
 	useEffect(() => {

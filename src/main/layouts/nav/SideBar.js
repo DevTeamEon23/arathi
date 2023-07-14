@@ -50,7 +50,6 @@ const SideBar = () => {
   
   useEffect(() => {
     let role = window.localStorage.getItem("role");
-    console.log(role);
     setRoleType(role);
   }, [roleType])
   
@@ -237,7 +236,7 @@ const SideBar = () => {
               </li>
             </ul>
           </li>
-          {/* ************ Superadmin Dashboard Options************* */}
+          {/* *********************************** Superadmin Dashboard Options************************************ */}
           {roleType === "Superadmin" && (
             <>
               <li className={`${superadmin.includes(path) ? "mm-active" : ""}`}>
@@ -683,7 +682,7 @@ const SideBar = () => {
               </li>
             </>
           )}
-          {/* ************ Admin Dashboard Options************* */}
+          {/* *********************************** Admin Dashboard Options************************************ */}
           {(roleType === "Admin" || roleType === "Superadmin") && (
             <>
               <li className={`${admin.includes(path) ? "mm-active" : ""}`}>
@@ -1063,8 +1062,8 @@ const SideBar = () => {
               </li>
             </>
           )}
-          {/* ************ Instructor Dashboard Options************* */}
-          {(roleType === "Admin" || roleType === "Superadmin" || roleType === "Instructor") && (
+          {/* *********************************** Instructor Dashboard Options************************************ */}
+          {(roleType === "Admin" || roleType === "Instructor" || roleType === "Superadmin") && (
             <>
               <li
                 className={`${
@@ -1333,7 +1332,7 @@ const SideBar = () => {
               </li>
             </>
           )}
-          {/* ************ Learner Dashboard Options************* */}
+          {/* *********************************** Learner Dashboard Options************************************ */}
           {(roleType === "Superadmin" ||
             roleType === "Admin" ||
             roleType === "Learner") && (

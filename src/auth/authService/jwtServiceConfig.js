@@ -4,8 +4,8 @@ const jwtServiceConfig = {
   signIn: "/auth/login",
   accessToken: "/auth/verify-token",
   logout: "/auth/logout",
-  forgotPassword:"/auth/send_mail",
-  resetPassword:"/auth/change-user-password",
+  forgotPassword:"auth/send_mail",
+  resetPassword:"auth/change-user-password"
 };
 
 export default jwtServiceConfig;
