@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect,useRef } from "react";
 import { Link, useParams, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
@@ -46,7 +46,7 @@ const langtype = [
   { value: "marathi", label: "Marathi" },
 ];
 
-const EditUser = () => {
+const EditUser = (props) => {
   const [id, setId] = useState('');
   const [eid, setEid] = useState('');
   const [userName, setUserName] = useState(""); //Full name
@@ -57,12 +57,13 @@ const EditUser = () => {
   const [bio, setBio] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState();
+  const fileRef = useRef(null);
   // const [status, setStatus] = useState();
-  const [file, setFile] = useState([]);
+  const [file, setFile] = useState(null);
   // const [selectedOption, setSelectedOption] = useState(null);
-  const [isActive, setIsActive] = useState(true);
-  // const [isDeactive, setIsDeactive] = useState(false);
-  // const [isExcludefromEmail, setIsExcludefromEmail] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isDeactive, setIsDeactive] = useState(false);
+  const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [showPassword, setShowPassword] = useState(false);
   // const [selectedFile, setSelectedFile] = useState(null);
   // const [isFilePicked, setIsFilePicked] = useState(false);
@@ -72,7 +73,9 @@ const EditUser = () => {
    const [userData, setUserData] = useState([]); //user list data
     const [token, setToken] = useState(); //auth token
     const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-
+    const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
+    const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState(null); // timezone
+    const [selectedOptionLang, setSelectedOptionLang] = useState(null); // Language
 
  //User List Api
   const getAllUsers = () => {
@@ -95,10 +98,43 @@ const EditUser = () => {
       });
   }; 
 
+  const getUsersById = async (id, authToken) => {
+    console.log("inside get user by id",id, authToken);
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/lms-service/users_by_onlyid', {
+        headers: {
+          'Auth-Token': authToken
+        },
+        params: {
+          id: id
+        }
+      });
+      console.log(response.data);
+      const res = response.data 
+      setEid(res.id)
+      setUserName(res.full_name)
+      setEmail(res.email)
+      setDept(res.dept)
+      setAdhr(res.adhr)
+      setBio(res.bio)
+      setUsername(res.username)
+      setSelectedOptionRole(res.role)
+      setFile(res.file)
+    } catch (error) {
+      console.error(error); 
+    }
+  };
+
  useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    getAllUsers();
+    // getAllUsers();
+    console.log("edit page",props.userId);
+    if(props.userId !== undefined){
+    setId(props.userId)
+    getUsersById(props.userId,token)
+
+    }
   }, []);
 
   // useEffect(() => {
@@ -127,7 +163,7 @@ const EditUser = () => {
 
   function handleChange(e) {
     console.log(e.target.files);
-    setFile(URL.createObjectURL(e.target.files[0]));
+    setFile(e.target.files[0]);
 }
 
 const validateName = () => {
@@ -152,6 +188,28 @@ const validateName = () => {
     }
   };
 
+  const clearAllState = () => {
+    setEid("");
+    setUserName("");
+    setEmail("");
+    setDept("");
+    setAdhr("");
+    setBio("");
+    setUsername("");
+    setPassword("");
+    setFile(null);
+    fileRef.current.value ="";
+    setIsActive(false);
+    setIsDeactive(false);
+    setExcludeFromEmail(false);
+    setShowPassword(false);
+    setNameErrorMsg("");
+    setAadharNoErrorMsg("");
+    setSelectedOptionRole(null);
+    setSelectedOptionTimeZone(null);
+    setSelectedOptionLang(null);
+  };
+
   return (
     <Fragment>
       <Nav >
@@ -172,7 +230,11 @@ const validateName = () => {
             <div className="card-body">
               <div className="form-validation">
                 <form onSubmit={handleSubmit}>
+               
                   <div className="row">
+                  {/* {userData.map((item, index)=>{
+                    console.log(item)
+                    return(<><div key={index}> */}
                     <div className="col-xl-6">
                       <div className="form-group mb-3 row">
                         <label
@@ -242,7 +304,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Department 
+                          Department <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -262,7 +324,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Aadhar Card No. 
+                          Aadhar Card No. <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -343,7 +405,7 @@ const validateName = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-suggestions"
                         >
-                          Bio 
+                          Bio <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-8">
                           <textarea
@@ -368,26 +430,23 @@ const validateName = () => {
                           User Type
                           <span className="text-danger">*</span>
                         </label>
-                      <div className="col-lg-6">
-                      <Select
-                          defaultValue={categorytype}
-                          onChange={categorytype}
-                          options={categorytype}
-                          name="categorytype"
-                        >
-                      </Select>
-                        <div
-                          id="val-username1-error"
-                          className="invalid-feedback animated fadeInUp"
-                          style={{ display: "block" }}
-                        >
+                        <div className="col-lg-6">
+                          <Select
+                            value={selectedOptionRole} 
+                            options={categorytype}
+                            onChange={(selectedOptionRole) =>
+                              setSelectedOptionRole(selectedOptionRole)
+                            }
+                           
+                            name="categorytype"
+                            required
+                          ></Select>
+                          <div
+                            id="val-username1-error"
+                            className="invalid-feedback animated fadeInUp"
+                            style={{ display: "block" }}
+                          ></div>
                         </div>
-                      </div>
-                        <div
-                          id="val-username1-error"
-                          className="invalid-feedback animated fadeInUp"
-                          style={{ display: "block" }}
-                        />
                       </div>
 
                       <div className="form-group mb-3 row">
@@ -396,16 +455,16 @@ const validateName = () => {
                           htmlFor="val-website"
                         >
                           Time Zone
-                          <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <Select
-                          defaultValue={timezonetype}
-                          onChange={timezonetype}
-                          options={timezonetype}
-                          name="timezonetype"
-                        >
-                        </Select>
+                          <Select
+                            value={selectedOptionTimeZone}
+                            options={timezonetype}
+                            onChange={(selectedOptionTimeZone) =>
+                              setSelectedOptionTimeZone(selectedOptionTimeZone)
+                            }
+                            name="timezonetype"
+                          ></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
@@ -414,87 +473,115 @@ const validateName = () => {
                           htmlFor="val-currency"
                         >
                           Language
-                          <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <Select
-                          defaultValue={langtype}
-                          onChange={langtype}
-                          options={langtype}
-                          name="langtype"
-                        >
-                        </Select>
+                          <Select
+                            value={selectedOptionLang}
+                            onChange={(selectedOptionLang) =>
+                              setSelectedOptionLang(selectedOptionLang)
+                            }
+                            options={langtype}
+                            name="langtype"
+                          ></Select>
                         </div>
                       </div>
                     
                     </div>
                     <div className="col-xl-6">
-                      <div className="form-group mb-3 row">
-                      <label
+                    <div className="form-group mb-3 row">
+                        <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-suggestions"
                         >
                           Add Photo<span className="text-danger">*</span>
                         </label>
-                        <div className="profile-info">
+                        <div className="profile-info col-lg-6">
                           <div className="profile-photo">
-                          <input type="file" name="file" accept='.jpeg, .png, .jpg' onChange={handleChange}/>
-                          <br/><br/> 
-                          <img src={file} width="250" height="250" alt="file" />
+                            {file ? (
+                              <>
+                                {" "}
+                                <img
+                                  src={file && URL.createObjectURL(file)}
+                                  width="250"
+                                  height="250"
+                                  alt="file"
+                                />{" "}
+                                <br />
+                                <br />
+                              </>
+                            ) : (
+                              ""
+                            )}
+
+                            <input
+                              type="file"
+                              name="file"
+                              ref={fileRef}
+                              accept=".jpeg, .png, .jpg"
+                              onChange={handleChange}
+                              required
+                            />
+                          </div>
                         </div>
-                        </div>
-                        </div>
+                      </div>
                       </div>
                      
                       <div className="form-group mb-3 row ">
-                        <div className="form-group mb-3 row d-flex mt-3">
-                          <div className="col-lg-2">
-                      <br/>
-                      <br/>
+                      <div className="col-lg-2 d-flex mt-3">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id="isActive"
+                          name="isActive"
+                          checked={isActive}
+                          onChange={(e) => setIsActive(e.target.checked)}
+                          required
+                        />
                         <label
-                          className="form-check css-control-primary css-checkbox"
+                          className="form-check css-control-primary css-checkbox mt-1"
                           htmlFor="val-terms"
                         >
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="isActive"
-                            name="isActive"
-                            onChange={(e) => setIsActive(e.target.value)}
-                          />Active
-                          </label>
-                        </div>
-                          <div className="col-lg-4">
-                      <br/>
-                      <br/>
-                        <label
-                          className="form-check css-control-primary css-checkbox"
-                          htmlFor="val-terms"
-                        >
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="isDeactive"
-                            name="isDeactive"
-                          />Deactive
-                          </label>
-                        </div>
-                          <div className="col-lg-8">
-                      <br/>
-                      <br/>
-                            <label
-                            className="form-check css-control-primary css-checkbox"
-                            htmlFor="val-terms"
-                          >
-                            <input
-                              type="checkbox"
-                              className="form-check-input"
-                              id="isExcludefromEmail"
-                              name="isExcludefromEmail"
-                            />Exclude from Email
+                          Active <span className="text-danger">*</span>
                         </label>
-                        </div>
-                        </div></div>
+                      </div>
+                      <div className="col-lg-2 d-flex mt-3">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id="isDeactive"
+                          name="isDeactive"
+                          checked={isDeactive}
+                          onChange={(e) => setIsDeactive(e.target.checked)}
+                        />
+                        <label
+                          className="form-check css-control-primary css-checkbox mt-1"
+                          htmlFor="val-terms"
+                        >
+                          Deactive
+                        </label>
+                      </div>
+                      <div className="col-lg-2 d-flex mt-3">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id="isExcludefromEmail"
+                          name="isExcludefromEmail"
+                          checked={excludeFromEmail}
+                          onChange={(e) => setExcludeFromEmail(e.target.checked)}
+                        />
+                        <label
+                          className="form-check css-control-primary css-checkbox mt-1"
+                          htmlFor="val-terms"
+                        >
+                          Exclude from Email
+                        </label>
+                      </div>
+                    </div>
+                    {/* </div> </>)})} */}
+                                
+
+
+
                         <div className="form-group mb-3 row">
                         <div className="col-lg-8 ms-auto">
                           <br/>
