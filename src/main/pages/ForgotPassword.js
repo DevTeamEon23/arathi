@@ -302,7 +302,7 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {/* {resetPg?<Reset/>:""} */}
     </div>
   );

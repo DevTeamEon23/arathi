@@ -30,8 +30,8 @@ const liveUrl = Url();
 
 const apiSlice = createApi({
   reducerPath: "appApi",
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com' }), // only for demo
-  // baseQuery: fetchBaseQuery({ baseUrl: liveUrl }), // Uncomment before start development
+  // baseQuery: fetchBaseQuery({ baseUrl: 'https://jsonplaceholder.typicode.com' }), // only for demo
+  baseQuery: fetchBaseQuery({ baseUrl: liveUrl }), // Uncomment before start development
   endpoints: (builder) => ({}),
 });
 

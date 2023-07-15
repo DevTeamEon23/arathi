@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import React, { Fragment } from "react";
-import { Row, Col, Card, Table, Button, Nav } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useGetUsersQuery } from "../../../services/authApi"
+import EditUser from "./EditUser";
+import { useHistory } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
 const Users = () => {
   const [id, setId] = useState("");
@@ -19,46 +22,40 @@ const Users = () => {
   const [file, setFile] = useState([]);
   const [isActive, setIsActive] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [userId, setUserId] = useState([]);
-  const [userData, setUserData] = useState([]);
-const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
-
-  const getUsers = async () => {
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
-
-    console.log(data);
-  };
+  const [uid, setUId] = useState(); //user id save for delete
+  const [token, setToken] = useState(); //auth token
+  const [userData, setUserData] = useState([]); //user list data
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [editUserID, setEditUserID] = useState("");
+  const [editUser, setEditUser] = useState(false);
+  const history = useHistory();
 
   //User List Api
-  const getAllUsers1 = () => {
+  const getAllUsers = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     console.log(jwtToken);
-    // Create the Axios request configuration
     const config = {
       headers: {
         "Auth-Token": jwtToken, // Attach the JWT token in the Authorization header
       },
     };
-    // Make the Axios GET request
     axios
-      .get("http://localhost:8000/lms-service/users", config)
+      .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
-        // Handle the successful response
-        console.log(response, response.data, response.data.data); // Do something with the user details
+        console.log(response, response.data, response.data.data);
         setUserData(response.data.data);
       })
       .catch((error) => {
-        // Handle the error
         console.log(error);
-        console.error(error);
+        toast.error("Failed to fetch users!"); // Handle the error
       });
+  };
+
+  const handleEdit = (id) => {
+    console.log("inside user handle edit page", id);
+    setEditUserID(id);
+    setEditUser(true);
+    // history.push("/edit-user");
   };
 
   // function selectUser(userId)
@@ -93,21 +90,48 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
-    console.log(token);
-    getAllUsers({token})
-    // getAllUsers();
+    setToken(token);
+    getAllUsers();
   }, []);
 
-  async function deleteOperation(id) {
-    if (window.confirm("Are you sure?")) {
-      let result = await fetch("http://localhost:8000/users/" + id, {
-        method: "DELETE",
+  const deleteUser = (userId) => {
+    setShowModal(true);
+    console.log("inside delete user", userId);
+    setUId(userId);
+  };
+
+  const handleDelete = () => {
+    console.log("modal delete", uid);
+    const config = {
+      headers: {
+        "Auth-Token": token, // Attach the JWT token in the Authorization header
+      },
+    };
+    const requestBody = {
+      id: uid,
+    };
+    // Make the Axios DELETE request
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_user`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        console.log(response.data.status);
+        getAllUsers();
+        toast.success("User deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+        toast.error("Failed to delete user!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
-      result = await result.json();
-      console.warn(result);
-      // getAllUsers();
-    }
-  }
+  };
 
   return (
     <>
@@ -141,6 +165,7 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
             </Link>
           </Nav.Item>
         </Nav>
+
         <Row>
           <Col lg={12}>
             <Card>
@@ -210,100 +235,122 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
                     </th>
                   </tr>
                 </thead>
-                <tbody>{userData.length ===0?<strong> No User Found !</strong>:<>
-                  {userData.map((item, index) => {
-                    const dateTimeString = item.created_at;//1
-                    const date = new Date(dateTimeString);
-                    const day = date.getDate();
-                    const month = date.getMonth() + 1; // Months are zero-based, so add 1
-                    const year = date.getFullYear();
-                    const formattedDate = `${day < 10 ? "0" + day : day}-${
-                      month < 10 ? "0" + month : month
-                    }-${year}`;
+                <tbody>
+                  {userData === null && userData === [] &&(
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="96"
+                      visible={true}
+                    />
+                  )}
+                  {userData.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan="13"
+                        rowSpan="13"
+                        className="text-center fs-16"
+                      >
+                        No File Found.
+                      </td>
+                    </tr>
+                  ) : (
+                    <>
+                      {userData.map((item, index) => {
+                        const dateTimeString = item.created_at; //1
+                        const date = new Date(dateTimeString);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1; // Months are zero-based, so add 1
+                        const year = date.getFullYear();
+                        const formattedDate = `${day < 10 ? "0" + day : day}-${
+                          month < 10 ? "0" + month : month
+                        }-${year}`;
 
-                    // Input date and time string
-                    const inputDateTime = item.updated_at;//2
-                    // Convert inputDateTime to a JavaScript Date object
-                    const dateObj = new Date(inputDateTime);
-                    // Get the date in dd-mm-yyyy format
-                    const day1 = dateObj.getDate().toString().padStart(2, "0");
-                    const month1 = (dateObj.getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0"); // Months are zero-based
-                    const year1 = dateObj.getFullYear().toString();
-                    const formattedDate1 = `${day1}-${month1}-${year1}`;
+                        // Input date and time string
+                        const inputDateTime = item.updated_at; //2
+                        // Convert inputDateTime to a JavaScript Date object
+                        const dateObj = new Date(inputDateTime);
+                        // Get the date in dd-mm-yyyy format
+                        const day1 = dateObj
+                          .getDate()
+                          .toString()
+                          .padStart(2, "0");
+                        const month1 = (dateObj.getMonth() + 1)
+                          .toString()
+                          .padStart(2, "0"); // Months are zero-based
+                        const year1 = dateObj.getFullYear().toString();
+                        const formattedDate1 = `${day1}-${month1}-${year1}`;
 
-                    // Get the time in 12-hour format
-                    let hours = dateObj.getHours();
-                    const minutes = dateObj
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0");
-                    const amPm = hours >= 12 ? "PM" : "AM";
-                    hours = hours % 12 || 12;
-                    const formattedTime = `${hours}:${minutes} ${amPm}`;
-                    console.log(userData)
-                    return (
-                      <tr key={index}>
-                        <td>
-                          <center>{item.id}</center>
-                        </td>
-                        <td>
-                          <center>{item.username}</center>
-                        </td>
-                        <td>
-                          <center>{item.full_name}</center>
-                        </td>
-                        <td>
-                          <center>{item.dept}</center>
-                        </td>
-                        <td>
-                          <center>{item.email}</center>
-                        </td>
-                        <td>
-                          <center>{item.role}</center>
-                        </td>
-                        <td>
-                          <center>{formattedDate}</center>
-                        </td>
-                        <td>
-                          <center>
-                            {formattedDate1}&nbsp;&nbsp;{formattedTime}
-                          </center>
-                        </td>
-                        {/* {users.map((data) => {
-               return (
-                <tr key={data.id}>
-                <td><center>{data.eid}</center></td>
-                <td><center>{data.eid}</center></td>
-                <td><center>{data.firstname}  {data.lastname}</center></td>
-                <td><center>{data.dept}</center></td>
-                <td><center>{data.email}</center></td>
-                <td><center>{data.categorytype}</center></td>
-                <td><center>2/2/2022</center></td>
-                <td><center>3 hrs Ago</center></td> */}
-                        <td>
-                          <center>
-                            {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
-                            <Link
-                              to="/edit-user"
-                              className="btn btn-primary shadow btn-xs sharp me-1"
-                            >
-                              <i className="fas fa-pencil-alt"></i>
-                            </Link>
-                            <Link
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
-                              onClick={() => deleteOperation(item.id)}
-                            >
-                              <i className="fa fa-trash"></i>
-                            </Link>
-                          </center>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  </>} </tbody>
+                        // Get the time in 12-hour format
+                        let hours = dateObj.getHours();
+                        const minutes = dateObj
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, "0");
+                        const amPm = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedTime = `${hours}:${minutes} ${amPm}`;
+                        return (
+                          <tr key={index}>
+                            <td>
+                              <center>{item.eid}</center>
+                            </td>
+                            <td>
+                              <center>{item.sid}</center>
+                            </td>
+                            <td>
+                              <center>{item.full_name}</center>
+                            </td>
+                            <td>
+                              <center>{item.dept}</center>
+                            </td>
+                            <td>
+                              <center>{item.email}</center>
+                            </td>
+                            <td>
+                              <center>{item.role}</center>
+                            </td>
+                            <td>
+                              <center>{formattedDate}</center>
+                            </td>
+                            <td>
+                              <center>
+                                {formattedDate1}&nbsp;&nbsp;{formattedTime}
+                              </center>
+                            </td>
+                            <td>
+                              <center>
+                                {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
+                                {/* <Link
+                                  to="/edit-user"
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                ></Link> */}
+                                <div
+                                  // to="/edit-user"
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                >
+                                  <i
+                                    className="fas fa-pencil-alt"
+                                    onClick={(e) => handleEdit(item.id)}
+                                  ></i>
+                                </div>
+
+                                <Link
+                                  href="#"
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  onClick={() => deleteUser(item.id)}
+                                >
+                                  <i className="fa fa-trash"></i>
+                                </Link>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </>
+                  )}{" "}
+                </tbody>
               </Table>
               {/* <div>
                 <form action="http://localhost:8000/users/${userId}" method='PUT' encType="multipart/form-data">
@@ -324,7 +371,24 @@ const [getAllUsers,{data,isSuccess,isError,error}]=useGetUsersQuery()
             </Card>
           </Col>
         </Row>
+        {/* {editUser?<EditUser userId={editUserID}/>:""} */}
       </Fragment>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete User?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

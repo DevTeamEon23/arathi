@@ -50,7 +50,6 @@ const SideBar = () => {
   
   useEffect(() => {
     let role = window.localStorage.getItem("role");
-    console.log(role);
     setRoleType(role);
   }, [roleType])
   
@@ -1064,7 +1063,7 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Instructor Dashboard Options************************************ */}
-          {(roleType === "Admin" || roleType === "Instructor") && (
+          {(roleType === "Admin" || roleType === "Instructor" || roleType === "Superadmin") && (
             <>
               <li
                 className={`${
@@ -1336,7 +1335,6 @@ const SideBar = () => {
           {/* *********************************** Learner Dashboard Options************************************ */}
           {(roleType === "Superadmin" ||
             roleType === "Admin" ||
-            roleType === "Instructor" ||
             roleType === "Learner") && (
             <>
               <li className={`${learner.includes(path) ? "mm-active" : ""}`}>

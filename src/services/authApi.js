@@ -11,13 +11,13 @@ const authApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000" }),//url
   endpoints: (builder) => ({
     getAllUsers:builder.query({
-      query:(headers)=>{
+      query:()=>{
         return{
           url: "/lms-service/users",
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Auth-Token": jwtToken
+            AuthToken:localStorage.getItem('token')
           }
         }
       }
@@ -27,3 +27,4 @@ const authApi = createApi({
 
 export const {useGetUsersQuery}= authApi;
 export default authApi 
+
