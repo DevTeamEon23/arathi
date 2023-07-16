@@ -1,482 +1,478 @@
-import React, { Fragment, useState ,useRef} from "react";
-import { Link } from "react-router-dom";
-import Select from "react-select";
-import axios from "axios";
-import { toast } from "react-toastify";
-import {
-  Nav,
-  Button,
-} from "react-bootstrap";
+import React, { Fragment, useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import Select from 'react-select'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { Nav, Button } from 'react-bootstrap'
 
 //select dropdown
 const categorytype = [
-  { value: "superadmin", label: "SuperAdmin" },
-  { value: "admin", label: "Admin" },
-  { value: "instructor", label: "Instructor" },
-  { value: "learner", label: "Learner" },
-];
+  { value: 'superadmin', label: 'SuperAdmin' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'instructor', label: 'Instructor' },
+  { value: 'learner', label: 'Learner' },
+]
 
 const timezonetype = [
-  { value: "ist", label: "India Standard Time (IST)" },
-  { value: "nst", label: "New Zealand Standard Time (NST)" },
-  { value: "ast", label: "Alaska Standard Time (AST)" },
-  { value: "gmt", label: "Greenwich Mean Time (GMT)" },
-  { value: "ect", label: "European Central Time (ECT)" },
-  { value: "arabic", label: "Egypt Standard Time	(Arabic)" },
-];
+  { value: 'ist', label: 'India Standard Time (IST)' },
+  { value: 'nst', label: 'New Zealand Standard Time (NST)' },
+  { value: 'ast', label: 'Alaska Standard Time (AST)' },
+  { value: 'gmt', label: 'Greenwich Mean Time (GMT)' },
+  { value: 'ect', label: 'European Central Time (ECT)' },
+  { value: 'arabic', label: 'Egypt Standard Time	(Arabic)' },
+]
 const langtype = [
-  { value: "hindi", label: "Hindi" },
-  { value: "english", label: "English" },
-  { value: "marathi", label: "Marathi" },
-];
+  { value: 'hindi', label: 'Hindi' },
+  { value: 'english', label: 'English' },
+  { value: 'marathi', label: 'Marathi' },
+]
 
 const AddUser = () => {
-  const [eid, setEid] = useState("");
-  const [userName, setUserName] = useState(""); //Full name
-  const [email, setEmail] = useState("");
-  const [dept, setDept] = useState("");
-  const [adhr, setAdhr] = useState("");
-  const [bio, setBio] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState();
-  const fileRef = useRef(null);
-  const [file, setFile] = useState(null);
-  const [isActive, setIsActive] = useState(false);
-  const [isDeactive, setIsDeactive] = useState(false);
-  const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
-  const [showPassword, setShowPassword] = useState(false);
-  const [emailError, setEmailError] = useState(""); //show wrong email error
-  const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
-  const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-  const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
-  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
-  const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
+  const [eid, setEid] = useState('')
+  const [userName, setUserName] = useState('') //Full name
+  const [email, setEmail] = useState('')
+  const [dept, setDept] = useState('')
+  const [adhr, setAdhr] = useState('')
+  const [bio, setBio] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState()
+  const fileRef = useRef(null)
+  const [file, setFile] = useState(null)
+  const [isActive, setIsActive] = useState(false)
+  const [isDeactive, setIsDeactive] = useState(false)
+  const [excludeFromEmail, setExcludeFromEmail] = useState(false) //Exclude from Email
+  const [showPassword, setShowPassword] = useState(false)
+  const [emailError, setEmailError] = useState('') //show wrong email error
+  const [nameErrorMsg, setNameErrorMsg] = useState('') //show error Name
+  const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState('') //show error Aadhar no
+  const [selectedOptionRole, setSelectedOptionRole] = useState(null) // role
+  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState('ist') // timezone
+  const [selectedOptionLang, setSelectedOptionLang] = useState('english') // Language
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     // const originalString = selectedOptionLang.value;
 
     // const modifiedString = originalString.replace(/['"]/g, '');
     // console.log(modifiedString);
-    const formData = new FormData();
-    formData.append("eid", eid);
-    formData.append("sid", eid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", selectedOptionRole.value);
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive);
-    formData.append("exclude_from_email", excludeFromEmail);
-    formData.append("generate_token", true);
-    formData.append("file", file);
+    const formData = new FormData()
+    formData.append('eid', eid)
+    formData.append('sid', eid)
+    formData.append('full_name', userName)
+    formData.append('email', email)
+    formData.append('dept', dept)
+    formData.append('adhr', adhr)
+    formData.append('username', username)
+    formData.append('password', password)
+    formData.append('bio', bio)
+    formData.append('role', selectedOptionRole.value)
+    formData.append('timezone', selectedOptionTimeZone.value)
+    formData.append('langtype', selectedOptionLang.value)
+    formData.append('active', isActive)
+    formData.append('deactive', isDeactive)
+    formData.append('exclude_from_email', excludeFromEmail)
+    formData.append('generate_token', true)
+    formData.append('file', file)
 
-    const url = "https://v1.eonlearning.tech/lms-service/addusers";
-    const authToken = window.localStorage.getItem("jwt_access_token");
-    
+    const url = 'https://v1.eonlearning.tech/lms-service/addusers'
+    const authToken = window.localStorage.getItem('jwt_access_token')
+
     axios
       .post(url, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
+          'Content-Type': 'multipart/form-data',
+          'Auth-Token': authToken,
         },
       })
       .then((response) => {
-        console.log(response.data);
-        toast.success("User added successfully!!!");
-        clearAllState();
+        console.log(response.data)
+        toast.success('User added successfully!!!')
+        clearAllState()
       })
       .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to add user...");
-      });
-  };
+        console.error(error)
+        toast.error('Failed !!! Unable to add user...')
+      })
+  }
 
   // To set img file
   function handleChange(e) {
-    console.log(e.target.files);
-    setFile(e.target.files[0]);
+    console.log(e.target.files)
+    setFile(e.target.files[0])
   }
 
   const handleEmail = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError('Please enter a valid email address')
     } else {
-      setEmailError("");
+      setEmailError('')
     }
-  };
+  }
 
   const validateName = () => {
     if (!/^[a-zA-Z\s]+$/.test(userName)) {
-      setNameErrorMsg("Please enter a valid full name");
+      setNameErrorMsg('Please enter a valid full name')
     } else {
-      setNameErrorMsg("");
+      setNameErrorMsg('')
     }
     if (userName.length < 3) {
-      setNameErrorMsg("Must contain at least 3 characters");
+      setNameErrorMsg('Must contain at least 3 characters')
     } else {
-      setNameErrorMsg("");
+      setNameErrorMsg('')
     }
-  };
+  }
 
   const handleAadhaarNo = () => {
-    const regexp =/^\d{12}$/;
+    const regexp = /^\d{12}$/
     if (!regexp.test(adhr)) {
-      setAadharNoErrorMsg("Please enter Valid Aadhar no.");
+      setAadharNoErrorMsg('Please enter Valid Aadhar no.')
     } else {
-      setAadharNoErrorMsg("");
+      setAadharNoErrorMsg('')
     }
-  };
+  }
 
   const clearAllState = () => {
-    setEid("");
-    setUserName("");
-    setEmail("");
-    setDept("");
-    setAdhr("");
-    setBio("");
-    setUsername("");
-    setPassword("");
-    setFile(null);
-    fileRef.current.value ="";
-    setIsActive(false);
-    setIsDeactive(false);
-    setExcludeFromEmail(false);
-    setShowPassword(false);
-    setEmailError("");
-    setNameErrorMsg("");
-    setAadharNoErrorMsg("");
-    setSelectedOptionRole(null);
-    setSelectedOptionTimeZone(null);
-    setSelectedOptionLang(null);
-  };
+    setEid('')
+    setUserName('')
+    setEmail('')
+    setDept('')
+    setAdhr('')
+    setBio('')
+    setUsername('')
+    setPassword('')
+    setFile(null)
+    fileRef.current.value = ''
+    setIsActive(false)
+    setIsDeactive(false)
+    setExcludeFromEmail(false)
+    setShowPassword(false)
+    setEmailError('')
+    setNameErrorMsg('')
+    setAadharNoErrorMsg('')
+    setSelectedOptionRole(null)
+    setSelectedOptionTimeZone(null)
+    setSelectedOptionLang(null)
+  }
 
   return (
     <Fragment>
       <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+        <Nav.Item as='div' className='nav nav-tabs' id='nav-tab' role='tablist'>
           <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard"
+            as='button'
+            className='nav-link  nt-unseen'
+            id='nav-following-tab'
+            eventkey='Follow'
+            type='button'
+            to='/dashboard'
           >
             Dashboard
           </Link>
           <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/users-list"
+            as='button'
+            className='nav-link  nt-unseen'
+            id='nav-following-tab'
+            eventkey='Follow'
+            type='button'
+            to='/users-list'
           >
             Users
           </Link>
         </Nav.Item>
       </Nav>
 
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="card">
-            <div className="card-header">
-              <h4 className="card-title">Add Users Form </h4>
+      <div className='row'>
+        <div className='col-lg-12'>
+          <div className='card'>
+            <div className='card-header'>
+              <h4 className='card-title'>Add Users Form </h4>
             </div>
-            <div className="card-body">
-              <div className="form-validation">
+            <div className='card-body'>
+              <div className='form-validation'>
                 <form onSubmit={handleSubmit}>
-                  <div className="row">
-                    <div className="col-xl-6">
-                      <div className="form-group mb-3 row">
+                  <div className='row'>
+                    <div className='col-xl-6'>
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-email'
                         >
-                          Employee ID <span className="text-danger">*</span>
+                          Employee ID <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
+                            type='text'
+                            className='form-control'
                             value={eid}
-                            placeholder="e.g. jd001"
+                            placeholder='e.g. jd001'
                             onChange={(e) => setEid(e.target.value)}
                             required
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-username'
                         >
-                          Full Name <span className="text-danger">*</span>
+                          Full Name <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter Full name"
+                            type='text'
+                            className='form-control'
+                            placeholder='Enter Full name'
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
                             onBlur={validateName}
                             required
                           />
                           {nameErrorMsg && (
-                            <span className="text-danger fs-14 m-2">
+                            <span className='text-danger fs-14 m-2'>
                               {nameErrorMsg}
                             </span>
-                          )}{" "}
+                          )}{' '}
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-email'
                         >
-                          Email Address <span className="text-danger">*</span>
+                          Email Address <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="email"
-                            className="form-control"
-                            id="email"
+                            type='email'
+                            className='form-control'
+                            id='email'
                             value={email}
-                            placeholder="e.g. jdoe@example.com"
+                            placeholder='e.g. jdoe@example.com'
                             onChange={(e) => setEmail(e.target.value)}
                             onBlur={handleEmail}
                             required
                           />
                           {emailError && (
-                            <span className="text-danger fs-14 m-2">
+                            <span className='text-danger fs-14 m-2'>
                               {emailError}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-email'
                         >
-                          Department
+                          Department<span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="dept"
-                            name="dept"
+                            type='text'
+                            className='form-control'
+                            id='dept'
+                            name='dept'
                             value={dept}
-                            placeholder="e.g. Information Technology"
+                            placeholder='e.g. Information Technology'
                             onChange={(e) => setDept(e.target.value)}
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-email'
                         >
-                          Aadhar Card No.
+                          Aadhar Card No.<span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="adhr"
+                            type='text'
+                            className='form-control'
+                            id='adhr'
                             value={adhr}
-                            placeholder="e.g. 369934566789"
+                            placeholder='e.g. 369934566789'
                             onChange={(e) => setAdhr(e.target.value)}
                             onBlur={handleAadhaarNo}
                           />
                           {aadharNoErrorMsg && (
-                            <span className="text-danger fs-14 m-2">
+                            <span className='text-danger fs-14 m-2'>
                               {aadharNoErrorMsg}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-username'
                         >
-                          Username <span className="text-danger">*</span>
+                          Username <span className='text-danger'>*</span>
                         </label>
-                        <div className="input-group col-lg-6">
-                          <span className="input-group-text">
-                            <i className="fa fa-user" />{" "}
+                        <div className='input-group col-lg-6'>
+                          <span className='input-group-text'>
+                            <i className='fa fa-user' />{' '}
                           </span>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="username"
+                            type='text'
+                            className='form-control'
+                            id='username'
                             value={username}
-                            placeholder="Enter Username"
+                            placeholder='Enter Username'
                             onChange={(e) => setUsername(e.target.value)}
                             required
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label className="col-lg-4 col-form-label">
-                          Password <span className="text-danger">*</span>
+                      <div className='form-group mb-3 row'>
+                        <label className='col-lg-4 col-form-label'>
+                          Password <span className='text-danger'>*</span>
                         </label>
-                        <div className="input-group col-lg-6">
-                          <span className="input-group-text">
-                            {" "}
-                            <i className="fa fa-lock" />{" "}
+                        <div className='input-group col-lg-6'>
+                          <span className='input-group-text'>
+                            {' '}
+                            <i className='fa fa-lock' />{' '}
                           </span>
 
                           <input
-                            type={`${showPassword ? "text" : "password"}`}
-                            className="form-control"
-                            id="password"
+                            type={`${showPassword ? 'text' : 'password'}`}
+                            className='form-control'
+                            id='password'
                             value={password}
-                            placeholder="Enter Password"
+                            placeholder='Enter Password'
                             onChange={(e) => setPassword(e.target.value)}
                             required
                           />
                           <div
-                            className="input-group-text "
+                            className='input-group-text '
                             onClick={() => setShowPassword(!showPassword)}
                           >
-                            {" "}
+                            {' '}
                             {showPassword === false ? (
-                              <i className="fa fa-eye-slash" />
+                              <i className='fa fa-eye-slash' />
                             ) : (
-                              <i className="fa fa-eye" />
+                              <i className='fa fa-eye' />
                             )}
                           </div>
                         </div>
                       </div>
-                   
-                        <div className="form-group mb-3 row">
-                          <label
-                            className="col-lg-4 col-form-label"
-                            htmlFor="val-suggestions"
-                          >
-                            Bio
-                          </label>
-                          <div className="col-lg-8">
-                            <textarea
-                              className="form-control"
-                              id="bio"
-                              value={bio}
-                              rows="5"
-                              maxLength={300}
-                              placeholder="Short Description about user..."
-                              onChange={(e) => setBio(e.target.value)}
-                            ></textarea>
-                          </div>
-                        </div>
-                        <br />
-                    
-                      <div className="form-group mb-3 row">
+
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-suggestions'
+                        >
+                          Bio
+                        </label>
+                        <div className='col-lg-8'>
+                          <textarea
+                            className='form-control'
+                            id='bio'
+                            value={bio}
+                            rows='5'
+                            maxLength={300}
+                            placeholder='Short Description about user...'
+                            onChange={(e) => setBio(e.target.value)}
+                          ></textarea>
+                        </div>
+                      </div>
+                      <br />
+
+                      <div className='form-group mb-3 row'>
+                        <label
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-username'
                         >
                           User Type
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <Select
-                            value={selectedOptionRole} 
+                            value={selectedOptionRole}
                             options={categorytype}
                             onChange={(selectedOptionRole) =>
                               setSelectedOptionRole(selectedOptionRole)
                             }
-                           
-                            name="categorytype"
+                            name='categorytype'
                             required
                           ></Select>
                           <div
-                            id="val-username1-error"
-                            className="invalid-feedback animated fadeInUp"
-                            style={{ display: "block" }}
+                            id='val-username1-error'
+                            className='invalid-feedback animated fadeInUp'
+                            style={{ display: 'block' }}
                           ></div>
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-website"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-website'
                         >
                           Time Zone
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <Select
                             value={selectedOptionTimeZone}
                             options={timezonetype}
                             onChange={(selectedOptionTimeZone) =>
                               setSelectedOptionTimeZone(selectedOptionTimeZone)
                             }
-                            name="timezonetype"
+                            name='timezonetype'
                           ></Select>
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-currency"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-currency'
                         >
                           Language
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <Select
                             value={selectedOptionLang}
                             onChange={(selectedOptionLang) =>
                               setSelectedOptionLang(selectedOptionLang)
                             }
                             options={langtype}
-                            name="langtype"
+                            name='langtype'
                           ></Select>
                         </div>
                       </div>
                     </div>
-                    <div className="col-xl-6">
-                      <div className="form-group mb-3 row">
+                    <div className='col-xl-6'>
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-suggestions'
                         >
-                          Add Photo<span className="text-danger">*</span>
+                          Add Photo<span className='text-danger'>*</span>
                         </label>
-                        <div className="profile-info col-lg-6">
-                          <div className="profile-photo">
+                        <div className='profile-info col-lg-6'>
+                          <div className='profile-photo'>
                             {file ? (
                               <>
-                                {" "}
+                                {' '}
                                 <img
                                   src={file && URL.createObjectURL(file)}
-                                  width="250"
-                                  height="250"
-                                  alt="file"
-                                />{" "}
+                                  width='250'
+                                  height='250'
+                                  alt='file'
+                                />{' '}
                                 <br />
                                 <br />
                               </>
                             ) : (
-                              ""
+                              ''
                             )}
 
                             <input
-                              type="file"
-                              name="file"
+                              type='file'
+                              name='file'
                               ref={fileRef}
-                              accept=".jpeg, .png, .jpg"
+                              accept='.jpeg, .png, .jpg'
                               onChange={handleChange}
                               required
                             />
@@ -485,71 +481,73 @@ const AddUser = () => {
                       </div>
                     </div>
 
-                    <div className="form-group mb-3 row ">
-                      <div className="col-lg-2 d-flex mt-3">
+                    <div className='form-group mb-3 row '>
+                      <div className='col-lg-2 d-flex mt-3'>
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="isActive"
-                          name="isActive"
+                          type='checkbox'
+                          className='form-check-input'
+                          id='isActive'
+                          name='isActive'
                           checked={isActive}
                           onChange={(e) => setIsActive(e.target.checked)}
                           required
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          className='form-check css-control-primary css-checkbox mt-1'
+                          htmlFor='val-terms'
                         >
-                          Active <span className="text-danger">*</span>
+                          Active <span className='text-danger'>*</span>
                         </label>
                       </div>
-                      <div className="col-lg-2 d-flex mt-3">
+                      <div className='col-lg-2 d-flex mt-3'>
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="isDeactive"
-                          name="isDeactive"
+                          type='checkbox'
+                          className='form-check-input'
+                          id='isDeactive'
+                          name='isDeactive'
                           checked={isDeactive}
                           onChange={(e) => setIsDeactive(e.target.checked)}
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          className='form-check css-control-primary css-checkbox mt-1'
+                          htmlFor='val-terms'
                         >
                           Deactive
                         </label>
                       </div>
-                      <div className="col-lg-2 d-flex mt-3">
+                      <div className='col-lg-2 d-flex mt-3'>
                         <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="isExcludefromEmail"
-                          name="isExcludefromEmail"
+                          type='checkbox'
+                          className='form-check-input'
+                          id='isExcludefromEmail'
+                          name='isExcludefromEmail'
                           checked={excludeFromEmail}
-                          onChange={(e) => setExcludeFromEmail(e.target.checked)}
+                          onChange={(e) =>
+                            setExcludeFromEmail(e.target.checked)
+                          }
                         />
                         <label
-                          className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          className='form-check css-control-primary css-checkbox mt-1'
+                          htmlFor='val-terms'
                         >
                           Exclude from Email
                         </label>
                       </div>
                     </div>
-                    <div className="form-group mb-5 row">
-                      <div className="col-lg-8 ms-auto">
+                    <div className='form-group mb-5 row'>
+                      <div className='col-lg-8 ms-auto'>
                         <br />
                         <br />
                         <Button
-                          type="submit"
-                          value="submit"
-                          className="btn me-2 btn-primary"
+                          type='submit'
+                          value='submit'
+                          className='btn me-2 btn-primary'
                         >
                           Add User
-                        </Button>{" "}
+                        </Button>{' '}
                         or &nbsp;&nbsp;
-                        <Link to="/users-list">
-                          <Button className="btn btn-light">Cancel</Button>
+                        <Link to='/users-list'>
+                          <Button className='btn btn-light'>Cancel</Button>
                         </Link>
                       </div>
                     </div>
@@ -561,7 +559,7 @@ const AddUser = () => {
         </div>
       </div>
     </Fragment>
-  );
-};
+  )
+}
 
-export default AddUser;
+export default AddUser
