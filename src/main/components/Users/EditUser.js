@@ -11,7 +11,7 @@ import {
   Button,
   FormCheck,
 } from 'react-bootstrap'
-import DateRangePicker from 'react-bootstrap-daterangepicker'
+import { RotatingLines } from 'react-loader-spinner'
 
 // const loginSchema = Yup.object().shape({
 //   username: Yup.string()
@@ -48,9 +48,10 @@ const langtype = [
 const EditUser = (props) => {
   const userId = props.match.params.id
   console.log({ userId })
-  const [id, setId] = useState('')
+  const [id, setId] = useState()
   const [userName, setUserName] = useState('') //Full name
   const [eid, setEid] = useState('')
+  const [sid, setSid] = useState('')
   const [nameErrorMsg, setNameErrorMsg] = useState('') //show error Name
   const [email, setEmail] = useState('')
   const [dept, setDept] = useState('')
@@ -71,50 +72,25 @@ const EditUser = (props) => {
   const [data, setData] = useState([])
   const [users, setUsers] = useState([])
   // const [user_id, setUserId] = useState(null);
-  const [userData, setUserData] = useState([]) //user list data
+  const [userData, setUserData] = useState() //user list data
   const [token, setToken] = useState() //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState('') //show error Aadhar no
   const [selectedOptionRole, setSelectedOptionRole] = useState({}) // role
-  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState(null) // timezone
-  const [selectedOptionLang, setSelectedOptionLang] = useState(null) // Language
+  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}) // timezone
+  const [selectedOptionLang, setSelectedOptionLang] = useState({}) // Language
 
   useEffect(() => {
     let token = window.localStorage.getItem('jwt_access_token')
     setToken(token)
-    // getAllUsers();
     console.log('edit page', props.userId)
     if (userId !== undefined) {
       setId(userId)
       getUsersById(userId, token)
     }
-  }, [])
+    console.log("User id data",userData,isDeactive,excludeFromEmail);
+  }, [isDeactive,excludeFromEmail])
 
-  //User List Api
-  const getAllUsers = () => {
-    const jwtToken = window.localStorage.getItem('jwt_access_token')
-    console.log(jwtToken)
-    const config = {
-      headers: {
-        'Auth-Token': jwtToken, // Attach the JWT token in the Authorization header
-      },
-    }
-    axios
-      .get('http://127.0.0.1:8000/lms-service/users', config)
-      .then((response) => {
-        console.log(
-          'inside edit user page',
-          response,
-          response.data,
-          response.data.data
-        )
-        setUserData(response.data.data)
-      })
-      .catch((error) => {
-        console.log(error)
-        toast.error('Failed to fetch users!') // Handle the error
-      })
-  }
-
+// User details by ID
   const getUsersById = async (id, authToken) => {
     console.log('inside get user by id', id, authToken)
     try {
@@ -130,45 +106,85 @@ const EditUser = (props) => {
         }
       )
       console.log(response.data)
+      setUserData(response.data.data)
       if (response.data.status === 'success') {
         console.log(response.data.id)
         const res = response.data.data
         setEid(res.eid)
+        setSid(res.sid)
         setUserName(res.full_name)
+        setPassword(res.password)
         setEmail(res.email)
         setDept(res.dept)
         setAdhr(res.adhr)
         setBio(res.bio)
         setUsername(res.username)
         setSelectedOptionRole({ value: res.role, label: res.role })
-        // setFile(res.file)
-        console.log(selectedOptionRole)
+        setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone })
+        setSelectedOptionLang({ value: res.langtype, label: res.langtype})
+        setFile(res.file)
+      setIsActive(res.active)
+//       setIsDeactive(res.deactive)
+// setExcludeFromEmail(res.exclude_from_email)
       }
     } catch (error) {
       console.error(error)
+      toast.error('Failed to fetch users!') // Handle the error
     }
   }
 
-  useEffect(() => {
-    console.log(selectedOptionRole)
-  }, [selectedOptionRole])
+  const handleActiveChange = (e) => {
+    setIsActive(e.target.checked);
+    setIsDeactive(false); // Uncheck "Deactive" when "Active" is checked
+  };
 
-  // function getUsers() {
-  //   fetch("http://localhost:8000/users").then((result) => {
-  //     result.json().then((resp) => {
-  //       //console.warning(response)
-  //       setUsers(resp)
-  //       setFirstname(resp[0].firstname)
-  //     })
-  //   })
-  // }
+  const handleDeactiveChange = (e) => {
+    setIsDeactive(e.target.checked);
+    setIsActive(false); // Uncheck "Active" when "Deactive" is checked
+  };
 
-  function selectUser(id) {
-    let item = users[id - 1]
-    // setFirstname(item.firstname)
-  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
+
+const formData = new FormData();
+formData.append("id", id);
+formData.append("eid", eid);
+formData.append("sid", sid);
+formData.append("full_name", userName);
+formData.append("email", email);
+formData.append("dept", dept);
+formData.append("adhr", adhr);
+formData.append("username", username);
+formData.append("password", password);
+formData.append("bio", bio);
+formData.append("role", selectedOptionRole.value);
+formData.append("timezone", selectedOptionTimeZone.value);
+formData.append("langtype", selectedOptionLang.value);
+formData.append("active", isActive);
+formData.append("deactive", isDeactive === false ? 0 : 1);
+formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+formData.append("file", file);
+console.log(isActive,isDeactive,excludeFromEmail);
+
+const url = "http://127.0.0.1:8000/lms-service/update_users";
+const authToken = token
+axios
+  .post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Auth-Token": authToken,
+    },
+  })
+  .then((response) => {
+    console.log(response.data);
+    toast.success("User updated successfully!!!");
+    clearAllState();
+  })
+  .catch((error) => {
+    console.error(error);
+    toast.error("Failed !!! Unable to update user...");
+  });
   }
 
   function handleChange(e) {
@@ -275,11 +291,16 @@ const EditUser = (props) => {
             </div>
             <div className='card-body'>
               <div className='form-validation'>
+              {userData === undefined ?  <div className="loader-container">
+              <RotatingLines
+                      strokeColor='grey'
+                      strokeWidth='5'
+                      animationDuration='0.75'
+                      width='96'
+                      visible={true}
+                    /></div>:<>
                 <form onSubmit={handleSubmit}>
                   <div className='row'>
-                    {/* {userData.map((item, index)=>{
-                    console.log(item)
-                    return(<><div key={index}> */}
                     <div className='col-xl-6'>
                       <div className='form-group mb-3 row'>
                         <label
@@ -426,6 +447,7 @@ const EditUser = (props) => {
                             id='password'
                             value={password}
                             placeholder='Enter Password'
+                            // readOnly={true}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                           />
@@ -535,7 +557,7 @@ const EditUser = (props) => {
                         </label>
                         <div className='profile-info col-lg-6'>
                           <div className='profile-photo'>
-                            {file ? (
+                            {/* {file ? (
                               <>
                                 {' '}
                                 <img
@@ -549,7 +571,7 @@ const EditUser = (props) => {
                               </>
                             ) : (
                               ''
-                            )}
+                            )} */}
 
                             <input
                               type='file'
@@ -637,7 +659,7 @@ const EditUser = (props) => {
                       </div>
                     </div>
                   </div>
-                </form>
+                </form></>}
               </div>
             </div>
           </div>

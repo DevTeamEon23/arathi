@@ -236,14 +236,15 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {userData === null && userData === [] && (
+                  { userData === undefined && (
+                    <div className="loader-container">
                     <RotatingLines
                       strokeColor='grey'
                       strokeWidth='5'
                       animationDuration='0.75'
                       width='96'
                       visible={true}
-                    />
+                    /></div>
                   )}
                   {userData.length === 0 ? (
                     <tr>
