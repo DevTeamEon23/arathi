@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Nav, Button } from "react-bootstrap";
 
+
 //select dropdown
 const categorytype = [
   { value: "superadmin", label: "SuperAdmin" },
@@ -50,16 +51,11 @@ const AddUser = () => {
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
 
-  // useEffect(() => {
-  //   console.log(
-  //     "isActive",
-  //     isActive,
-  //     "isDeactive",
-  //     isDeactive,
-  //     "exclude",
-  //     excludeFromEmail
-  //   );
-  // });
+  useEffect(() => {
+    console.log(
+      file,"file"
+    );
+  });
 
   const handleActiveChange = (e) => {
     setIsActive(e.target.checked);
@@ -77,12 +73,13 @@ const AddUser = () => {
 
     // const modifiedString = originalString.replace(/['"]/g, '');
     // console.log(modifiedString);
-    if(isActive === false || isDeactive === true){
-      console.log("Plz select any one of this");
-      setActiveError("Please select any one, Active or Deactive")
-    }else{
-      setActiveError("")
-    }
+
+    // if(isActive === false || isDeactive === false){
+    //   console.log("Plz select any one of this");
+    //   setActiveError("Please select an Active or Deactive before submitting.")
+    // }else{
+    //   setActiveError("")
+    // }
 
     const formData = new FormData();
     formData.append("eid", eid);
@@ -123,12 +120,28 @@ const AddUser = () => {
       });
     
   };
-
+  
   // To set img file
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(e.target.files[0]);
-  }
+  // function handleChange(e) {
+  //   console.log(e.target.files);
+  //   setFile(e.target.files[0]);
+  // }
+
+  const handleChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && isValidFileType(selectedFile)) {
+      setFile(selectedFile);
+    } else {
+      setFile(null);
+      toast.error("Please select a valid image file (jpeg, jpg, png).");
+    }
+  };
+
+  const isValidFileType = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
+  };
+
 
   const handleEmail = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -58,35 +58,6 @@ const Users = () => {
     history.push(`/edit-user/${id}`)
   }
 
-  // function selectUser(userId)
-  // {
-  //   let item=users[id-1];
-  //   setEid(item.eid);
-  //   setFirstname(item.firstname);
-  //   setLastname(item.lastname);
-  //   setEmail(item.email);
-  //   setDept(item.dept);
-  //   setAdhr(item.adhr);
-  //   setBio(item.bio);
-  //   setUsername(item.username);
-  //   setPassword(item.password);
-  //   setFile(item.file);
-  //   setIsActive(item.isActive);
-  //   setUserId(item.id)
-  // }
-  // function updateUser()
-  // {
-  //   let item={eid,firstname,lastname,email,dept,adhr,bio,username, password,file,isActive,userId}
-  //   console.warn("data",data)
-  //   fetch(`http://localhost:8000/users/${userId}`, {
-  //     method: 'PUT',
-  //   }).then((result) => {
-  //     result.json().then((resp) => {
-  //       console.warn(resp)
-  //       getUsers()
-  //     })
-  //   })
-  // }
 
   useEffect(() => {
     let token = window.localStorage.getItem('jwt_access_token')
@@ -236,7 +207,7 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  { userData === undefined && (
+                  { userData === undefined && userData === null &&(
                     <div className="loader-container">
                     <RotatingLines
                       strokeColor='grey'
