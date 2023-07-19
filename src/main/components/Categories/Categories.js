@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
+import axios from 'axios';
 import {
   Row,
   Col,
@@ -11,23 +11,42 @@ import {
   ProgressBar,
   Button,
 } from "react-bootstrap";
-
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 import { Link } from "react-router-dom";
 
 const Categories = () => {
-  // const getCategory= async () => {
-  //   const requestOptions = {
-  //     method:"GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   };
-  //   const response = await fetch("/api", requestOptions);
-  //   const data = await response.json();
-
-  //   console.log(data);
-  // };
   const [data, setData] = useState([]);
+  const [getAllCategoriesData,setGetAllCategoriesData] = useState([]);
+  const [token, setToken] = useState() //auth token
+
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllCourses();
+    console.log(getAllCategoriesData);
+  }, []);
+
+  const getAllCourses = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "http://127.0.0.1:8000/lms-service/categories";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+
+      // Handle the response data here
+      console.log("getAllCourses", response.data);
+      setGetAllCategoriesData(response.data.data);
+    } catch (error) {
+      // Handle errors if any
+      console.error("Error fetching data:", error);
+      toast.error('Failed to fetch Courses !') // Handle the error
+    }
+  };
+
 
   const fetchData = () => {
     fetch(`https://localhost:8000/categories`)
@@ -134,7 +153,7 @@ const Categories = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {data?.map((item, index) => {
+                {getAllCategoriesData?.map((item, index) => {
                return (
                   <tr key={index}>
                     <td></td>
