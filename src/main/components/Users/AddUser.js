@@ -1,12 +1,10 @@
-import React, { Fragment, useState ,useRef} from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  Nav,
-  Button,
-} from "react-bootstrap";
+import { Nav, Button } from "react-bootstrap";
+
 
 //select dropdown
 const categorytype = [
@@ -48,9 +46,26 @@ const AddUser = () => {
   const [emailError, setEmailError] = useState(""); //show wrong email error
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
+  const [activeError,setActiveError]=useState("");
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
+
+  useEffect(() => {
+    console.log(
+      file,"file"
+    );
+  });
+
+  const handleActiveChange = (e) => {
+    setIsActive(e.target.checked);
+    setIsDeactive(false); // Uncheck "Deactive" when "Active" is checked
+  };
+
+  const handleDeactiveChange = (e) => {
+    setIsDeactive(e.target.checked);
+    setIsActive(false); // Uncheck "Active" when "Deactive" is checked
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -58,6 +73,14 @@ const AddUser = () => {
 
     // const modifiedString = originalString.replace(/['"]/g, '');
     // console.log(modifiedString);
+
+    // if(isActive === false || isDeactive === false){
+    //   console.log("Plz select any one of this");
+    //   setActiveError("Please select an Active or Deactive before submitting.")
+    // }else{
+    //   setActiveError("")
+    // }
+
     const formData = new FormData();
     formData.append("eid", eid);
     formData.append("sid", eid);
@@ -79,7 +102,6 @@ const AddUser = () => {
 
     const url = "https://v1.eonlearning.tech/lms-service/addusers";
     const authToken = window.localStorage.getItem("jwt_access_token");
-    
     axios
       .post(url, formData, {
         headers: {
@@ -96,13 +118,30 @@ const AddUser = () => {
         console.error(error);
         toast.error("Failed !!! Unable to add user...");
       });
+    
+  };
+  
+  // To set img file
+  // function handleChange(e) {
+  //   console.log(e.target.files);
+  //   setFile(e.target.files[0]);
+  // }
+
+  const handleChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && isValidFileType(selectedFile)) {
+      setFile(selectedFile);
+    } else {
+      setFile(null);
+      toast.error("Please select a valid image file (jpeg, jpg, png).");
+    }
   };
 
-  // To set img file
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(e.target.files[0]);
-  }
+  const isValidFileType = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
+  };
+
 
   const handleEmail = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -127,7 +166,7 @@ const AddUser = () => {
   };
 
   const handleAadhaarNo = () => {
-    const regexp =/^\d{12}$/;
+    const regexp = /^\d{12}$/;
     if (!regexp.test(adhr)) {
       setAadharNoErrorMsg("Please enter Valid Aadhar no.");
     } else {
@@ -145,7 +184,7 @@ const AddUser = () => {
     setUsername("");
     setPassword("");
     setFile(null);
-    fileRef.current.value ="";
+    fileRef.current.value = "";
     setIsActive(false);
     setIsDeactive(false);
     setExcludeFromEmail(false);
@@ -268,7 +307,7 @@ const AddUser = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Department
+                          Department<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -287,7 +326,7 @@ const AddUser = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="val-email"
                         >
-                          Aadhar Card No.
+                          Aadhar Card No.<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -360,28 +399,28 @@ const AddUser = () => {
                           </div>
                         </div>
                       </div>
-                   
-                        <div className="form-group mb-3 row">
-                          <label
-                            className="col-lg-4 col-form-label"
-                            htmlFor="val-suggestions"
-                          >
-                            Bio
-                          </label>
-                          <div className="col-lg-8">
-                            <textarea
-                              className="form-control"
-                              id="bio"
-                              value={bio}
-                              rows="5"
-                              maxLength={300}
-                              placeholder="Short Description about user..."
-                              onChange={(e) => setBio(e.target.value)}
-                            ></textarea>
-                          </div>
+
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="val-suggestions"
+                        >
+                          Bio
+                        </label>
+                        <div className="col-lg-8">
+                          <textarea
+                            className="form-control"
+                            id="bio"
+                            value={bio}
+                            rows="5"
+                            maxLength={300}
+                            placeholder="Short Description about user..."
+                            onChange={(e) => setBio(e.target.value)}
+                          ></textarea>
                         </div>
-                        <br />
-                    
+                      </div>
+                      <br />
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -392,12 +431,11 @@ const AddUser = () => {
                         </label>
                         <div className="col-lg-6">
                           <Select
-                            value={selectedOptionRole} 
+                            value={selectedOptionRole}
                             options={categorytype}
                             onChange={(selectedOptionRole) =>
                               setSelectedOptionRole(selectedOptionRole)
                             }
-                           
                             name="categorytype"
                             required
                           ></Select>
@@ -493,14 +531,13 @@ const AddUser = () => {
                           id="isActive"
                           name="isActive"
                           checked={isActive}
-                          onChange={(e) => setIsActive(e.target.checked)}
-                          required
+                          onChange={handleActiveChange}
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          htmlFor="isActive"
                         >
-                          Active <span className="text-danger">*</span>
+                          Active 
                         </label>
                       </div>
                       <div className="col-lg-2 d-flex mt-3">
@@ -510,11 +547,11 @@ const AddUser = () => {
                           id="isDeactive"
                           name="isDeactive"
                           checked={isDeactive}
-                          onChange={(e) => setIsDeactive(e.target.checked)}
+                          onChange={handleDeactiveChange}
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          htmlFor="isDeactive"
                         >
                           Deactive
                         </label>
@@ -523,19 +560,27 @@ const AddUser = () => {
                         <input
                           type="checkbox"
                           className="form-check-input"
-                          id="isExcludefromEmail"
-                          name="isExcludefromEmail"
+                          id="exclude"
+                          name="excludeFromEmail"
                           checked={excludeFromEmail}
-                          onChange={(e) => setExcludeFromEmail(e.target.checked)}
+                          onChange={(e) =>
+                            setExcludeFromEmail(e.target.checked)
+                          }
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="val-terms"
+                          htmlFor="exclude"
                         >
                           Exclude from Email
                         </label>
                       </div>
                     </div>
+                    { activeError&& (
+                            <span className="text-danger fs-14 m-2">
+                              {activeError}
+                            </span>
+                          )}
+
                     <div className="form-group mb-5 row">
                       <div className="col-lg-8 ms-auto">
                         <br />

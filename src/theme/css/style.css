@@ -37342,6 +37342,12 @@ button:focus {
   width: 40%;
 }
 
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
 .password-toggle {
   position: absolute;
   right: 12px;

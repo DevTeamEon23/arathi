@@ -52,6 +52,7 @@
     "react-dropzone-uploader": "^2.11.0",
     "react-form-stepper": "^1.4.3",
     "react-linear-gradient-picker": "^1.1.4",
+    "react-loader-spinner": "^5.3.4",
     "react-modal-video": "^1.2.8",
     "react-multiselect-dropdown-bootstrap": "^1.1.0",
     "react-multistep": "^5.1.0",
