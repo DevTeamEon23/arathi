@@ -1,23 +1,56 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 import {
   Row,
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Nav,
+  Button
 } from "react-bootstrap";
-
+import axios from 'axios';
 
 const Info = () => {
   const [courses, setCourses] = useState([]);
+  const [popup, setPopup] = useState({
+    show: false, // initial values set to false and null
+    id: null,
+  });
+  const [token, setToken] = useState() //auth token
+  const [allCategoriesData,setAllCategoriesData] = useState([])
+
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllCourses();
+    console.log(allCategoriesData);
+  }, []);
+
+
+  const getAllCourses = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "http://127.0.0.1:8000/lms-service/courses";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+
+      // Handle the response data here
+      console.log("getAllCourses", response.data);
+      setAllCategoriesData(response.data.data);
+    } catch (error) {
+      // Handle errors if any
+      console.error("Error fetching data:", error);
+      toast.error('Failed to fetch Courses !') // Handle the error
+    }
+  };
+
   const getUsers = async () => {
     const requestOptions = {
-      method:"GET",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
@@ -27,38 +60,21 @@ const Info = () => {
 
     console.log(data);
   };
-  const fetchData = () => {
-     fetch('https://localhost:8000/courses')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setCourses(data); 
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
-  };
 
   // useEffect( async () => {
   //   fetchData();
   // }, []);
 
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/courses/"+id,{
-        method:'DELETE'
+  async function deleteOperation(id) {
+    if (window.confirm("Are you sure?")) {
+      let result = await fetch("https://localhost:8000/courses/" + id, {
+        method: "DELETE",
       });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
+      result = await result.json();
+      console.warn(result);
+      // fetchData();
     }
   }
-  const [popup, setPopup] = useState({
-    show: false, // initial values set to false and null
-    id: null,
-      });
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
   const chackboxFun = (type) => {
@@ -91,10 +107,9 @@ const Info = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+  let history = useHistory();
   return (
     <Fragment>
-
       <Row>
         <Col lg={12}>
           <Card>
@@ -111,34 +126,87 @@ let history = useHistory();
                 <thead>
                   <tr>
                     <th>
-                      <strong><center>COURSE ID</center></strong>
+                      <strong>
+                        <center>COURSE ID</center>
+                      </strong>
                     </th>
                     <th>
-                      <strong><center>COURSE NAME</center></strong>
+                      <strong>
+                        <center>COURSE NAME</center>
+                      </strong>
                     </th>
                     <th>
-                      <strong><center>CATEGORY</center></strong>
+                      <strong>
+                        <center>CATEGORY</center>
+                      </strong>
                     </th>
                     <th>
-                      <strong><center>LAST UPDATED ON</center></strong>
+                      <strong>
+                        <center>LAST UPDATED ON</center>
+                      </strong>
                     </th>
                     <th>
-                      <strong><center>OPTION</center></strong>
+                      <strong>
+                        <center>OPTION</center>
+                      </strong>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                {courses.map((data) => {
-               return (
-                  <tr key={data.id}>
-                    <td><center>{data.id}</center></td>
-                    <td>
-                    <center><Link to={"/edit-courses"}><strong>{data.coursename}</strong></Link></center>
-                    </td>
-                <td><center>Sample</center></td>
-                <td><center>2/2/2022</center></td>
-                    <td>
-                      {/* <center>
+                {allCategoriesData === [] || allCategoriesData === null? <div className="loader-container">
+                    <RotatingLines
+                      strokeColor='grey'
+                      strokeWidth='5'
+                      animationDuration='0.75'
+                      width='96'
+                      visible={true}
+                    /></div>:<>
+                  {allCategoriesData.map((data) => {
+                    // Input date and time string
+                    const inputDateTime = data.updated_at //2
+                        // Convert inputDateTime to a JavaScript Date object
+                        const dateObj = new Date(inputDateTime)
+                        // Get the date in dd-mm-yyyy format
+                        const day1 = dateObj
+                          .getDate()
+                          .toString()
+                          .padStart(2, '0')
+                        const month1 = (dateObj.getMonth() + 1)
+                          .toString()
+                          .padStart(2, '0') // Months are zero-based
+                        const year1 = dateObj.getFullYear().toString()
+                        const formattedDate = `${day1}-${month1}-${year1}`
+
+                          // Get the time in 12-hour format
+                          let hours = dateObj.getHours()
+                        const minutes = dateObj
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, '0')
+                        const amPm = hours >= 12 ? 'PM' : 'AM'
+                        hours = hours % 12 || 12
+                        const formattedTime = `${hours}:${minutes} ${amPm}`
+
+                    return (
+                      <tr key={data.id}>
+                        <td>
+                          <center>{data.id}</center>
+                        </td>
+                        <td>
+                          <center>
+                            <Link to={"/edit-courses"}>
+                              <strong>{data.coursename}</strong>
+                            </Link>
+                          </center>
+                        </td>
+                        <td>
+                          <center>Sample</center>
+                        </td>
+                        <td>
+                          <center>{formattedDate}&nbsp;&nbsp;{formattedTime}</center>
+                        </td>
+                        <td>
+                          {/* <center>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -154,37 +222,37 @@ let history = useHistory();
                         </Dropdown.Menu>
                       </Dropdown>
                       </center> */}
-                      <center>
-                        <Link
-                          to="/add-courses"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i class="fa-solid fa-plus"></i>
-                        </Link>
-                        <Link
-                          to="/course_overview"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i class="fa-regular fa-clipboard"></i>
-                        </Link>
-                        <Link
-                          to="/edit-courses"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(data.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                      </center>
-                    </td>
-                  </tr>
-               );
-                })}
+                          <center>
+                            <Link
+                              to="/add-courses"
+                              className="btn btn-primary shadow btn-xs sharp me-1"
+                            >
+                              <i class="fa-solid fa-plus"></i>
+                            </Link>
+                            <Link
+                              to="/course_overview"
+                              className="btn btn-primary shadow btn-xs sharp me-1"
+                            >
+                              <i class="fa-regular fa-clipboard"></i>
+                            </Link>
+                            <Link
+                              to="/edit-courses"
+                              className="btn btn-primary shadow btn-xs sharp me-1"
+                            >
+                              <i className="fas fa-pencil-alt"></i>
+                            </Link>
+                            <Link
+                              href="#"
+                              className="btn btn-danger shadow btn-xs sharp"
+                              onClick={() => deleteOperation(data.id)}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </Link>
+                          </center>
+                        </td>
+                      </tr>
+                    );
+                  })}</>}
                 </tbody>
               </Table>
             </Card.Body>
@@ -192,7 +260,7 @@ let history = useHistory();
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );
