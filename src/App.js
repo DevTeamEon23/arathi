@@ -43,7 +43,6 @@ function App(props) {
     </Switch>
   );
   if (isAuthenticated) {
-    console.log("inside app.js@@@@@@@@@@@@@@@@@@@@");
     return (
       <>
         <Suspense
