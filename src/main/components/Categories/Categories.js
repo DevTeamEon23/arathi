@@ -6,9 +6,7 @@ import {
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
+Nav,
   Button,
   Modal,
 } from 'react-bootstrap'
@@ -29,6 +27,7 @@ const Categories = () => {
     console.log(getAllCategoriesData)
   }, [])
 
+  // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem('jwt_access_token')
     const url = 'http://127.0.0.1:8000/lms-service/categories'
@@ -124,6 +123,35 @@ const Categories = () => {
   let history = useHistory()
   return (
     <Fragment>
+    <Nav>
+          <Nav.Item
+            as='div'
+            className='nav nav-tabs'
+            id='nav-tab'
+            role='tablist'
+          >
+            <Link
+              as='button'
+              className='nav-link  nt-unseen'
+              id='nav-following-tab'
+              eventkey='Follow'
+              type='button'
+              to='/dashboard'
+            >
+              Dashboard
+            </Link>
+            <Link
+              as='button'
+              className='nav-link  nt-unseen'
+              id='nav-following-tab'
+              eventkey='Follow'
+              type='button'
+              to='/add-category'
+            >
+              Add Category
+            </Link>
+          </Nav.Item>
+        </Nav>
       <Row>
         <Col lg={12}>
           <Card>
