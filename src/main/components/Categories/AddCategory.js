@@ -63,7 +63,7 @@ let history = useHistory();
       <Nav >
 		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
         <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/dashboard">Dashboard</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/add-category">Add Category</Link>
+        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/categories">Categories</Link>
         </Nav.Item>
       </Nav>
       <div className="row">
@@ -77,25 +77,6 @@ let history = useHistory();
               <form action="https://localhost:8000/categories" method="post" encType="multipart/form-data" >
                   <div className="row">
                     <div className="col-xl-12">
-                    <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
-                          id
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="id"
-                            name="id"
-                            placeholder="e.g. 1"
-                            onChange={(e) => setId(e.target.value)}
-                          />
-                        </div>
-                      </div> 
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -112,11 +93,12 @@ let history = useHistory();
                             name="name"
                             placeholder="e.g. React-Redux"
                             onChange={(e) => setName(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
                       
-                      <div className="form-group mb-3 row">
+                      {/* <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-website"
@@ -133,7 +115,7 @@ let history = useHistory();
                         >
                         </Select>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -148,15 +130,17 @@ let history = useHistory();
                             className="form-control"
                             id="price"
                             name="price"
-                            placeholder="$21.60"
+                            placeholder="₹21.60"
                             onChange={(e) => setPrice(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
                       <br/>
                       
                       <br/>
-
+ <div className="form-group mb-5 row">
+                      <div className="col-lg-8 ms-auto">
                       <button
                         type="submit"
                         className="btn me-2 btn-primary"
@@ -164,6 +148,8 @@ let history = useHistory();
                         Add Category
                       </button> or &nbsp;&nbsp;
                       <Button onClick={() => history.goBack()}>Cancel</Button>
+ </div>
+                    </div>
                     </div>
                 </div>
             </form>

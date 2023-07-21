@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  Nav,
-  Button,
-} from "react-bootstrap";
+import { Nav, Button } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 
 // const loginSchema = Yup.object().shape({
@@ -72,6 +69,7 @@ const EditUser = (props) => {
   const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
+  const backendBaseUrl = "http://127.0.0.1:8000";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -119,9 +117,10 @@ const EditUser = (props) => {
         setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
         // setFile(res.file);
+        setFile(`${backendBaseUrl}/${res.file}`);
         setIsActive(res.active);
-        setIsDeactive(res.deactive)
-        setExcludeFromEmail(res.exclude_from_email)
+        setIsDeactive(res.deactive);
+        setExcludeFromEmail(res.exclude_from_email);
       }
     } catch (error) {
       console.error(error);
@@ -160,7 +159,7 @@ const EditUser = (props) => {
     formData.append("deactive", isDeactive === false ? 0 : 1);
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
-    console.log(isActive, isDeactive, excludeFromEmail,file);
+    console.log(isActive, isDeactive, excludeFromEmail, file);
 
     const url = "http://127.0.0.1:8000/lms-service/update_users";
     const authToken = token;
@@ -562,20 +561,21 @@ const EditUser = (props) => {
                             <div className="profile-info col-lg-6">
                               <div className="profile-photo">
                                 {file ? (
-                              <>
-                                {' '}
-                                <img
-                                  src={file && URL.createObjectURL(file)}
-                                  width='250'
-                                  height='250'
-                                  alt='file'
-                                />{' '}
-                                <br />
-                                <br />
-                              </>
-                            ) : (
-                              ''
-                            )}
+                                  <>
+                                    {" "}
+                                    <img
+                                      // src={file && URL.createObjectURL(file)}
+                                      src={file}
+                                      width="250"
+                                      height="250"
+                                      alt="file"
+                                    />{" "}
+                                    <br />
+                                    <br />
+                                  </>
+                                ) : (
+                                  ""
+                                )}
 
                                 <input
                                   type="file"
@@ -642,7 +642,6 @@ const EditUser = (props) => {
                             </label>
                           </div>
                         </div>
-             
 
                         <div className="form-group mb-3 row">
                           <div className="col-lg-8 ms-auto">

@@ -112,7 +112,7 @@ let history = useHistory();
                             className="form-control"
                             id="val-currency"
                             name="val-currency"
-                            placeholder="$21.60"
+                            placeholder="₹21.60"
                           />
                         </div>
                       </div>
