@@ -1,14 +1,13 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState ,useEffect} from "react";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import * as Yup from "yup";
-
 import {
-  Dropdown,
-  DropdownButton,
   Button,
   Nav,
 } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 
 const loginSchema = Yup.object().shape({
@@ -28,16 +27,91 @@ const options = [
   { value: "parent_category_3", label: "Parent Category 3" },
   { value: "parent_category_4", label: "Parent Category 4" },
 ];
-const EditCategory = () => {
-  const [showPassword, setShowPassword] = useState(false);
+
+const EditCategory = (props) => {
+  const catId = props.match.params.id;
+  console.log({ catId });
+  const [categoryId,setCategoryId]= useState('');
+  const [catData, setCatData] = useState(); //category data by id
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
   const [value, onChange] = useState(new Date());
   const [file, setFile] = useState();
   const [selectedOption, setSelectedOption] = useState(null);
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(URL.createObjectURL(e.target.files[0]));
+  const [token, setToken] = useState(); //auth token
+  const history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    if (catId !== undefined) {
+      setCategoryId(catId);
+      getCategoryById(catId, token);
+    }
+  }, []);
+
+// Category details by ID
+const getCategoryById = async (id, authToken) => {
+  console.log("inside get cat by id", id, authToken);
+  try {
+    const response = await axios.get(
+      "http://127.0.0.1:8000/lms-service/categories_by_onlyid",
+      {
+        headers: {
+          "Auth-Token": authToken,
+        },
+        params: {
+          id: catId,
+        },
+      }
+    );
+    setCatData(response.data.data);
+    if (response.data.status === "success") {
+      console.log(response.data.data);
+      const res = response.data.data;
+      setName(res.name);
+      setPrice(res.price);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to fetch users!"); // Handle the error
+  }
+};
+
+const handleSubmit=(e)=>{
+  e.preventDefault()
+  const formData = new FormData();
+  formData.append("id", categoryId);
+  formData.append("name", name);
+  formData.append("price", price);
+  const url = "http://127.0.0.1:8000/lms-service/update_categories";
+  const authToken = token;
+  axios
+    .post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Auth-Token": authToken,
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      toast.success("Category updated successfully!!!");
+      clearAllState();
+      history.push(`/categories`)
+    })
+    .catch((error) => {
+      console.error(error);
+      toast.error("Failed !!! Unable to update category...");
+    });
+
 }
-let history = useHistory();
+
+const clearAllState = () => {
+  console.log("inside clear function");
+  setName("");
+  setPrice("");
+};
+
   return (
     <Fragment>
       <Nav >
@@ -55,10 +129,7 @@ let history = useHistory();
             <div className="card-body">
               <div className="form-validation">
                 <form
-                  className="form-valide"
-                  action="#"
-                  method="post"
-                  onSubmit={(e) => e.preventDefault()}
+                  onSubmit={handleSubmit}
                 >
                   <div className="row">
                     <div className="col-xl-12">
@@ -76,12 +147,15 @@ let history = useHistory();
                             className="form-control"
                             id="val-username"
                             name="val-username"
+                            value={name}
                             placeholder="e.g. React-Redux"
+                            onChange={(e) => setName(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
                       
-                      <div className="form-group mb-3 row">
+                      {/* <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-website"
@@ -97,7 +171,7 @@ let history = useHistory();
             >
             </Select>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -112,23 +186,34 @@ let history = useHistory();
                             className="form-control"
                             id="val-currency"
                             name="val-currency"
-                            placeholder="$21.60"
+                            value={price}
+                            placeholder="₹21.60"
+                            onChange={(e) => setPrice(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
                       <br/>
                       
                       <br/>
-
-                      <button
+                      <div className="form-group mb-5 row">
+                        <div className="col-lg-8 ms-auto">
+                      <Button
                         type="submit"
+                        value="submit"
                         className="btn me-2 btn-primary"
                       >
                         Update Category
-                      </button> or &nbsp;&nbsp;
-                      <Button onClick={() => history.goBack()}>Cancel</Button>
+                      </Button> or &nbsp;&nbsp;
+                      <Link to="/categories">
+                            <Button className="btn me-2 btn-light">
+                              Cancel
+                            </Button>
+                          </Link>
                     </div>
                 </div>
+                </div>
+            </div>
             </form>
             </div>
           </div>

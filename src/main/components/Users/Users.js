@@ -4,30 +4,14 @@ import { toast } from 'react-toastify'
 import { Row, Col, Card, Table, Button, Nav, Modal } from 'react-bootstrap'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
-import EditUser from './EditUser'
 import { useHistory } from 'react-router-dom'
 import { RotatingLines } from 'react-loader-spinner'
 
 const Users = () => {
-  const [id, setId] = useState('')
-  const [eid, setEid] = useState('')
-  const [firstname, setFirstname] = useState('')
-  const [lastname, setLastname] = useState('')
-  const [email, setEmail] = useState('')
-  const [dept, setDept] = useState('')
-  const [adhr, setAdhr] = useState('')
-  const [bio, setBio] = useState('')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState()
-  const [file, setFile] = useState([])
-  const [isActive, setIsActive] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
   const [uid, setUId] = useState() //user id save for delete
   const [token, setToken] = useState() //auth token
   const [userData, setUserData] = useState([]) //user list data
   const [showModal, setShowModal] = useState(false) //delete button modal
-  const [editUserID, setEditUserID] = useState('')
-  const [editUser, setEditUser] = useState(false)
   const history = useHistory()
 
   //User List Api
@@ -53,11 +37,8 @@ const Users = () => {
 
   const handleEdit = (id) => {
     console.log('inside user handle edit page', id)
-    // setEditUserID(id)
-    // setEditUser(true)
     history.push(`/edit-user/${id}`)
   }
-
 
   useEffect(() => {
     let token = window.localStorage.getItem('jwt_access_token')
@@ -305,13 +286,12 @@ const Users = () => {
                                   ></i>
                                 </div>
 
-                                <Link
-                                  href='#'
+                                <div
                                   className='btn btn-danger shadow btn-xs sharp'
                                   onClick={() => deleteUser(item.id)}
                                 >
                                   <i className='fa fa-trash'></i>
-                                </Link>
+                                </div>
                               </center>
                             </td>
                           </tr>
@@ -321,22 +301,6 @@ const Users = () => {
                   )}{' '}
                 </tbody>
               </Table>
-              {/* <div>
-                <form action="http://localhost:8000/users/${userId}" method='PUT' encType="multipart/form-data">
-                <input type="text" id="eid" name="eid" value={eid} onChange={(e) => setEid(e.target.value)} />
-                <input type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
-                <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} />
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <input type="text" value={dept} onChange={(e) => setDept(e.target.value)} />
-                <input type="text" value={adhr} onChange={(e) => setAdhr(e.target.value)} />
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} />
-                <input type="file" value={file} onChange={(e) => setFile(e.target.value)} />
-                <input type="text" value={isActive} onChange={(e) => setIsActive(e.target.value)} />
-                <button onClick={updateUser} >Update</button>
-                </form>
-              </div> */}
             </Card>
           </Col>
         </Row>
@@ -357,7 +321,6 @@ const Users = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* {editUser ? <EditUser userId={editUserID} /> : ''} */}
     </>
   )
 }
