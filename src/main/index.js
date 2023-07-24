@@ -404,7 +404,7 @@ const Markup = () => {
 
     { url: 'categories', component: Categories },
     { url: 'add-category', component: AddCategory },
-    { url: 'edit-category', component: EditCategory },
+    { url: 'edit-category/:id', component: EditCategory },
 
     // Courses ----
     { url: 'courses', component: CoursesMain },

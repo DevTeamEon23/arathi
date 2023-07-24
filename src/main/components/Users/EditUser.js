@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -70,6 +70,7 @@ const EditUser = (props) => {
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
   const backendBaseUrl = "http://127.0.0.1:8000";
+  const history = useHistory();
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -78,7 +79,6 @@ const EditUser = (props) => {
       setId(userId);
       getUsersById(userId, token);
     }
-    console.log("User id data", file);
   }, []);
 
   // User details by ID
@@ -174,6 +174,7 @@ const EditUser = (props) => {
         console.log(response.data);
         toast.success("User updated successfully!!!");
         clearAllState();
+        history.push(`/users-list`)
       })
       .catch((error) => {
         console.error(error);
