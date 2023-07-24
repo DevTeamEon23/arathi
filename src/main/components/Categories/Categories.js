@@ -37,7 +37,7 @@ const Categories = () => {
     } catch (error) {
       // Handle errors if any
       console.error('Error fetching data:', error)
-      toast.error('Failed to fetch Courses !') // Handle the error
+      toast.error('Failed to fetch Categories !') // Handle the error
     }
   }
 
@@ -150,38 +150,63 @@ const Categories = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {getAllCategoriesData?.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        {/* <td></td> */}
-                        {/* <td>
+                  {getAllCategoriesData.length === 0 ? (
+                    <div className='loader-container justify-content-end'>
+                      <RotatingLines
+                        strokeColor='grey'
+                        strokeWidth='5'
+                        animationDuration='0.75'
+                        width='140'
+                        visible={true}
+                      />
+                    </div>
+                  ) : getAllCategoriesData.length > 0 ? (
+                    getAllCategoriesData?.map((item, index) => {
+                      return (
+                        <tr key={index}>
+                          {/* <td></td> */}
+                          {/* <td>
                           <strong>{item.id}</strong>
                         </td> */}
-                        <td>
-                          <center>{item.name}</center>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          <div className='d-flex'>
-                            <div className='btn btn-primary shadow btn-xs sharp me-1'>
-                              <i
-                                className='fas fa-pencil-alt'
-                                onClick={(e) => handleEdit(item.id)}
-                              ></i>
+                          <td>
+                            <center>{item.name}</center>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td>
+                            <div className='d-flex'>
+                              <div className='btn btn-primary shadow btn-xs sharp me-1'>
+                                <i
+                                  className='fas fa-pencil-alt'
+                                  onClick={(e) => handleEdit(item.id)}
+                                ></i>
+                              </div>
+                              <div
+                                className='btn btn-danger shadow btn-xs sharp'
+                                onClick={() => deleteOperation(item.id)}
+                              >
+                                <i className='fa fa-trash'></i>
+                              </div>
                             </div>
-                            <div
-                              className='btn btn-danger shadow btn-xs sharp'
-                              onClick={() => deleteOperation(item.id)}
-                            >
-                              <i className='fa fa-trash'></i>
-                            </div>
-                          </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <>
+                      {' '}
+                      <tr>
+                        <td
+                          colSpan='13'
+                          rowSpan='13'
+                          className='text-center fs-16'
+                        >
+                          No File Found.
                         </td>
                       </tr>
-                    )
-                  })}
+                    </>
+                  )}
                 </tbody>
               </Table>
             </Card.Body>
