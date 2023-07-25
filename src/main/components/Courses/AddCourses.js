@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect,useRef } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import Select from 'react-select'
 import * as Yup from 'yup'
@@ -46,30 +46,35 @@ const category = [
   { value: 'ParentCategory4', label: 'Parent Category 4' },
 ]
 const AddCourses = () => {
-  const [id, setId] = useState('')
   const [largeModal, setLargeModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [file, setFile] = useState([])
-  // const [selectedOption, setSelectedOption] = useState(null);
+  const [file, setFile] = useState(null)//image
+  const fileRef = useRef(null);
+  const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(null);//Certificate 
+  const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
   const [selectedValue, setSelectedValue] = useState(null)
   const [categories, setCategory] = useState(null)
   const [coursename, setCoursename] = useState('')
   const [coursecode, setCoursecode] = useState()
   const [description, setDescription] = useState('')
-  const [isActive, setIsActive] = useState(true)
+  const [isActive, setIsActive] = useState(false)
+  const [isHide, setIsHide] = useState(false)
   const [price, setPrice] = useState('')
-  const [courselink, setCourselink] = useState('')
-  const [coursevideo, setCoursevideo] = useState([])
+  const [courselink, setCourselink] = useState('')//to save youtube link
+  const [isValidLink, setIsValidLink] = useState(true);
+  const [coursevideo, setCoursevideo] = useState(null)//to save video link
+  const fileInputRef = useRef(null);
   const [capacity, setCapacity] = useState('')
-  const [startdate, setStartdate] = useState('')
-  const [enddate, setEnddate] = useState('')
-  const [timelimit, setTimelimit] = useState('')
+  const [startdate, setStartdate] = useState('')//Course StartDate
+  const [enddate, setEnddate] = useState('')//Course EndDate
+  const [timelimit, setTimelimit] = useState(null)//in future should be remove
   const [selected, setSelected] = useState('')
   const [data, setData] = useState([])
   const [courses, setCourses] = useState([])
   const [token, setToken] = useState() //auth token
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}) //save all categories data
   let history = useHistory()
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem('jwt_access_token')
@@ -108,27 +113,39 @@ const AddCourses = () => {
     console.log(selectedName)
   }
 
+  //video file change
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith("video/")) {
+      setSelectedVideo(file);
+    } else {
+      setSelectedVideo(null);
+      alert("Please select a valid video file.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const formData = new FormData()
-    formData.append('coursename')
-    formData.append('file')
-    formData.append('description')
-    formData.append('coursecode')
-    formData.append('price')
-    formData.append('courselink')
-    formData.append('coursevideo')
-    formData.append('capacity')
-    formData.append('startdate')
-    formData.append('enddate')
-    formData.append('timelimit')
-    formData.append('certificate')
-    formData.append('level')
-    formData.append('category')
-    formData.append('isActive')
-    formData.append('isHide')
+    formData.append('coursename',coursename)
+    formData.append('file',file)
+    formData.append('description',description)
+    formData.append('coursecode',coursecode)
+    formData.append('price',price)
+    formData.append('courselink',courselink)
+    formData.append('coursevideo',coursevideo === null?"null":coursevideo)
+    formData.append('capacity',capacity)
+    formData.append('startdate',startdate)
+    formData.append('enddate',enddate)
+    formData.append('timelimit',timelimit)
+    formData.append('certificate',selectedOptionCertificate.value)
+    formData.append('level',selectedOptionLevel.value)
+    formData.append('category',"Web Development")
+    formData.append('isActive',isActive)
+    formData.append('isHide',isHide)
     formData.append('generate_token', true)
 
+    console.log(formData,"<formData")
     const url = 'http://127.0.0.1:8000/lms-service/addcourses'
     const authToken = window.localStorage.getItem('jwt_access_token')
     axios
@@ -149,20 +166,68 @@ const AddCourses = () => {
       })
   }
 
-  const clearAllState = () => {}
+  const clearAllState = () => {
+    fileInputRef.current.value = "";
+    setFile(null);
+    fileRef.current.value = "";
+    setSelectedOptionCertificate(null)
+    setSelectedOptionLevel(null)
+  }
 
-  function handleChange(e) {
-    console.log(e.target.files)
-    setFile(URL.createObjectURL(e.target.files[0]))
-  }
-  function HandleChange(e) {
-    console.log(e.target.files)
-    setCoursevideo(URL.createObjectURL(e.target.files[0]))
-  }
+  const handleChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && isValidFileType(selectedFile)) {
+      setFile(selectedFile);
+    } else {
+      setFile(null);
+      toast.error("Please select a valid image file (jpeg, jpg, png).");
+    }
+  };
+
+  const isValidFileType = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return allowedTypes.includes(file.type);
+  };
+
+  // function HandleChange(e) {
+  //   console.log(e.target.files)
+  //   setCoursevideo(URL.createObjectURL(e.target.files[0]))
+  // }
 
   const Handlechange = (event) => {
     setSelected(event.target.value)
   }
+
+  const HandleChange1=(e)=>{
+    // const selectedFile = e.target.files[0];
+    // setCoursevideo(selectedFile);
+    // setCoursevideo(URL.createObjectURL(e.target.files[0]))
+    const input = e.target;
+    if (input.files && input.files[0]) {
+      // The user has selected a video file
+      const file = input.files[0];
+      setCoursevideo(URL.createObjectURL(file));
+      setCourselink(''); // Reset the link state to empty, in case it was previously set
+    } else {
+      // The user has provided a YouTube link or empty input
+      setCoursevideo(''); // Reset the video state to empty, in case it was previously set
+      setCourselink(input.value.trim());
+    }
+  }
+
+  console.log(selectedVideo,"video",courselink,getAllCategoriesData);
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setCourselink(value);
+    validateYouTubeLink(value);
+  };
+
+  const validateYouTubeLink = (link) => {
+    // Regular expression to check for valid YouTube links
+    const youtubeRegex = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
+    setIsValidLink(youtubeRegex.test(link));
+  };
 
   const chackbox = document.querySelectorAll('.bs_exam_topper input')
   const motherChackBox = document.querySelector('.bs_exam_topper_all input')
@@ -232,26 +297,20 @@ const AddCourses = () => {
               <div className='form-validation'>
                 <form onSubmit={handleSubmit}>
                   <div className='row'>
-                    <div className='col-xl-12'>
-                      <div className='form-group mb-3 row'>
-                        <label
-                          className='col-lg-4 col-form-label'
-                          htmlFor='val-username'
-                        >
-                          id
-                          <span className='text-danger'>*</span>
-                        </label>
-                        <div className='col-lg-6'>
-                          <input
-                            type='text'
-                            className='form-control'
-                            id='id'
-                            name='id'
-                            placeholder='e.g. 1'
-                            onChange={(e) => setId(e.target.value)}
-                          />
-                        </div>
-                      </div>
+                    <div className='col-xl-8'>
+                    <div>
+      <input
+        type="file"
+        accept=".mp4, .mkv"
+        onChange={handleFileChange}
+      />
+      {selectedVideo && (
+        <video controls>
+          <source src={URL.createObjectURL(selectedVideo)} type={selectedVideo.type} />
+          Your browser does not support the video tag.
+        </video>
+      )}
+    </div>
                       <div className='form-group mb-3 row'>
                         <label
                           className='col-lg-4 col-form-label'
@@ -266,282 +325,13 @@ const AddCourses = () => {
                             className='form-control'
                             id='coursename'
                             name='coursename'
+                            value={coursename}
                             placeholder='e.g. React-Redux'
                             onChange={(e) => setCoursename(e.target.value)}
                           />
                         </div>
                       </div>
                       <div className='form-group mb-3 row'>
-                        <label
-                          className='col-xl-12 col-form-label'
-                          htmlFor='val-suggestions'
-                        >
-                          Add Photo<span className='text-danger'>*</span>
-                        </label>
-                        <div className='profile-info'>
-                          <div className='profile-photo'>
-                            <input
-                              type='file'
-                              name='file'
-                              accept='.jpeg, .png, .jpg'
-                              onChange={handleChange}
-                            />
-                            <br />
-                            <br />
-                            <img
-                              src={file}
-                              width='250'
-                              height='250'
-                              alt='file'
-                              objectFit='cover'
-                            />
-                          </div>
-                        </div>
-                        <div className='form-group mb-3 row'>
-                          <label
-                            className='col-lg-4 col-form-label'
-                            htmlFor='val-suggestions'
-                          >
-                            Description <span className='text-danger'>*</span>
-                          </label>
-                          <div className='col-xl-12'>
-                            <textarea
-                              className='form-control'
-                              id='description'
-                              name='description'
-                              rows='5'
-                              placeholder='Brief Description about Course...'
-                              onChange={(e) => setDescription(e.target.value)}
-                              required
-                            ></textarea>
-                          </div>
-                        </div>
-                        <div className='form-group mb-3 row'>
-                          <div className='col-lg-4 ms-auto'>
-                            <br />
-                            <br />
-                            <label
-                              className='form-check css-control-primary css-checkbox'
-                              htmlFor='val-terms'
-                            >
-                              <input
-                                type='checkbox'
-                                className='form-check-input'
-                                id='isActive'
-                                name='isActive'
-                                onChange={(e) => setIsActive(e.target.value)}
-                              />
-                              Active
-                            </label>
-                          </div>
-                          <div className='col-lg-8 ms-auto'>
-                            <br />
-                            <br />
-                            <label
-                              className='form-check css-control-primary css-checkbox'
-                              htmlFor='val-terms'
-                            >
-                              <input
-                                type='checkbox'
-                                className='form-check-input'
-                                id='isHide'
-                                name='isHide'
-                              />
-                              Hide from Course Catalog
-                            </label>
-                            <br />
-                            <br />
-                          </div>
-                        </div>
-                        <div className='form-group mb-3 row'>
-                          <label
-                            className='col-lg-4 col-form-label'
-                            htmlFor='val-email'
-                          >
-                            Course Code <span className='text-danger'>*</span>
-                          </label>
-                          <div className='col-lg-6'>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='coursecode'
-                              name='coursecode'
-                              placeholder='Enter the Course Code'
-                              onChange={(e) => setCoursecode(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className='form-group mb-3 row'>
-                          <label
-                            className='col-lg-4 col-form-label'
-                            htmlFor='val-currency'
-                          >
-                            Price
-                            <span className='text-danger'>*</span>
-                          </label>
-                          <div className='col-lg-6'>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='price'
-                              name='price'
-                              placeholder='$21.60'
-                              onChange={(e) => setPrice(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className='form-group mb-3 row'></div>
-                        <label>Course Intro Video</label>
-                        <div className='input-group mb-3  input-success'></div>
-                        <span className='input-group-text'>
-                          Use Your Intro Video Link
-                        </span>
-                        <input
-                          type='text'
-                          className='form-control'
-                          placeholder=' https://youtube.com'
-                          id='courselink'
-                          name='courselink'
-                          onChange={(e) => setCourselink(e.target.value)}
-                        />
-                      </div>
-                      <div className='mb-5'>
-                        <label htmlFor='formFileLg' className='form-label'>
-                          Use Your Intro Video
-                        </label>
-                        <input
-                          className='form-control form-control-lg'
-                          id='coursevideo'
-                          type='file'
-                          name='coursevideo'
-                          accept='.jpeg, .png, .jpg, .mp4, .mkv'
-                          onChange={HandleChange}
-                        />
-                        <input type='file' id='myFile' name='filename' />
-                      </div>
-                      <div className='form-group mb-3 row'>
-                        <label
-                          className='col-lg-4 col-form-label'
-                          htmlFor='val-confirm-password'
-                        >
-                          Capacity <span className='text-danger'>*</span>
-                        </label>
-                        <div className='col-lg-6'>
-                          <input
-                            type='text'
-                            className='form-control'
-                            id='capacity'
-                            name='capacity'
-                            placeholder='Unlimited'
-                            onChange={(e) => setCapacity(e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className='form-group mb-3 row'>
-                        <label
-                          className='col-lg-4 col-form-label'
-                          htmlFor='val-currency'
-                        >
-                          Set Course Duration
-                          <span className='text-danger'>*</span>
-                        </label>
-                        <div className='col-lg-3 mb-3'>
-                          <div className='example rangeDatePicker'>
-                            <p className='mb-1'>Course StartDate</p>
-                            {/* <DateRangePicker
-                              startText="Start"
-                              endText="End"
-                              startPlaceholder="Start Date"
-                              endPlaceholder="End Date"
-                            />   */}
-
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='startdate'
-                              name='startdate'
-                              placeholder='1/1/2023'
-                              onChange={(e) => setStartdate(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className='col-lg-3 mb-3'>
-                          <div className='example rangeDatePicker'>
-                            <p className='mb-1'>Course EndDate</p>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='enddate'
-                              name='enddate'
-                              placeholder='31/2/2023'
-                              onChange={(e) => setEnddate(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className='row mb-0'>
-                          <div className='col-lg-5'></div>
-                          <div className='col-md-4'>
-                            <strong>
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR
-                            </strong>
-                          </div>
-                        </div>
-                        <div className='row mt-0'>
-                          <div className='col-lg-5'>&nbsp;&nbsp;</div>
-                          <div className='col-md-4 mb-5'>
-                            <div className='example rangeDatePicker'>
-                              <br />
-                              <br />
-                              Enter Total Days of Course
-                              <input
-                                type='text'
-                                className='form-control'
-                                id='timelimit'
-                                name='timelimit'
-                                placeholder='30 Days or 2 Months'
-                                onChange={(e) => setTimelimit(e.target.value)}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className='form-group mb-3 row'>
-                        <label
-                          className='col-lg-4 col-form-label'
-                          htmlFor='val-website'
-                        >
-                          Certificate
-                          <span className='text-danger'>*</span>
-                        </label>
-                        <div className='col-lg-6'>
-                          <Select
-                            defaultValue={certificate}
-                            onChange={certificate}
-                            options={certificate}
-                            name='certificate'
-                          ></Select>
-                        </div>
-                      </div>
-                      <div className='form-group mb-3 row'>
-                        <label
-                          className='col-lg-4 col-form-label'
-                          htmlFor='val-website'
-                        >
-                          Level
-                          <span className='text-danger'>*</span>
-                        </label>
-                        <div className='col-lg-6'>
-                          <Select
-                            defaultValue={level}
-                            onChange={level}
-                            options={level}
-                            name='level'
-                          ></Select>
-                        </div>
-                      </div>
-                    </div>
-                    <div className='form-group mb-3 row'>
                       <label
                         className='col-lg-4 col-form-label'
                         htmlFor='val-website'
@@ -562,6 +352,7 @@ const AddCourses = () => {
                           value={getAllCategoriesData}
                           name='categories'
                           options={getAllCategoriesData}
+                          placeholder="Select a category"
                         >
                           {/* {getAllCategoriesData.map((categories) => {
                             return options={categories
@@ -587,16 +378,322 @@ const AddCourses = () => {
                         </select>; */}
                       </div>
                     </div>
+                      
+
+                        <div className='form-group mb-3 row'>
+                          <label
+                            className='col-lg-4 col-form-label'
+                            htmlFor='val-suggestions'
+                          >
+                            Description <span className='text-danger'>*</span>
+                          </label>
+                          <div className='col-xl-6'>
+                            <textarea
+                              className='form-control'
+                              id='description'
+                              name='description'
+                              value={description}
+                              rows='5'
+                              placeholder='Add a course description upto 5000 characters'
+                              onChange={(e) => setDescription(e.target.value)}
+                              required
+                            ></textarea>
+                          </div>
+                        </div>
+
+                        <div className='form-group mb-3 row'>
+                          <div className='col-lg-4 ms-auto'>
+                            <br />
+                            <label
+                              className='form-check css-control-primary css-checkbox'
+                              htmlFor='val-terms'
+                            >
+                              <input
+                                type='checkbox'
+                                className='form-check-input'
+                                id='isActive'
+                                name='isActive'
+                                value={isActive}
+                                onChange={(e) => setIsActive(e.target.value)}
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className='col-lg-4 ms-auto'>
+                            <br />
+                            <label
+                              className='form-check css-control-primary css-checkbox'
+                              htmlFor='val-terms'
+                            >
+                              <input
+                                type='checkbox'
+                                className='form-check-input'
+                                id='isHide'
+                                name='isHide'
+                                value={isHide}
+                                onChange={(e) => setIsHide(e.target.value)}
+                              />
+                              Hide from Course Catalog
+                            </label>
+                            <br />
+                          </div>
+                        </div>
+
+                        <div className='form-group mb-3 row'>
+                          <label
+                            className='col-lg-4 col-form-label'
+                            htmlFor='val-email'
+                          >
+                            Course Code <span className='text-danger'>*</span>
+                          </label>
+                          <div className='col-lg-6'>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='coursecode'
+                              name='coursecode'
+                              placeholder='E.g. 1111'
+                              value={coursecode}
+                              onChange={(e) => setCoursecode(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <div className='form-group mb-3 row'>
+                          <label
+                            className='col-lg-4 col-form-label'
+                            htmlFor='val-currency'
+                          >
+                            Price
+                            <span className='text-danger'>*</span>
+                          </label>
+                          <div className='col-lg-6'>
+                            <input
+                              type='text'
+                              className='form-control'
+                              id='price'
+                              name='price'
+                              placeholder='₹21.60'
+                              value={price}
+                              onChange={(e) => setPrice(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className='form-group mb-3 row'>
+                        <label className='col-lg-4 col-form-label'>Course Intro Video <span className='text-danger'>*</span></label>
+                        <div className='input-group mb-3 col-lg-6 '>
+                        <span className='input-group-text'>
+                          Use Youtube Video Link
+                        </span>
+                        <input
+                          type='text'
+                          className='form-control'
+                          placeholder='Paste YouTube link here...'
+                          id='courselink'
+                          name='courselink'
+                          value={courselink}
+                          // onChange={handleInputChange}
+                          onChange={handleInputChange}
+                          // onChange={(e) => setCourselink(e.target.value)}
+                        />
+                         {!isValidLink && <p style={{ color: "red" }}>Please enter a valid YouTube link.</p>}
+                        </div>
+                      </div>
+                      <div className='form-group mb-3 row '>
+                        <label htmlFor='formFileLg' className='col-lg-4 col-form-label'>
+                          Use Your Video
+                        </label>
+                        <div className='input-group mb-3 col-lg-6 '>
+                        <input
+                          type='file'
+                          name='file'
+                          accept='.mp4, .mkv'
+                          value={coursevideo}
+                          onChange={HandleChange1}
+                          ref={fileInputRef}
+                        />
+                        </div>
+                      </div>
+                      <div className='form-group mb-3 row'>
+                        <label
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-confirm-password'
+                        >
+                          Capacity <span className='text-danger'>*</span>
+                        </label>
+                        <div className='col-lg-6'>
+                          <input
+                            type='text'
+                            className='form-control'
+                            id='capacity'
+                            name='capacity'
+                            placeholder='Unlimited'
+                            value={capacity}
+                            onChange={(e) => setCapacity(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className='form-group mb-3 row'>
+                        <label
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-currency'
+                        >
+                          Set Course Duration
+                          <span className='text-danger'>*</span>
+                        </label>
+                        <div className='col-lg-3 mb-3'>
+                          <div className='example rangeDatePicker'>
+                            <p className='mb-1'>Course StartDate</p>
+                            {/* <DateRangePicker
+                              startText="Start"
+                              endText="End"
+                              startPlaceholder="Start Date"
+                              endPlaceholder="End Date"
+                            />   */}
+
+                            <input
+                              type='date'
+                              className='form-control'
+                              id='startdate'
+                              name='startdate'
+                              placeholder='01/01/2023'
+                              onChange={(e) => setStartdate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className='col-lg-3 mb-3'>
+                          <div className='example rangeDatePicker'>
+                            <p className='mb-1'>Course EndDate</p>
+                            <input
+                              type='date'
+                              className='form-control'
+                              id='enddate'
+                              name='enddate'
+                              placeholder='31/06/2023'
+                              onChange={(e) => setEnddate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        {/* <div className='row mb-0'>
+                          <div className='col-lg-5'></div>
+                          <div className='col-md-4'>
+                            <strong>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR
+                            </strong>
+                          </div>
+                        </div> */}
+                        {/* <div className='row mt-0'>
+                          <div className='col-lg-5'>&nbsp;&nbsp;</div>
+                          <div className='col-md-4 mb-5'>
+                            <div className='example rangeDatePicker'>
+                              <br />
+                              <br />
+                              Enter Total Days of Course
+                              <input
+                                type='text'
+                                className='form-control'
+                                id='timelimit'
+                                name='timelimit'
+                                placeholder='30 Days or 2 Months'
+                                onChange={(e) => setTimelimit(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div> */}
+                      </div>
+                      <div className='form-group mb-3 row'>
+                        <label
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-website'
+                        >
+                          Certificate
+                          <span className='text-danger'>*</span>
+                        </label>
+                        <div className='col-lg-6'>
+                          <Select
+                            value={selectedOptionCertificate}
+                            options={certificate}
+                            onChange={(selectedOptionCertificate) =>
+                              setSelectedOptionCertificate(selectedOptionCertificate)
+                            }
+                            
+                            name='certificate'
+                            required
+                          ></Select>
+                        </div>
+                      </div>
+                      <div className='form-group mb-3 row'>
+                        <label
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-website'
+                        >
+                          Level
+                          <span className='text-danger'>*</span>
+                        </label>
+                        <div className='col-lg-6'>
+                          <Select
+                            value={selectedOptionLevel}
+                            options={level}
+                            onChange={(selectedOptionLevel) =>
+                              setSelectedOptionLevel(selectedOptionLevel)
+                            }
+                            name='level'
+                            required
+                          ></Select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-xl-4">
+                    <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="val-suggestions"
+                        >
+                          Add Photo<span className="text-danger">*</span>
+                        </label>
+                        <div className="profile-info col-lg-6">
+                          <div className="profile-photo">
+                            {file ? (
+                              <>
+                                {" "}
+                                <img
+                                  src={file && URL.createObjectURL(file)}
+                                  width="250"
+                                  height="250"
+                                  alt="file"
+                                />{" "}
+                                <br />
+                                <br />
+                              </>
+                            ) : (
+                              ""
+                            )}
+
+                            <input
+                              type="file"
+                              name="file"
+                              ref={fileRef}
+                              accept=".jpeg, .png, .jpg"
+                              onChange={handleChange}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                        </div>
+
+                    
                   </div>
                   <br />
 
                   <br />
 
                   <div className='form-group mb-3 row'>
-                    <div className='col-lg-3 '>
-                      <button type='submit' className='btn me-2 btn-primary'>
+                    <div className='col-lg-5 ms-auto'>
+                      <Button type='submit' className='btn me-2 btn-primary' value="submit">
                         Save
-                      </button>{' '}
+                      </Button>{' '}
                       or &nbsp;&nbsp;
                       <Button
                         onClick={() => history.goBack()}
