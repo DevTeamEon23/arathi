@@ -141,17 +141,17 @@ const Info = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allCourseData === [] || allCourseData === null ? (
-                    <div className='loader-container'>
+                  {allCourseData.length === 0 ? (
+                    <div className='loader-container justify-content-end' >
                       <RotatingLines
                         strokeColor='grey'
                         strokeWidth='5'
                         animationDuration='0.75'
-                        width='96'
+                        width='140'
                         visible={true}
                       />
                     </div>
-                  ) : (
+                  ) :  allCourseData.length > 0 ? (
                     <>
                       {allCourseData.map((data) => {
                         // Input date and time string
@@ -241,6 +241,19 @@ const Info = () => {
                           </tr>
                         )
                       })}
+                    </>
+                  ): (
+                    <>
+                      {' '}
+                      <tr>
+                        <td
+                          colSpan='13'
+                          rowSpan='13'
+                          className='text-center fs-16'
+                        >
+                          No Course Found.
+                        </td>
+                      </tr>
                     </>
                   )}
                 </tbody>

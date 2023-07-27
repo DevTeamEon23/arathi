@@ -1,27 +1,40 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useRef , useEffect} from "react";
 import { Link, useHistory } from "react-router-dom";
-import {nanoid} from 'nanoid';
-import swal from "sweetalert";
 import Select from "react-select";
 import * as Yup from "yup";
-import TimePickerPicker from 'react-time-picker';
+import TimePickerPicker from "react-time-picker";
 import {
   Dropdown,
   DropdownButton,
   ButtonGroup,
   Button,
   Nav,
-  Modal,Table
+  Modal,
+  Table,
 } from "react-bootstrap";
-import DateRangePicker from "react-bootstrap-daterangepicker";
-import EditCourses from '../../components/Courses/EditCourses';
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const tableList = [
-	{
-		id:"1", coursename:"", addcoursephoto:"", description:"", hidecourse:"",coursecode:"", coursevideolink:""
-        ,coursevideofile:"", capacity:"",coursedate:'',coursetime:"", certificate:"", level:"",instname:"",parentcategory:"",lastprice:""
-	}
-]; 
+  {
+    id: "1",
+    coursename: "",
+    addcoursephoto: "",
+    description: "",
+    hidecourse: "",
+    coursecode: "",
+    coursevideolink: "",
+    coursevideofile: "",
+    capacity: "",
+    coursedate: "",
+    coursetime: "",
+    certificate: "",
+    level: "",
+    instname: "",
+    parentcategory: "",
+    lastprice: "",
+  },
+];
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -34,214 +47,134 @@ const loginSchema = Yup.object().shape({
     .required("Please provide a password"),
 });
 
-const options = [
-  { value: "certificate_1", label: "Certificate 1" },
-  { value: "certificate_2", label: "Certificate 2" },
-  { value: "certificate_3", label: "Certificate 3" },
-  { value: "certificate_4", label: "Certificate 4" },
+const certificate = [
+  { value: "certificate1", label: "Certificate 1" },
+  { value: "certificate2", label: "Certificate 2" },
+  { value: "certificate3", label: "Certificate 3" },
+  { value: "certificate4", label: "Certificate 4" },
 ];
-const options_1 = [
-  { value: "level_1", label: "Level 1" },
-  { value: "level_2", label: "Level 2" },
-  { value: "level_3", label: "Level 3" },
-  { value: "level_4", label: "Level 4" },
+const level = [
+  { value: "level1", label: "Level 1" },
+  { value: "level2", label: "Level 2" },
+  { value: "level3", label: "Level 3" },
+  { value: "level4", label: "Level 4" },
 ];
-const options_2 = [
-  { value: "parent_category_1", label: "Parent Category 1" },
-  { value: "parent_category_2", label: "Parent Category 2" },
-  { value: "parent_category_3", label: "Parent Category 3" },
-  { value: "parent_category_4", label: "Parent Category 4" },
-];
-const EditcourseForm = () => {
-  const [largeModal, setLargeModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [value, onChange] = useState(new Date());
-  const [file, setFile] = useState();
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [contents, setContents] = useState(tableList);
-  // delete data  
-  const handleDeleteClick = (contentId) => {
-      const newContents = [...contents];    
-      const index = contents.findIndex((content)=> content.id === contentId);
-      newContents.splice(index, 1);
-      setContents(newContents);
-  }
-  
-  //Modal box
-  const [addCard, setAddCard] = useState(false);
-  //Add data 
-  const [addFormData, setAddFormData ] = useState({
-    coursename:'',
-    addcoursephoto:'',
-    description:'',
-    hidecourse:'',
-    coursecode:'',
-    coursevideolink:'',
-    coursevideofile:'',
-    capacity:'',
-    coursedate:'',
-    coursetime:'',
-    certificate:'',
-    level:'',
-    instname:'',
-    parentcategory:'',
-    lastprice:'',
-  }); 
-  
-  // Add contact function
-  const handleAddFormChange = (event) => {
-      event.preventDefault();    
-      const fieldName = event.target.getAttribute('coursename');
-      const fieldValue = event.target.value;
-      const newFormData = {...addFormData};
-      newFormData[fieldName] = fieldValue;
-      setAddFormData(newFormData);
-  };
-  
-   //Add Submit data
-  const handleAddFormSubmit = (event)=> {
-      event.preventDefault();
-      var error = false;
-      var errorMsg = '';
-      if(addFormData.coursename === ""){
-          error = true;
-          errorMsg = 'Please fill  coursename';
-      }else if(addFormData.instname === ""){
-          error = true;
-          errorMsg = 'Please fill instname.';
-      }else if(addFormData.parentcategory === ""){
-          error = true;
-          errorMsg = "please fill parentcategory";
-      }
-      if(!error){
-          const newContent = {
-              id: nanoid(),
-              coursename: addFormData.coursename,
-              addcoursephoto:  addFormData.addcoursephoto,
-              description: addFormData.description,
-              hidecourse:  addFormData.hidecourse,
-              coursecode:  addFormData.coursecode,
-              coursevideolink:  addFormData.coursevideolink,
-              coursevideofile:  addFormData.coursevideofile,
-              capacity:  addFormData.capacity,
-              coursedate:  addFormData.coursedate,
-              coursetime:  addFormData.coursetime,
-              certificate:  addFormData.certificate,
-              level:  addFormData.level,
-              instname:  addFormData.instname,
-              parentcategory:  addFormData.parentcategory,
-              lastprice:  addFormData.lastprice,
-          };
-          
-          const newContents = [...contents, newContent];
-          setContents(newContents);
-          setAddCard(false);
-          swal('Good job!', 'Successfully Added', "success");
-          addFormData.coursename  = addFormData.addcoursephoto = addFormData.description = addFormData.hidecourse = addFormData.coursecode = addFormData.coursevideolink = addFormData.coursevideofile = addFormData.capacity = addFormData.coursedate = addFormData.coursetime = addFormData.certificate = addFormData.level = addFormData.instname = addFormData.parentcategory = addFormData.lastprice = '';         
 
-      }else{
-          swal('Oops', errorMsg, "error");
-      }
-  };
-  
-  //Edit start 
-  //const [editModal, setEditModal] = useState(false);	
-  // Edit function editable page loop
-  const [editContentId, setEditContentId] = useState(null);
- 
-  // Edit function button click to edit
-  const handleEditClick = ( event, content) => {
-      event.preventDefault();
-      setEditContentId(content.id);
-      const formValues = {
-        coursename: content.coursename,
-        addcoursephoto:  content.addcoursephoto,
-        description: content.description,
-        hidecourse:  content.hidecourse,
-        coursecode:  content.coursecode,
-        coursevideolink:  content.coursevideolink,
-        coursevideofile:  content.coursevideofile,
-        capacity:  content.capacity,
-        coursedate:  content.coursedate,
-        coursetime:  content.coursetime,
-        certificate:  content.certificate,
-        level:  content.level,
-        instname:  content.instname,
-        parentcategory:  content.parentcategory,
-        lastprice:  content.lastprice,
-      }
-      setEditFormData(formValues);
-      //setEditModal(true);
-  };
- 
-  // edit  data  
-  const [editFormData, setEditFormData] = useState({
-    coursename:'',
-    addcoursephoto:'',
-    description:'',
-    hidecourse:'',
-    coursecode:'',
-    coursevideolink:'',
-    coursevideofile:'',
-    capacity:'',
-    coursedate:'',
-    coursetime:'',
-    certificate:'',
-    level:'',
-    instname:'',
-    parentcategory:'',
-    lastprice:'',
-  })
-  
-  //update data function
-  const handleEditFormChange = (event) => {
-      event.preventDefault();   
-      const fieldName = event.target.getAttribute('coursename');
-      const fieldValue = event.target.value;
-      const newFormData = {...editFormData};
-      newFormData[fieldName] = fieldValue;
-      setEditFormData(newFormData);
-  };
-  
+const EditcourseForm = (props) => {
+  const courseID = props.match.params.id
+  console.log({ courseID })
+  const [largeModal, setLargeModal] = useState(false);
+
+  const [id, setId] = useState()
+  const [token, setToken] = useState() //auth token
+  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
+  const [coursename, setCoursename] = useState("");
+  const [file, setFile] = useState(null);
+  const fileRef = useRef(null); //for image
+  const [selectedOptionCertificate, setSelectedOptionCertificate] =
+    useState(null); //Certificate
+  const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
+  const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
+  const [coursecode, setCoursecode] = useState("");
+  const [description, setDescription] = useState(""); //Description
+  const [isActive, setIsActive] = useState(false); //Active
+  const [isHide, setIsHide] = useState(false); //Hide
+  const [price, setPrice] = useState("");
+  const [courselink, setCourselink] = useState(""); //to save youtube link
+  const [isValidLink, setIsValidLink] = useState(true);
+  const fileInputRef = useRef(null);
+  const [capacity, setCapacity] = useState(""); //Capacity
+  const [startdate, setStartdate] = useState(""); //Course StartDate
+  const [enddate, setEnddate] = useState(""); //Course EndDate
+
+  useEffect(() => {
+    let token = window.localStorage.getItem('jwt_access_token')
+    setToken(token)
+    if (courseID !== undefined) {
+      setId(courseID)
+      getUsersById(courseID, token)
+    }
+  }, [])
+
   // edit form data submit
   const handleEditFormSubmit = (event) => {
-      event.preventDefault();
-      const editedContent = {
-          id: editContentId,
-          coursename: editFormData.coursename,
-          addcoursephoto:  editFormData.addcoursephoto,
-          description: editFormData.description,
-          hidecourse:  editFormData.hidecourse,
-          coursecode:  editFormData.coursecode,
-          coursevideolink:  editFormData.coursevideolink,
-          coursevideofile:  editFormData.coursevideofile,
-          capacity:  editFormData.capacity,
-          coursedate:  editFormData.coursedate,
-          coursetime:  editFormData.coursetime,
-          certificate:  editFormData.certificate,
-          level:  editFormData.level,
-          instname:  editFormData.instname,
-          parentcategory:  editFormData.parentcategory,
-          lastprice:  editFormData.lastprice,
-      }
-      const newContents = [...contents];
-      const index = contents.findIndex((content)=> content.id === editContentId);
-      newContents[index] = editedContent;
-      setContents(newContents);
-      setEditContentId(null);
-     // setEditModal(false);
-  }
-  //Cencel button to same data
-  const handleCancelClick = () => {
-      setEditContentId(null);    
+    event.preventDefault();
+    
   };
-  
+
   function handleChange(e) {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
-}
-let history = useHistory();
-const chackbox = document.querySelectorAll(".bs_exam_topper input");
+  }
+  // *******************My functions***********
+  // User details by ID
+  const getUsersById = async (id, authToken) => {
+    console.log('inside get user by id', id, authToken)
+    try {
+      const response = await axios.get(
+        'http://127.0.0.1:8000/lms-service/users_by_onlyid',
+        {
+          headers: {
+            'Auth-Token': authToken,
+          },
+          params: {
+            id: courseID,
+          },
+        }
+      )
+      if (response.data.status === 'success') {
+        console.log(response.data.data)
+        const res = response.data.data
+        //         const url = res.file
+        //         const parts = url.split('\\').pop();
+        //         const onlypath = parts.split('/').pop();
+        // console.log(onlypath);
+    
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to fetch users!') // Handle the error
+    }
+  }
+
+
+  // categories handle
+  const handleSelectChange = (event) => {
+    console.log("inside onchange");
+    const selectedName = event.target.value;
+    console.log(selectedName);
+  };
+
+  // "Active" is checked
+  const handleActiveChange = (e) => {
+    setIsActive(e.target.checked);
+    setIsHide(false);
+  };
+
+  // "Deactive" is checked
+  const handleHideChange = (e) => {
+    setIsHide(e.target.checked);
+    setIsActive(false);
+  };
+
+  // youtube link handle
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setCourselink(value);
+  };
+  //video file handle
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith("video/")) {
+      setSelectedVideo(file);
+    } else {
+      setSelectedVideo(null);
+      alert("Please select a valid video file.");
+    }
+  };
+
+  let history = useHistory();
+  const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
   const chackboxFun = (type) => {
     for (let i = 0; i < chackbox.length; i++) {
@@ -262,46 +195,59 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
       }
     }
   };
-  
+
   return (
-    <Fragment show={addCard} onHide={setAddCard}>
-      <Nav >
-	    <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/edit-courses">Courses</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_users">Users</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_groups">Groups</Link>
+    <Fragment>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/edit-courses"
+          >
+            Courses
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_users"
+          >
+            Users
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_groups"
+          >
+            Groups
+          </Link>
         </Nav.Item>
       </Nav>
 
       <div className="row">
-        <div className="col-lg-12" >
+        <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Add Course Form </h4>
+              <h4 className="card-title">Edit Course</h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
-                <form
-                  className="form-valide"
-                  action="#"
-                  method="post"
-                  onSubmit={handleEditFormSubmit}
-                >
+                <form onSubmit={handleEditFormSubmit}>
                   <div className="row">
-                    <div className="col-xl-12">
-                    {contents.map((content, index)=>(
-        <div key={index}>
-            {editContentId === content.id ? 
-                ( 
-                    <EditCourses editFormData={editFormData} 
-                        handleEditFormChange={handleEditFormChange} handleCancelClick={handleCancelClick}/> 
-                    ) : 
-                ( 
-                    <>
+                    <div className="col-xl-8">
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
+                          htmlFor="coursename"
                         >
                           Course Name
                           <span className="text-danger">*</span>
@@ -310,81 +256,109 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                           <input
                             type="text"
                             className="form-control"
-                            id="val-username"
-                            name="val-username"
-                            placeholder="e.g. React-Redux"
-                            onChange={handleAddFormChange}
+                            id="coursename"
+                            name="coursename"
+                            value={coursename}
+                            onChange={(e) => setCoursename(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-xl-12 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
-                          Add Photo<span className="text-danger">*</span>
-                        </label>
-                        <div className="profile-info">
-                          <div className="profile-photo">
-                          <input type="file" onChange={handleChange} />
-                          <br/><br/>
-                          <img src={file} width="250" height="250"/>
-                        </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
+                          htmlFor="categories"
+                        >
+                          Category
+                          <span className="text-danger">*</span>
+                        </label>
+                        <div className="col-lg-6">
+                          {/* <Select
+                          defaultValue={category}
+                          onChange={category}
+                          options={category}
+                          name='category'
+                        ></Select> */}
+                          <Select
+                            onChange={handleSelectChange}
+                            value={getAllCategoriesData}
+                            id="categories"
+                            name="categories"
+                            options={getAllCategoriesData}
+                            placeholder="Select a category"
+                            required
+                          ></Select>
+                        </div>
+                      </div>
+
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="description"
                         >
                           Description <span className="text-danger">*</span>
                         </label>
-                        <div className="col-xl-12">
+                        <div className="col-xl-6">
                           <textarea
                             className="form-control"
-                            id="val-suggestions"
-                            name="val-suggestions"
+                            id="description"
+                            name="description"
+                            value={description}
                             rows="5"
-                            placeholder="Brief Description about Course..."
-                            onChange={handleAddFormChange}
+                            maxLength={5000}
+                            onChange={(e) => setDescription(e.target.value)}
+                            required
                           ></textarea>
                         </div>
                       </div>
+
                       <div className="form-group mb-3 row">
-                          <div className="col-lg-4 ms-auto">
-                      <br/>
-                      <br/>
-                        <label
-                          className="form-check css-control-primary css-checkbox"
-                          htmlFor="val-terms"
-                        >
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            onChange={handleAddFormChange}
-                          />Active
+                        <div className="col-lg-3 ms-auto">
+                          <br />
+                          <br />
+                          <label
+                            className="form-check css-control-primary css-checkbox"
+                            htmlFor="isActive"
+                          >
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              style={{ marginRight: "8px" }}
+                              id="isActive"
+                              name="isActive"
+                              checked={isActive}
+                              onChange={handleActiveChange}
+                            />
+                            Active
                           </label>
                         </div>
-                          <div className="col-lg-8 ms-auto">
-                      <br/>
-                      <br/>
-                        <label
-                          className="form-check css-control-primary css-checkbox"
-                          htmlFor="val-terms"
-                        >
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            onChange={handleAddFormChange}
-                          />Hide from Course Catalog
+                        <div className="col-lg-5 ms-auto">
+                          <br />
+                          <br />
+                          <label
+                            className="form-check css-control-primary css-checkbox"
+                            htmlFor="isHide"
+                          >
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              style={{ marginRight: "8px" }}
+                              id="isHide"
+                              name="isHide"
+                              checked={isHide}
+                              onChange={handleHideChange}
+                            />
+                            Hide from Course Catalog
                           </label>
-                      <br/>
-                      <br/>
+                          <br />
                         </div>
-                        </div>
+                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
+                          htmlFor="coursecode"
                         >
                           Course Code <span className="text-danger">*</span>
                         </label>
@@ -392,13 +366,15 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                           <input
                             type="text"
                             className="form-control"
-                            id="val-email"
-                            name="val-email"
-                            placeholder="Enter the Course Code"
-                            onChange={handleAddFormChange}
+                            id="coursecode"
+                            name="coursecode"
+                            value={coursecode}
+                            onChange={(e) => setCoursecode(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -413,33 +389,81 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                             className="form-control"
                             id="val-currency"
                             name="val-currency"
-                            placeholder="$21.60"
-                            onChange={handleAddFormChange}
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
+
+                      <div className="form-group mb-3 row"></div>
+
                       <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="courselink"
+                        >
+                          Course Intro Video{" "}
+                        </label>
+                        <div className="input-group mb-3 col-lg-6 ">
+                          <span className="input-group-text">
+                            Youtube Video Link
+                          </span>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Paste YouTube link here..."
+                            id="courselink"
+                            name="courselink"
+                            value={courselink}
+                            onChange={handleInputChange}
+                          />
+                        </div>
                       </div>
-                      <label>Course Video</label>
-                  <div className="input-group mb-3  input-success">
-                  </div> 
-                      <span className="input-group-text">
-                        Use Your Video Link
-                      </span>
-                    
-                    <input type="text" className="form-control" placeholder=" https://youtube.com" onChange={handleAddFormChange}/>
-                  </div>
-                  <div className="mb-5">
-                    <label htmlFor="formFileLg" className="form-label">Use Your Video</label>
-                    <input className="form-control form-control-lg" id="formFileLg" type="file" onChange={handleAddFormChange}/>
-                  </div>
+
+                      <div className="form-group mb-3 row ">
+                        <label
+                          htmlFor="selectedVideo"
+                          className="col-lg-4 col-form-label"
+                        >
+                          Upload Your Video
+                          <span className="text-danger">*</span>
+                        </label>
+                        <div className="input-group mb-3 col-lg-6 ">
+                          <div>
+                            <input
+                              type="file"
+                              accept=".mp4, .mkv"
+                              id="selectedVideo"
+                              onChange={handleFileChange}
+                              ref={fileInputRef}
+                              required
+                            />
+                            <br />
+                            <br />
+                            {selectedVideo && (
+                              <video controls>
+                                <source
+                                  src={
+                                    selectedVideo &&
+                                    URL.createObjectURL(selectedVideo)
+                                  }
+                                  type={selectedVideo.type}
+                                  alt="video"
+                                />
+                                Your browser does not support the video tag.
+                              </video>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-confirm-password"
                         >
-                          Capacity{" "}
-                          <span className="text-danger">*</span>
+                          Capacity <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -447,119 +471,162 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                             className="form-control"
                             id="val-confirm-password"
                             name="val-confirm-password"
-                            placeholder="Unlimited"
-                            onChange={handleAddFormChange}
+                            value={capacity}
+                            onChange={(e) => setCapacity(e.target.value)}
+                            required
                           />
                         </div>
                       </div>
 
-
-                     
-                      
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-website"
+                          htmlFor="startdate"
+                        >
+                          Course Duration
+                          <span className="text-danger">*</span>
+                        </label>
+                        <div className="col-lg-3 mb-3">
+                          <div className="example rangeDatePicker">
+                            <p className="mb-1">Course Start Date</p>
+                            {/* <DateRangePicker
+                              startText="Start"
+                              endText="End"
+                              startPlaceholder="Start Date"
+                              endPlaceholder="End Date"
+                            />   */}
+
+                            <input
+                              type="date"
+                              className="form-control"
+                              id="startdate"
+                              name="startdate"
+                              value={startdate}
+                              onChange={(e) => setStartdate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-lg-3 mb-3">
+                          <div className="example rangeDatePicker">
+                            <p className="mb-1">Course End Date</p>
+                            <input
+                              type="date"
+                              className="form-control"
+                              id="enddate"
+                              name="enddate"
+                              value={enddate}
+                              onChange={(e) => setEnddate(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="certificate"
                         >
                           Certificate
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                        >
-                        </Select>
+                          <Select
+                            value={selectedOptionCertificate}
+                            options={certificate}
+                            onChange={(selectedOptionCertificate) =>
+                              setSelectedOptionCertificate(
+                                selectedOptionCertificate
+                              )
+                            }
+                            name="certificate"
+                            id="certificate"
+                            required
+                          ></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-website"
+                          htmlFor="level"
                         >
                           Level
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                          <Select
+                            value={selectedOptionLevel}
+                            options={level}
+                            onChange={(selectedOptionLevel) =>
+                              setSelectedOptionLevel(selectedOptionLevel)
+                            }
+                            name="level"
+                            id="level"
+                            required
+                          ></Select>
                         </div>
                       </div>
-                        <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
-                          Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="val-username"
-                            name="val-username"
-                            placeholder="e.g. John Doe"
-                            onChange={handleAddFormChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-website"
-                        >
-                          Parent Category
-                          <span className="text-danger">*</span>
-                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <div className="col-lg-6">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_2}
-                        >
-                        </Select>
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-currency"
-                        >
-                          Price
-                          <span className="text-danger">*</span>
-                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="val-currency"
-                            name="val-currency"
-                            placeholder="$21.60"
-                            onChange={handleAddFormChange}
-                          />
-                        </div>
-                      </div>
-                      <br/>
-                      
-                      <br/>
+                      <br />
 
-                      <button
+                      <br />
+                    </div>
+
+                    <div className="col-xl-4">
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="file"
+                        >
+                          Add Photo<span className="text-danger">*</span>
+                        </label>
+                        <div className="profile-info col-lg-6">
+                          <div className="profile-photo">
+                            {file ? (
+                              <>
+                                {" "}
+                                <img
+                                  src={file && URL.createObjectURL(file)}
+                                  width="250"
+                                  height="250"
+                                  alt="file"
+                                  objectFit="cover"
+                                />{" "}
+                                <br />
+                                <br />
+                              </>
+                            ) : (
+                              ""
+                            )}
+
+                            <input
+                              type="file"
+                              name="file"
+                              id="file"
+                              ref={fileRef}
+                              accept=".jpeg, .png, .jpg"
+                              onChange={handleChange}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="form-group mb-3 row">
+                    <div className="col-lg-5 ms-auto">
+                      <Button
                         type="submit"
                         className="btn me-2 btn-primary"
-                        onClick={handleAddFormSubmit}
+                        value="submit"
                       >
-                        Save
-                </button> or &nbsp;&nbsp;
-                      <Button onClick={() => history.goBack()}>Cancel</Button>
-                      <div className="form-group mb-3 row">
-                        <div className="col-lg-5 ms-auto">
-                        <DropdownButton
+                        update Course
+                      </Button>{" "}
+                      or &nbsp;&nbsp;
+                      <Link to="/courses-info">
+                        <Button className="btn me-2 btn-light">Cancel</Button>
+                      </Link>
+                    </div>
+                    <div className="col-lg-5 ms-auto">
+                      <DropdownButton
                         as={ButtonGroup}
                         id="dropdown-button-drop-up"
                         drop="up"
@@ -643,10 +710,13 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                           </Link>
                         </Dropdown.Item>
                       </DropdownButton>
-                        <button type="submit" className="btn btn-primary me-1 col-lg-5 ms-auto">
-                          View as Learner
-                        </button>
-                        <DropdownButton
+                      <button
+                        type="submit"
+                        className="btn btn-primary me-1 col-lg-5 ms-auto"
+                      >
+                        View as Learner
+                      </button>
+                      <DropdownButton
                         as={ButtonGroup}
                         id="dropdown-button-drop-up"
                         drop="up"
@@ -958,28 +1028,22 @@ const chackbox = document.querySelectorAll(".bs_exam_topper input");
                           </Modal.Footer>
                         </Modal>
                       </DropdownButton>
-                      </div>
-            </div>	
-		</>   
-      )}
-    </div>
-))}
-</div>
-    </div>
-        </form>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-        </div>
       </div>
-         
     </Fragment>
   );
 };
 
 export default EditcourseForm;
 
-{/* <div className="form-group mb-3 row">
+{
+  /* <div className="form-group mb-3 row">
 <label
   className="col-lg-4 col-form-label"
   htmlFor="val-currency"
@@ -995,11 +1059,12 @@ export default EditcourseForm;
       endText="End"
       startPlaceholder="Start Date"
       endPlaceholder="End Date"
-    />   */}
+    />   */
+}
 
-    // <DateRangePicker>
-    //     <input type="text" className="form-control input-daterange-timepicker" onChange={handleAddFormChange}/>
-    // </DateRangePicker>
+// <DateRangePicker>
+//     <input type="text" className="form-control input-daterange-timepicker" onChange={handleAddFormChange}/>
+// </DateRangePicker>
 //     <br/>
 //     <br/>Pick Your Time of Course
 //     <TimePickerPicker className="form-control input-daterange-timepicker" onChange={onChange} value={value} />

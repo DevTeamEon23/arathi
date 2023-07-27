@@ -253,7 +253,7 @@ const AddCourses = () => {
   return (
     <Fragment>
       <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+        <Nav.Item>
           <Link
             as="button"
             className="nav-link  nt-unseen"
