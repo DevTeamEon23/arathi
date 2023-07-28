@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useRef , useEffect} from "react";
-import { Link, useHistory } from "react-router-dom";
-import Select from "react-select";
-import * as Yup from "yup";
-import TimePickerPicker from "react-time-picker";
+import React, { Fragment, useState, useRef, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+import Select from 'react-select'
+import * as Yup from 'yup'
+import TimePickerPicker from 'react-time-picker'
 import {
   Dropdown,
   DropdownButton,
@@ -11,108 +11,149 @@ import {
   Nav,
   Modal,
   Table,
-} from "react-bootstrap";
+} from 'react-bootstrap'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
 const tableList = [
   {
-    id: "1",
-    coursename: "",
-    addcoursephoto: "",
-    description: "",
-    hidecourse: "",
-    coursecode: "",
-    coursevideolink: "",
-    coursevideofile: "",
-    capacity: "",
-    coursedate: "",
-    coursetime: "",
-    certificate: "",
-    level: "",
-    instname: "",
-    parentcategory: "",
-    lastprice: "",
+    id: '1',
+    coursename: '',
+    addcoursephoto: '',
+    description: '',
+    hidecourse: '',
+    coursecode: '',
+    coursevideolink: '',
+    coursevideofile: '',
+    capacity: '',
+    coursedate: '',
+    coursetime: '',
+    certificate: '',
+    level: '',
+    instname: '',
+    parentcategory: '',
+    lastprice: '',
   },
-];
+]
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
+    .min(3, 'Your username must consist of at least 3 characters ')
+    .max(50, 'Your username must consist of at least 3 characters ')
+    .required('Please enter a username'),
   password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
+    .min(5, 'Your password must be at least 5 characters long')
+    .max(50, 'Your password must be at least 5 characters long')
+    .required('Please provide a password'),
+})
 
 const certificate = [
-  { value: "certificate1", label: "Certificate 1" },
-  { value: "certificate2", label: "Certificate 2" },
-  { value: "certificate3", label: "Certificate 3" },
-  { value: "certificate4", label: "Certificate 4" },
-];
+  { value: 'certificate1', label: 'Certificate 1' },
+  { value: 'certificate2', label: 'Certificate 2' },
+  { value: 'certificate3', label: 'Certificate 3' },
+  { value: 'certificate4', label: 'Certificate 4' },
+]
 const level = [
-  { value: "level1", label: "Level 1" },
-  { value: "level2", label: "Level 2" },
-  { value: "level3", label: "Level 3" },
-  { value: "level4", label: "Level 4" },
-];
+  { value: 'level1', label: 'Level 1' },
+  { value: 'level2', label: 'Level 2' },
+  { value: 'level3', label: 'Level 3' },
+  { value: 'level4', label: 'Level 4' },
+]
 
 const EditcourseForm = (props) => {
   const courseID = props.match.params.id
   console.log({ courseID })
-  const [largeModal, setLargeModal] = useState(false);
-
+  const [largeModal, setLargeModal] = useState(false)
+  const [courseData, setCourseData] = useState()
   const [id, setId] = useState()
   const [token, setToken] = useState() //auth token
-  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
-  const [coursename, setCoursename] = useState("");
-  const [file, setFile] = useState(null);
-  const fileRef = useRef(null); //for image
-  const [selectedOptionCertificate, setSelectedOptionCertificate] =
-    useState(null); //Certificate
-  const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
-  const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
-  const [coursecode, setCoursecode] = useState("");
-  const [description, setDescription] = useState(""); //Description
-  const [isActive, setIsActive] = useState(false); //Active
-  const [isHide, setIsHide] = useState(false); //Hide
-  const [price, setPrice] = useState("");
-  const [courselink, setCourselink] = useState(""); //to save youtube link
-  const [isValidLink, setIsValidLink] = useState(true);
-  const fileInputRef = useRef(null);
-  const [capacity, setCapacity] = useState(""); //Capacity
-  const [startdate, setStartdate] = useState(""); //Course StartDate
-  const [enddate, setEnddate] = useState(""); //Course EndDate
+  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}) //save all categories data
+  const [coursename, setCoursename] = useState('')
+  const [file, setFile] = useState(null)
+  const fileRef = useRef(null) //for image
+  const [selectedOptionCertificate, setSelectedOptionCertificate] = useState({}) //Certificate
+  const [selectedVideo, setSelectedVideo] = useState(null) //to save video link
+  const [selectedOptionLevel, setSelectedOptionLevel] = useState({}) // Level
+  const [coursecode, setCoursecode] = useState('')
+  const [description, setDescription] = useState('') //Description
+  const [isActive, setIsActive] = useState(false) //Active
+  const [isHide, setIsHide] = useState(false) //Hide
+  const [price, setPrice] = useState('')
+  const [courselink, setCourselink] = useState('') //to save youtube link
+  const [isValidLink, setIsValidLink] = useState(true)
+  const fileInputRef = useRef(null)
+  const [capacity, setCapacity] = useState('') //Capacity
+  const [startdate, setStartdate] = useState('') //Course StartDate
+  const [enddate, setEnddate] = useState('') //Course EndDate
+  const [timelimit, setTimelimit] = useState(null) //in future should be remove
+  const backendBaseUrl = 'http://127.0.0.1:8000'
 
   useEffect(() => {
     let token = window.localStorage.getItem('jwt_access_token')
     setToken(token)
     if (courseID !== undefined) {
       setId(courseID)
-      getUsersById(courseID, token)
+      getCourseById(courseID, token)
+    }
+    if (courseData !== undefined) {
+      console.log(courseData)
     }
   }, [])
 
   // edit form data submit
   const handleEditFormSubmit = (event) => {
-    event.preventDefault();
-    
-  };
+    event.preventDefault()
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('coursename', coursename)
+    formData.append('description', description)
+    formData.append('coursecode', coursecode)
+    formData.append('price', price)
+    formData.append('courselink', courselink)
+    formData.append('coursevideo', selectedVideo)
+    formData.append('capacity', capacity)
+    formData.append('startdate', startdate)
+    formData.append('enddate', enddate)
+    formData.append('timelimit', timelimit)
+    formData.append('certificate', selectedOptionCertificate)
+    formData.append('level', selectedOptionLevel)
+    formData.append('category', getAllCategoriesData)
+    formData.append('isActive', isActive)
+    formData.append('isHide', isHide)
+    formData.append('file', file)
+
+    const url = 'http://127.0.0.1:8000/lms-service/update_courses'
+    const authToken = token
+    console.log(formData)
+    axios
+      .post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Auth-Token': authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data)
+        toast.success('Course updated successfully!!!')
+        history.push(`/courses-info`)
+      })
+      .catch((error) => {
+        console.error(error)
+        toast.error('Failed !!! Unable to update course...')
+      })
+  }
 
   function handleChange(e) {
-    console.log(e.target.files);
-    setFile(URL.createObjectURL(e.target.files[0]));
+    console.log(e.target.files)
+    setFile(e.target.files[0])
   }
   // *******************My functions***********
-  // User details by ID
-  const getUsersById = async (id, authToken) => {
-    console.log('inside get user by id', id, authToken)
+  // Course details by ID
+  const getCourseById = async (id, authToken) => {
+    console.log('inside get course by id', id, authToken)
     try {
       const response = await axios.get(
-        'http://127.0.0.1:8000/lms-service/users_by_onlyid',
+        'http://127.0.0.1:8000/lms-service/courses_by_onlyid',
         {
           headers: {
             'Auth-Token': authToken,
@@ -122,142 +163,177 @@ const EditcourseForm = (props) => {
           },
         }
       )
+      const res = response.data.data
+      console.log(response.data.data)
+      setCourseData(response.data.data)
+
+      const dateObject = new Date(res.startdate)
+      const year = dateObject.getFullYear()
+      const month = String(dateObject.getMonth() + 1).padStart(2, '0') // Months are zero-indexed
+      const day = String(dateObject.getDate()).padStart(2, '0')
+      // Create the formatted date string in "yyyy-MM-dd" format
+      const formattedStart = `${year}-${month}-${day}`
+
+      const dateObject2 = new Date(res.enddate)
+      const year2 = dateObject2.getFullYear()
+      const month2 = String(dateObject2.getMonth() + 1).padStart(2, '0') // Months are zero-indexed
+      const day2 = String(dateObject2.getDate()).padStart(2, '0')
+      // Create the formatted date string in "yyyy-MM-dd" format
+      const formattedEnd = `${year2}-${month2}-${day2}`
+
       if (response.data.status === 'success') {
-        console.log(response.data.data)
-        const res = response.data.data
-        //         const url = res.file
-        //         const parts = url.split('\\').pop();
-        //         const onlypath = parts.split('/').pop();
-        // console.log(onlypath);
-    
+        setCoursename(res.coursename)
+        setDescription(res.description)
+        setIsActive(res.isActive)
+        setIsHide(res.isHide)
+        setPrice(res.price)
+        setCourselink(res.courselink)
+        setCapacity(res.capacity)
+        setCoursecode(res.coursecode)
+        setStartdate(formattedStart)
+        setEnddate(formattedEnd)
+        setTimelimit(res.timelimit)
+        setGetAllCategoriesData(res.category)
+        setFile(`${backendBaseUrl}/${res.file}`)
+        setSelectedVideo(`${backendBaseUrl}/${res.coursevideo}`)
+        setSelectedOptionCertificate({
+          value: res.certificate,
+          label: res.certificate,
+        })
       }
     } catch (error) {
       console.error(error)
-      toast.error('Failed to fetch users!') // Handle the error
+      toast.error('Failed to fetch course!') // Handle the error
     }
   }
 
-
   // categories handle
   const handleSelectChange = (event) => {
-    console.log("inside onchange");
-    const selectedName = event.target.value;
-    console.log(selectedName);
-  };
+    console.log('inside onchange')
+    const selectedName = event.target.value
+    console.log(selectedName)
+  }
 
   // "Active" is checked
   const handleActiveChange = (e) => {
-    setIsActive(e.target.checked);
-    setIsHide(false);
-  };
+    setIsActive(e.target.checked)
+    setIsHide(false)
+  }
 
   // "Deactive" is checked
   const handleHideChange = (e) => {
-    setIsHide(e.target.checked);
-    setIsActive(false);
-  };
+    setIsHide(e.target.checked)
+    setIsActive(false)
+  }
 
   // youtube link handle
   const handleInputChange = (event) => {
-    const value = event.target.value;
-    setCourselink(value);
-  };
+    const value = event.target.value
+    setCourselink(value)
+  }
   //video file handle
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith("video/")) {
-      setSelectedVideo(file);
+    const file = event.target.files[0]
+    if (file && file.type.startsWith('video/')) {
+      setSelectedVideo(file)
     } else {
-      setSelectedVideo(null);
-      alert("Please select a valid video file.");
+      setSelectedVideo(null)
+      alert('Please select a valid video file.')
     }
-  };
+  }
 
-  let history = useHistory();
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
+  console.log(
+    '@@',
+    selectedVideo,
+    file,
+    selectedOptionCertificate,
+    selectedOptionLevel
+  )
+  let history = useHistory()
+  const chackbox = document.querySelectorAll('.bs_exam_topper input')
+  const motherChackBox = document.querySelector('.bs_exam_topper_all input')
   const chackboxFun = (type) => {
     for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
+      const element = chackbox[i]
+      if (type === 'all') {
         if (motherChackBox.checked) {
-          element.checked = true;
+          element.checked = true
         } else {
-          element.checked = false;
+          element.checked = false
         }
       } else {
         if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
+          motherChackBox.checked = false
+          break
         } else {
-          motherChackBox.checked = true;
+          motherChackBox.checked = true
         }
       }
     }
-  };
+  }
 
   return (
     <Fragment>
       <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+        <Nav.Item as='div' className='nav nav-tabs' id='nav-tab' role='tablist'>
           <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/edit-courses"
+            as='button'
+            className='nav-link  nt-unseen'
+            id='nav-following-tab'
+            eventKey='Follow'
+            type='button'
+            to='/courses-info'
           >
             Courses
           </Link>
           <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/course_users"
+            as='button'
+            className='nav-link  nt-unseen'
+            id='nav-following-tab'
+            eventKey='Follow'
+            type='button'
+            to='/course_users'
           >
             Users
           </Link>
           <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/course_groups"
+            as='button'
+            className='nav-link  nt-unseen'
+            id='nav-following-tab'
+            eventKey='Follow'
+            type='button'
+            to='/course_groups'
           >
             Groups
           </Link>
         </Nav.Item>
       </Nav>
 
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="card">
-            <div className="card-header">
-              <h4 className="card-title">Edit Course</h4>
+      <div className='row'>
+        <div className='col-lg-12'>
+          <div className='card'>
+            <div className='card-header'>
+              <h4 className='card-title'>Edit Course</h4>
             </div>
-            <div className="card-body">
-              <div className="form-validation">
+            <div className='card-body'>
+              <div className='form-validation'>
                 <form onSubmit={handleEditFormSubmit}>
-                  <div className="row">
-                    <div className="col-xl-8">
-                      <div className="form-group mb-3 row">
+                  <div className='row'>
+                    <div className='col-xl-8'>
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="coursename"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='coursename'
                         >
                           Course Name
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="coursename"
-                            name="coursename"
+                            type='text'
+                            className='form-control'
+                            id='coursename'
+                            name='coursename'
                             value={coursename}
                             onChange={(e) => setCoursename(e.target.value)}
                             required
@@ -265,15 +341,15 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="categories"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='categories'
                         >
                           Category
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           {/* <Select
                           defaultValue={category}
                           onChange={category}
@@ -283,29 +359,29 @@ const EditcourseForm = (props) => {
                           <Select
                             onChange={handleSelectChange}
                             value={getAllCategoriesData}
-                            id="categories"
-                            name="categories"
+                            id='categories'
+                            name='categories'
                             options={getAllCategoriesData}
-                            placeholder="Select a category"
+                            placeholder='Select a category'
                             required
                           ></Select>
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="description"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='description'
                         >
-                          Description <span className="text-danger">*</span>
+                          Description <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-xl-6">
+                        <div className='col-xl-6'>
                           <textarea
-                            className="form-control"
-                            id="description"
-                            name="description"
+                            className='form-control'
+                            id='description'
+                            name='description'
                             value={description}
-                            rows="5"
+                            rows='5'
                             maxLength={5000}
                             onChange={(e) => setDescription(e.target.value)}
                             required
@@ -313,39 +389,39 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
-                        <div className="col-lg-3 ms-auto">
+                      <div className='form-group mb-3 row'>
+                        <div className='col-lg-3 ms-auto'>
                           <br />
                           <br />
                           <label
-                            className="form-check css-control-primary css-checkbox"
-                            htmlFor="isActive"
+                            className='form-check css-control-primary css-checkbox'
+                            htmlFor='isActive'
                           >
                             <input
-                              type="checkbox"
-                              className="form-check-input"
-                              style={{ marginRight: "8px" }}
-                              id="isActive"
-                              name="isActive"
+                              type='checkbox'
+                              className='form-check-input'
+                              style={{ marginRight: '8px' }}
+                              id='isActive'
+                              name='isActive'
                               checked={isActive}
                               onChange={handleActiveChange}
                             />
                             Active
                           </label>
                         </div>
-                        <div className="col-lg-5 ms-auto">
+                        <div className='col-lg-5 ms-auto'>
                           <br />
                           <br />
                           <label
-                            className="form-check css-control-primary css-checkbox"
-                            htmlFor="isHide"
+                            className='form-check css-control-primary css-checkbox'
+                            htmlFor='isHide'
                           >
                             <input
-                              type="checkbox"
-                              className="form-check-input"
-                              style={{ marginRight: "8px" }}
-                              id="isHide"
-                              name="isHide"
+                              type='checkbox'
+                              className='form-check-input'
+                              style={{ marginRight: '8px' }}
+                              id='isHide'
+                              name='isHide'
                               checked={isHide}
                               onChange={handleHideChange}
                             />
@@ -355,19 +431,19 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="coursecode"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='coursecode'
                         >
-                          Course Code <span className="text-danger">*</span>
+                          Course Code <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="coursecode"
-                            name="coursecode"
+                            type='text'
+                            className='form-control'
+                            id='coursecode'
+                            name='coursecode'
                             value={coursecode}
                             onChange={(e) => setCoursecode(e.target.value)}
                             required
@@ -375,20 +451,20 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-currency"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-currency'
                         >
                           Price
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="val-currency"
-                            name="val-currency"
+                            type='text'
+                            className='form-control'
+                            id='val-currency'
+                            name='val-currency'
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
                             required
@@ -396,45 +472,45 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row"></div>
+                      <div className='form-group mb-3 row'></div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="courselink"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='courselink'
                         >
-                          Course Intro Video{" "}
+                          Course Intro Video{' '}
                         </label>
-                        <div className="input-group mb-3 col-lg-6 ">
-                          <span className="input-group-text">
+                        <div className='input-group mb-3 col-lg-6 '>
+                          <span className='input-group-text'>
                             Youtube Video Link
                           </span>
                           <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Paste YouTube link here..."
-                            id="courselink"
-                            name="courselink"
+                            type='text'
+                            className='form-control'
+                            placeholder='Paste YouTube link here...'
+                            id='courselink'
+                            name='courselink'
                             value={courselink}
                             onChange={handleInputChange}
                           />
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row ">
+                      <div className='form-group mb-3 row '>
                         <label
-                          htmlFor="selectedVideo"
-                          className="col-lg-4 col-form-label"
+                          htmlFor='selectedVideo'
+                          className='col-lg-4 col-form-label'
                         >
                           Upload Your Video
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="input-group mb-3 col-lg-6 ">
+                        <div className='input-group mb-3 col-lg-6 '>
                           <div>
                             <input
-                              type="file"
-                              accept=".mp4, .mkv"
-                              id="selectedVideo"
+                              type='file'
+                              accept='.mp4, .mkv'
+                              id='selectedVideo'
                               onChange={handleFileChange}
                               ref={fileInputRef}
                               required
@@ -442,14 +518,15 @@ const EditcourseForm = (props) => {
                             <br />
                             <br />
                             {selectedVideo && (
-                              <video controls>
+                              <video controls className='video-player'>
                                 <source
-                                  src={
-                                    selectedVideo &&
-                                    URL.createObjectURL(selectedVideo)
-                                  }
-                                  type={selectedVideo.type}
-                                  alt="video"
+                                  // src={
+                                  //   selectedVideo &&
+                                  //   URL.createObjectURL(selectedVideo)
+                                  // }
+                                  src={selectedVideo}
+                                  // type={selectedVideo.type}
+                                  alt='video'
                                 />
                                 Your browser does not support the video tag.
                               </video>
@@ -458,19 +535,19 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-confirm-password"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='val-confirm-password'
                         >
-                          Capacity <span className="text-danger">*</span>
+                          Capacity <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="val-confirm-password"
-                            name="val-confirm-password"
+                            type='text'
+                            className='form-control'
+                            id='val-confirm-password'
+                            name='val-confirm-password'
                             value={capacity}
                             onChange={(e) => setCapacity(e.target.value)}
                             required
@@ -478,17 +555,17 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="startdate"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='startdate'
                         >
                           Course Duration
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-3 mb-3">
-                          <div className="example rangeDatePicker">
-                            <p className="mb-1">Course Start Date</p>
+                        <div className='col-lg-3 mb-3'>
+                          <div className='example rangeDatePicker'>
+                            <p className='mb-1'>Course Start Date</p>
                             {/* <DateRangePicker
                               startText="Start"
                               endText="End"
@@ -497,23 +574,23 @@ const EditcourseForm = (props) => {
                             />   */}
 
                             <input
-                              type="date"
-                              className="form-control"
-                              id="startdate"
-                              name="startdate"
+                              type='date'
+                              className='form-control'
+                              id='startdate'
+                              name='startdate'
                               value={startdate}
                               onChange={(e) => setStartdate(e.target.value)}
                             />
                           </div>
                         </div>
-                        <div className="col-lg-3 mb-3">
-                          <div className="example rangeDatePicker">
-                            <p className="mb-1">Course End Date</p>
+                        <div className='col-lg-3 mb-3'>
+                          <div className='example rangeDatePicker'>
+                            <p className='mb-1'>Course End Date</p>
                             <input
-                              type="date"
-                              className="form-control"
-                              id="enddate"
-                              name="enddate"
+                              type='date'
+                              className='form-control'
+                              id='enddate'
+                              name='enddate'
                               value={enddate}
                               onChange={(e) => setEnddate(e.target.value)}
                             />
@@ -521,15 +598,15 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="certificate"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='certificate'
                         >
                           Certificate
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <Select
                             value={selectedOptionCertificate}
                             options={certificate}
@@ -538,29 +615,29 @@ const EditcourseForm = (props) => {
                                 selectedOptionCertificate
                               )
                             }
-                            name="certificate"
-                            id="certificate"
+                            name='certificate'
+                            id='certificate'
                             required
                           ></Select>
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="level"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='level'
                         >
                           Level
-                          <span className="text-danger">*</span>
+                          <span className='text-danger'>*</span>
                         </label>
-                        <div className="col-lg-6">
+                        <div className='col-lg-6'>
                           <Select
                             value={selectedOptionLevel}
                             options={level}
                             onChange={(selectedOptionLevel) =>
                               setSelectedOptionLevel(selectedOptionLevel)
                             }
-                            name="level"
-                            id="level"
+                            name='level'
+                            id='level'
                             required
                           ></Select>
                         </div>
@@ -570,39 +647,39 @@ const EditcourseForm = (props) => {
                       <br />
                     </div>
 
-                    <div className="col-xl-4">
-                      <div className="form-group mb-3 row">
+                    <div className='col-xl-4'>
+                      <div className='form-group mb-3 row'>
                         <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="file"
+                          className='col-lg-4 col-form-label'
+                          htmlFor='file'
                         >
-                          Add Photo<span className="text-danger">*</span>
+                          Add Photo<span className='text-danger'>*</span>
                         </label>
-                        <div className="profile-info col-lg-6">
-                          <div className="profile-photo">
+                        <div className='profile-info col-lg-6'>
+                          <div className='profile-photo'>
                             {file ? (
                               <>
-                                {" "}
+                                {' '}
                                 <img
-                                  src={file && URL.createObjectURL(file)}
-                                  width="250"
-                                  height="250"
-                                  alt="file"
-                                  objectFit="cover"
-                                />{" "}
+                                  src={file}
+                                  width='250'
+                                  height='250'
+                                  alt='file'
+                                  objectFit='cover'
+                                />{' '}
                                 <br />
                                 <br />
                               </>
                             ) : (
-                              ""
+                              ''
                             )}
 
                             <input
-                              type="file"
-                              name="file"
-                              id="file"
+                              type='file'
+                              name='file'
+                              id='file'
                               ref={fileRef}
-                              accept=".jpeg, .png, .jpg"
+                              accept='.jpeg, .png, .jpg'
                               onChange={handleChange}
                               required
                             />
@@ -611,159 +688,159 @@ const EditcourseForm = (props) => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-group mb-3 row">
-                    <div className="col-lg-5 ms-auto">
+                  <div className='form-group mb-3 row'>
+                    <div className='col-lg-5 ms-auto'>
                       <Button
-                        type="submit"
-                        className="btn me-2 btn-primary"
-                        value="submit"
+                        type='submit'
+                        className='btn me-2 btn-primary'
+                        value='submit'
                       >
                         update Course
-                      </Button>{" "}
+                      </Button>{' '}
                       or &nbsp;&nbsp;
-                      <Link to="/courses-info">
-                        <Button className="btn me-2 btn-light">Cancel</Button>
+                      <Link to='/courses-info'>
+                        <Button className='btn me-2 btn-light'>Cancel</Button>
                       </Link>
                     </div>
-                    <div className="col-lg-5 ms-auto">
+                    <div className='col-lg-5 ms-auto'>
                       <DropdownButton
                         as={ButtonGroup}
-                        id="dropdown-button-drop-up"
-                        drop="up"
-                        variant="primary"
-                        title="ADD"
-                        className="me-1 mt-1"
+                        id='dropdown-button-drop-up'
+                        drop='up'
+                        variant='primary'
+                        title='ADD'
+                        className='me-1 mt-1'
                       >
                         <Dropdown.Item>
-                          <Link to="/content">
-                            <i class="bi bi-back"> &nbsp;</i>Content
+                          <Link to='/content'>
+                            <i class='bi bi-back'> &nbsp;</i>Content
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/webcontent">
-                            <i class="bi bi-cloud"> &nbsp;</i>Web Content
+                          <Link to='/webcontent'>
+                            <i class='bi bi-cloud'> &nbsp;</i>Web Content
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/video">
-                            <i class="bi bi-play-circle"> &nbsp;</i>Video
+                          <Link to='/video'>
+                            <i class='bi bi-play-circle'> &nbsp;</i>Video
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/audio">
-                            <i class="bi bi-file-music"> &nbsp;</i>Audio
+                          <Link to='/audio'>
+                            <i class='bi bi-file-music'> &nbsp;</i>Audio
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/presentation">
-                            <i class="bi bi-file-slides"> &nbsp;</i>Presentation
-                            | Documents{" "}
+                          <Link to='/presentation'>
+                            <i class='bi bi-file-slides'> &nbsp;</i>Presentation
+                            | Documents{' '}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/scorm">
-                            <i class="bi bi-command"> &nbsp;</i>SCORM | xAPI |
+                          <Link to='/scorm'>
+                            <i class='bi bi-command'> &nbsp;</i>SCORM | xAPI |
                             cmi5
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/iframe">
-                            <i class="bi bi-code-slash"> &nbsp;</i>iFrame
+                          <Link to='/iframe'>
+                            <i class='bi bi-code-slash'> &nbsp;</i>iFrame
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/test-question">
-                            <i class="bi bi-journal-check"> &nbsp;</i>Test
+                          <Link to='/test-question'>
+                            <i class='bi bi-journal-check'> &nbsp;</i>Test
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/survey-question">
-                            <i class="bi bi-check2-square"> &nbsp;</i>Survey
+                          <Link to='/survey-question'>
+                            <i class='bi bi-check2-square'> &nbsp;</i>Survey
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/assignment">
-                            <i class="bi bi-clipboard"> &nbsp;</i>Assignment
+                          <Link to='/assignment'>
+                            <i class='bi bi-clipboard'> &nbsp;</i>Assignment
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/instructor-led">
-                            <i class="bi bi-calendar4-week"> &nbsp;</i>
+                          <Link to='/instructor-led'>
+                            <i class='bi bi-calendar4-week'> &nbsp;</i>
                             Instructor-led training
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-tropical-storm"> &nbsp;</i>Section
+                          <Link to='#'>
+                            <i class='bi bi-tropical-storm'> &nbsp;</i>Section
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-vr"> &nbsp;</i>Clone from another
+                          <Link to='#'>
+                            <i class='bi bi-vr'> &nbsp;</i>Clone from another
                             course
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-link"> &nbsp;</i>Link from another
+                          <Link to='#'>
+                            <i class='bi bi-link'> &nbsp;</i>Link from another
                             course
                           </Link>
                         </Dropdown.Item>
                       </DropdownButton>
                       <button
-                        type="submit"
-                        className="btn btn-primary me-1 col-lg-5 ms-auto"
+                        type='submit'
+                        className='btn btn-primary me-1 col-lg-5 ms-auto'
                       >
                         View as Learner
                       </button>
                       <DropdownButton
                         as={ButtonGroup}
-                        id="dropdown-button-drop-up"
-                        drop="up"
-                        variant="primary"
-                        title="..."
-                        className="me-1 mt-1"
+                        id='dropdown-button-drop-up'
+                        drop='up'
+                        variant='primary'
+                        title='...'
+                        className='me-1 mt-1'
                       >
                         <Dropdown.Item>
-                          <Link to="/message_users">
-                            <i class="bi bi-chat-right-text"> &nbsp;</i>Message
+                          <Link to='/message_users'>
+                            <i class='bi bi-chat-right-text'> &nbsp;</i>Message
                             Users
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="/ad_event">
-                            <i class="bi bi-calendar4-week"> &nbsp;</i>Add Event
+                          <Link to='/ad_event'>
+                            <i class='bi bi-calendar4-week'> &nbsp;</i>Add Event
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-cloud-snow-fill"> &nbsp;</i>Make
+                          <Link to='#'>
+                            <i class='bi bi-cloud-snow-fill'> &nbsp;</i>Make
                             Course Public
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-lock"> &nbsp;</i>Lock Course Content
+                          <Link to='#'>
+                            <i class='bi bi-lock'> &nbsp;</i>Lock Course Content
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item
-                          variant="primary"
-                          className="mb-2 me-2"
+                          variant='primary'
+                          className='mb-2 me-2'
                           onClick={() => setLargeModal(true)}
                         >
-                          <i class="bi bi-tablet"> &nbsp;</i>
+                          <i class='bi bi-tablet'> &nbsp;</i>
                           Mobile App Compatibility
                         </Dropdown.Item>
                         <Modal
-                          className="fade bd-example-modal-lg"
+                          className='fade bd-example-modal-lg'
                           show={largeModal}
-                          size="lg"
+                          size='lg'
                         >
                           <Modal.Header>
                             <Modal.Title>Modal App Compatibility</Modal.Title>
                             <Button
-                              variant=""
-                              className="btn-close"
+                              variant=''
+                              className='btn-close'
                               onClick={() => setLargeModal(false)}
                             ></Button>
                           </Modal.Header>
@@ -771,7 +848,7 @@ const EditcourseForm = (props) => {
                             <Table responsive>
                               <thead>
                                 <tr>
-                                  <th className="width80">Unit Name</th>
+                                  <th className='width80'>Unit Name</th>
                                   <th>Mobile App Compatible</th>
                                   <th>Offline Compatible</th>
                                   <th>Render as web page</th>
@@ -787,14 +864,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -810,14 +887,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -833,14 +910,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -856,14 +933,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -879,14 +956,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -902,14 +979,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -925,14 +1002,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -948,14 +1025,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -971,14 +1048,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -994,14 +1071,14 @@ const EditcourseForm = (props) => {
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;✔️
                                   </td>
                                   <td>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper">
-                                      <div className="col-xl-1">
+                                    <div className='form-check custom-checkbox checkbox-success check-lg me-3 bs_exam_topper'>
+                                      <div className='col-xl-1'>
                                         <input
-                                          type="checkbox"
-                                          className="form-check-input"
-                                          style={{ marginLeft: "4rem" }}
-                                          id="customCheckBox2"
-                                          required=""
+                                          type='checkbox'
+                                          className='form-check-input'
+                                          style={{ marginLeft: '4rem' }}
+                                          id='customCheckBox2'
+                                          required=''
                                           onClick={() => chackboxFun()}
                                         />
                                       </div>
@@ -1013,15 +1090,15 @@ const EditcourseForm = (props) => {
                           </Modal.Body>
                           <Modal.Footer>
                             <Button
-                              variant="danger light"
+                              variant='danger light'
                               onClick={() => setLargeModal(false)}
                             >
                               Close
                             </Button>
                             <Button
-                              variant=""
-                              type="button"
-                              className="btn btn-primary"
+                              variant=''
+                              type='button'
+                              className='btn btn-primary'
                             >
                               Save changes
                             </Button>
@@ -1037,10 +1114,10 @@ const EditcourseForm = (props) => {
         </div>
       </div>
     </Fragment>
-  );
-};
+  )
+}
 
-export default EditcourseForm;
+export default EditcourseForm
 
 {
   /* <div className="form-group mb-3 row">

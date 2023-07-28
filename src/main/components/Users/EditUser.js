@@ -159,7 +159,6 @@ const EditUser = (props) => {
     formData.append('deactive', isDeactive === false ? 0 : 1)
     formData.append('exclude_from_email', excludeFromEmail === false ? 0 : 1)
     formData.append('file', file)
-    console.log(isActive, isDeactive, excludeFromEmail, file)
 
     const url = 'http://127.0.0.1:8000/lms-service/update_users'
     const authToken = token
