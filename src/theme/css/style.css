@@ -37357,6 +37357,10 @@ button:focus {
   cursor: pointer;
 }
 
+.video-player {
+  width: 100%;
+  height: auto;
+}
 /* ******************** */
 .light.tp-btn {
   background-color: transparent;
