@@ -100,10 +100,6 @@ const EditUser = (props) => {
       if (response.data.status === 'success') {
         console.log(response.data.data)
         const res = response.data.data
-        //         const url = res.file
-        //         const parts = url.split('\\').pop();
-        //         const onlypath = parts.split('/').pop();
-        // console.log(onlypath);
         setEid(res.eid)
         setSid(res.sid)
         setUserName(res.full_name)

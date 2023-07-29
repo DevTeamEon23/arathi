@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 
 //images
 import palette from '@images/svg/color-palette.svg'
@@ -26,64 +29,36 @@ const widgetData = [
 // ];
 
 const CoursesMain = () => {
+  const [token, setToken] = useState() //auth token
+  const [data, setData] = useState([]) //Course data
   const [courses, setCourses] = useState([])
   const [file, setFile] = useState([])
-  const getCourses = async () => {
-    const requestOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-    const response = await fetch('/api', requestOptions)
-    const data = await response.json()
-
-    console.log(data)
-  }
-  // var base64String = btoa(
-  // 	String.fromCharCode(...new Uint8Array(file[0]?.courses.data))
-  //   );
-  //   setFile(base64String);
-
-  const [data, setData] = useState([])
   const [query, setQuery] = useState('')
+  const backendBaseUrl = 'http://127.0.0.1:8000'
 
-  const fetchData = () => {
-    fetch(`https://localhost:8000/courses`, {
-      responseType: 'blob',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data)
-        setData(data)
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem('jwt_access_token')
+    setToken(accessToken)
+    getAllCourses()
+  }, [])
+ 
+  const getAllCourses = async () => {
+    const jwtToken = window.localStorage.getItem('jwt_access_token')
+    const url = 'http://127.0.0.1:8000/lms-service/courses'
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Auth-Token': jwtToken,
+        },
       })
-      .catch((err) => {
-        console.log(err.message)
-      })
+      console.log('getAllCourses', response.data)
+      setData(response.data.data)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error('Failed to fetch Courses !') // Handle the error
+    }
   }
-  // const fetchImage = () => {
-  // 	fetch(`http://localhost:8000/photo`)
-  //  };
 
-  // useEffect(async () => {
-  //   fetchData();
-  // }, []);
-
-  // fetch('https://localhost:8000/media/${id}', {
-  // 	method: 'GET',
-  // })
-  // .then(response => response.blob())
-  // .then(blob => {
-  // 	var blobURL = URL.createObjectURL(blob);
-  // 	var image = document.getElementById("myImage");
-  // 	image.onload = function(){
-  // 		URL.revokeObjectURL(this.src); // release the blob URL once the image is loaded
-  // 	}
-  // 	image.src = blobURL;
-  // })
-  // .catch(error => {
-  // 	console.error(error);
-  // });
   return (
     <>
       <div className='widget-heading d-flex justify-content-between align-items-center'>
@@ -93,7 +68,7 @@ const CoursesMain = () => {
         </Link>
       </div>
       <div className='row'>
-        <Swiper
+        <Swiper iper
           className='swiper course-slider'
           speed={1500}
           slidesPerView={4}
@@ -145,15 +120,15 @@ const CoursesMain = () => {
       </div>
       <div className='row'>
         {data?.map((item, index) => {
+          const img = `${backendBaseUrl}/${item.file}`
           return (
             <div className='col-xl-4 col-md-6' key={index}>
               <div className='card all-crs-wid'>
                 <div className='card-body'>
                   <div className='courses-bx'>
                     <div>
-                      {/* {"media/Famous-Fort-Maharashtra.png;base64,${data.file[0]}"} */}
-                      {/* <img src="https://localhost:8000/media/" width="250" height="250" id="file" name="file"/> */}
-                      <p>{item.file} </p>
+                      <img src={img} width="150" height="120" id="file" name="file"/>
+                      {/* <p>{img} </p> */}
                     </div>
                     <div className='dlab-info'>
                       <div className='dlab-title d-flex justify-content-between'>
@@ -193,7 +168,7 @@ const CoursesMain = () => {
                           </p>
                         </div>
                         <h4 className='text-primary'>
-                          <span>$</span>
+                          <span>₹</span>
                           {item.price}
                         </h4>
                       </div>
@@ -241,13 +216,13 @@ const CoursesMain = () => {
               </Link>
             </li>
             <li>
-              <Link to={'./course-details-1'}>2</Link>
+              <Link>2</Link>
             </li>
             <li>
-              <Link to={'./course-details-2'}>3</Link>
+              <Link>3</Link>
             </li>
             <li>
-              <Link to={'./course-details-1'}>
+              <Link>
                 <i className='fas fa-chevron-right'></i>
               </Link>
             </li>

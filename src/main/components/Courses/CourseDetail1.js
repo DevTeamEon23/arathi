@@ -80,6 +80,7 @@ const CourseDetail1 =()=> {
 										<Nav as='div' className="nav nav-tabs justify-content-start tab-auto" id="nav-tab" role="tablist">
 											<Nav.Link as='button' className="nav-link" id="nav-about-tab" eventKey='About' >About</Nav.Link>
 											<Nav.Link as='button' className="nav-link" id="nav-reviews-tab" eventKey='Reviews'>Reviews</Nav.Link>
+											<Nav.Link as='button' className="nav-link"><Link to={"./course-details-2"}>Content Details</Link></Nav.Link>
 										</Nav>
 									</nav>
 									<Tab.Content >
@@ -177,7 +178,7 @@ const CourseDetail1 =()=> {
 			</div>
 			<ModalVideo channel='youtube' autoplay isOpen={isOpen} videoId="RV9IeG_oidw" onClose={() => setOpen(false)} />
 			{/* videoId="RV9IeG_oidw" */}
-			<div className="pagination-down">
+			{/* <div className="pagination-down">
 				<div className="d-flex align-items-center justify-content-between flex-wrap">
 					<h4 className="sm-mb-0 mb-3"> <span> </span> <span> </span></h4>
 					<ul>
@@ -188,7 +189,7 @@ const CourseDetail1 =()=> {
 						<li><Link to={"./course-details-2"}><i className="fas fa-chevron-right"></i></Link></li>
 					</ul>
 				</div>
-			</div>
+			</div> */}
 		</>
 	)
 }

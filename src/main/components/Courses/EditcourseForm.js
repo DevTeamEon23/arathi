@@ -14,27 +14,7 @@ import {
 } from 'react-bootstrap'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
-const tableList = [
-  {
-    id: '1',
-    coursename: '',
-    addcoursephoto: '',
-    description: '',
-    hidecourse: '',
-    coursecode: '',
-    coursevideolink: '',
-    coursevideofile: '',
-    capacity: '',
-    coursedate: '',
-    coursetime: '',
-    certificate: '',
-    level: '',
-    instname: '',
-    parentcategory: '',
-    lastprice: '',
-  },
-]
+import { RotatingLines } from 'react-loader-spinner'
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -97,6 +77,7 @@ const EditcourseForm = (props) => {
     }
     if (courseData !== undefined) {
       console.log(courseData)
+      getAllCategories();
     }
   }, [])
 
@@ -147,7 +128,7 @@ const EditcourseForm = (props) => {
     console.log(e.target.files)
     setFile(e.target.files[0])
   }
-  // *******************My functions***********
+
   // Course details by ID
   const getCourseById = async (id, authToken) => {
     console.log('inside get course by id', id, authToken)
@@ -200,6 +181,10 @@ const EditcourseForm = (props) => {
           value: res.certificate,
           label: res.certificate,
         })
+        setSelectedOptionLevel({
+          value: res.level,
+          label: res.level,
+        })
       }
     } catch (error) {
       console.error(error)
@@ -207,6 +192,28 @@ const EditcourseForm = (props) => {
     }
   }
 
+   // All Categories List
+   const getAllCategories = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "http://127.0.0.1:8000/lms-service/categories";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+      console.log("getAllCategories", response.data.data);
+
+      const expectedOutput = response?.data?.data.map(({ name }) => ({
+        value: name,
+        label: name,
+      }));
+      setGetAllCategoriesData(expectedOutput);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Categories !"); // Handle the error
+    }
+  };
   // categories handle
   const handleSelectChange = (event) => {
     console.log('inside onchange')
@@ -242,13 +249,6 @@ const EditcourseForm = (props) => {
     }
   }
 
-  console.log(
-    '@@',
-    selectedVideo,
-    file,
-    selectedOptionCertificate,
-    selectedOptionLevel
-  )
   let history = useHistory()
   const chackbox = document.querySelectorAll('.bs_exam_topper input')
   const motherChackBox = document.querySelector('.bs_exam_topper_all input')
@@ -276,6 +276,16 @@ const EditcourseForm = (props) => {
     <Fragment>
       <Nav>
         <Nav.Item as='div' className='nav nav-tabs' id='nav-tab' role='tablist'>
+        <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/dashboard"
+          >
+            Dashboard
+          </Link>
           <Link
             as='button'
             className='nav-link  nt-unseen'
@@ -286,7 +296,7 @@ const EditcourseForm = (props) => {
           >
             Courses
           </Link>
-          <Link
+          {/* <Link
             as='button'
             className='nav-link  nt-unseen'
             id='nav-following-tab'
@@ -305,7 +315,7 @@ const EditcourseForm = (props) => {
             to='/course_groups'
           >
             Groups
-          </Link>
+          </Link> */}
         </Nav.Item>
       </Nav>
 
@@ -317,9 +327,21 @@ const EditcourseForm = (props) => {
             </div>
             <div className='card-body'>
               <div className='form-validation'>
+              {courseData === undefined ? (
+                  <div className='loader-container'>
+                    <RotatingLines
+                      strokeColor='grey'
+                      strokeWidth='5'
+                      animationDuration='0.75'
+                      width='100'
+                      visible={true}
+                    />
+                  </div>
+                ):(
+                  <>
                 <form onSubmit={handleEditFormSubmit}>
                   <div className='row'>
-                    <div className='col-xl-8'>
+                    <div className='col-xl-6'>
                       <div className='form-group mb-3 row'>
                         <label
                           className='col-lg-4 col-form-label'
@@ -647,7 +669,7 @@ const EditcourseForm = (props) => {
                       <br />
                     </div>
 
-                    <div className='col-xl-4'>
+                    <div className='col-xl-6'>
                       <div className='form-group mb-3 row'>
                         <label
                           className='col-lg-4 col-form-label'
@@ -1108,6 +1130,8 @@ const EditcourseForm = (props) => {
                     </div>
                   </div>
                 </form>
+                </>
+                )}
               </div>
             </div>
           </div>
