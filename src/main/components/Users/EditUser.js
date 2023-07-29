@@ -241,9 +241,9 @@ const EditUser = (props) => {
             id='nav-following-tab'
             eventkey='Follow'
             type='button'
-            to='/edit-user'
+            to='/users-list'
           >
-            Info
+          User
           </Link>
           <Link
             as='button'
@@ -251,7 +251,7 @@ const EditUser = (props) => {
             id='nav-following-tab'
             eventkey='Follow'
             type='button'
-            to='/user-courses-info'
+            to='/courses-info'
           >
             Courses
           </Link>

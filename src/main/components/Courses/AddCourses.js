@@ -253,7 +253,10 @@ const AddCourses = () => {
   return (
     <Fragment>
       <Nav>
-        <Nav.Item>
+        <Nav.Item as='div'
+            className='nav nav-tabs'
+            id='nav-tab'
+            role='tablist'>
           <Link
             as="button"
             className="nav-link  nt-unseen"
@@ -265,6 +268,16 @@ const AddCourses = () => {
             Dashboard
           </Link>
           <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/courses-info"
+          >
+          Course
+          </Link>
+          {/* <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
@@ -283,7 +296,7 @@ const AddCourses = () => {
             to="/course_groups"
           >
             Groups
-          </Link>
+          </Link> */}
         </Nav.Item>
       </Nav>
       <div className="row">
