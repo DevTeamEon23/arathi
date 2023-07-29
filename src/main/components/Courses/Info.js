@@ -76,6 +76,11 @@ const Info = () => {
       })
   }
 
+  const handleEdit = (id) => {
+    console.log('inside course handle edit page', id)
+    history.push(`/edit-courses/${id}`)
+  }
+
   let history = useHistory()
   return (
     <Fragment>
@@ -141,17 +146,17 @@ const Info = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allCourseData === [] || allCourseData === null ? (
-                    <div className='loader-container'>
+                  {allCourseData.length === 0 ? (
+                    <div className='loader-container justify-content-end'>
                       <RotatingLines
                         strokeColor='grey'
                         strokeWidth='5'
                         animationDuration='0.75'
-                        width='96'
+                        width='140'
                         visible={true}
                       />
                     </div>
-                  ) : (
+                  ) : allCourseData.length > 0 ? (
                     <>
                       {allCourseData.map((data) => {
                         // Input date and time string
@@ -224,12 +229,12 @@ const Info = () => {
                                 >
                                   <i class='fa-regular fa-clipboard'></i>
                                 </Link>
-                                <Link
-                                  to='/edit-courses'
-                                  className='btn btn-primary shadow btn-xs sharp me-1'
-                                >
-                                  <i className='fas fa-pencil-alt'></i>
-                                </Link>
+                                <div className='btn btn-primary shadow btn-xs sharp me-1'>
+                                  <i
+                                    className='fas fa-pencil-alt'
+                                    onClick={(e) => handleEdit(data.id)}
+                                  ></i>
+                                </div>
                                 <div
                                   className='btn btn-danger shadow btn-xs sharp'
                                   onClick={() => deleteOperation(data.id)}
@@ -241,6 +246,19 @@ const Info = () => {
                           </tr>
                         )
                       })}
+                    </>
+                  ) : (
+                    <>
+                      {' '}
+                      <tr>
+                        <td
+                          colSpan='13'
+                          rowSpan='13'
+                          className='text-center fs-16'
+                        >
+                          No Course Found.
+                        </td>
+                      </tr>
                     </>
                   )}
                 </tbody>

@@ -411,7 +411,7 @@ const Markup = () => {
     { url: 'course-details-1', component: CourseDetail1 },
     { url: 'course-details-2', component: CourseDetail2 },
     { url: 'add-courses', component: AddCourses },
-    { url: 'edit-courses', component: EditcourseForm },
+    { url: 'edit-courses/:id', component: EditcourseForm },
     { url: 'courses-info', component: Info },
     { url: 'user-courses-info', component: UCoursesInfo },
     { url: 'content', component: Content },

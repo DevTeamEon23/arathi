@@ -202,7 +202,7 @@ const Categories = () => {
                           rowSpan='13'
                           className='text-center fs-16'
                         >
-                          No File Found.
+                          No Category Found.
                         </td>
                       </tr>
                     </>
