@@ -27,6 +27,9 @@ const AppProfile = () => {
       overlayColor: "#000000",
     },
   };
+  const user_name =localStorage.getItem("name");
+  const user_email =localStorage.getItem("email");
+
   return (
     <Fragment>
       {/* <PageTitle activeMenu="Profile" motherMenu="App" /> */}
@@ -35,11 +38,11 @@ const AppProfile = () => {
         <div className="col-lg-12">
           <div className="profile card card-body px-3 pt-3 pb-0">
             <div className="profile-head">
-              <div className="photo-content ">
+              {/* <div className="photo-content ">
                 <div className="cover-photo rounded"></div>
-              </div>
+              </div> */}
               <div className="profile-info">
-                <div className="profile-photo">
+                <div className="cover-photo rounded">
                   <img
                     src={profile}
                     className="img-fluid rounded-circle"
@@ -47,12 +50,12 @@ const AppProfile = () => {
                   />
                 </div>
                 <div className="profile-details">
-                  <div className="profile-name px-3 pt-2">
-                    <h4 className="text-primary mb-0">Mitchell C. Shay</h4>
+                  <div className="profile-name px-5 pt-2">
+                    <h4 className="text-primary mb-0">{user_name}</h4>
                     <p>UX / UI Designer</p>
                   </div>
                   <div className="profile-email px-2 pt-2">
-                    <h4 className="text-muted mb-0">hello@email.com</h4>
+                    <h4 className="text-muted mb-0">{user_email}</h4>
                     <p>Email</p>
                   </div>
                   <Dropdown className="dropdown ms-auto">

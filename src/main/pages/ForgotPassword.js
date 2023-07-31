@@ -10,6 +10,7 @@ import logo from "@images/Asset.png";
 import axios from "axios";
 // import Reset from "./Reset";
 import jwtService from "src/auth/authService/jwtService";
+import Swal from "sweetalert2";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -55,28 +56,40 @@ function ForgotPassword() {
           setBtnLoader(false);
         });
 
-      jwtService
-      .forgotPassword({
-      email:[email]
-      // generate_token: true
-      })
-      .then((response) => {
-        console.log(response);
-          setOtpReceived(response.data.OTP);
-          setIsShown(true);
-           setBtnLoader(false);
-           setDisabled(true);
-      });
+      // jwtService
+      // .forgotPassword({email:[email]})
+      // .then((res) => {
+      //   console.log(res);
+      //      Swal.fire({
+      //           title: "Success!",
+      //           text: "Password reset email sent",
+      //           icon: "success",
+      //           confirmButtonText: "OK",
+      //         });
+      // });
    
       // jwtService.forgotPassword({ email: [email] })
-      // .then((response) => {
+      // .then((res) => {
+      //   console.log(res);
       //   // Handle the success response here
-      //   console.log(response);
+      //   Swal.fire({
+      //     title: "Success!",
+      //     text: "Password reset email sent",
+      //     icon: "success",
+      //     confirmButtonText: "OK",
+      //   });
       // })
       // .catch((error) => {
-      //   // Handle any errors that occur during the password reset process
-      //   console.error("Password reset failed:", error);
+      //   // Handle errors that occur during the password reset process
+      //   console.error("Password reset failed:",error);
+      //   Swal.fire({
+      //     title: "Error!",
+      //     text: "Password reset email could not be sent",
+      //     icon: "error",
+      //     confirmButtonText: "OK",
+      //   });
       // });
+    
     
     }
   };

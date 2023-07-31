@@ -8,33 +8,37 @@ import showPwdImg from "@images/eye.svg";
 import hidePwdImg from "@images/eye-slash.svg";
 import Swal from "sweetalert2";
 
-function Login(props) {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRevealPwd, setIsRevealPwd] = useState(false);
 
   //sign up code
-  function onLogin(e) {
+  const onLogin=(e)=> {
     e.preventDefault();
-    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {
-      console.log("role",res.role);
-    localStorage.setItem("role",res.role);
-      Swal.fire({
-        title: "Success!",
-        text: "Login successful",
-        icon: "success",
-        confirmButtonText: "OK",
+    jwtService
+      .signInWithEmailAndPassword({ email, password })
+      .then((res) => {
+        console.log("role", res.role);
+        localStorage.setItem("role", res.role);
+        Swal.fire({
+          title: "Success!",
+          text: "Login successful",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        localStorage.setItem("name", res.data.displayName);
+        localStorage.setItem("email", res.data.email);
+      })
+      .catch((error) => {
+        console.error("Error during sign-in:", error);
+        Swal.fire({
+          title: "Failed!",
+          text: "Email or Password invaild.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       });
-    }) 
-    .catch((error) => {
-      console.error("Error during sign-in:", error); 
-      Swal.fire({
-        title: "Failed!",
-        text: "Email or Password invaild.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    });
   }
 
   return (
@@ -77,7 +81,8 @@ function Login(props) {
                           Sign in your account
                         </h4>
                         <span>
-                          Welcome back! <br/>Login with your data that you entered
+                          Welcome back! <br />
+                          Login with your data that you entered
                           <br /> during registration
                         </span>
                         <div className="login-social">
@@ -107,9 +112,9 @@ function Login(props) {
                             className="mb-3"
                             style={{ position: "relative" }}
                           >
-                          <label className="mb-1">
-                            <strong>Password</strong>
-                          </label>
+                            <label className="mb-1">
+                              <strong>Password</strong>
+                            </label>
                             <input
                               type={isRevealPwd ? "text" : "password"}
                               className="form-control"
@@ -154,6 +159,6 @@ function Login(props) {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
