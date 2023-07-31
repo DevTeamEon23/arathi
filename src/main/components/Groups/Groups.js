@@ -12,7 +12,6 @@ import {
   Button,
 } from "react-bootstrap";
 
-
 const options = [
   { value: "mass", label: "Mass Action" },
   { value: "all", label: "Add a course to all groups" },
@@ -25,30 +24,38 @@ const Groups = () => {
   const [data, setData] = useState([]);
 
   const fetchData = () => {
-     fetch('https://localhost:8000/groups')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setData(data);
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
+    const token = localStorage.getItem("token");
+    fetch("http://127.0.0.1:8000/lms-service/groups", {
+      headers: {
+        "Auth-Token": "2fbff1e0984e52281d8070d0b62c4c64",
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setData(data.data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/groups/"+id,{
-        method:'DELETE'
+  async function deleteOperation(id) {
+    if (window.confirm("Are you sure?")) {
+      let result = await fetch("https://localhost:8000/groups/" + id, {
+        method: "DELETE",
       });
-      result=await result.json();
-      console.warn(result)
+      result = await result.json();
+      console.warn(result);
       fetchData();
     }
   }
@@ -84,7 +91,7 @@ const Groups = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+  let history = useHistory();
   return (
     <Fragment>
       <Row>
@@ -92,27 +99,24 @@ let history = useHistory();
           <Card>
             <Card.Header>
               <Card.Title>
-              <div>
-                <Link to="/add-groups">
-                  <Button variant="primary">Add Groups</Button>
-                </Link>
-              </div></Card.Title>
+                <div>
+                  <Link to="/add-groups">
+                    <Button variant="primary">Add Groups</Button>
+                  </Link>
+                </div>
+              </Card.Title>
               <Select
-              defaultValue={selectedOption}
-              onChange={setSelectedOption}
-              options={options}
-              className="col-lg-5"
-            >
-            </Select>
-            
+                defaultValue={selectedOption}
+                onChange={setSelectedOption}
+                options={options}
+                className="col-lg-5"
+              ></Select>
             </Card.Header>
             <Card.Body>
               <Table responsive>
                 <thead>
                   <tr>
-                    <th className="width80">
-                      <strong>#</strong>
-                    </th>
+                    <th className="width110"></th>
                     <th>
                       <strong>NAME</strong>
                     </th>
@@ -125,34 +129,32 @@ let history = useHistory();
                   </tr>
                 </thead>
                 <tbody>
-                {data?.map((item, index) => {
-               return (
-                  <tr key={index}>
-                    <td>
-                      <strong>{item.id}</strong>
-                    </td>
-                    <td>{item.groupname}</td>
-                    <td>{item.groupdesc}</td>
-                    <td>
-                    <div className="d-flex">
-                        <Link
-                          to="/edit-groups"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-               );
-                })}
+                  {data?.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td></td>
+                        <td>{item.groupname}</td>
+                        <td>{item.groupdesc}</td>
+                        <td>
+                          <div className="d-flex">
+                            <Link
+                              to="/edit-groups"
+                              className="btn btn-primary shadow btn-xs sharp me-1"
+                            >
+                              <i className="fas fa-pencil-alt"></i>
+                            </Link>
+                            <Link
+                              href="#"
+                              className="btn btn-danger shadow btn-xs sharp"
+                              onClick={() => deleteOperation(item.id)}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             </Card.Body>
@@ -160,7 +162,7 @@ let history = useHistory();
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );

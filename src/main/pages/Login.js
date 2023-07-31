@@ -6,34 +6,34 @@ import logofull from "@images/Asset.png";
 import jwtService from "src/auth/authService/jwtService";
 import showPwdImg from "@images/eye.svg";
 import hidePwdImg from "@images/eye-slash.svg";
+import Swal from "sweetalert2";
 
 function Login(props) {
   const [email, setEmail] = useState("");
-  let errorsObj = { email: "", password: "" };
-  const [errors, setErrors] = useState(errorsObj);
   const [password, setPassword] = useState("");
   const [isRevealPwd, setIsRevealPwd] = useState(false);
 
+  //sign up code
   function onLogin(e) {
     e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (email === "") {
-      errorObj.email = "Email is Required";
-      error = true;
-    }
-    if (password === "") {
-      errorObj.password = "Password is Required";
-      error = true;
-    }
-    setErrors(errorObj);
-    if (error) {
-      return;
-    }
-    // dispatch(loadingToggleAction(true));
-    // dispatch(loginAction(email, password, props.history));
-    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {console.log(res,"inside login page");
-      // Sign in successfull
+    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {
+      console.log("role",res.role);
+    localStorage.setItem("role",res.role);
+      Swal.fire({
+        title: "Success!",
+        text: "Login successful",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    }) 
+    .catch((error) => {
+      console.error("Error during sign-in:", error); 
+      Swal.fire({
+        title: "Failed!",
+        text: "Email or Password invaild.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     });
   }
 
@@ -55,14 +55,14 @@ function Login(props) {
                     <div className="col-xl-6 col-md-6 sign text-center">
                       <div>
                         <div className="text-center my-5">
-                          <Link to="/dashboard">
+                          <div>
                             <img
                               width="300"
                               height="50"
                               src={logofull}
                               alt=""
                             />
-                          </Link>
+                          </div>
                         </div>
                         <img
                           src={logo}
@@ -77,7 +77,7 @@ function Login(props) {
                           Sign in your account
                         </h4>
                         <span>
-                          Welcome back! Login with your data that you entered
+                          Welcome back! <br/>Login with your data that you entered
                           <br /> during registration
                         </span>
                         <div className="login-social">
@@ -90,16 +90,6 @@ function Login(props) {
                             Login with Facebook
                           </Link>
                         </div>
-                        {props.errorMessage && (
-                          <div className="bg-red-300 text-red-900 border border-red-900 p-1 my-2">
-                            {props.errorMessage}
-                          </div>
-                        )}
-                        {props.successMessage && (
-                          <div className="bg-green-300 text-green-900 border border-green-900 p-1 my-2">
-                            {props.successMessage}
-                          </div>
-                        )}
                         <form onSubmit={onLogin}>
                           <div className="mb-3">
                             <label className="mb-1">
@@ -110,12 +100,8 @@ function Login(props) {
                               className="form-control"
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
+                              required
                             />
-                            {errors.email && (
-                              <div className="text-danger fs-12">
-                                {errors.email}
-                              </div>
-                            )}
                           </div>
                           <div
                             className="mb-3"
@@ -140,12 +126,6 @@ function Login(props) {
                               className="password-toggle"
                             />
                           </div>
-                          {errors.password && (
-                              <div className="text-danger fs-12">
-                                {errors.password}
-                              </div>
-                            )}
-
                           <div className="text-center">
                             <button
                               type="submit"

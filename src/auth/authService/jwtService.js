@@ -108,17 +108,6 @@ createUser = (data) => {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done token",response.data.token,response.data.data.user.role);
-          localStorage.setItem("role", response.data.data.user.role);
-          if (response.data.status === "success") {
-            Swal.fire({
-              title: "Success!",
-              text: "Login successful",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-          }
-          // handled wrong password or email response
           if (response.data.data.user) {
             this.setSession(response.data.token);
             this.emit("onLogin", response.data.data.user);
@@ -129,15 +118,6 @@ createUser = (data) => {
         })
         .catch(({ response }) => {
           console.log(response);
-          if (response.data.status === "failure") {
-            Swal.fire({
-              title: "Failed!",
-              text: "Email or Password invaild.",
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-            reject(new Error("Email or Password invaild."));
-          }
           reject(response.data);
           //   if (!response.data.verified) {
           //     reject(new Error({ verified: response.data.verified }));
@@ -167,32 +147,33 @@ createUser = (data) => {
       axiosInstance
         .post(jwtServiceConfig.forgotPassword, email)
         .then((response) => {
-          console.log(response) 
-          if (response.data.status === "success") {
-            Swal.fire({
-              title: "Success!",
-              text: "Password reset email sent",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-          }
-          resolve(response.data);
-        })
-        .catch((error) => {
-          console.log(error.response);
-          if (error.response && error.response.data && error.response.data.status === "failure") {
-            Swal.fire({
-              title: "Failed!",
-              text: "Failed to send password reset email",
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-            reject(new Error("Failed to send password reset email."));
-          } else {
-            reject(error);
-          }
-        });
-    });
+    //       console.log(response) 
+    //       if (response.data.status === "success") {
+    //         Swal.fire({
+    //           title: "Success!",
+    //           text: "Password reset email sent",
+    //           icon: "success",
+    //           confirmButtonText: "OK",
+    //         });
+    //       }
+    //       resolve(response.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error.response);
+    //       if (error.response && error.response.data && error.response.data.status === "failure") {
+    //         Swal.fire({
+    //           title: "Failed!",
+    //           text: "Failed to send password reset email",
+    //           icon: "error",
+    //           confirmButtonText: "OK",
+    //         });
+    //         reject(new Error("Failed to send password reset email."));
+    //       } else {
+    //         reject(error);
+    //       }
+    //     });
+    // });
+        })})
   };
 
    // Reset password function
