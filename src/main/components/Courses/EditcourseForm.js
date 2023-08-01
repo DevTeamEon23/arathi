@@ -84,6 +84,9 @@ const EditcourseForm = (props) => {
   // edit form data submit
   const handleEditFormSubmit = (event) => {
     event.preventDefault()
+    if(file===null && selectedVideo === null){
+alert("Please add Photo or Video")
+    }else{
     const formData = new FormData()
     formData.append('id', id)
     formData.append('coursename', coursename)
@@ -105,23 +108,24 @@ const EditcourseForm = (props) => {
 
     const url = 'http://127.0.0.1:8000/lms-service/update_courses'
     const authToken = token
-    console.log(formData)
-    axios
-      .post(url, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Auth-Token': authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data)
-        toast.success('Course updated successfully!!!')
-        history.push(`/courses-info`)
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.error('Failed !!! Unable to update course...')
-      })
+    console.log(file,selectedVideo)
+    // axios
+    //   .post(url, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //       'Auth-Token': authToken,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     console.log(response.data)
+    //     toast.success('Course updated successfully!!!')
+    //     history.push(`/courses-info`)
+    //   })
+    //   .catch((error) => {
+    //     console.error(error)
+    //     toast.error('Failed !!! Unable to update course...')
+    //   })
+    }
   }
 
   function handleChange(e) {
@@ -162,13 +166,15 @@ const EditcourseForm = (props) => {
       // Create the formatted date string in "yyyy-MM-dd" format
       const formattedEnd = `${year2}-${month2}-${day2}`
 
+      const link = res.courselink === null ? "" : courselink
+      
       if (response.data.status === 'success') {
         setCoursename(res.coursename)
         setDescription(res.description)
         setIsActive(res.isActive)
         setIsHide(res.isHide)
         setPrice(res.price)
-        setCourselink(res.courselink)
+        setCourselink(link)
         setCapacity(res.capacity)
         setCoursecode(res.coursecode)
         setStartdate(formattedStart)
@@ -535,7 +541,6 @@ const EditcourseForm = (props) => {
                               id='selectedVideo'
                               onChange={handleFileChange}
                               ref={fileInputRef}
-                              required
                             />
                             <br />
                             <br />
@@ -703,7 +708,6 @@ const EditcourseForm = (props) => {
                               ref={fileRef}
                               accept='.jpeg, .png, .jpg'
                               onChange={handleChange}
-                              required
                             />
                           </div>
                         </div>
