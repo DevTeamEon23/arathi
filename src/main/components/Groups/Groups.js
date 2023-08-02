@@ -11,21 +11,24 @@ import {
   ProgressBar,
   Nav,
   Button,
+  Modal,
 } from "react-bootstrap";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "react-toastify";
 
 const options = [
-  { value: "mass", label: "Mass Action" },
+  // { value: "mass", label: "Mass Action" },
   { value: "all", label: "Add a course to all groups" },
   { value: "removeall", label: "Remove a course from all groups" },
 ];
 
 const Groups = () => {
+  const [grpId, setGrpId] = useState(); //grp id save for delete
   const [token, setToken] = useState(); //auth token
   const [selectedOption, setSelectedOption] = useState(null);
   const [grpData, setGrpData] = useState([]);
+  const [showModal, setShowModal] = useState(false); //delete button modal
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -48,6 +51,40 @@ const Groups = () => {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
     }
+  };
+
+  const deleteGrp = (grpId) => {
+    setShowModal(true);
+    setGrpId(grpId);
+  };
+
+  const handleDelete = async () => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: grpId,
+    };
+    await axios
+      .delete(`http://127.0.0.1:8000/lms-service/delete_group`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        getAllGroups();
+        toast.success("Group deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to delete group!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
   };
 
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
@@ -112,10 +149,11 @@ const Groups = () => {
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
                 options={options}
+                placeholder="Mass Action"
                 className="col-lg-5"></Select>
             </Card.Header>
             <Card.Body>
-              {grpData.length === 0 ? (
+              {grpData.length === undefined ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -155,13 +193,11 @@ const Groups = () => {
                                 className="btn btn-primary shadow btn-xs sharp me-2 ml-2">
                                 <i className="fas fa-pencil-alt"></i>
                               </Link>
-                              <Link
-                                href="#"
-                                className="btn btn-danger shadow btn-xs sharp"
-                                // onClick={() => deleteOperation(item.id)}
-                              >
-                                <i className="fa fa-trash"></i>
-                              </Link>
+                              <div className="btn btn-danger shadow btn-xs sharp">
+                                <i
+                                  className="fa fa-trash"
+                                  onClick={() => deleteGrp(item.id)}></i>
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -172,11 +208,9 @@ const Groups = () => {
               ) : (
                 <>
                   {" "}
-                  <tr>
-                    <td colSpan="13" rowSpan="13" className="text-center fs-16">
-                      No Group Found.
-                    </td>
-                  </tr>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
+                  </div>
                 </>
               )}
             </Card.Body>
@@ -186,6 +220,22 @@ const Groups = () => {
       <div>
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Group</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete a Group?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 };
