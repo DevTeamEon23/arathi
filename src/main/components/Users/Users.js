@@ -23,7 +23,6 @@ const Users = () => {
   //User List Api
   const getAllUsers = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    console.log(jwtToken);
     const config = {
       headers: {
         "Auth-Token": jwtToken, // Attach the JWT token in the Authorization header
@@ -32,28 +31,23 @@ const Users = () => {
     axios
       .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
-        console.log(response, response.data, response.data.data);
         setUserData(response.data.data);
       })
       .catch((error) => {
-        console.log(error);
         toast.error("Failed to fetch users!"); // Handle the error
       });
   };
 
   const handleEdit = (id) => {
-    console.log("inside user handle edit page", id);
     history.push(`/edit-user/${id}`);
   };
 
   const deleteUser = (userId) => {
     setShowModal(true);
-    console.log("inside delete user", userId);
     setUId(userId);
   };
 
   const handleDelete = () => {
-    console.log("modal delete", uid);
     const config = {
       headers: {
         "Auth-Token": token, // Attach the JWT token in the Authorization header
@@ -62,7 +56,6 @@ const Users = () => {
     const requestBody = {
       id: uid,
     };
-    // Make the Axios DELETE request
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/delete_user`, {
         ...config,
@@ -70,7 +63,6 @@ const Users = () => {
       })
       .then((response) => {
         setShowModal(false);
-        console.log(response.data.status);
         getAllUsers();
         toast.success("User deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -134,79 +126,69 @@ const Users = () => {
                   </Link>
                 </div>
               </Card.Header>
-              <Table responsive striped bordered className="verticle-middle">
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>
-                        <center>EID</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>SID</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>USER</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>DEPARTMENT</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>EMAIL</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>USER TYPE</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>REGISTRATION</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>LAST LOGIN</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>OPTIONS</center>
-                      </strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userData === undefined && userData === null && (
-                    <div className="loader-container">
-                      <RotatingLines
-                        strokeColor="grey"
-                        strokeWidth="5"
-                        animationDuration="0.75"
-                        width="96"
-                        visible={true}
-                      />
-                    </div>
-                  )}
-                  {userData.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan="13"
-                        rowSpan="13"
-                        className="text-center fs-16">
-                        No File Found.
-                      </td>
-                    </tr>
-                  ) : (
-                    <>
+              <Card.Body>
+                {userData.length === undefined ? (
+                  <div className="loader-container">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="130"
+                      visible={true}
+                    />
+                  </div>
+                ) : userData.length > 0 ? (
+                  <Table responsive striped bordered>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>
+                            <center>EID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>SID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>USER</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>DEPARTMENT</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>EMAIL</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>USER TYPE</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>REGISTRATION</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>LAST LOGIN</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>OPTIONS</center>
+                          </strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {userData.map((item, index) => {
                         const dateTimeString = item.created_at; //1
                         const date = new Date(dateTimeString);
@@ -271,31 +253,35 @@ const Users = () => {
                             </td>
                             <td>
                               <center>
-                                {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
-                                {/* <Link
-                                  to="/edit-user"
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                ></Link> */}
                                 <div className="btn btn-primary shadow btn-xs sharp me-1">
                                   <i
                                     className="fas fa-pencil-alt"
                                     onClick={(e) => handleEdit(item.id)}></i>
                                 </div>
 
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  onClick={() => deleteUser(item.id)}>
-                                  <i className="fa fa-trash"></i>
+                                <div className="btn btn-danger shadow btn-xs sharp">
+                                  <i
+                                    className="fa fa-trash"
+                                    onClick={() => deleteUser(item.id)}></i>
                                 </div>
                               </center>
                             </td>
                           </tr>
                         );
                       })}
-                    </>
-                  )}{" "}
-                </tbody>
-              </Table>
+                    </tbody>
+                  </Table>
+                ) : (
+                  <>
+                    {" "}
+                    <div>
+                      <p className="text-center fs-20 fw-bold">
+                        No User Found.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </Card.Body>
             </Card>
           </Col>
         </Row>

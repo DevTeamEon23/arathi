@@ -53,6 +53,11 @@ const Groups = () => {
     }
   };
 
+  const handleEdit = (id) => {
+    console.log("inside course handle edit page", id);
+    history.push(`/edit-groups/${id}`);
+  };
+
   const deleteGrp = (grpId) => {
     setShowModal(true);
     setGrpId(grpId);
@@ -188,11 +193,11 @@ const Groups = () => {
                           <td>{item.groupdesc}</td>
                           <td>
                             <div className="d-flex">
-                              <Link
-                                to="/edit-groups"
-                                className="btn btn-primary shadow btn-xs sharp me-2 ml-2">
-                                <i className="fas fa-pencil-alt"></i>
-                              </Link>
+                              <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <i
+                                  className="fas fa-pencil-alt"
+                                  onClick={(e) => handleEdit(item.id)}></i>
+                              </div>
                               <div className="btn btn-danger shadow btn-xs sharp">
                                 <i
                                   className="fa fa-trash"

@@ -118,44 +118,44 @@ const Info = () => {
               </div>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>
-                        <center>COURSE NAME</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>CATEGORY</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>LAST UPDATED ON</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>OPTION</center>
-                      </strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allCourseData.length === 0 ? (
-                    <div className="loader-container justify-content-end">
-                      <RotatingLines
-                        strokeColor="grey"
-                        strokeWidth="5"
-                        animationDuration="0.75"
-                        width="140"
-                        visible={true}
-                      />
-                    </div>
-                  ) : allCourseData.length > 0 ? (
-                    <>
+              {allCourseData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : allCourseData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>
+                            <center>COURSE NAME</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>CATEGORY</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>LAST UPDATED ON</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>OPTION</center>
+                          </strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {allCourseData.map((data) => {
                         // Input date and time string
                         const inputDateTime = data.updated_at; //2
@@ -240,22 +240,18 @@ const Info = () => {
                           </tr>
                         );
                       })}
-                    </>
-                  ) : (
-                    <>
-                      {" "}
-                      <tr>
-                        <td
-                          colSpan="13"
-                          rowSpan="13"
-                          className="text-center fs-16">
-                          No Course Found.
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                </tbody>
-              </Table>
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>

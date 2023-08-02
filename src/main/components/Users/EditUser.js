@@ -137,44 +137,48 @@ const EditUser = (props) => {
   //Update User info API
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("eid", eid);
-    formData.append("sid", sid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", selectedOptionRole.value);
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive === false ? 0 : 1);
-    formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
-    formData.append("file", file);
+    if (file === null) {
+      alert("Please add Photo");
+    } else {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("eid", eid);
+      formData.append("sid", sid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", selectedOptionRole.value);
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
 
-    const url = "http://127.0.0.1:8000/lms-service/update_users";
-    const authToken = token;
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("User updated successfully!!!");
-        clearAllState();
-        history.push(`/users-list`);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to update user...");
-      });
+      const url = "http://127.0.0.1:8000/lms-service/update_users";
+      const authToken = token;
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("User updated successfully!!!");
+          clearAllState();
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
   };
 
   function handleChange(e) {
@@ -324,7 +328,6 @@ const EditUser = (props) => {
                                 value={userName}
                                 onChange={(e) => setUserName(e.target.value)}
                                 onBlur={validateName}
-                                required
                               />
                               {nameErrorMsg && (
                                 <span className="text-danger fs-14 m-2">
@@ -414,7 +417,6 @@ const EditUser = (props) => {
                                 value={username}
                                 placeholder="Enter Username"
                                 onChange={(e) => setUsername(e.target.value)}
-                                required
                               />
                             </div>
                           </div>
@@ -485,8 +487,7 @@ const EditUser = (props) => {
                                 value={selectedOptionRole}
                                 options={categorytype}
                                 onChange={setSelectedOptionRole}
-                                name="categorytype"
-                                required></Select>
+                                name="categorytype"></Select>
                               <div
                                 id="val-username1-error"
                                 className="invalid-feedback animated fadeInUp"
@@ -561,7 +562,6 @@ const EditUser = (props) => {
                                   ref={fileRef}
                                   accept=".jpeg, .png, .jpg"
                                   onChange={handleChange}
-                                  required
                                 />
                               </div>
                             </div>

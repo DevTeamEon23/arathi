@@ -178,7 +178,7 @@ const AddGroups = () => {
                             placeholder="Enter Group Key"
                             value={groupkey}
                             onChange={(e) => setGroupkey(e.target.value)}
-                            req
+                            required
                           />
                         </div>
                       </div>
