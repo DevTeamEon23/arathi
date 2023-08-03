@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import {
@@ -31,8 +31,11 @@ const AddGroups = () => {
   const [groupkey, setGroupkey] = useState("");
   const unique_id = uuid();
   const small_id = unique_id.slice(0, 8);
-
   let history = useHistory();
+
+  useEffect(() => {
+    setGroupkey(small_id);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,6 +46,8 @@ const AddGroups = () => {
     formData.append("generate_token", true);
     const url = "http://127.0.0.1:8000/lms-service/addgroups";
     const authToken = window.localStorage.getItem("jwt_access_token");
+
+    console.log(groupname, groupdesc, groupkey);
     axios
       .post(url, formData, {
         headers: {

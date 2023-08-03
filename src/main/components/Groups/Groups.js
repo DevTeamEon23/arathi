@@ -158,7 +158,7 @@ const Groups = () => {
                 className="col-lg-5"></Select>
             </Card.Header>
             <Card.Body>
-              {grpData.length === undefined ? (
+              {grpData.length === 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"

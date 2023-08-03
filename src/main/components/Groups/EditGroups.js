@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -27,19 +27,20 @@ const loginSchema = Yup.object().shape({
 const EditGroups = (props) => {
   const grpId = props.match.params.id;
   console.log({ grpId });
-  const [categoryId, setCategoryId] = useState("");
+  const [groupId, setGrpId] = useState("");
   const [token, setToken] = useState(); //auth token
   const [grpData, setGrpData] = useState(); //Group data by id
   const [groupname, setGroupname] = useState("");
   const [groupdesc, setGroupdesc] = useState("");
   const [groupkey, setGroupkey] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     // getGrpById();
     if (grpId !== undefined) {
-      setCategoryId(grpId);
+      setGrpId(grpId);
       getGrpById(grpId, token);
     }
   }, []);
@@ -75,12 +76,16 @@ const EditGroups = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
+    formData.append("id", groupId);
     formData.append("groupname", groupname);
     formData.append("groupdesc", groupdesc);
     formData.append("groupkey", groupkey);
     formData.append("generate_token", true);
-    const url = "";
+    const url = "http://127.0.0.1:8000/lms-service/update_groups";
     const authToken = window.localStorage.getItem("jwt_access_token");
+
+    console.log(groupId, groupname, groupdesc, groupkey);
+
     axios
       .post(url, formData, {
         headers: {
@@ -91,6 +96,7 @@ const EditGroups = (props) => {
       .then((response) => {
         console.log(response.data);
         toast.success("Group added successfully!!!");
+        history.push(`/groups`);
       })
       .catch((error) => {
         console.error(error);
@@ -107,7 +113,7 @@ const EditGroups = (props) => {
             className="nav-link  nt-unseen"
             id="nav-following-tab"
             type="button"
-            to="/edit-groups">
+            to={`/edit-groups/${grpId}`}>
             Info
           </Link>
           <Link
