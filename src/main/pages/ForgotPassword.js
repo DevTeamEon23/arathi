@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 // image
 import logo from "@images/Asset.png";
 // import Reset from "./Reset";
@@ -15,6 +13,7 @@ import Swal from "sweetalert2";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [OTPError, setOTPError] = useState("");
   const [otpReceived, setOtpReceived] = useState();
   const history = useHistory();
   // const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
@@ -25,7 +24,6 @@ function ForgotPassword() {
   const [verifyBtnLoader, setVerifyBtnLoader] = useState(false); //Loader
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  // const [resetPg, setResetPg] = useState(false)
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -48,46 +46,31 @@ function ForgotPassword() {
         })
         .catch((error) => {
           console.log(error, error.response, error.response.status);
-          toast.error("Invalid credentials!", {
-            position: toast.POSITION.TOP_CENTER,
-            className: "toast-message",
-          });
           setBtnLoader(false);
         });
 
       // jwtService
-      // .forgotPassword({email:[email]})
-      // .then((res) => {
-      //   console.log(res);
-      //      Swal.fire({
-      //           title: "Success!",
-      //           text: "Password reset email sent",
-      //           icon: "success",
-      //           confirmButtonText: "OK",
-      //         });
-      // });
-
-      // jwtService.forgotPassword({ email: [email] })
-      // .then((res) => {
-      //   console.log(res);
-      //   // Handle the success response here
-      //   Swal.fire({
-      //     title: "Success!",
-      //     text: "Password reset email sent",
-      //     icon: "success",
-      //     confirmButtonText: "OK",
+      //   .forgotPassword({ email: [email] })
+      //   .then((res) => {
+      //     console.log(res, "on forgotpwd page");
+      //     // Handle the success response here
+      //     Swal.fire({
+      //       title: "Success!",
+      //       text: "Password reset email sent",
+      //       icon: "success",
+      //       confirmButtonText: "OK",
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     // Handle errors that occur during the password reset process
+      //     console.error("Password reset failed:", error);
+      //     Swal.fire({
+      //       title: "Error!",
+      //       text: "Password reset email could not be sent",
+      //       icon: "error",
+      //       confirmButtonText: "OK",
+      //     });
       //   });
-      // })
-      // .catch((error) => {
-      //   // Handle errors that occur during the password reset process
-      //   console.error("Password reset failed:",error);
-      //   Swal.fire({
-      //     title: "Error!",
-      //     text: "Password reset email could not be sent",
-      //     icon: "error",
-      //     confirmButtonText: "OK",
-      //   });
-      // });
     }
   };
 
@@ -123,10 +106,10 @@ function ForgotPassword() {
       })
       .catch((error) => {
         console.log(error, error.response, error.response.status);
-        toast.error("Invalid credentials!", {
-          position: toast.POSITION.TOP_CENTER,
-          className: "toast-message",
-        });
+        // toast.error("Invalid credentials!", {
+        //   position: toast.POSITION.TOP_CENTER,
+        //   className: "toast-message",
+        // });
       });
   };
 
@@ -146,23 +129,18 @@ function ForgotPassword() {
     console.log(
       "inside handleVerifyOtp",
       otp.length,
-      otp.length - 1,
       otp.join(""),
       otpReceived
     );
+    setOTPError("");
     if (otpReceived === otp.join("")) {
       console.log("inside if verify otp");
-      // return <Reset mail={email}/>
-      // setResetPg(true)
       localStorage.setItem("email", email);
       setVerifyBtnLoader(false);
       history.push("/page-reset-password");
     } else {
       console.log("inside error");
-      toast.error("Incorrect OTP! Please try again...", {
-        position: toast.POSITION.TOP_CENTER,
-        className: "toast-message",
-      });
+      setOTPError("Incorrect OTP! Please try again...");
     }
   };
 
@@ -177,7 +155,7 @@ function ForgotPassword() {
                 <div className="col-xl-12">
                   <div className="auth-form">
                     <div className="text-center mb-3">
-                      <Link to="/dashboard">
+                      <Link to="/login">
                         <img src={logo} height="40" alt="" />
                       </Link>
                     </div>
@@ -206,8 +184,7 @@ function ForgotPassword() {
                         <button
                           type="submit"
                           className="btn btn-primary btn-block"
-                          disabled={disabled}
-                        >
+                          disabled={disabled}>
                           {btnLoader ? (
                             <CircularProgress
                               style={{
@@ -282,8 +259,7 @@ function ForgotPassword() {
                                 <button
                                   className="btn btn-link"
                                   onClick={handleResendOTP}
-                                  disabled={resendDisabled}
-                                >
+                                  disabled={resendDisabled}>
                                   Resend OTP
                                 </button>
                                 {resendDisabled && (
@@ -297,17 +273,20 @@ function ForgotPassword() {
                                   className="btn btn-secondary btn-block-half"
                                   onClick={(e) =>
                                     setOtp([...otp.map((v) => "")])
-                                  }
-                                >
+                                  }>
                                   Clear
                                 </button>
                                 <button
                                   className="btn btn-primary btn-block-half"
-                                  type="submit"
-                                >
+                                  type="submit">
                                   Verify OTP
                                 </button>
                               </div>
+                              {OTPError && (
+                                <div className="text-danger fs-18">
+                                  {OTPError}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -329,8 +308,6 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      {/* <ToastContainer /> */}
-      {/* {resetPg?<Reset/>:""} */}
     </div>
   );
 }
