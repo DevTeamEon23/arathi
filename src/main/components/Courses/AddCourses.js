@@ -198,8 +198,8 @@ const AddCourses = () => {
     setIsActive(false);
   };
 
-    //image file handle
-    const handleChange = (e) => {
+  //image file handle
+  const handleChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && isValidFileType(selectedFile)) {
       setFile(selectedFile);
@@ -214,7 +214,7 @@ const AddCourses = () => {
     return allowedTypes.includes(file.type);
   };
 
-    // youtube link handle
+  // youtube link handle
   const handleInputChange = (event) => {
     const value = event.target.value;
     setCourselink(value);
@@ -227,6 +227,12 @@ const AddCourses = () => {
       /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
     setIsValidLink(youtubeRegex.test(link));
   };
+
+  // date validation
+  const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowFormatted = tomorrow.toISOString().split("T")[0];
 
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
@@ -253,18 +259,14 @@ const AddCourses = () => {
   return (
     <Fragment>
       <Nav>
-        <Nav.Item as='div'
-            className='nav nav-tabs'
-            id='nav-tab'
-            role='tablist'>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/dashboard"
-          >
+            to="/dashboard">
             Dashboard
           </Link>
           <Link
@@ -273,9 +275,8 @@ const AddCourses = () => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/courses-info"
-          >
-          Course
+            to="/courses-info">
+            Course
           </Link>
           {/* <Link
             as="button"
@@ -313,8 +314,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="coursename"
-                        >
+                          htmlFor="coursename">
                           Course Name
                           <span className="text-danger">*</span>
                         </label>
@@ -334,8 +334,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="categories"
-                        >
+                          htmlFor="categories">
                           Category
                           <span className="text-danger">*</span>
                         </label>
@@ -353,16 +352,14 @@ const AddCourses = () => {
                             name="categories"
                             options={getAllCategoriesData}
                             placeholder="Select a category"
-                            required
-                          ></Select>
+                            required></Select>
                         </div>
                       </div>
 
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="description"
-                        >
+                          htmlFor="description">
                           Description <span className="text-danger">*</span>
                         </label>
                         <div className="col-xl-6">
@@ -375,8 +372,7 @@ const AddCourses = () => {
                             maxLength={5000}
                             placeholder="Add a course description upto 5000 characters"
                             onChange={(e) => setDescription(e.target.value)}
-                            required
-                          ></textarea>
+                            required></textarea>
                         </div>
                       </div>
 
@@ -385,8 +381,7 @@ const AddCourses = () => {
                           <br />
                           <label
                             className="form-check css-control-primary css-checkbox"
-                            htmlFor="isActive"
-                          >
+                            htmlFor="isActive">
                             <input
                               type="checkbox"
                               className="form-check-input"
@@ -403,8 +398,7 @@ const AddCourses = () => {
                           <br />
                           <label
                             className="form-check css-control-primary css-checkbox"
-                            htmlFor="isHide"
-                          >
+                            htmlFor="isHide">
                             <input
                               type="checkbox"
                               className="form-check-input"
@@ -423,8 +417,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="coursecode"
-                        >
+                          htmlFor="coursecode">
                           Course Code <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -444,8 +437,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="price"
-                        >
+                          htmlFor="price">
                           Price
                           <span className="text-danger">*</span>
                         </label>
@@ -465,8 +457,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="courselink"
-                        >
+                          htmlFor="courselink">
                           Course Intro Video{" "}
                         </label>
                         <div className="input-group mb-3 col-lg-6 ">
@@ -492,8 +483,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row ">
                         <label
                           htmlFor="selectedVideo"
-                          className="col-lg-4 col-form-label"
-                        >
+                          className="col-lg-4 col-form-label">
                           Upload Your Video
                           <span className="text-danger">*</span>
                         </label>
@@ -528,8 +518,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="capacity"
-                        >
+                          htmlFor="capacity">
                           Capacity <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -549,8 +538,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="startdate"
-                        >
+                          htmlFor="startdate">
                           Course Duration
                           <span className="text-danger">*</span>
                         </label>
@@ -570,6 +558,7 @@ const AddCourses = () => {
                               id="startdate"
                               name="startdate"
                               value={startdate}
+                              min={today}
                               onChange={(e) => setStartdate(e.target.value)}
                             />
                           </div>
@@ -583,6 +572,7 @@ const AddCourses = () => {
                               id="enddate"
                               name="enddate"
                               value={enddate}
+                              min={tomorrowFormatted}
                               onChange={(e) => setEnddate(e.target.value)}
                             />
                           </div>
@@ -617,8 +607,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="certificate"
-                        >
+                          htmlFor="certificate">
                           Certificate
                           <span className="text-danger">*</span>
                         </label>
@@ -633,15 +622,13 @@ const AddCourses = () => {
                             }
                             name="certificate"
                             id="certificate"
-                            required
-                          ></Select>
+                            required></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="level"
-                        >
+                          htmlFor="level">
                           Level
                           <span className="text-danger">*</span>
                         </label>
@@ -654,8 +641,7 @@ const AddCourses = () => {
                             }
                             name="level"
                             id="level"
-                            required
-                          ></Select>
+                            required></Select>
                         </div>
                       </div>
                     </div>
@@ -663,8 +649,7 @@ const AddCourses = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="file"
-                        >
+                          htmlFor="file">
                           Add Photo<span className="text-danger">*</span>
                         </label>
                         <div className="profile-info col-lg-6">
@@ -709,8 +694,7 @@ const AddCourses = () => {
                       <Button
                         type="submit"
                         className="btn me-2 btn-primary"
-                        value="submit"
-                      >
+                        value="submit">
                         Add Course
                       </Button>{" "}
                       or &nbsp;&nbsp;
@@ -725,8 +709,7 @@ const AddCourses = () => {
                         drop="up"
                         variant="primary"
                         title="ADD"
-                        className="me-1 mt-1"
-                      >
+                        className="me-1 mt-1">
                         <Dropdown.Item>
                           <Link to="/content">
                             <i class="bi bi-back"> &nbsp;</i>Content
@@ -805,8 +788,7 @@ const AddCourses = () => {
                       </DropdownButton>
                       <button
                         type="submit"
-                        className="btn btn-primary me-1 col-lg-5 ms-auto"
-                      >
+                        className="btn btn-primary me-1 col-lg-5 ms-auto">
                         View as Learner
                       </button>
                       <DropdownButton
@@ -815,8 +797,7 @@ const AddCourses = () => {
                         drop="up"
                         variant="primary"
                         title="..."
-                        className="me-1 mt-1"
-                      >
+                        className="me-1 mt-1">
                         <Dropdown.Item>
                           <Link to="/message_users">
                             <i class="bi bi-chat-right-text"> &nbsp;</i>Message
@@ -842,23 +823,20 @@ const AddCourses = () => {
                         <Dropdown.Item
                           variant="primary"
                           className="mb-2 me-2"
-                          onClick={() => setLargeModal(true)}
-                        >
+                          onClick={() => setLargeModal(true)}>
                           <i class="bi bi-tablet"> &nbsp;</i>
                           Mobile App Compatibility
                         </Dropdown.Item>
                         <Modal
                           className="fade bd-example-modal-lg"
                           show={largeModal}
-                          size="lg"
-                        >
+                          size="lg">
                           <Modal.Header>
                             <Modal.Title>Modal App Compatibility</Modal.Title>
                             <Button
                               variant=""
                               className="btn-close"
-                              onClick={() => setLargeModal(false)}
-                            ></Button>
+                              onClick={() => setLargeModal(false)}></Button>
                           </Modal.Header>
                           <Modal.Body>
                             <Table responsive>
@@ -1107,15 +1085,13 @@ const AddCourses = () => {
                           <Modal.Footer>
                             <Button
                               variant="danger light"
-                              onClick={() => setLargeModal(false)}
-                            >
+                              onClick={() => setLargeModal(false)}>
                               Close
                             </Button>
                             <Button
                               variant=""
                               type="button"
-                              className="btn btn-primary"
-                            >
+                              className="btn btn-primary">
                               Save changes
                             </Button>
                           </Modal.Footer>

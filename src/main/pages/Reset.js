@@ -25,40 +25,40 @@ const Reset = () => {
   setPwdError("Password and Confirm password should be same");
 }else {
   setPwdError('');
-  // const requestData = {
-  //   email: email,
-  //   password: password
-  // };
-  // // Make the POST request using Axios
-  // axios.post('http://localhost:8000/auth/change-user-password', requestData)
-  //   .then(response => {
-  //     console.log('Password changed successfully!',response);
-  //     if (response.data.status === "success") {
-  //       Swal.fire({
-  //         title: "Password changed successfully!!",
-  //         text: "Please Login with new password...",
-  //         icon: "success",
-  //         confirmButtonText: "OK",
-  //       }).then(() => {
-  //         // Redirect to the login page
-  //         window.location.href = "/login";
-  //       });
-  //     }
-  //     localStorage.removeItem("email");
-  //   })
-  //   .catch((error) => {
-  //     console.log(error,error.response);
-  //     if (error.response && error.response.data && error.response.data.status === "failure") {
-  //       Swal.fire({
-  //         title: "Error changing password!",
-  //         text: "Please try again later...",
-  //         icon: "error",
-  //         confirmButtonText: "OK",
-  //       }).then(() => {
-  //         // Redirect to the login page
-  //         window.location.href = "/login";
-  //       });
-  //     }})
+  const requestData = {
+    email: email,
+    password: password
+  };
+  // Make the POST request using Axios
+  axios.post('http://localhost:8000/auth/change-user-password', requestData)
+    .then(response => {
+      console.log('Password changed successfully!',response);
+      if (response.data.status === "success") {
+        Swal.fire({
+          title: "Password changed successfully!!",
+          text: "Please Login with new password...",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Redirect to the login page
+          window.location.href = "/login";
+        });
+      }
+      localStorage.removeItem("email");
+    })
+    .catch((error) => {
+      console.log(error,error.response);
+      if (error.response && error.response.data && error.response.data.status === "failure") {
+        Swal.fire({
+          title: "Error changing password!",
+          text: "Please try again later...",
+          icon: "error",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Redirect to the login page
+          window.location.href = "/login";
+        });
+      }})
 
   jwtService
   .resetPassword({

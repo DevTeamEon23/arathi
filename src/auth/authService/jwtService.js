@@ -60,22 +60,9 @@ class JwtService extends Utils.EventEmitter {
 
 //Sign up function
 createUser = (data) => {
-  console.log(data);
   return new Promise((resolve, reject) => {
     axiosInstance.post(jwtServiceConfig.signUp, data)
       .then((response) => {
-      console.log("signup function",response.data.user,response.data.error);
-        if (response.data.status === "Success") {
-          Swal.fire({
-            title: "Success!",
-            text: "Registration Done Successfully",
-            icon: "success",
-            confirmButtonText: "OK",
-          }).then(() => {
-            // Redirect to the login page
-            window.location.href = "/login";
-          });
-        }
         resolve();
         if (response.data.user) {
           this.setSession(response.data.access_token);
@@ -86,18 +73,8 @@ createUser = (data) => {
         }
       })
       .catch((error) => {
-        console.log(error,error.response);
-        if (error.response && error.response.data && error.response.data.status === "failure") {
-          Swal.fire({
-            title: "Something went wrong!",
-            text: "User Already Exists",
-            icon: "error",
-            confirmButtonText: "OK",
-          });
-          reject(new Error("Email or Password invalid."));
-        } else {
-          reject(error);
-        }
+        reject(new Error("Email or Password invalid."));
+        reject(error);
       });
   });
 };
@@ -151,17 +128,7 @@ signInWithEmailAndPassword = (data) => {
       axiosInstance
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
-          console.log("login done token",response.data.token,response.data.data.user.role);
-          localStorage.setItem("role", response.data.data.user.role);
-          if (response.data.status === "success") {
-            Swal.fire({
-              title: "Success!",
-              text: "Login successful",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
-          }
-          // handled wrong password or email response
+          console.log(response);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             this.emit("onLogin", response.data.data.user);
@@ -171,20 +138,7 @@ signInWithEmailAndPassword = (data) => {
           }
         })
         .catch(({ response }) => {
-          console.log(response);
-          if (response.data.status === "failure") {
-            Swal.fire({
-              title: "Failed!",
-              text: "Email or Password invaild.",
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-            reject(new Error("Email or Password invaild."));
-          }
           reject(response.data);
-          //   if (!response.data.verified) {
-          //     reject(new Error({ verified: response.data.verified }));
-          //   }
         });
     });
   };
@@ -200,43 +154,64 @@ signInWithEmailAndPassword = (data) => {
         this.setSession(null);
         this.emit("onLogout", "Logged out");
         localStorage.removeItem("role");
+        localStorage.removeItem("name","email");
       });
   };
 
   // forgot password function
+  // forgotPassword = (email) => {
+  // console.log(email)
+  //   return new Promise((resolve, reject) => {
+  //     axiosInstance
+  //       .post(jwtServiceConfig.forgotPassword, email)
+  //       .then((response) => {
+  //         console.log(response) 
+  //         // if (response.data.status === "success") {
+  //         //   Swal.fire({
+  //         //     title: "Success!",
+  //         //     text: "Password reset email sent",
+  //         //     icon: "success",
+  //         //     confirmButtonText: "OK",
+  //         //   });
+  //         // }
+  //         resolve();
+  //       })
+  //       .catch((error) => {
+  //         console.log(error.response);
+  //         reject(error);
+  //         // if (error.response && error.response.data && error.response.data.status === "failure") {
+  //         //   Swal.fire({
+  //         //     title: "Failed!",
+  //         //     text: "Failed to send password reset email",
+  //         //     icon: "error",
+  //         //     confirmButtonText: "OK",
+  //         //   });
+  //         //   reject(new Error("Failed to send password reset email."));
+  //         // } else {
+  //         //   reject(error);
+  //         // }
+  //       });
+  //   });
+  // };
   forgotPassword = (email) => {
-  console.log(email)
     return new Promise((resolve, reject) => {
-      axiosInstance
-        .post(jwtServiceConfig.forgotPassword, email)
+      axiosInstance.post(jwtServiceConfig.forgotPassword, email )
         .then((response) => {
-          console.log(response) 
-          if (response.data.status === "success") {
-            Swal.fire({
-              title: "Success!",
-              text: "Password reset email sent",
-              icon: "success",
-              confirmButtonText: "OK",
-            });
+          console.log(response);
+          if (response.data.data) {
+            this.setSession(response.data.token);
+            this.emit("onLogin", response.data.data);
+            resolve(response.data.data);
           }
-          resolve(response.data);
+          console.log("Password reset email sent successfully.");
         })
-        .catch((error) => {
-          console.log(error.response);
-          if (error.response && error.response.data && error.response.data.status === "failure") {
-            Swal.fire({
-              title: "Failed!",
-              text: "Failed to send password reset email",
-              icon: "error",
-              confirmButtonText: "OK",
-            });
-            reject(new Error("Failed to send password reset email."));
-          } else {
-            reject(error);
-          }
+        .catch(({ response }) => {
+          reject(response.data);
+          console.error("Error sending password reset email:", response);
         });
     });
   };
+  
 
    // Reset password function
 resetPassword = (email, password) => {

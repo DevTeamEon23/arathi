@@ -10,7 +10,7 @@ import jwtService from "src/auth/authService/jwtService";
 // Add sweet alert
 import Swal from "sweetalert2";
 
-function Register(props) {
+const Register =() =>{
   const [userName, setUserName] = useState("");
   const [nameErrorMsg, setNameErrorMsg] = useState("");
   const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ function Register(props) {
   const [error, setError] = useState("");
   const [isRevealPwd, setIsRevealPwd] = useState(false);
 
-  function onSignUp(e) {
+  const onSignUp=(e)=> {
     e.preventDefault();
     if (userName.length < 3) {
       setNameErrorMsg("Full name must contain at least 3 characters");
@@ -30,8 +30,6 @@ function Register(props) {
       setError("Password must be at least 5 characters long");
     } else {
       setError("");
-    }
-
     jwtService
       .createUser({
         fullname: userName,
@@ -39,19 +37,38 @@ function Register(props) {
         email,
         generate_token: true,
       })
-      .then((response) => {});
+      .then((response) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Registration Done Successfully",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          // Redirect to the login page
+          window.location.href = "/login";
+        });
+      })
+      .catch((error) => {
+        console.error("Error during sign-in:", error); 
+        Swal.fire({
+          title: "Something went wrong!",
+          text: "User Already Exists",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      });
+    }
   }
 
+      // Validate full name
   const validateName = () => {
-    // Validate full name
     if (!/^[a-zA-Z\s]+$/.test(userName)) {
-      console.log(userName.length);
       setNameErrorMsg("Please enter a valid full name");
     } else {
       setNameErrorMsg("");
-      // Perform further actions or submit the form
     }
   };
+
   return (
     <div className="authincation h-100 p-meddle">
       <div className="container h-100">
@@ -67,19 +84,14 @@ function Register(props) {
                       </Link>
                     </div>
                     <h4 className="text-center mb-4 ">Sign up your account</h4>
-                    {props.errorMessage && (
-                      <div className="">{props.errorMessage}</div>
-                    )}
-                    {props.successMessage && (
-                      <div className="">{props.successMessage}</div>
-                    )}
                     <form onSubmit={onSignUp}>
                       <div className="form-group mb-3">
-                        <label className="mb-1 ">
+                        <label className="mb-1" htmlFor="userName">
                           <strong>Full Name</strong>
                         </label>
                         <input
                           type="text"
+                          id="userName"
                           className="form-control"
                           placeholder="Enter Full name"
                           value={userName}
@@ -92,11 +104,12 @@ function Register(props) {
                         )}
                       </div>
                       <div className="form-group mb-3">
-                        <label className="mb-1 ">
+                        <label className="mb-1" htmlFor="email">
                           <strong>Email</strong>
                         </label>
                         <input
                           type="email"
+                          id="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           className="form-control"
@@ -107,11 +120,12 @@ function Register(props) {
                         className="form-group mb-3"
                         style={{ position: "relative" }}
                       >
-                        <label className="mb-1">
+                        <label className="mb-1" htmlFor="password">
                           <strong>Password</strong>
                         </label>
                         <input
                           type={isRevealPwd ? "text" : "password"}
+                          id="password"
                           className="form-control"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
@@ -170,4 +184,4 @@ function Register(props) {
   );
 }
 
-export default withRouter(Register);
+export default Register;
