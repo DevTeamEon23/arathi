@@ -342,14 +342,7 @@ const AddCourses = () => {
                           <span className='text-danger'>*</span>
                         </label>
                         <div className='col-lg-6'>
-                          {/* <Select
-                          defaultValue={category}
-                          onChange={category}
-                          options={category}
-                          name='category'
-                        ></Select> */}
                           <Select
-                            // onChange={handleSelectChange}
                             value={selectCategoriesData}
                             id='categories'
                             name='categories'
