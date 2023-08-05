@@ -13,7 +13,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const eventtype = [
-  { value: "Selectevent", label: "Select event" },
   { value: "Onusercreate", label: "On user create" },
   { value: "Onusersignup", label: "On user signup" },
   { value: "Xhoursafterusersignup", label: "X hours after user signup" },
@@ -83,7 +82,6 @@ const eventtype = [
 ];
 
 const recipienttype = [
-  { value: "Selectrecipient", label: "Select recipient" },
   { value: "Relateduser", label: "Related user" },
   { value: "Accountowner", label: "Account owner" },
   { value: "SuperAdmins", label: "SuperAdmins" },
@@ -94,10 +92,9 @@ const recipienttype = [
 ];
 
 const AddNotification = () => {
-  const [id, setId] = useState("");
   const [ename, setEname] = useState("");
   const [descp, setDescp] = useState("");
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [selectEvent, setSelectEvent] = useState(null); //set event list
   const [selectRecipient, setSelectRecipient] = useState(null); //recipient
 
@@ -105,13 +102,13 @@ const AddNotification = () => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("ename", ename);
-    formData.append("eventtype", selectEvent);
-    formData.append("recipienttype", selectRecipient);
+    formData.append("eventtype", selectEvent.value);
+    formData.append("recipienttype", selectRecipient.value);
     formData.append("descp", descp);
     formData.append("isActive", isActive);
     formData.append("generate_token", true);
 
-    console.log(ename, eventtype, recipienttype, descp);
+    console.log(ename, selectEvent.label, selectRecipient.label, descp);
 
     const url = "http://127.0.0.1:8000/lms-service/addevents";
     const authToken = window.localStorage.getItem("jwt_access_token");
@@ -229,6 +226,7 @@ const AddNotification = () => {
                             }
                             options={eventtype}
                             name="eventtype"
+                            placeholder="Select event"
                             required></Select>
                         </div>
                       </div>
@@ -242,11 +240,12 @@ const AddNotification = () => {
                         <div className="col-lg-6">
                           <Select
                             value={selectRecipient}
+                            options={recipienttype}
                             onChange={(selectRecipient) =>
                               setSelectRecipient(selectRecipient)
                             }
-                            options={recipienttype}
                             name="recipienttype"
+                            placeholder="Select recipient"
                             required></Select>
                         </div>
                       </div>
@@ -280,7 +279,7 @@ const AddNotification = () => {
                               className="form-check-input"
                               id="isActive"
                               name="isActive"
-                              value={isActive}
+                              checked={isActive}
                               onChange={(e) => setIsActive(e.target.value)}
                               required
                             />
