@@ -2,7 +2,13 @@ import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import Select from "react-select";
-import { Dropdown, DropdownButton, ButtonGroup, Button } from "react-bootstrap";
+import {
+  Dropdown,
+  DropdownButton,
+  ButtonGroup,
+  Button,
+  Nav,
+} from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -92,9 +98,7 @@ const AddNotification = () => {
   const [ename, setEname] = useState("");
   const [descp, setDescp] = useState("");
   const [isActive, setIsActive] = useState(true);
-  const [data, setData] = useState([]);
-  const [events, setEvents] = useState([]); //set event list
-  const [selectEvent, setSelectEvent] = useState(null); //eventtype
+  const [selectEvent, setSelectEvent] = useState(null); //set event list
   const [selectRecipient, setSelectRecipient] = useState(null); //recipient
 
   const handleSubmit = (e) => {
@@ -109,30 +113,58 @@ const AddNotification = () => {
 
     console.log(ename, eventtype, recipienttype, descp);
 
-    // const url = "";
-    // const authToken = window.localStorage.getItem("jwt_access_token");
-    // axios
-    //   .post(url, formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //       "Auth-Token": authToken,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data);
-    //     toast.success("Course added successfully!!!");
-    //     clearAllState();
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     toast.error("Failed !!! Unable to add course...");
-    //   });
+    const url = "http://127.0.0.1:8000/lms-service/addevents";
+    const authToken = window.localStorage.getItem("jwt_access_token");
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Notification added successfully!!!");
+        clearAllState();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to add notification...");
+      });
   };
 
-  const clearAllState = () => {};
+  const clearAllState = () => {
+    setEname("");
+    setDescp("");
+    setIsActive(false);
+    setSelectEvent(null);
+    setSelectRecipient(null);
+  };
 
   return (
     <Fragment>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/dashboard">
+            Dashboard
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/events">
+            Events
+          </Link>
+        </Nav.Item>
+      </Nav>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -191,10 +223,13 @@ const AddNotification = () => {
                         <div className="col-lg-6">
                           <Select
                             id="eventtype"
-                            defaultValue={eventtype}
-                            onChange={eventtype}
+                            value={selectEvent}
+                            onChange={(selectEvent) =>
+                              setSelectEvent(selectEvent)
+                            }
                             options={eventtype}
-                            name="eventtype"></Select>
+                            name="eventtype"
+                            required></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
@@ -206,10 +241,13 @@ const AddNotification = () => {
                         </label>
                         <div className="col-lg-6">
                           <Select
-                            defaultValue={recipienttype}
-                            onChange={recipienttype}
+                            value={selectRecipient}
+                            onChange={(selectRecipient) =>
+                              setSelectRecipient(selectRecipient)
+                            }
                             options={recipienttype}
-                            name="recipienttype"></Select>
+                            name="recipienttype"
+                            required></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
@@ -232,28 +270,39 @@ const AddNotification = () => {
                       </div>
                       <div className="col-lg-04"></div>
                       <br />
-                      <div className="form-group mb-3 row"></div>
-                      <label
-                        className="form-check css-control-primary css-checkbox"
-                        htmlFor="val-terms">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          id="isActive"
-                          name="isActive"
-                          value={isActive}
-                          onChange={(e) => setIsActive(e.target.value)}
-                        />
-                        Active
-                      </label>
+                      <div className="form-group mb-3 row">
+                        <div className="col-lg-8 ms-auto">
+                          <label
+                            className="form-check css-control-primary css-checkbox"
+                            htmlFor="isActive">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id="isActive"
+                              name="isActive"
+                              value={isActive}
+                              onChange={(e) => setIsActive(e.target.value)}
+                              required
+                            />
+                            Active
+                          </label>
+                        </div>
+                      </div>
                       <br />
-                      <button type="submit" className="btn me-2 btn-primary">
-                        Create Notification
-                      </button>
-                      &nbsp; or &nbsp;&nbsp;
-                      <Link to="/events">
-                        <Button className="btn btn-light">Cancel</Button>
-                      </Link>
+                    </div>
+                    <div className="form-group mb-3 row">
+                      <div className="col-lg-8 ms-auto">
+                        <Button
+                          type="submit"
+                          className="btn me-2 btn-primary"
+                          value="submit">
+                          Create Notification
+                        </Button>
+                        &nbsp; or &nbsp;&nbsp;
+                        <Link to="/events">
+                          <Button className="btn me-2 btn-light">Cancel</Button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </form>

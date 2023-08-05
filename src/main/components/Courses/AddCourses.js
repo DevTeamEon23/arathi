@@ -70,6 +70,7 @@ const AddCourses = () => {
   const [courses, setCourses] = useState([]);
   const [token, setToken] = useState(); //auth token
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
+  const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   let history = useHistory();
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
 
@@ -77,7 +78,7 @@ const AddCourses = () => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllCategories();
-    console.log(getAllCategoriesData);
+    console.log(selectCategoriesData);
   }, []);
 
   // All Categories List
@@ -108,6 +109,7 @@ const AddCourses = () => {
     console.log("inside onchange");
     const selectedName = event.target.value;
     console.log(selectedName);
+    setSelectCategoriesData(selectedName);
   };
 
   //video file handle
@@ -141,7 +143,7 @@ const AddCourses = () => {
     formData.append("timelimit", timelimit);
     formData.append("certificate", selectedOptionCertificate.value);
     formData.append("level", selectedOptionLevel.value);
-    formData.append("category", "Web Development");
+    formData.append("category", selectCategoriesData.value);
     formData.append("isActive", isActive);
     formData.append("isHide", isHide);
     formData.append("generate_token", true);
@@ -174,7 +176,7 @@ const AddCourses = () => {
     fileRef.current.value = "";
     setSelectedOptionCertificate(null);
     setSelectedOptionLevel(null);
-    setGetAllCategoriesData({});
+    setSelectCategoriesData(null);
     setDescription("");
     setIsActive(false);
     setIsHide(false);
@@ -339,18 +341,14 @@ const AddCourses = () => {
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          {/* <Select
-                          defaultValue={category}
-                          onChange={category}
-                          options={category}
-                          name='category'
-                        ></Select> */}
                           <Select
-                            onChange={handleSelectChange}
-                            value={getAllCategoriesData}
+                            value={selectCategoriesData}
                             id="categories"
                             name="categories"
                             options={getAllCategoriesData}
+                            onChange={(selectCategoriesData) =>
+                              setSelectCategoriesData(selectCategoriesData)
+                            }
                             placeholder="Select a category"
                             required></Select>
                         </div>
