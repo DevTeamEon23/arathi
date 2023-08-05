@@ -226,9 +226,8 @@ const AddNotification = () => {
                             rows="5"
                             placeholder="Short Description about user.."
                             value={descp}
-                            onChange={(e) =>
-                              setDescp(e.target.value)
-                            }></textarea>
+                            onChange={(e) => setDescp(e.target.value)}
+                            style={{ resize: "none" }}></textarea>
                         </div>
                       </div>
                       <div className="col-lg-04"></div>

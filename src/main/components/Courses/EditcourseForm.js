@@ -408,6 +408,7 @@ const EditcourseForm = (props) => {
                                 rows="5"
                                 maxLength={5000}
                                 onChange={(e) => setDescription(e.target.value)}
+                                style={{ resize: "none" }}
                                 required></textarea>
                             </div>
                           </div>

@@ -372,6 +372,7 @@ const AddCourses = () => {
                             maxLength={5000}
                             placeholder="Add a course description upto 5000 characters"
                             onChange={(e) => setDescription(e.target.value)}
+                            style={{ resize: "none" }}
                             required></textarea>
                         </div>
                       </div>

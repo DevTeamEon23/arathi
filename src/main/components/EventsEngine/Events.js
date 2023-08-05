@@ -12,13 +12,13 @@ import {
   Nav,
 } from "react-bootstrap";
 
-
 const Events = () => {
   const [events, setEvents] = useState([]);
+  const [data, setData] = useState([]);
 
   const getEvents = async () => {
     const requestOptions = {
-      method:"GET",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
@@ -28,42 +28,15 @@ const Events = () => {
 
     console.log(data);
   };
-  const [data, setData] = useState([]);
 
-  const fetchData = () => {
-    fetch(`https://localhost:8000/lmsevents`)
-    //This function is used while fetching data from FASTAPI (HTTP/HTTPS) 3.110.124.80
-      // .then((response) => response.json())
-      // .then((actualData) => {
-      //   console.log(actualData);
-      //   setUsers(actualData.data);
-      //   console.log(data);
-
-      // This is used for fetching data from json-server port 4000 fastAPI 8000
-      .then((res) => res.json())
-      .then((data) => {
-         console.log(data);
-         setData(data);
-      })
-      .catch((err) => {
-        console.log(err.message);
+  async function deleteOperation(id) {
+    if (window.confirm("Are you sure?")) {
+      let result = await fetch("https://localhost:8000/lmsevents/" + id, {
+        method: "DELETE",
       });
-  };
-
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/lmsevents/"+id,{
-        method:'DELETE'
-      });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
+      result = await result.json();
+      console.warn(result);
+      // fetchData();
     }
   }
 
@@ -98,13 +71,31 @@ const Events = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+
+  let history = useHistory();
+
   return (
     <Fragment>
-        <Nav >
-	      <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/events">Notification</Link>
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/pending-notification">Pending Notification</Link>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/events">
+            Notification
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/pending-notification">
+            Pending Notification
+          </Link>
         </Nav.Item>
       </Nav>
       <Row>
@@ -115,9 +106,12 @@ let history = useHistory();
               <div>
                 <Link to="/add-events">
                   <Button variant="primary">Add Notification</Button>
-                </Link>&nbsp;&nbsp;
+                </Link>
+                &nbsp;&nbsp;
                 <Link to="/customize-system-notification">
-                  <Button variant="primary">Customize system Notification</Button>
+                  <Button variant="primary">
+                    Customize system Notification
+                  </Button>
                 </Link>
               </div>
             </Card.Header>
@@ -143,33 +137,33 @@ let history = useHistory();
                   </tr>
                 </thead>
                 <tbody>
-                {data?.map((item, index) => {
-               return (
-                <tr key={index}>
-                <td><center>{item.id}</center></td>
-                    <td>{item.ename}</td>
-                    <td>{item.eventtype}</td>
-                    <td>{item.recipienttype}</td>
-                    <td>
-                        <center>
-                        <Link
-                          to="/edit-events"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                        </center>
-                    </td>
-                  </tr>
-               );
-                })}
+                  {data?.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <center>{item.id}</center>
+                        </td>
+                        <td>{item.ename}</td>
+                        <td>{item.eventtype}</td>
+                        <td>{item.recipienttype}</td>
+                        <td>
+                          <center>
+                            <Link
+                              to="/edit-events"
+                              className="btn btn-primary shadow btn-xs sharp me-1">
+                              <i className="fas fa-pencil-alt"></i>
+                            </Link>
+                            <Link
+                              href="#"
+                              className="btn btn-danger shadow btn-xs sharp"
+                              onClick={() => deleteOperation(item.id)}>
+                              <i className="fa fa-trash"></i>
+                            </Link>
+                          </center>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </Table>
             </Card.Body>
@@ -177,7 +171,7 @@ let history = useHistory();
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Cancel</Button>
+        <Button onClick={() => history.goBack()}>Cancel</Button>
       </div>
     </Fragment>
   );

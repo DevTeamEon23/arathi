@@ -198,9 +198,8 @@ const EditGroups = (props) => {
                               rows="5"
                               placeholder="Short Description about course.."
                               value={groupdesc}
-                              onChange={(e) =>
-                                setGroupdesc(e.target.value)
-                              }></textarea>
+                              onChange={(e) => setGroupdesc(e.target.value)}
+                              style={{ resize: "none" }}></textarea>
                           </div>
                         </div>
                         <div className="col-lg-04"></div>
