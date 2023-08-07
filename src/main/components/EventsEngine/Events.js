@@ -47,6 +47,11 @@ const Events = () => {
     }
   };
 
+  const handleEdit = (id) => {
+    console.log("inside event handle edit page", id);
+    history.push(`/edit-events/${id}`);
+  };
+
   const deleteEvent = (eventId) => {
     setShowModal(true);
     setEventId(eventId);
@@ -183,11 +188,12 @@ const Events = () => {
                           </td>
                           <td>
                             <center>
-                              <Link
-                                to="/edit-events"
-                                className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i className="fas fa-pencil-alt"></i>
-                              </Link>
+                              <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <i
+                                  className="fas fa-pencil-alt"
+                                  onClick={(e) => handleEdit(item.id)}></i>
+                              </div>
+
                               <div className="btn btn-danger shadow btn-xs sharp">
                                 <i
                                   className="fa fa-trash"

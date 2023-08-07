@@ -508,7 +508,7 @@ const Markup = () => {
     // Events -----
     { url: "events", component: Events },
     { url: "add-events", component: AddNotification },
-    { url: "edit-events", component: EditNotification },
+    { url: "edit-events/:id", component: EditNotification },
     { url: "customize-system-notification", component: CustomizeNotification },
     { url: "pending-notification", component: PendingNotification },
 

@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
+import Url from "../../../../src/auth/authService/Url";
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -69,7 +70,7 @@ const EditcourseForm = (props) => {
   const [enddate, setEnddate] = useState(""); //Course EndDate
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  const backendBaseUrl = "http://127.0.0.1:8000";
+  const backendBaseUrl = Url; //"http://127.0.0.1:8000";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -96,7 +97,10 @@ const EditcourseForm = (props) => {
       formData.append("description", description);
       formData.append("coursecode", coursecode);
       formData.append("price", price);
-      formData.append("courselink", courselink);
+      formData.append(
+        "courselink",
+        !courselink === undefined ? courselink : null
+      );
       formData.append("coursevideo", selectedVideo);
       formData.append("capacity", capacity);
       formData.append("startdate", startdate);

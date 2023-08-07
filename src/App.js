@@ -30,6 +30,7 @@ function App(props) {
       console.log("inside app.js");
       props.history.push("/dashboard");
     } else {
+      console.log("inside app.js@@@@@@@@@@@@@@@");
       props.history.push("/login");
     }
   }, [dispatch, props.history, isAuthenticated]);
@@ -54,17 +55,18 @@ function App(props) {
                 <div className="sk-child sk-bounce3"></div>
               </div>
             </div>
-          }
-        >
-          <ToastContainer  position='top-center'
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover/>
+          }>
+          <ToastContainer
+            position="top-center"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
           <Index />
         </Suspense>
       </>
@@ -81,8 +83,7 @@ function App(props) {
                 <div className="sk-child sk-bounce3"></div>
               </div>
             </div>
-          }
-        >
+          }>
           {routes}
         </Suspense>
       </div>
