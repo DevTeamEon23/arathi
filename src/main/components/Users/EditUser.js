@@ -466,10 +466,10 @@ const EditUser = (props) => {
                                 id="bio"
                                 value={bio}
                                 rows="5"
+                                maxLength={300}
                                 placeholder="Short Description about user..."
-                                onChange={(e) =>
-                                  setBio(e.target.value)
-                                }></textarea>
+                                onChange={(e) => setBio(e.target.value)}
+                                style={{ resize: "none" }}></textarea>
                             </div>
                           </div>
                           <br />

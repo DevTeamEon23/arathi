@@ -10,101 +10,101 @@ import {
   ProgressBar,
   Button,
   Nav,
+  Modal,
 } from "react-bootstrap";
-
+import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
+  const [data, setData] = useState([]);
+  const [eventId, setEventId] = useState(); //grp id save for delete
+  const [token, setToken] = useState(); //auth token
+  const [eventData, setEventData] = useState([]);
+  const [showModal, setShowModal] = useState(false); //delete button modal
 
-  const getEvents = async () => {
-    const requestOptions = {
-      method:"GET",
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllEvents();
+  }, []);
+
+  const getAllEvents = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "http://127.0.0.1:8000/lms-service/events";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+      console.log("getAllEvents", response.data);
+      setEventData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Courses !"); // Handle the error
+    }
+  };
+
+  const deleteEvent = (eventId) => {
+    setShowModal(true);
+    setEventId(eventId);
+  };
+
+  const handleDelete = async () => {
+    const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Auth-Token": token,
       },
     };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
-
-    console.log(data);
-  };
-  const [data, setData] = useState([]);
-
-  const fetchData = () => {
-    fetch(`https://localhost:8000/lmsevents`)
-    //This function is used while fetching data from FASTAPI (HTTP/HTTPS) 3.110.124.80
-      // .then((response) => response.json())
-      // .then((actualData) => {
-      //   console.log(actualData);
-      //   setUsers(actualData.data);
-      //   console.log(data);
-
-      // This is used for fetching data from json-server port 4000 fastAPI 8000
-      .then((res) => res.json())
-      .then((data) => {
-         console.log(data);
-         setData(data);
+    const requestBody = {
+      id: eventId,
+    };
+    await axios
+      .delete(`http://127.0.0.1:8000/lms-service/delete_event`, {
+        ...config,
+        data: requestBody,
       })
-      .catch((err) => {
-        console.log(err.message);
+      .then((response) => {
+        setShowModal(false);
+        getAllEvents();
+        toast.success("Event deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to delete a event!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
   };
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
+  let history = useHistory();
 
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/lmsevents/"+id,{
-        method:'DELETE'
-      });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
-    }
-  }
-
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
-  };
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
-let history = useHistory();
   return (
     <Fragment>
-        <Nav >
-	      <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/events">Notification</Link>
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/pending-notification">Pending Notification</Link>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/events">
+            Notification
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/pending-notification">
+            Pending Notification
+          </Link>
         </Nav.Item>
       </Nav>
       <Row>
@@ -115,70 +115,122 @@ let history = useHistory();
               <div>
                 <Link to="/add-events">
                   <Button variant="primary">Add Notification</Button>
-                </Link>&nbsp;&nbsp;
+                </Link>
+                &nbsp;&nbsp;
                 <Link to="/customize-system-notification">
-                  <Button variant="primary">Customize system Notification</Button>
+                  <Button variant="primary">
+                    Customize system Notification
+                  </Button>
                 </Link>
               </div>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
+              {eventData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="130"
+                    visible={true}
+                  />
+                </div>
+              ) : eventData.length > 0 ? (
+                <Table responsive>
+                  <thead>
+                    <tr>
+                      {/* <th className="width80">
                       <strong>#</strong>
-                    </th>
-                    <th>
-                      <strong>NAME</strong>
-                    </th>
-                    <th>
-                      <strong>Event</strong>
-                    </th>
-                    <th>
-                      <strong>Recipent</strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {data?.map((item, index) => {
-               return (
-                <tr key={index}>
-                <td><center>{item.id}</center></td>
-                    <td>{item.ename}</td>
-                    <td>{item.eventtype}</td>
-                    <td>{item.recipienttype}</td>
-                    <td>
+                    </th> */}
+                      <th>
                         <center>
-                        <Link
-                          to="/edit-events"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
+                          <strong>NAME</strong>
                         </center>
-                    </td>
-                  </tr>
-               );
-                })}
-                </tbody>
-              </Table>
+                      </th>
+                      <th>
+                        <center>
+                          <strong>Event</strong>
+                        </center>
+                      </th>
+                      <th>
+                        <center>
+                          {" "}
+                          <strong>Recipent</strong>
+                        </center>
+                      </th>
+                      <th>
+                        <center>
+                          <strong>OPTION</strong>
+                        </center>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {eventData?.map((item, index) => {
+                      return (
+                        <tr key={index}>
+                          {/* <td>
+                          <center>{item.id}</center>
+                        </td> */}
+                          <td>
+                            <center>{item.ename}</center>
+                          </td>
+                          <td>
+                            <center>{item.eventtype}</center>
+                          </td>
+                          <td>
+                            <center>{item.recipienttype}</center>
+                          </td>
+                          <td>
+                            <center>
+                              <Link
+                                to="/edit-events"
+                                className="btn btn-primary shadow btn-xs sharp me-1">
+                                <i className="fas fa-pencil-alt"></i>
+                              </Link>
+                              <div className="btn btn-danger shadow btn-xs sharp">
+                                <i
+                                  className="fa fa-trash"
+                                  onClick={() => deleteEvent(item.id)}></i>
+                              </div>
+                            </center>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              ) : (
+                <>
+                  {" "}
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No Event Found.</p>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Cancel</Button>
+        <Button onClick={() => history.goBack()}>Cancel</Button>
       </div>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Event</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete a Event?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 };

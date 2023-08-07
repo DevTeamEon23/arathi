@@ -68,6 +68,7 @@ const EditcourseForm = (props) => {
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
+  const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const backendBaseUrl = "http://127.0.0.1:8000";
 
   useEffect(() => {
@@ -103,7 +104,7 @@ const EditcourseForm = (props) => {
       formData.append("timelimit", timelimit);
       formData.append("certificate", selectedOptionCertificate);
       formData.append("level", selectedOptionLevel);
-      formData.append("category", getAllCategoriesData);
+      formData.append("category", selectCategoriesData.value);
       formData.append("isActive", isActive);
       formData.append("isHide", isHide);
       formData.append("file", file);
@@ -193,6 +194,10 @@ const EditcourseForm = (props) => {
           value: res.level,
           label: res.level,
         });
+        setSelectCategoriesData({
+          value: res.category,
+          label: res.category,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -221,12 +226,6 @@ const EditcourseForm = (props) => {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Categories !"); // Handle the error
     }
-  };
-  // categories handle
-  const handleSelectChange = (event) => {
-    console.log("inside onchange");
-    const selectedName = event.target.value;
-    console.log(selectedName);
   };
 
   // "Active" is checked
@@ -383,12 +382,14 @@ const EditcourseForm = (props) => {
                           name='category'
                         ></Select> */}
                               <Select
-                                onChange={handleSelectChange}
-                                value={getAllCategoriesData}
+                                // onChange={handleSelectChange}
+                                value={selectCategoriesData}
                                 id="categories"
                                 name="categories"
                                 options={getAllCategoriesData}
-                                placeholder="Select a category"
+                                onChange={(selectCategoriesData) =>
+                                  setSelectCategoriesData(selectCategoriesData)
+                                }
                                 required></Select>
                             </div>
                           </div>
@@ -408,6 +409,7 @@ const EditcourseForm = (props) => {
                                 rows="5"
                                 maxLength={5000}
                                 onChange={(e) => setDescription(e.target.value)}
+                                style={{ resize: "none" }}
                                 required></textarea>
                             </div>
                           </div>

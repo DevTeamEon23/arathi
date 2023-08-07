@@ -5,7 +5,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Nav, Button } from "react-bootstrap";
 
-
 //select dropdown
 const categorytype = [
   { value: "superadmin", label: "SuperAdmin" },
@@ -46,15 +45,13 @@ const AddUser = () => {
   const [emailError, setEmailError] = useState(""); //show wrong email error
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-  const [activeError,setActiveError]=useState("");
+  const [activeError, setActiveError] = useState("");
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
 
   useEffect(() => {
-    console.log(
-      file,"file"
-    );
+    console.log(file, "file");
   });
 
   const handleActiveChange = (e) => {
@@ -118,9 +115,8 @@ const AddUser = () => {
         console.error(error);
         toast.error("Failed !!! Unable to add user...");
       });
-    
   };
-  
+
   // To set img file
   // function handleChange(e) {
   //   console.log(e.target.files);
@@ -141,7 +137,6 @@ const AddUser = () => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     return allowedTypes.includes(file.type);
   };
-
 
   const handleEmail = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -207,8 +202,7 @@ const AddUser = () => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/dashboard"
-          >
+            to="/dashboard">
             Dashboard
           </Link>
           <Link
@@ -217,8 +211,7 @@ const AddUser = () => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/users-list"
-          >
+            to="/users-list">
             Users
           </Link>
         </Nav.Item>
@@ -238,8 +231,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
-                        >
+                          htmlFor="val-email">
                           Employee ID <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -256,8 +248,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Full Name <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -280,8 +271,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
-                        >
+                          htmlFor="val-email">
                           Email Address <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -305,8 +295,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
-                        >
+                          htmlFor="val-email">
                           Department<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -324,8 +313,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email"
-                        >
+                          htmlFor="val-email">
                           Aadhar Card No.<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -348,8 +336,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Username <span className="text-danger">*</span>
                         </label>
                         <div className="input-group col-lg-6">
@@ -388,8 +375,7 @@ const AddUser = () => {
                           />
                           <div
                             className="input-group-text "
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
+                            onClick={() => setShowPassword(!showPassword)}>
                             {" "}
                             {showPassword === false ? (
                               <i className="fa fa-eye-slash" />
@@ -403,8 +389,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
+                          htmlFor="val-suggestions">
                           Bio
                         </label>
                         <div className="col-lg-8">
@@ -416,7 +401,7 @@ const AddUser = () => {
                             maxLength={300}
                             placeholder="Short Description about user..."
                             onChange={(e) => setBio(e.target.value)}
-                          ></textarea>
+                            style={{ resize: "none" }}></textarea>
                         </div>
                       </div>
                       <br />
@@ -424,8 +409,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           User Type
                           <span className="text-danger">*</span>
                         </label>
@@ -437,21 +421,18 @@ const AddUser = () => {
                               setSelectedOptionRole(selectedOptionRole)
                             }
                             name="categorytype"
-                            required
-                          ></Select>
+                            required></Select>
                           <div
                             id="val-username1-error"
                             className="invalid-feedback animated fadeInUp"
-                            style={{ display: "block" }}
-                          ></div>
+                            style={{ display: "block" }}></div>
                         </div>
                       </div>
 
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-website"
-                        >
+                          htmlFor="val-website">
                           Time Zone
                         </label>
                         <div className="col-lg-6">
@@ -461,15 +442,13 @@ const AddUser = () => {
                             onChange={(selectedOptionTimeZone) =>
                               setSelectedOptionTimeZone(selectedOptionTimeZone)
                             }
-                            name="timezonetype"
-                          ></Select>
+                            name="timezonetype"></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-currency"
-                        >
+                          htmlFor="val-currency">
                           Language
                         </label>
                         <div className="col-lg-6">
@@ -479,8 +458,7 @@ const AddUser = () => {
                               setSelectedOptionLang(selectedOptionLang)
                             }
                             options={langtype}
-                            name="langtype"
-                          ></Select>
+                            name="langtype"></Select>
                         </div>
                       </div>
                     </div>
@@ -488,8 +466,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
+                          htmlFor="val-suggestions">
                           Add Photo<span className="text-danger">*</span>
                         </label>
                         <div className="profile-info col-lg-6">
@@ -535,9 +512,8 @@ const AddUser = () => {
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="isActive"
-                        >
-                          Active 
+                          htmlFor="isActive">
+                          Active
                         </label>
                       </div>
                       <div className="col-lg-2 d-flex mt-3">
@@ -551,8 +527,7 @@ const AddUser = () => {
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="isDeactive"
-                        >
+                          htmlFor="isDeactive">
                           Deactive
                         </label>
                       </div>
@@ -569,17 +544,16 @@ const AddUser = () => {
                         />
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
-                          htmlFor="exclude"
-                        >
+                          htmlFor="exclude">
                           Exclude from Email
                         </label>
                       </div>
                     </div>
-                    { activeError&& (
-                            <span className="text-danger fs-14 m-2">
-                              {activeError}
-                            </span>
-                          )}
+                    {activeError && (
+                      <span className="text-danger fs-14 m-2">
+                        {activeError}
+                      </span>
+                    )}
 
                     <div className="form-group mb-5 row">
                       <div className="col-lg-8 ms-auto">
@@ -588,8 +562,7 @@ const AddUser = () => {
                         <Button
                           type="submit"
                           value="submit"
-                          className="btn me-2 btn-primary"
-                        >
+                          className="btn me-2 btn-primary">
                           Add User
                         </Button>{" "}
                         or &nbsp;&nbsp;

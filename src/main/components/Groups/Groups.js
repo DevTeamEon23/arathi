@@ -45,11 +45,10 @@ const Groups = () => {
           "Auth-Token": jwtToken,
         },
       });
-      console.log("getAllGroups", response.data);
       setGrpData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Courses !"); // Handle the error
+      toast.error("Failed to fetch Groups !"); // Handle the error
     }
   };
 
@@ -90,28 +89,6 @@ const Groups = () => {
           position: toast.POSITION.TOP_RIGHT,
         });
       });
-  };
-
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
   };
 
   let history = useHistory();

@@ -160,6 +160,7 @@ const AddGroups = () => {
                             placeholder="Short Description about Group.."
                             value={groupdesc}
                             onChange={(e) => setGroupdesc(e.target.value)}
+                            style={{ resize: "none" }}
                             required></textarea>
                         </div>
                       </div>
