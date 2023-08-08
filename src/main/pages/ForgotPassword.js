@@ -123,6 +123,11 @@ function ForgotPassword() {
     }
   };
 
+  const handleClear = (e) => {
+    setOtp([...otp.map((v) => "")]);
+    setOTPError("");
+  };
+
   const handleVerifyOtp = (e) => {
     e.preventDefault();
     setVerifyBtnLoader(true);
@@ -132,9 +137,9 @@ function ForgotPassword() {
       otp.join(""),
       otpReceived
     );
-    setOTPError("");
+
     if (otpReceived === otp.join("")) {
-      console.log("inside if verify otp");
+      setOTPError("");
       localStorage.setItem("email", email);
       setVerifyBtnLoader(false);
       history.push("/page-reset-password");
@@ -271,9 +276,7 @@ function ForgotPassword() {
                               <div className="d-flex justify-content-around mb-2">
                                 <button
                                   className="btn btn-secondary btn-block-half"
-                                  onClick={(e) =>
-                                    setOtp([...otp.map((v) => "")])
-                                  }>
+                                  onClick={handleClear}>
                                   Clear
                                 </button>
                                 <button

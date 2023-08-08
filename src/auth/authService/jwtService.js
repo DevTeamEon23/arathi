@@ -160,7 +160,7 @@ class JwtService extends Utils.EventEmitter {
           console.log(response);
           if (response.data.data) {
             this.setSession(response.data.token);
-            this.emit("onLogin", response.data.data);
+            this.emit("onForgotPwd", response.data.data);
           }
           resolve();
           console.log("Password reset email sent successfully.");

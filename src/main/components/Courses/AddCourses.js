@@ -78,7 +78,6 @@ const AddCourses = () => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllCategories();
-    console.log(selectCategoriesData);
   }, []);
 
   // All Categories List
@@ -102,14 +101,6 @@ const AddCourses = () => {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Categories !"); // Handle the error
     }
-  };
-
-  // categories handle
-  const handleSelectChange = (event) => {
-    console.log("inside onchange");
-    const selectedName = event.target.value;
-    console.log(selectedName);
-    setSelectCategoriesData(selectedName);
   };
 
   //video file handle
@@ -312,7 +303,7 @@ const AddCourses = () => {
               <div className="form-validation">
                 <form onSubmit={handleSubmit}>
                   <div className="row">
-                    <div className="col-xl-8">
+                    <div className="col-xl-7">
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -644,14 +635,14 @@ const AddCourses = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-xl-4">
+                    <div className="col-xl-5">
                       <div className="form-group mb-3 row">
                         <label
-                          className="col-lg-4 col-form-label"
+                          className="col-lg-3 col-form-label"
                           htmlFor="file">
                           Add Photo<span className="text-danger">*</span>
                         </label>
-                        <div className="profile-info col-lg-6">
+                        <div className="profile-info col-lg-7">
                           <div className="profile-photo">
                             {file ? (
                               <>

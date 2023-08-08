@@ -48,7 +48,7 @@ const EditcourseForm = (props) => {
   const [courseData, setCourseData] = useState();
   const [id, setId] = useState();
   const [token, setToken] = useState(); //auth token
-  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
+
   const [coursename, setCoursename] = useState("");
   const [file, setFile] = useState(null);
   const fileRef = useRef(null); //for image
@@ -69,6 +69,7 @@ const EditcourseForm = (props) => {
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
+  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const backendBaseUrl = Url; //"http://127.0.0.1:8000";
 
@@ -79,14 +80,12 @@ const EditcourseForm = (props) => {
       setId(courseID);
       getCourseById(courseID, token);
     }
-    if (courseData !== undefined) {
-      console.log(courseData);
-      getAllCategories();
-    }
+    getAllCategories();
   }, []);
 
   // edit form data submit
   const handleEditFormSubmit = (event) => {
+    console.log(file, selectedVideo);
     event.preventDefault();
     if (file === null && selectedVideo === null) {
       alert("Please add Photo or Video");
@@ -187,7 +186,6 @@ const EditcourseForm = (props) => {
         setStartdate(formattedStart);
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
-        setGetAllCategoriesData(res.category);
         setFile(`${backendBaseUrl}/${res.file}`);
         setSelectedVideo(`${backendBaseUrl}/${res.coursevideo}`);
         setSelectedOptionCertificate({
@@ -393,8 +391,7 @@ const EditcourseForm = (props) => {
                                 options={getAllCategoriesData}
                                 onChange={(selectCategoriesData) =>
                                   setSelectCategoriesData(selectCategoriesData)
-                                }
-                                required></Select>
+                                }></Select>
                             </div>
                           </div>
 

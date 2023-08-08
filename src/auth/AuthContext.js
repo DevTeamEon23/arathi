@@ -7,7 +7,7 @@ import jwtService from "./authService/jwtService";
 const AuthContext = React.createContext();
 
 function AuthProvider({ children }) {
-  console.log("inside AuthProvider",children);
+  console.log("inside AuthProvider", children);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [waitAuthCheck, setWaitAuthCheck] = useState(true);
   const dispatch = useDispatch();
@@ -34,6 +34,10 @@ function AuthProvider({ children }) {
       success(user, "Signed in");
     });
 
+    jwtService.on("onForgotPwd", (user) => {
+      success(user, "ForgotPassword");
+    });
+
     jwtService.on("onLogout", () => {
       pass("Signed out");
 
@@ -46,7 +50,7 @@ function AuthProvider({ children }) {
       dispatch(logoutUser());
     });
 
-      jwtService.on("onNoAccessToken", () => {
+    jwtService.on("onNoAccessToken", () => {
       pass();
     });
 
