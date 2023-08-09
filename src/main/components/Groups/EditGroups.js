@@ -49,7 +49,7 @@ const EditGroups = (props) => {
   const getGrpById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/groups_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/groups_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -81,7 +81,7 @@ const EditGroups = (props) => {
     formData.append("groupdesc", groupdesc);
     formData.append("groupkey", groupkey);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/lms-service/update_groups";
+    const url = "https://v1.eonlearning.tech/lms-service/update_groups";
     const authToken = window.localStorage.getItem("jwt_access_token");
 
     console.log(groupId, groupname, groupdesc, groupkey);

@@ -71,7 +71,7 @@ const EditcourseForm = (props) => {
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  const backendBaseUrl = Url; //"http://127.0.0.1:8000";
+  const backendBaseUrl = Url; //"https://v1.eonlearning.tech";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -112,7 +112,7 @@ const EditcourseForm = (props) => {
       formData.append("isHide", isHide);
       formData.append("file", file);
 
-      const url = "http://127.0.0.1:8000/lms-service/update_courses";
+      const url = "https://v1.eonlearning.tech/lms-service/update_courses";
       const authToken = token;
       console.log(file, selectedVideo);
       axios
@@ -144,7 +144,7 @@ const EditcourseForm = (props) => {
     console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/courses_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -210,7 +210,7 @@ const EditcourseForm = (props) => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/categories";
+    const url = "https://v1.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {

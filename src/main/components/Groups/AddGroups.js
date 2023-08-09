@@ -44,7 +44,7 @@ const AddGroups = () => {
     formData.append("groupdesc", groupdesc);
     formData.append("groupkey", groupkey);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/lms-service/addgroups";
+    const url = "https://v1.eonlearning.tech/lms-service/addgroups";
     const authToken = window.localStorage.getItem("jwt_access_token");
 
     console.log(groupname, groupdesc, groupkey);

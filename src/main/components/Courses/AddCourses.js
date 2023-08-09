@@ -83,7 +83,7 @@ const AddCourses = () => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/categories";
+    const url = "https://v1.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -139,7 +139,7 @@ const AddCourses = () => {
     formData.append("isHide", isHide);
     formData.append("generate_token", true);
 
-    const url = "http://127.0.0.1:8000/lms-service/addcourses";
+    const url = "https://v1.eonlearning.tech/lms-service/addcourses";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {

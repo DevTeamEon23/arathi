@@ -116,7 +116,7 @@ const EditNotification = (props) => {
   const getEventById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/events_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/events_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -159,7 +159,7 @@ const EditNotification = (props) => {
     formData.append("isActive", isActive);
     formData.append("generate_token", true);
 
-    const url = "http://127.0.0.1:8000/lms-service/update_events";
+    const url = "https://v1.eonlearning.tech/lms-service/update_events";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {

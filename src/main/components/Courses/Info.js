@@ -22,7 +22,7 @@ const Info = () => {
 
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/courses";
+    const url = "https://v1.eonlearning.tech/lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -60,7 +60,7 @@ const Info = () => {
     console.log("config", config, requestBody);
     // Make the Axios DELETE request
     axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_course`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
         ...config,
         data: requestBody,
       })

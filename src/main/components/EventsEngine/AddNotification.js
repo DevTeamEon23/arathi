@@ -110,7 +110,7 @@ const AddNotification = () => {
 
     console.log(ename, selectEvent.label, selectRecipient.label, descp);
 
-    const url = "http://127.0.0.1:8000/lms-service/addevents";
+    const url = "https://v1.eonlearning.tech/lms-service/addevents";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {
