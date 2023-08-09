@@ -25,6 +25,8 @@ function ForgotPassword() {
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
+  const otpExpirationTime = 3 * 60 * 1000; // 3 minutes in milliseconds
+
   const onSubmit = (e) => {
     e.preventDefault();
     setBtnLoader(true);
@@ -43,6 +45,7 @@ function ForgotPassword() {
           setIsShown(true);
           setBtnLoader(false);
           setDisabled(true);
+          handleotp();
         })
         .catch((error) => {
           console.log(error, error.response, error.response.status);
@@ -74,6 +77,12 @@ function ForgotPassword() {
     }
   };
 
+  const handleotp = () => {
+    // Check if OTP has expired
+    if (Date.now() - otpReceived.timestamp > otpExpirationTime) {
+      console.log("@@@@");
+    }
+  };
   // Function to start the resend OTP timer
   const startResendTimer = () => {
     setResendDisabled(true); // Disable the resend button initially

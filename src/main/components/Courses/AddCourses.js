@@ -271,7 +271,9 @@ const AddCourses = () => {
             to="/courses-info">
             Course
           </Link>
-          {/* <Link
+        </Nav.Item>
+      </Nav>
+      {/* <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
@@ -291,8 +293,7 @@ const AddCourses = () => {
           >
             Groups
           </Link> */}
-        </Nav.Item>
-      </Nav>
+
       <div className="row">
         <div className="col-lg-12">
           <div className="card">

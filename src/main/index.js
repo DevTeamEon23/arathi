@@ -364,7 +364,7 @@ const Markup = () => {
     // Learn Timeline
     { url: "learn-timeline", component: LearnerTimeline },
 
-    //Users---
+    //Users (superadmin)
 
     { url: "users-list", component: Users },
     { url: "add-user", component: AddUser },

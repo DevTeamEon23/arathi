@@ -29,7 +29,8 @@ class MM extends Component {
 }
 
 const SideBar = () => {
-  const { iconHover, sidebarposition, headerposition, sidebarLayout } =useContext(ThemeContext);
+  const { iconHover, sidebarposition, headerposition, sidebarLayout } =
+    useContext(ThemeContext);
   const [roleType, setRoleType] = useState();
 
   useEffect(() => {
@@ -47,12 +48,11 @@ const SideBar = () => {
     }
     handleheartBlast.addEventListener("click", heartBlast);
   }, []);
-  
+
   useEffect(() => {
     let role = window.localStorage.getItem("role");
     setRoleType(role);
-  }, [roleType])
-  
+  }, [roleType]);
 
   //For scroll
   const [hideOnScroll, setHideOnScroll] = useState(true);
@@ -207,8 +207,7 @@ const SideBar = () => {
             ? "fixed"
             : ""
           : ""
-      }`}
-    >
+      }`}>
       <PerfectScrollbar className="dlabnav-scroll">
         <MM className="metismenu" id="menu">
           <li className={`${deshBoard.includes(path) ? "mm-active" : ""}`}>
@@ -220,8 +219,7 @@ const SideBar = () => {
               <li>
                 <Link
                   className={`${path === "dashboard" ? "mm-active" : ""}`}
-                  to="/dashboard"
-                >
+                  to="/dashboard">
                   {" "}
                   Dashboard Light
                 </Link>
@@ -229,8 +227,7 @@ const SideBar = () => {
               <li>
                 <Link
                   className={`${path === "dashboard-dark" ? "mm-active" : ""}`}
-                  to="/dashboard-dark"
-                >
+                  to="/dashboard-dark">
                   Dark Mode
                 </Link>
               </li>
@@ -248,8 +245,7 @@ const SideBar = () => {
                   <li>
                     <Link
                       className={`${path === "dashboard" ? "mm-active" : ""}`}
-                      to="/dashboard"
-                    >
+                      to="/dashboard">
                       Superadmin Dashboard
                     </Link>
                   </li>
@@ -264,8 +260,7 @@ const SideBar = () => {
                           className={`${
                             path === "users-list" ? "mm-active" : ""
                           }`}
-                          to="/users-list"
-                        >
+                          to="/users-list">
                           {" "}
                           Users{" "}
                         </Link>
@@ -275,10 +270,29 @@ const SideBar = () => {
                           className={`${
                             path === "add-user" ? "mm-active" : ""
                           }`}
-                          to="/add-user"
-                        >
+                          to="/add-user">
                           {" "}
                           Add User{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "user-progress" ? "mm-active" : ""
+                          }`}
+                          to="/user-progress">
+                          {" "}
+                          User Progress
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "user-infographic" ? "mm-active" : ""
+                          }`}
+                          to="/user-infographic">
+                          {" "}
+                          User Infographics
                         </Link>
                       </li>
                     </ul>
@@ -286,8 +300,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       categories.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-list-ul"></i>
                       <span className="nav-text">CATEGORIES</span>
@@ -298,8 +311,7 @@ const SideBar = () => {
                           className={`${
                             path === "categories" ? "mm-active" : ""
                           }`}
-                          to="/categories"
-                        >
+                          to="/categories">
                           {" "}
                           Categories{" "}
                         </Link>
@@ -309,8 +321,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-category" ? "mm-active" : ""
                           }`}
-                          to="/add-category"
-                        >
+                          to="/add-category">
                           {" "}
                           Add Category
                         </Link>
@@ -319,8 +330,7 @@ const SideBar = () => {
                     </ul>
                   </li>
                   <li
-                    className={`${courses.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${courses.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-book"></i>
                       <span className="nav-text">COURSES</span>
@@ -331,8 +341,7 @@ const SideBar = () => {
                           className={`${
                             path === "courses-info" ? "mm-active" : ""
                           }`}
-                          to="/courses-info"
-                        >
+                          to="/courses-info">
                           Courses
                         </Link>
                       </li>
@@ -341,16 +350,14 @@ const SideBar = () => {
                           className={`${
                             path === "add-courses" ? "mm-active" : ""
                           }`}
-                          to="/add-courses"
-                        >
+                          to="/add-courses">
                           Add Courses
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${path === "courses" ? "mm-active" : ""}`}
-                          to="/courses"
-                        >
+                          to="/courses">
                           Course Store
                         </Link>
                       </li>
@@ -365,8 +372,7 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${path === "groups" ? "mm-active" : ""}`}
-                          to="/groups"
-                        >
+                          to="/groups">
                           Groups
                         </Link>
                       </li>
@@ -375,8 +381,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-groups" ? "mm-active" : ""
                           }`}
-                          to="/add-groups"
-                        >
+                          to="/add-groups">
                           Add Groups
                         </Link>
                       </li>
@@ -391,8 +396,7 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${path === "events" ? "mm-active" : ""}`}
-                          to="/events"
-                        >
+                          to="/events">
                           Events
                         </Link>
                       </li>
@@ -401,16 +405,16 @@ const SideBar = () => {
                           className={`${
                             path === "add-events" ? "mm-active" : ""
                           }`}
-                          to="/add-events"
-                        >
+                          to="/add-events">
                           Add Notification
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${usertypes.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${
+                      usertypes.includes(path) ? "mm-active" : ""
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-tags-fill"></i>
                       <span className="nav-text">USER TYPES</span>
@@ -421,8 +425,7 @@ const SideBar = () => {
                           className={`${
                             path === "user-types" ? "mm-active" : ""
                           }`}
-                          to="/user-types"
-                        >
+                          to="/user-types">
                           {" "}
                           User Types
                         </Link>
@@ -432,8 +435,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-user-type" ? "mm-active" : ""
                           }`}
-                          to="/add-user-type"
-                        >
+                          to="/add-user-type">
                           Add User Types
                         </Link>
                       </li>
@@ -443,8 +445,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       importexport.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-tags-fill"></i>
                       <span className="nav-text">IMPORT/EXPORT</span>
@@ -455,8 +456,7 @@ const SideBar = () => {
                           className={`${
                             path === "import-user" ? "mm-active" : ""
                           }`}
-                          to="/import-user"
-                        >
+                          to="/import-user">
                           {" "}
                           Import{" "}
                         </Link>
@@ -466,8 +466,7 @@ const SideBar = () => {
                           className={`${
                             path === "export-user" ? "mm-active" : ""
                           }`}
-                          to="/export-user"
-                        >
+                          to="/export-user">
                           {" "}
                           Export{" "}
                         </Link>
@@ -476,8 +475,7 @@ const SideBar = () => {
                     </ul>
                   </li>
                   <li
-                    className={`${reports.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${reports.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-graph-up"></i>
@@ -489,8 +487,7 @@ const SideBar = () => {
                           className={`${
                             path === "reports-overview" ? "mm-active" : ""
                           }`}
-                          to="/reports-overview"
-                        >
+                          to="/reports-overview">
                           Overview
                         </Link>
                       </li>
@@ -499,8 +496,7 @@ const SideBar = () => {
                           className={`${
                             path === "user-reports" ? "mm-active" : ""
                           }`}
-                          to="/user-reports"
-                        >
+                          to="/user-reports">
                           Users
                         </Link>
                       </li>
@@ -509,8 +505,7 @@ const SideBar = () => {
                           className={`${
                             path === "course-reports" ? "mm-active" : ""
                           }`}
-                          to="/course-reports"
-                        >
+                          to="/course-reports">
                           Courses
                         </Link>
                       </li>
@@ -519,8 +514,7 @@ const SideBar = () => {
                           className={`${
                             path === "group-reports" ? "mm-active" : ""
                           }`}
-                          to="/group-reports"
-                        >
+                          to="/group-reports">
                           Groups
                         </Link>
                       </li>
@@ -529,8 +523,7 @@ const SideBar = () => {
                           className={`${
                             path === "scorm-reports" ? "mm-active" : ""
                           }`}
-                          to="/scorm-reports"
-                        >
+                          to="/scorm-reports">
                           Scorm
                         </Link>
                       </li>
@@ -539,8 +532,7 @@ const SideBar = () => {
                           className={`${
                             path === "test-reports" ? "mm-active" : ""
                           }`}
-                          to="/test-reports"
-                        >
+                          to="/test-reports">
                           Tests
                         </Link>
                       </li>
@@ -549,8 +541,7 @@ const SideBar = () => {
                           className={`${
                             path === "survey-reports" ? "mm-active" : ""
                           }`}
-                          to="/survey-reports"
-                        >
+                          to="/survey-reports">
                           Surveys
                         </Link>
                       </li>
@@ -559,8 +550,7 @@ const SideBar = () => {
                           className={`${
                             path === "assign-reports" ? "mm-active" : ""
                           }`}
-                          to="/assign-reports"
-                        >
+                          to="/assign-reports">
                           Assignments
                         </Link>
                       </li>
@@ -569,8 +559,7 @@ const SideBar = () => {
                           className={`${
                             path === "ilt-reports" ? "mm-active" : ""
                           }`}
-                          to="/ilt-reports"
-                        >
+                          to="/ilt-reports">
                           ILTS
                         </Link>
                       </li>
@@ -579,8 +568,7 @@ const SideBar = () => {
                           className={`${
                             path === "infographics" ? "mm-active" : ""
                           }`}
-                          to="/infographics"
-                        >
+                          to="/infographics">
                           Info Graphics
                         </Link>
                       </li>
@@ -590,8 +578,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       accountsettings.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-gear-fill"></i>
@@ -603,8 +590,7 @@ const SideBar = () => {
                           className={`${
                             path === "basic-settings" ? "mm-active" : ""
                           }`}
-                          to="/basic-settings"
-                        >
+                          to="/basic-settings">
                           Basic Settings
                         </Link>
                       </li>
@@ -613,8 +599,7 @@ const SideBar = () => {
                           className={`${
                             path === "user-settings" ? "mm-active" : ""
                           }`}
-                          to="/user-settings"
-                        >
+                          to="/user-settings">
                           Users
                         </Link>
                       </li>
@@ -623,8 +608,7 @@ const SideBar = () => {
                           className={`${
                             path === "thoms-page" ? "mm-active" : ""
                           }`}
-                          to="/thoms-page"
-                        >
+                          to="/thoms-page">
                           Themes
                         </Link>
                       </li>
@@ -633,8 +617,7 @@ const SideBar = () => {
                           className={`${
                             path === "certificates" ? "mm-active" : ""
                           }`}
-                          to="/certificates"
-                        >
+                          to="/certificates">
                           Certificates
                         </Link>
                       </li>
@@ -643,8 +626,7 @@ const SideBar = () => {
                           className={`${
                             path === "gamification" ? "mm-active" : ""
                           }`}
-                          to="/gamification"
-                        >
+                          to="/gamification">
                           Gamifications
                         </Link>
                       </li>
@@ -653,16 +635,14 @@ const SideBar = () => {
                           className={`${
                             path === "ecommerce" ? "mm-active" : ""
                           }`}
-                          to="/ecommerce"
-                        >
+                          to="/ecommerce">
                           E-commerce
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${path === "domains" ? "mm-active" : ""}`}
-                          to="/domains"
-                        >
+                          to="/domains">
                           Domain
                         </Link>
                       </li>
@@ -671,8 +651,7 @@ const SideBar = () => {
                           className={`${
                             path === "subscriptions" ? "mm-active" : ""
                           }`}
-                          to="/subscriptions"
-                        >
+                          to="/subscriptions">
                           Subscription
                         </Link>
                       </li>
@@ -694,8 +673,7 @@ const SideBar = () => {
                   <li>
                     <Link
                       className={`${path === "dashboard" ? "mm-active" : ""}`}
-                      to="/dashboard"
-                    >
+                      to="/dashboard">
                       Admin Dashboard
                     </Link>
                   </li>
@@ -710,8 +688,7 @@ const SideBar = () => {
                           className={`${
                             path === "a-users-list" ? "mm-active" : ""
                           }`}
-                          to="/a-users-list"
-                        >
+                          to="/a-users-list">
                           {" "}
                           Users{" "}
                         </Link>
@@ -721,8 +698,7 @@ const SideBar = () => {
                           className={`${
                             path === "ad-add-user" ? "mm-active" : ""
                           }`}
-                          to="/ad-add-user"
-                        >
+                          to="/ad-add-user">
                           Add User
                         </Link>
                       </li>
@@ -731,8 +707,7 @@ const SideBar = () => {
                           className={`${
                             path === "ad-add-user-type" ? "mm-active" : ""
                           }`}
-                          to="/ad-add-user-type"
-                        >
+                          to="/ad-add-user-type">
                           Add User Types
                         </Link>
                       </li>
@@ -741,8 +716,7 @@ const SideBar = () => {
                           className={`${
                             path === "ad-user-progress" ? "mm-active" : ""
                           }`}
-                          to="/ad-user-progress"
-                        >
+                          to="/ad-user-progress">
                           {" "}
                           User Progress
                         </Link>
@@ -752,8 +726,7 @@ const SideBar = () => {
                           className={`${
                             path === "ad-user-infographic" ? "mm-active" : ""
                           }`}
-                          to="/ad-user-infographic"
-                        >
+                          to="/ad-user-infographic">
                           {" "}
                           User Infographics
                         </Link>
@@ -763,8 +736,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       admcourses.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-book"></i>
                       <span className="nav-text">COURSES</span>
@@ -775,8 +747,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_courses-info" ? "mm-active" : ""
                           }`}
-                          to="/adm_courses-info"
-                        >
+                          to="/adm_courses-info">
                           Courses
                         </Link>
                       </li>
@@ -785,8 +756,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_add-courses" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-courses"
-                        >
+                          to="/adm_add-courses">
                           Add Courses
                         </Link>
                       </li>
@@ -795,8 +765,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_courses" ? "mm-active" : ""
                           }`}
-                          to="/adm_courses"
-                        >
+                          to="/adm_courses">
                           Course Store
                         </Link>
                       </li>
@@ -807,8 +776,7 @@ const SideBar = () => {
                               ? "mm-active"
                               : ""
                           }`}
-                          to="/adm_users_course_progress"
-                        >
+                          to="/adm_users_course_progress">
                           USER & PROGRESS
                         </Link>
                       </li>
@@ -817,8 +785,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_course_files" ? "mm-active" : ""
                           }`}
-                          to="/adm_course_files"
-                        >
+                          to="/adm_course_files">
                           FILES
                         </Link>
                       </li>
@@ -827,8 +794,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_rules-path" ? "mm-active" : ""
                           }`}
-                          to="/adm_rules-path"
-                        >
+                          to="/adm_rules-path">
                           RULES & PATH
                         </Link>
                       </li>
@@ -837,16 +803,14 @@ const SideBar = () => {
                           className={`${
                             path === "adm_course_overview" ? "mm-active" : ""
                           }`}
-                          to="/adm_course_overview"
-                        >
+                          to="/adm_course_overview">
                           REPORTS
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${agroups.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${agroups.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-people"></i>
                       <span className="nav-text">GROUPS</span>
@@ -857,8 +821,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_groups" ? "mm-active" : ""
                           }`}
-                          to="/adm_groups"
-                        >
+                          to="/adm_groups">
                           Groups
                         </Link>
                       </li>
@@ -867,16 +830,14 @@ const SideBar = () => {
                           className={`${
                             path === "adm_add-groups" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-groups"
-                        >
+                          to="/adm_add-groups">
                           Add Groups
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${aevents.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${aevents.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-calendar-check"></i>
                       <span className="nav-text">EVENT ENGINE</span>
@@ -887,8 +848,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_events" ? "mm-active" : ""
                           }`}
-                          to="/adm_events"
-                        >
+                          to="/adm_events">
                           Events
                         </Link>
                       </li>
@@ -897,16 +857,14 @@ const SideBar = () => {
                           className={`${
                             path === "adm_add-events" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-events"
-                        >
+                          to="/adm_add-events">
                           Add Notification
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${areports.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${areports.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i class="bi bi-graph-up"></i>
@@ -918,8 +876,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_reports-overview" ? "mm-active" : ""
                           }`}
-                          to="/adm_reports-overview"
-                        >
+                          to="/adm_reports-overview">
                           Overview
                         </Link>
                       </li>
@@ -928,8 +885,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_user-reports" ? "mm-active" : ""
                           }`}
-                          to="/adm_user-reports"
-                        >
+                          to="/adm_user-reports">
                           Users
                         </Link>
                       </li>
@@ -938,8 +894,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_course-reports" ? "mm-active" : ""
                           }`}
-                          to="/adm_course-reports"
-                        >
+                          to="/adm_course-reports">
                           Courses
                         </Link>
                       </li>
@@ -948,8 +903,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_group-reports" ? "mm-active" : ""
                           }`}
-                          to="/adm_group-reports"
-                        >
+                          to="/adm_group-reports">
                           Groups
                         </Link>
                       </li>
@@ -958,8 +912,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_infographics" ? "mm-active" : ""
                           }`}
-                          to="/adm_infographics"
-                        >
+                          to="/adm_infographics">
                           Info Graphics
                         </Link>
                       </li>
@@ -968,8 +921,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       admaccountsettings.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-gear-fill"></i>
@@ -981,8 +933,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_basic-settings" ? "mm-active" : ""
                           }`}
-                          to="/adm_basic-settings"
-                        >
+                          to="/adm_basic-settings">
                           Basic Settings
                         </Link>
                       </li>
@@ -991,8 +942,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_user-settings" ? "mm-active" : ""
                           }`}
-                          to="/adm_user-settings"
-                        >
+                          to="/adm_user-settings">
                           Users
                         </Link>
                       </li>
@@ -1001,8 +951,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_thoms-page" ? "mm-active" : ""
                           }`}
-                          to="/adm_thoms-page"
-                        >
+                          to="/adm_thoms-page">
                           Themes
                         </Link>
                       </li>
@@ -1011,8 +960,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_certificates" ? "mm-active" : ""
                           }`}
-                          to="/adm_certificates"
-                        >
+                          to="/adm_certificates">
                           Certificates
                         </Link>
                       </li>
@@ -1021,8 +969,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_gamification" ? "mm-active" : ""
                           }`}
-                          to="/adm_gamification"
-                        >
+                          to="/adm_gamification">
                           Gamifications
                         </Link>
                       </li>
@@ -1031,8 +978,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_ecommerce" ? "mm-active" : ""
                           }`}
-                          to="/adm_ecommerce"
-                        >
+                          to="/adm_ecommerce">
                           E-commerce
                         </Link>
                       </li>
@@ -1041,8 +987,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_domains" ? "mm-active" : ""
                           }`}
-                          to="/adm_domains"
-                        >
+                          to="/adm_domains">
                           Domain
                         </Link>
                       </li>
@@ -1051,8 +996,7 @@ const SideBar = () => {
                           className={`${
                             path === "adm_subscriptions" ? "mm-active" : ""
                           }`}
-                          to="/adm_subscriptions"
-                        >
+                          to="/adm_subscriptions">
                           Subscription
                         </Link>
                       </li>
@@ -1063,13 +1007,14 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Instructor Dashboard Options************************************ */}
-          {(roleType === "Admin" || roleType === "Instructor" || roleType === "Superadmin") && (
+          {(roleType === "Admin" ||
+            roleType === "Instructor" ||
+            roleType === "Superadmin") && (
             <>
               <li
                 className={`${
                   maininstructor.includes(path) ? "mm-active" : ""
-                }`}
-              >
+                }`}>
                 <Link className="has-arrow" to="#">
                   <i className="bi bi-grid"></i>
                   <span className="nav-text">INSTRUCTOR</span>
@@ -1078,14 +1023,12 @@ const SideBar = () => {
                   <li>
                     <Link
                       className={`${path === "inst-dash" ? "mm-active" : ""}`}
-                      to="/inst-dash"
-                    >
+                      to="/inst-dash">
                       Instructor Dashboard
                     </Link>
                   </li>
                   <li
-                    className={`${courses.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${courses.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-book"></i>
                       <span className="nav-text">COURSES</span>
@@ -1096,8 +1039,7 @@ const SideBar = () => {
                           className={`${
                             path === "courses-info" ? "mm-active" : ""
                           }`}
-                          to="/courses-info"
-                        >
+                          to="/courses-info">
                           Courses
                         </Link>
                       </li>
@@ -1106,8 +1048,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-courses" ? "mm-active" : ""
                           }`}
-                          to="/add-courses"
-                        >
+                          to="/add-courses">
                           Add Courses
                         </Link>
                       </li>
@@ -1116,8 +1057,7 @@ const SideBar = () => {
                           className={`${
                             path === "users_course_progress" ? "mm-active" : ""
                           }`}
-                          to="/users_course_progress"
-                        >
+                          to="/users_course_progress">
                           USER & PROGRESS
                         </Link>
                       </li>
@@ -1126,8 +1066,7 @@ const SideBar = () => {
                           className={`${
                             path === "course_files" ? "mm-active" : ""
                           }`}
-                          to="/course_files"
-                        >
+                          to="/course_files">
                           FILES
                         </Link>
                       </li>
@@ -1136,8 +1075,7 @@ const SideBar = () => {
                           className={`${
                             path === "rules-path" ? "mm-active" : ""
                           }`}
-                          to="/rules-path"
-                        >
+                          to="/rules-path">
                           RULES & PATH
                         </Link>
                       </li>
@@ -1146,8 +1084,7 @@ const SideBar = () => {
                           className={`${
                             path === "course_overview" ? "mm-active" : ""
                           }`}
-                          to="/course_overview"
-                        >
+                          to="/course_overview">
                           REPORTS
                         </Link>
                       </li>
@@ -1156,16 +1093,14 @@ const SideBar = () => {
                           className={`${
                             path === "scorm-file" ? "mm-active" : ""
                           }`}
-                          to="/scorm-file"
-                        >
+                          to="/scorm-file">
                           Course Scorm
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${igroups.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${igroups.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-people"></i>
                       <span className="nav-text">GROUPS</span>
@@ -1176,8 +1111,7 @@ const SideBar = () => {
                           className={`${
                             path === "inst_groups" ? "mm-active" : ""
                           }`}
-                          to="/inst_groups"
-                        >
+                          to="/inst_groups">
                           Groups
                         </Link>
                       </li>
@@ -1186,16 +1120,16 @@ const SideBar = () => {
                           className={`${
                             path === "inst_add-groups" ? "mm-active" : ""
                           }`}
-                          to="/inst_add-groups"
-                        >
+                          to="/inst_add-groups">
                           Add Groups
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${trainings.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${
+                      trainings.includes(path) ? "mm-active" : ""
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-people"></i>{" "}
@@ -1207,8 +1141,7 @@ const SideBar = () => {
                           className={`${
                             path === "conference" ? "mm-active" : ""
                           }`}
-                          to="/conference"
-                        >
+                          to="/conference">
                           Conference Training
                         </Link>
                       </li>
@@ -1217,8 +1150,7 @@ const SideBar = () => {
                           className={`${
                             path === "classroom" ? "mm-active" : ""
                           }`}
-                          to="/classroom"
-                        >
+                          to="/classroom">
                           Classroom Training
                         </Link>
                       </li>
@@ -1227,8 +1159,7 @@ const SideBar = () => {
                           className={`${
                             path === "virtual-training" ? "mm-active" : ""
                           }`}
-                          to="/virtual-training"
-                        >
+                          to="/virtual-training">
                           Virtual Trainings
                         </Link>
                       </li>
@@ -1237,8 +1168,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-classroom" ? "mm-active" : ""
                           }`}
-                          to="/add-classroom"
-                        >
+                          to="/add-classroom">
                           Add Classroom
                         </Link>
                       </li>
@@ -1247,8 +1177,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-conference" ? "mm-active" : ""
                           }`}
-                          to="/add-conference"
-                        >
+                          to="/add-conference">
                           Add Conference
                         </Link>
                       </li>
@@ -1257,8 +1186,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-virtual-trainings" ? "mm-active" : ""
                           }`}
-                          to="/add-virtual-trainings"
-                        >
+                          to="/add-virtual-trainings">
                           Add Virtual Trainings
                         </Link>
                       </li>
@@ -1267,8 +1195,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       discussion.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-chat-quote-fill"></i>{" "}
@@ -1280,8 +1207,7 @@ const SideBar = () => {
                           className={`${
                             path === "discussion" ? "mm-active" : ""
                           }`}
-                          to="/discussion"
-                        >
+                          to="/discussion">
                           Discussion
                         </Link>
                       </li>
@@ -1290,16 +1216,14 @@ const SideBar = () => {
                           className={`${
                             path === "add-discussion" ? "mm-active" : ""
                           }`}
-                          to="/add-discussion"
-                        >
+                          to="/add-discussion">
                           Add Discussion
                         </Link>
                       </li>
                     </ul>
                   </li>
                   <li
-                    className={`${calender.includes(path) ? "mm-active" : ""}`}
-                  >
+                    className={`${calender.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-calendar3"></i>{" "}
@@ -1311,8 +1235,7 @@ const SideBar = () => {
                           className={`${
                             path === "calender" ? "mm-active" : ""
                           }`}
-                          to="/calender"
-                        >
+                          to="/calender">
                           Calender
                         </Link>
                       </li>
@@ -1321,8 +1244,7 @@ const SideBar = () => {
                           className={`${
                             path === "add-c-event" ? "mm-active" : ""
                           }`}
-                          to="/add-c-event"
-                        >
+                          to="/add-c-event">
                           Add Event
                         </Link>
                       </li>
@@ -1346,16 +1268,14 @@ const SideBar = () => {
                   <li>
                     <Link
                       className={`${path === "learn-dash" ? "mm-active" : ""}`}
-                      to="/learn-dash"
-                    >
+                      to="/learn-dash">
                       Overview
                     </Link>
                   </li>
                   <li
                     className={`${
                       learnercourse.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-book"></i>
                       <span className="nav-text">COURSES</span>
@@ -1366,16 +1286,14 @@ const SideBar = () => {
                           className={`${
                             path === "learn-course" ? "mm-active" : ""
                           }`}
-                          to="/learn-course"
-                        >
+                          to="/learn-course">
                           Info
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${path === "courses" ? "mm-active" : ""}`}
-                          to="/courses"
-                        >
+                          to="/courses">
                           Course Catalog
                         </Link>
                       </li>
@@ -1384,8 +1302,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learnertrainings.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-people"></i>{" "}
@@ -1397,8 +1314,7 @@ const SideBar = () => {
                           className={`${
                             path === "lclassroom" ? "mm-active" : ""
                           }`}
-                          to="/lclassroom"
-                        >
+                          to="/lclassroom">
                           Trainings
                         </Link>
                       </li>
@@ -1407,8 +1323,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       ldiscussion.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-chat-quote-fill"></i>{" "}
@@ -1420,8 +1335,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn_discussion" ? "mm-active" : ""
                           }`}
-                          to="/learn_discussion"
-                        >
+                          to="/learn_discussion">
                           Discussion
                         </Link>
                       </li>
@@ -1430,8 +1344,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learncalender.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-calendar3"></i>{" "}
@@ -1443,8 +1356,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn_calender" ? "mm-active" : ""
                           }`}
-                          to="/learn_calender"
-                        >
+                          to="/learn_calender">
                           Calender
                         </Link>
                       </li>
@@ -1453,8 +1365,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       discussion.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-cursor-text"></i>{" "}
@@ -1466,8 +1377,7 @@ const SideBar = () => {
                           className={`${
                             path === "discussion" ? "mm-active" : ""
                           }`}
-                          to="/discussion"
-                        >
+                          to="/discussion">
                           Transcript
                         </Link>
                       </li>
@@ -1476,8 +1386,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learngroups.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-people"></i>
                       <span className="nav-text">GROUPS</span>
@@ -1488,8 +1397,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn-group" ? "mm-active" : ""
                           }`}
-                          to="/learn-group"
-                        >
+                          to="/learn-group">
                           Groups
                         </Link>
                       </li>
@@ -1498,8 +1406,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learnfiles.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-file-earmark-zip"></i>{" "}
@@ -1511,8 +1418,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn-files" ? "mm-active" : ""
                           }`}
-                          to="/learn-files"
-                        >
+                          to="/learn-files">
                           Files
                         </Link>
                       </li>
@@ -1521,8 +1427,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learncertificate.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-award"></i>{" "}
@@ -1534,8 +1439,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn-certificate" ? "mm-active" : ""
                           }`}
-                          to="/learn-certificate"
-                        >
+                          to="/learn-certificate">
                           Certificates
                         </Link>
                       </li>
@@ -1544,8 +1448,7 @@ const SideBar = () => {
                   <li
                     className={`${
                       learntimeline.includes(path) ? "mm-active" : ""
-                    }`}
-                  >
+                    }`}>
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-hourglass-split"></i>{" "}
@@ -1557,8 +1460,7 @@ const SideBar = () => {
                           className={`${
                             path === "learn-timeline" ? "mm-active" : ""
                           }`}
-                          to="/learn-timeline"
-                        >
+                          to="/learn-timeline">
                           Timeline
                         </Link>
                       </li>
