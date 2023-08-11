@@ -470,7 +470,7 @@ const Header = ({ onNote }) => {
                       variant=""
                       as="a"
                       className="nav-link i-false c-pointer">
-                      <img src={profileImg} width={20} alt="" />
+                      <img src={profileImg} width={25} alt="" />
                     </Dropdown.Toggle>
                     <Dropdown.Menu
                       align="right"
