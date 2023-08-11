@@ -34,7 +34,7 @@ const CoursesMain = () => {
   const [courses, setCourses] = useState([]);
   const [file, setFile] = useState([]);
   const [query, setQuery] = useState("");
-  const backendBaseUrl = "http://127.0.0.1:8000";
+  const backendBaseUrl = "https://v1.eonlearning.tech";
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -44,7 +44,7 @@ const CoursesMain = () => {
 
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/courses";
+    const url = "https://v1.eonlearning.tech/lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
