@@ -110,7 +110,7 @@ const AddNotification = () => {
 
     console.log(ename, selectEvent.label, selectRecipient.label, descp);
 
-    const url = "http://127.0.0.1:8000/lms-service/addevents";
+    const url = "https://v1.eonlearning.tech/lms-service/addevents";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {
@@ -231,9 +231,7 @@ const AddNotification = () => {
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-website">
+                        <label className="col-lg-4 col-form-label">
                           Recipient
                           <span className="text-danger">*</span>
                         </label>
@@ -244,22 +242,17 @@ const AddNotification = () => {
                             onChange={(selectRecipient) =>
                               setSelectRecipient(selectRecipient)
                             }
-                            name="recipienttype"
                             placeholder="Select recipient"
                             required></Select>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions">
+                        <label className="col-lg-4 col-form-label">
                           Description <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <textarea
                             className="form-control"
-                            id="descp"
-                            name="descp"
                             rows="5"
                             placeholder="Short Description about user.."
                             value={descp}
@@ -280,7 +273,7 @@ const AddNotification = () => {
                               id="isActive"
                               name="isActive"
                               checked={isActive}
-                              onChange={(e) => setIsActive(e.target.value)}
+                              onChange={(e) => setIsActive(e.target.checked)}
                               required
                             />
                             Active

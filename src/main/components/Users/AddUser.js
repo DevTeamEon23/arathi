@@ -7,10 +7,10 @@ import { Nav, Button } from "react-bootstrap";
 
 //select dropdown
 const categorytype = [
-  { value: "superadmin", label: "SuperAdmin" },
+  // { value: "superadmin", label: "SuperAdmin" },
   { value: "admin", label: "Admin" },
-  { value: "instructor", label: "Instructor" },
-  { value: "learner", label: "Learner" },
+  // { value: 'instructor', label: 'Instructor' },
+  // { value: 'learner', label: 'Learner' },
 ];
 
 const timezonetype = [

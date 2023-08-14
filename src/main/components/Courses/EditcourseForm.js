@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
+import Url from "../../../../src/auth/authService/Url";
 
 const loginSchema = Yup.object().shape({
   username: Yup.string()
@@ -47,7 +48,7 @@ const EditcourseForm = (props) => {
   const [courseData, setCourseData] = useState();
   const [id, setId] = useState();
   const [token, setToken] = useState(); //auth token
-  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
+
   const [coursename, setCoursename] = useState("");
   const [file, setFile] = useState(null);
   const fileRef = useRef(null); //for image
@@ -68,8 +69,9 @@ const EditcourseForm = (props) => {
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
+  const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  const backendBaseUrl = "http://127.0.0.1:8000";
+  const backendBaseUrl = Url; //"https://v1.eonlearning.tech";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -78,14 +80,12 @@ const EditcourseForm = (props) => {
       setId(courseID);
       getCourseById(courseID, token);
     }
-    if (courseData !== undefined) {
-      console.log(courseData);
-      getAllCategories();
-    }
+    getAllCategories();
   }, []);
 
   // edit form data submit
   const handleEditFormSubmit = (event) => {
+    console.log(file, selectedVideo);
     event.preventDefault();
     if (file === null && selectedVideo === null) {
       alert("Please add Photo or Video");
@@ -96,7 +96,10 @@ const EditcourseForm = (props) => {
       formData.append("description", description);
       formData.append("coursecode", coursecode);
       formData.append("price", price);
-      formData.append("courselink", courselink);
+      formData.append(
+        "courselink",
+        !courselink === undefined ? courselink : null
+      );
       formData.append("coursevideo", selectedVideo);
       formData.append("capacity", capacity);
       formData.append("startdate", startdate);
@@ -109,7 +112,7 @@ const EditcourseForm = (props) => {
       formData.append("isHide", isHide);
       formData.append("file", file);
 
-      const url = "http://127.0.0.1:8000/lms-service/update_courses";
+      const url = "https://v1.eonlearning.tech/lms-service/update_courses";
       const authToken = token;
       console.log(file, selectedVideo);
       axios
@@ -141,7 +144,7 @@ const EditcourseForm = (props) => {
     console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/courses_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -183,7 +186,6 @@ const EditcourseForm = (props) => {
         setStartdate(formattedStart);
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
-        setGetAllCategoriesData(res.category);
         setFile(`${backendBaseUrl}/${res.file}`);
         setSelectedVideo(`${backendBaseUrl}/${res.coursevideo}`);
         setSelectedOptionCertificate({
@@ -208,7 +210,7 @@ const EditcourseForm = (props) => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/categories";
+    const url = "https://v1.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -389,8 +391,7 @@ const EditcourseForm = (props) => {
                                 options={getAllCategoriesData}
                                 onChange={(selectCategoriesData) =>
                                   setSelectCategoriesData(selectCategoriesData)
-                                }
-                                required></Select>
+                                }></Select>
                             </div>
                           </div>
 
@@ -543,7 +544,7 @@ const EditcourseForm = (props) => {
                                       //   URL.createObjectURL(selectedVideo)
                                       // }
                                       src={selectedVideo}
-                                      // type={selectedVideo.type}
+                                      type={selectedVideo.type}
                                       alt="video"
                                     />
                                     Your browser does not support the video tag.
@@ -721,79 +722,52 @@ const EditcourseForm = (props) => {
                             title="ADD"
                             className="me-1 mt-1">
                             <Dropdown.Item>
-                              <Link to="/content">
-                                <i class="bi bi-back"> &nbsp;</i>Content
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="/webcontent">
-                                <i class="bi bi-cloud"> &nbsp;</i>Web Content
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item>
                               <Link to="/video">
-                                <i class="bi bi-play-circle"> &nbsp;</i>Video
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-play-circle"> &nbsp;</i>Video
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="/audio">
-                                <i class="bi bi-file-music"> &nbsp;</i>Audio
-                              </Link>
-                            </Dropdown.Item>
+
                             <Dropdown.Item>
                               <Link to="/presentation">
-                                <i class="bi bi-file-slides"> &nbsp;</i>
-                                Presentation | Documents{" "}
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-file-slides"> &nbsp;</i>
+                                  Presentation | Documents{" "}
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
                             <Dropdown.Item>
                               <Link to="/scorm">
-                                <i class="bi bi-command"> &nbsp;</i>SCORM | xAPI
-                                | cmi5
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-command"> &nbsp;</i>SCORM |
+                                  xAPI | cmi5
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="/iframe">
-                                <i class="bi bi-code-slash"> &nbsp;</i>iFrame
-                              </Link>
-                            </Dropdown.Item>
+
                             <Dropdown.Item>
                               <Link to="/test-question">
-                                <i class="bi bi-journal-check"> &nbsp;</i>Test
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-journal-check"> &nbsp;</i>Test
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="/survey-question">
-                                <i class="bi bi-check2-square"> &nbsp;</i>Survey
-                              </Link>
-                            </Dropdown.Item>
+
                             <Dropdown.Item>
                               <Link to="/assignment">
-                                <i class="bi bi-clipboard"> &nbsp;</i>Assignment
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-clipboard"> &nbsp;</i>
+                                  Assignment
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
                             <Dropdown.Item>
                               <Link to="/instructor-led">
-                                <i class="bi bi-calendar4-week"> &nbsp;</i>
-                                Instructor-led training
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="#">
-                                <i class="bi bi-tropical-storm"> &nbsp;</i>
-                                Section
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="#">
-                                <i class="bi bi-vr"> &nbsp;</i>Clone from
-                                another course
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="#">
-                                <i class="bi bi-link"> &nbsp;</i>Link from
-                                another course
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-calendar4-week"> &nbsp;</i>
+                                  Instructor-led training
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
                           </DropdownButton>
@@ -811,35 +785,30 @@ const EditcourseForm = (props) => {
                             className="me-1 mt-1">
                             <Dropdown.Item>
                               <Link to="/message_users">
-                                <i class="bi bi-chat-right-text"> &nbsp;</i>
-                                Message Users
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-chat-right-text"> &nbsp;</i>
+                                  Message Users
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
                             <Dropdown.Item>
                               <Link to="/ad_event">
-                                <i class="bi bi-calendar4-week"> &nbsp;</i>Add
-                                Event
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-calendar4-week"> &nbsp;</i>Add
+                                  Event
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
+
                             <Dropdown.Item>
                               <Link to="#">
-                                <i class="bi bi-cloud-snow-fill"> &nbsp;</i>Make
-                                Course Public
+                                <div className="dropdown-item-content">
+                                  <i class="bi bi-lock"> &nbsp;</i>Lock Course
+                                  Content
+                                </div>{" "}
                               </Link>
                             </Dropdown.Item>
-                            <Dropdown.Item>
-                              <Link to="#">
-                                <i class="bi bi-lock"> &nbsp;</i>Lock Course
-                                Content
-                              </Link>
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              variant="primary"
-                              className="mb-2 me-2"
-                              onClick={() => setLargeModal(true)}>
-                              <i class="bi bi-tablet"> &nbsp;</i>
-                              Mobile App Compatibility
-                            </Dropdown.Item>
+
                             <Modal
                               className="fade bd-example-modal-lg"
                               show={largeModal}

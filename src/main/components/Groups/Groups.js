@@ -38,7 +38,7 @@ const Groups = () => {
 
   const getAllGroups = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/groups";
+    const url = "https://v1.eonlearning.tech/lms-service/groups";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -72,7 +72,7 @@ const Groups = () => {
       id: grpId,
     };
     await axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_group`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_group`, {
         ...config,
         data: requestBody,
       })

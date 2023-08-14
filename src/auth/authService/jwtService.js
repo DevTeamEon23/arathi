@@ -61,22 +61,21 @@ class JwtService extends Utils.EventEmitter {
   //Sign up function
   createUser = (data) => {
     return new Promise((resolve, reject) => {
-      axiosInstance
-        .post(jwtServiceConfig.signUp, data)
-        .then((response) => {
-          resolve();
-          if (response.data.user) {
-            this.setSession(response.data.access_token);
-            resolve(response.data.user);
-            this.emit("onLogin", response.data.user);
-          } else {
-            reject(response.data.error);
-          }
-        })
-        .catch((error) => {
-          reject(new Error("Email or Password invalid."));
-          reject(error);
-        });
+      axiosInstance.post(jwtServiceConfig.signUp, data).then((response) => {
+        resolve();
+        //   if (response.data.user) {
+        //     this.setSession(response.data.access_token)
+        //     resolve(response.data.user)
+        //     this.emit('onLogin', response.data.user)
+        //   } else {
+        //     reject(response.data.error)
+        //   }
+        // })
+        // .catch((error) => {
+        //   reject(new Error('Email or Password invalid.'))
+        //   reject(error)
+        // })
+      });
     });
   };
 
@@ -130,6 +129,7 @@ signInWithEmailAndPassword = (data) => {
         .post(jwtServiceConfig.signIn, { ...data })
         .then((response) => {
           console.log(response);
+          localStorage.setItem("id", response.data.user_id);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             this.emit("onLogin", response.data.data.user);
@@ -155,7 +155,8 @@ signInWithEmailAndPassword = (data) => {
         this.setSession(null);
         this.emit("onLogout", "Logged out");
         localStorage.removeItem("role");
-        localStorage.removeItem("name", "email");
+        localStorage.removeItem("email");
+        localStorage.removeItem("id");
       });
   };
 
@@ -203,7 +204,7 @@ signInWithEmailAndPassword = (data) => {
           console.log(response);
           if (response.data.data) {
             this.setSession(response.data.token);
-            this.emit("onLogin", response.data.data);
+            this.emit("onForgotPwd", response.data.data);
           }
           resolve();
           console.log("Password reset email sent successfully.");

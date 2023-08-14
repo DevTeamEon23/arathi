@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -37,7 +37,7 @@ const AddCategory = () => {
     formData.append("name", name);
     formData.append("price", price);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/lms-service/addcategories";
+    const url = "https://v1.eonlearning.tech/lms-service/addcategories";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {
@@ -73,8 +73,7 @@ const AddCategory = () => {
             id="nav-following-tab"
             eventKey="Follow"
             type="button"
-            to="/dashboard"
-          >
+            to="/dashboard">
             Dashboard
           </Link>
           <Link
@@ -83,8 +82,7 @@ const AddCategory = () => {
             id="nav-following-tab"
             eventKey="Follow"
             type="button"
-            to="/categories"
-          >
+            to="/categories">
             Categories
           </Link>
         </Nav.Item>
@@ -103,8 +101,7 @@ const AddCategory = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Name
                           <span className="text-danger">*</span>
                         </label>
@@ -143,8 +140,7 @@ const AddCategory = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-currency"
-                        >
+                          htmlFor="val-currency">
                           Price
                           <span className="text-danger">*</span>
                         </label>
@@ -169,8 +165,7 @@ const AddCategory = () => {
                           <Button
                             type="submit"
                             value="submit"
-                            className="btn me-2 btn-primary"
-                          >
+                            className="btn me-2 btn-primary">
                             Add Category
                           </Button>{" "}
                           or &nbsp;&nbsp;

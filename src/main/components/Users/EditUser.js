@@ -69,7 +69,7 @@ const EditUser = (props) => {
   const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
-  const backendBaseUrl = "http://127.0.0.1:8000";
+  const backendBaseUrl = "https://v1.eonlearning.tech";
   const history = useHistory();
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const EditUser = (props) => {
     console.log("inside get user by id", id, authToken);
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/users_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/users_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -159,7 +159,7 @@ const EditUser = (props) => {
       formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
       formData.append("file", file);
 
-      const url = "http://127.0.0.1:8000/lms-service/update_users";
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
       const authToken = token;
       axios
         .post(url, formData, {
@@ -238,18 +238,19 @@ const EditUser = (props) => {
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
-            eventkey="Follow"
+            eventKey="Follow"
             type="button"
-            to="/users-list">
-            User
+            to="/edit-user/:id">
+            Info
           </Link>
+
           <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/courses-info">
+            to="/user-courses-info">
             Courses
           </Link>
           <Link

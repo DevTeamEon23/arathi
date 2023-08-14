@@ -32,7 +32,7 @@ const Events = () => {
 
   const getAllEvents = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/events";
+    const url = "https://v1.eonlearning.tech/lms-service/events";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -45,6 +45,11 @@ const Events = () => {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
     }
+  };
+
+  const handleEdit = (id) => {
+    console.log("inside event handle edit page", id);
+    history.push(`/edit-events/${id}`);
   };
 
   const deleteEvent = (eventId) => {
@@ -62,7 +67,7 @@ const Events = () => {
       id: eventId,
     };
     await axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_event`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_event`, {
         ...config,
         data: requestBody,
       })
@@ -183,11 +188,12 @@ const Events = () => {
                           </td>
                           <td>
                             <center>
-                              <Link
-                                to="/edit-events"
-                                className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i className="fas fa-pencil-alt"></i>
-                              </Link>
+                              <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <i
+                                  className="fas fa-pencil-alt"
+                                  onClick={(e) => handleEdit(item.id)}></i>
+                              </div>
+
                               <div className="btn btn-danger shadow btn-xs sharp">
                                 <i
                                   className="fa fa-trash"

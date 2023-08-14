@@ -8,7 +8,10 @@ import axios from "axios";
 const Info = () => {
   const [token, setToken] = useState(); //auth token
   const [allCourseData, setAllCourseData] = useState([]); //set course data
+  const [courseName, setCourseName] = useState(""); //course name
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [showCloneModal, setShowCloneModal] = useState(false); //clone modal
+  const [courseCloneId, setCourseCloneId] = useState(); //course id save for clone
   const [courseId, setCourseId] = useState(); //course id save for delete
 
   useEffect(() => {
@@ -19,15 +22,17 @@ const Info = () => {
 
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/courses";
+    const url = "https://v1.eonlearning.tech/lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
           "Auth-Token": jwtToken,
         },
       });
-      // Handle the response data here
+      const courseData = response.data.data;
       console.log("getAllCourses", response.data);
+      // const names = courseData.map((course) => course.coursename);
+      // setCourseName(names);
       setAllCourseData(response.data.data);
     } catch (error) {
       // Handle errors if any
@@ -55,7 +60,7 @@ const Info = () => {
     console.log("config", config, requestBody);
     // Make the Axios DELETE request
     axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_course`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
         ...config,
         data: requestBody,
       })
@@ -75,6 +80,15 @@ const Info = () => {
         });
       });
   };
+
+  const handleClone = (id, coursename) => {
+    setShowCloneModal(true);
+    console.log("inside course handle clone", id, coursename);
+    setCourseName(coursename);
+    setCourseCloneId(id);
+  };
+
+  const handleCatClone = () => {};
 
   const handleEdit = (id) => {
     console.log("inside course handle edit page", id);
@@ -215,11 +229,13 @@ const Info = () => {
                       </Dropdown>
                       </center> */}
                               <center>
-                                <Link
-                                  to="/add-courses"
-                                  className="btn btn-primary shadow btn-xs sharp me-1">
-                                  <i class="fa-solid fa-plus"></i>
-                                </Link>
+                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                  <i
+                                    class="fa-solid fa-plus"
+                                    onClick={(e) =>
+                                      handleClone(data.id, data.coursename)
+                                    }></i>
+                                </div>
                                 <Link
                                   to="/course-reports"
                                   className="btn btn-primary shadow btn-xs sharp me-1">
@@ -259,6 +275,7 @@ const Info = () => {
       <div>
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
+      {/* Delete Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Delete Course</Modal.Title>
@@ -275,8 +292,36 @@ const Info = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      {/* Clone Modal */}
+      <Modal show={showCloneModal} onHide={() => setShowCloneModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Clone</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to clone the course{" "}
+          <strong>{courseName}</strong> ?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger light"
+            onClick={() => setShowCloneModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-success " onClick={handleCatClone}>
+            Clone
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 };
 
 export default Info;
+
+{
+  /* <Link
+to="/add-courses"
+className="btn btn-primary shadow btn-xs sharp me-1">
+<i class="fa-solid fa-plus"></i>
+</Link> */
+}
