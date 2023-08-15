@@ -95,18 +95,18 @@ import AddCourses from './components/Courses/AddCourses'
 import EditcourseForm from './components/Courses/EditcourseForm'
 import Info from './components/Courses/Info'
 import UCoursesInfo from './components/Courses/UCoursesInfo'
-import Content from './components/Courses/Content'
-import WebContent from './components/Courses/WebContent'
+// import Content from "./components/Courses/Content";
+// import WebContent from "./components/Courses/WebContent";
 import Video from './components/Courses/Video'
-import Audio from './components/Courses/Audio'
+// import Audio from "./components/Courses/Audio";
 import Presentation from './components/Courses/Presentation'
 import Scorm from './components/Courses/Scorm'
-import Iframe from './components/Courses/Iframe'
+// import Iframe from "./components/Courses/Iframe";
 import SelectTestQuestion from './components/Courses/SelectTestQuestion'
 import SetTestOrder from './components/Courses/SetTestOrder'
 import SetTestWeight from './components/Courses/SetTestWeight'
 import TestOption from './components/Courses/TestOption'
-import SelectSurveyQuestion from './components/Courses/SelectSurveyQuestion'
+// import SelectSurveyQuestion from "./components/Courses/SelectSurveyQuestion";
 import SetSurveyOrder from './components/Courses/SetSurveyOrder'
 import SurveyOption from './components/Courses/SurveyOption'
 import Assignment from './components/Courses/Assignment'
@@ -414,18 +414,18 @@ const Markup = () => {
     { url: 'edit-courses/:id', component: EditcourseForm },
     { url: 'courses-info', component: Info },
     { url: 'user-courses-info/:id', component: UCoursesInfo },
-    { url: 'content', component: Content },
-    { url: 'webcontent', component: WebContent },
+    // { url: "content", component: Content },
+    // { url: "webcontent", component: WebContent },
     { url: 'video', component: Video },
-    { url: 'audio', component: Audio },
+    // { url: "audio", component: Audio },
     { url: 'presentation', component: Presentation },
     { url: 'scorm', component: Scorm },
-    { url: 'iframe', component: Iframe },
+    // { url: "iframe", component: Iframe },
     { url: 'test-question', component: SelectTestQuestion },
     { url: 'test-order', component: SetTestOrder },
     { url: 'test-weight', component: SetTestWeight },
     { url: 'test-option', component: TestOption },
-    { url: 'survey-question', component: SelectSurveyQuestion },
+    // { url: "survey-question", component: SelectSurveyQuestion },
     { url: 'survey-order', component: SetSurveyOrder },
     { url: 'survey-option', component: SurveyOption },
     { url: 'assignment', component: Assignment },

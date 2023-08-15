@@ -491,7 +491,7 @@ const AddCourses = () => {
                             <br />
                             <br />
                             {selectedVideo && (
-                              <video controls>
+                              <video controls className="video-player">
                                 <source
                                   src={
                                     selectedVideo &&
@@ -702,78 +702,51 @@ const AddCourses = () => {
                         title="ADD"
                         className="me-1 mt-1">
                         <Dropdown.Item>
-                          <Link to="/content">
-                            <i class="bi bi-back"> &nbsp;</i>Content
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="/webcontent">
-                            <i class="bi bi-cloud"> &nbsp;</i>Web Content
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
                           <Link to="/video">
-                            <i class="bi bi-play-circle"> &nbsp;</i>Video
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-play-circle"> &nbsp;</i>Video
+                            </div>
                           </Link>
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="/audio">
-                            <i class="bi bi-file-music"> &nbsp;</i>Audio
-                          </Link>
-                        </Dropdown.Item>
+
                         <Dropdown.Item>
                           <Link to="/presentation">
-                            <i class="bi bi-file-slides"> &nbsp;</i>Presentation
-                            | Documents{" "}
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-file-slides"> &nbsp;</i>
+                              Presentation | Documents{" "}
+                            </div>
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
                           <Link to="/scorm">
-                            <i class="bi bi-command"> &nbsp;</i>SCORM | xAPI |
-                            cmi5
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-command"> &nbsp;</i>SCORM | xAPI |
+                              cmi5
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="/iframe">
-                            <i class="bi bi-code-slash"> &nbsp;</i>iFrame
-                          </Link>
-                        </Dropdown.Item>
+
                         <Dropdown.Item>
                           <Link to="/test-question">
-                            <i class="bi bi-journal-check"> &nbsp;</i>Test
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-journal-check"> &nbsp;</i>Test
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="/survey-question">
-                            <i class="bi bi-check2-square"> &nbsp;</i>Survey
-                          </Link>
-                        </Dropdown.Item>
+
                         <Dropdown.Item>
                           <Link to="/assignment">
-                            <i class="bi bi-clipboard"> &nbsp;</i>Assignment
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-clipboard"> &nbsp;</i>Assignment
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
                           <Link to="/instructor-led">
-                            <i class="bi bi-calendar4-week"> &nbsp;</i>
-                            Instructor-led training
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-tropical-storm"> &nbsp;</i>Section
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-vr"> &nbsp;</i>Clone from another
-                            course
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-link"> &nbsp;</i>Link from another
-                            course
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-calendar4-week"> &nbsp;</i>
+                              Instructor-led training
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                       </DropdownButton>
@@ -791,33 +764,30 @@ const AddCourses = () => {
                         className="me-1 mt-1">
                         <Dropdown.Item>
                           <Link to="/message_users">
-                            <i class="bi bi-chat-right-text"> &nbsp;</i>Message
-                            Users
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-chat-right-text"> &nbsp;</i>
+                              Message Users
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
                           <Link to="/ad_event">
-                            <i class="bi bi-calendar4-week"> &nbsp;</i>Add Event
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-calendar4-week"> &nbsp;</i>Add
+                              Event
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
+
                         <Dropdown.Item>
                           <Link to="#">
-                            <i class="bi bi-cloud-snow-fill"> &nbsp;</i>Make
-                            Course Public
+                            <div className="dropdown-item-content">
+                              <i class="bi bi-lock"> &nbsp;</i>Lock Course
+                              Content
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
-                        <Dropdown.Item>
-                          <Link to="#">
-                            <i class="bi bi-lock"> &nbsp;</i>Lock Course Content
-                          </Link>
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          variant="primary"
-                          className="mb-2 me-2"
-                          onClick={() => setLargeModal(true)}>
-                          <i class="bi bi-tablet"> &nbsp;</i>
-                          Mobile App Compatibility
-                        </Dropdown.Item>
+
                         <Modal
                           className="fade bd-example-modal-lg"
                           show={largeModal}
