@@ -45,7 +45,7 @@ const AddUser = () => {
   const [emailError, setEmailError] = useState(""); //show wrong email error
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-  const [activeError, setActiveError] = useState("");
+
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
@@ -88,7 +88,7 @@ const AddUser = () => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", selectedOptionRole.value);
+    formData.append("role", "admin");
     formData.append("timezone", selectedOptionTimeZone.value);
     formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
@@ -221,7 +221,7 @@ const AddUser = () => {
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Add Users Form </h4>
+              <h4 className="card-title">Add Users Form (Admin) </h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
@@ -406,7 +406,7 @@ const AddUser = () => {
                       </div>
                       <br />
 
-                      <div className="form-group mb-3 row">
+                      {/* <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="val-username">
@@ -427,7 +427,7 @@ const AddUser = () => {
                             className="invalid-feedback animated fadeInUp"
                             style={{ display: "block" }}></div>
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="form-group mb-3 row">
                         <label
@@ -531,7 +531,7 @@ const AddUser = () => {
                           Deactive
                         </label>
                       </div>
-                      <div className="col-lg-2 d-flex mt-3">
+                      <div className="col-lg-3 d-flex mt-3">
                         <input
                           type="checkbox"
                           className="form-check-input"
@@ -545,19 +545,18 @@ const AddUser = () => {
                         <label
                           className="form-check css-control-primary css-checkbox mt-1"
                           htmlFor="exclude">
-                          Exclude from Email
+                          Exclude from Email&nbsp;&nbsp;
                         </label>
+
+                        <i
+                          className="fa-regular fa-circle-question fa-xl mt-3 "
+                          style={{ color: "#3065d0" }}
+                          title="check if you'd like to exclude the user from all automated notification,except for essential system emails.(i.e- password and username reset)"></i>
                       </div>
                     </div>
-                    {activeError && (
-                      <span className="text-danger fs-14 m-2">
-                        {activeError}
-                      </span>
-                    )}
 
                     <div className="form-group mb-5 row">
                       <div className="col-lg-8 ms-auto">
-                        <br />
                         <br />
                         <Button
                           type="submit"

@@ -174,13 +174,15 @@ const Categories = () => {
                           <td></td>
                           <td>
                             <div className="d-flex">
-                              <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i
-                                  className="fas fa-pencil-alt"
-                                  onClick={(e) => handleEdit(item.id)}></i>
+                              <div
+                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                title="Edit"
+                                onClick={(e) => handleEdit(item.id)}>
+                                <i className="fas fa-pencil-alt"></i>
                               </div>
                               <div
                                 className="btn btn-danger shadow btn-xs sharp"
+                                title="Delete"
                                 onClick={() => deleteOperation(item.id)}>
                                 <i className="fa fa-trash"></i>
                               </div>

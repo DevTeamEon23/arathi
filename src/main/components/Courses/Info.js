@@ -229,7 +229,9 @@ const Info = () => {
                       </Dropdown>
                       </center> */}
                               <center>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Clone">
                                   <i
                                     class="fa-solid fa-plus"
                                     onClick={(e) =>
@@ -238,16 +240,20 @@ const Info = () => {
                                 </div>
                                 <Link
                                   to="/course-reports"
-                                  className="btn btn-primary shadow btn-xs sharp me-1">
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Reports">
                                   <i class="fa-regular fa-clipboard"></i>
                                 </Link>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Edit">
                                   <i
                                     className="fas fa-pencil-alt"
                                     onClick={(e) => handleEdit(data.id)}></i>
                                 </div>
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
                                   onClick={() => deleteOperation(data.id)}>
                                   <i className="fa fa-trash"></i>
                                 </div>

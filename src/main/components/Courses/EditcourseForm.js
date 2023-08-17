@@ -71,7 +71,7 @@ const EditcourseForm = (props) => {
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  const backendBaseUrl = Url; //"https://v1.eonlearning.tech";
+  const backendBaseUrl = "https://v1.eonlearning.tech";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -348,7 +348,7 @@ const EditcourseForm = (props) => {
                   <>
                     <form onSubmit={handleEditFormSubmit}>
                       <div className="row">
-                        <div className="col-xl-8">
+                        <div className="col-xl-7">
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
@@ -660,14 +660,14 @@ const EditcourseForm = (props) => {
                           <br />
                         </div>
 
-                        <div className="col-xl-4">
+                        <div className="col-xl-5">
                           <div className="form-group mb-3 row">
                             <label
-                              className="col-lg-4 col-form-label"
+                              className="col-lg-3 col-form-label"
                               htmlFor="file">
                               Add Photo<span className="text-danger">*</span>
                             </label>
-                            <div className="profile-info col-lg-6">
+                            <div className="profile-info col-lg-7">
                               <div className="profile-photo">
                                 {file ? (
                                   <>
