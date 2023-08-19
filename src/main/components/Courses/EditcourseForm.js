@@ -285,7 +285,7 @@ const EditcourseForm = (props) => {
     <Fragment>
       <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
+          {/* <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
@@ -302,27 +302,25 @@ const EditcourseForm = (props) => {
             type="button"
             to="/courses-info">
             Courses
-          </Link>
-          {/* <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='/course_users'
-          >
+          </Link> */}
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_users">
             Users
           </Link>
           <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='/course_groups'
-          >
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_groups">
             Groups
-          </Link> */}
+          </Link>
         </Nav.Item>
       </Nav>
 

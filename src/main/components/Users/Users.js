@@ -13,7 +13,7 @@ const Users = () => {
   const [userData, setUserData] = useState([]); //user list data
   const [showModal, setShowModal] = useState(false); //delete button modal
   const history = useHistory();
-
+  const [selectedFilter, setSelectedFilter] = useState(""); // Initialize with an empty string or default filter value
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const [totalUserData, setTotalUserData] = useState(); //user list data
   const itemsPerPage = 20; // Number of items to display per page
@@ -178,7 +178,24 @@ const Users = () => {
                         </th>
                         <th>
                           <strong>
-                            <center>USER TYPE</center>
+                            <center>
+                              ROLE&nbsp;
+                              <select
+                                value={selectedFilter}
+                                style={{
+                                  width: "21px",
+                                  borderRadius: "6px",
+                                }}
+                                onChange={(e) =>
+                                  setSelectedFilter(e.target.value)
+                                }>
+                                <option value="">All</option>{" "}
+                                <option value="Superadmin">SuperAdmin</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Instructor">Instructor</option>
+                                <option value="Learner">Learner</option>
+                              </select>
+                            </center>
                           </strong>
                         </th>
                         <th>
@@ -233,6 +250,9 @@ const Users = () => {
                         const amPm = hours >= 12 ? "PM" : "AM";
                         hours = hours % 12 || 12;
                         const formattedTime = `${hours}:${minutes} ${amPm}`;
+                        if (selectedFilter && item.role !== selectedFilter) {
+                          return null; // Skip rendering this row
+                        }
                         return (
                           <tr key={index}>
                             <td>
