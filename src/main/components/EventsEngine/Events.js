@@ -188,16 +188,16 @@ const Events = () => {
                           </td>
                           <td>
                             <center>
-                              <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i
-                                  className="fas fa-pencil-alt"
-                                  onClick={(e) => handleEdit(item.id)}></i>
+                              <div
+                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                onClick={(e) => handleEdit(item.id)}>
+                                <i className="fas fa-pencil-alt"></i>
                               </div>
 
-                              <div className="btn btn-danger shadow btn-xs sharp">
-                                <i
-                                  className="fa fa-trash"
-                                  onClick={() => deleteEvent(item.id)}></i>
+                              <div
+                                className="btn btn-danger shadow btn-xs sharp"
+                                onClick={() => deleteEvent(item.id)}>
+                                <i className="fa fa-trash"></i>
                               </div>
                             </center>
                           </td>
