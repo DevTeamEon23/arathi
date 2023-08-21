@@ -1,306 +1,324 @@
-import React, { useState } from "react";  
-import { read, utils, writeFile } from 'xlsx';
+import React, { useState, useRef } from "react";
+import { read, utils, writeFile } from "xlsx";
+// import { useDropzone } from "react-dropzone";
+import Dropzone from "react-dropzone-uploader";
+import "react-dropzone-uploader/dist/styles.css";
+import { Link, useHistory } from "react-router-dom";
+import { Nav, Row, Col, Card, Table, Button } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
 import { useDropzone } from "react-dropzone";
-import Dropzone from 'react-dropzone-uploader';
-import { Link } from "react-router-dom";
-import {
-  Nav,
-  Row,
-  Col,
-  Card,
-  Table,
-} from "react-bootstrap";
-
 
 const ImportUser = () => {
-    const [id, setId] = useState('');
-    const [eid, setEid] = useState('');
-    const [firstname, setFirstname] = useState('');
-    const [lastname, setLastname] = useState('');
-    const [email, setEmail] = useState('');
-    const [dept, setDept] = useState('');
-    const [adhr, setAdhr] = useState('');
-    const [bio, setBio] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [categorytype, setCategoryType] = useState('');
-    const [timezonetype, setTimezoneType] = useState('');
-    const [langtype, setLangType] = useState('');
-    const [file, setFile] = useState([]);
-    const [isActive, setIsActive] = useState(true);
-    const [showPassword, setShowPassword] = useState(false);
-    const [data, setData] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [movies, setMovies] = useState([]);
-    const { getRootProps, getInputProps, acceptedFiles } =
-      useDropzone({});
+  const [id, setId] = useState("");
+  const [eid, setEid] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [dept, setDept] = useState("");
+  const [adhr, setAdhr] = useState("");
+  const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [categorytype, setCategoryType] = useState("");
+  const [timezonetype, setTimezoneType] = useState("");
+  const [langtype, setLangType] = useState("");
+  const [isActive, setIsActive] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [file, setFile] = useState([]); //excel file
 
-//     const onUploadClick = async (event) => {
-//     event.preventDefault()
-//     var formData = new FormData();
+  const [fileError, setFileError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [excelData, setExcelData] = useState([]);
+  const dropzoneRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
 
-//     formData.append(
-//         "file",
-//         this.state.uploadFile,
-//         this.state.uploadFile.name
-//     );
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]);
+  };
 
-//     this.setState({isFileUploaded: true})
-//     console.log(this.state.uploadFile)
+  const handleFileDrop = async (files, allFiles) => {
+    console.log("inside handleFileDrop", allFiles);
+    if (files.length > 0) {
+      setSelectedFile(files[0].file);
 
-//     const headers={'Content-Type': this.state.uploadFile.type}
-    
-//     await data.post("http:localhost:8000/FileUpload/",formData,headers);
-// };
-//     const onFileChange = (event) => {
-//     this.setState({
-//         uploadFile: event.target.files[0],
-//         isFileSelected: true
-//     });
-// };
-
-    //   const handleSubmit = (e) => {
-    //     e.preventDefault();
-        
-    //     const data = {id, eid, firstname, lastname, email, dept, adhr, file, bio, username, password, isActive};
-    
-    //     fetch('/import-excel', {
-    //       headers: {
-    //         'Accept': 'muiltipart/form-data',
-    //         'Content-Type': 'muiltipart/form-data'
-    //       },
-    //       method: 'POST',
-    //       body: {
-    //         id: setId,
-    //         eid: setEid,
-    //         firstname: setFirstname,
-    //         lastname: setLastname,
-    //         email: setEmail,
-    //         dept: setDept,
-    //         adhr: setAdhr,
-    //         file: setEid,
-    //         bio: setBio,
-    //         username: setUsername,
-    //         password: setPassword,
-    //         categorytype: setCategoryType,
-    //         timezonetype: setTimezoneType,
-    //         langtype: setLangType,
-    //         isActive: setIsActive
-    //       }
-    //     })
-    //     .then((data) => {
-    //       console.log('new user added')
-    //       alert("✔️ User Added Successfully");
-    //       setUsers(data);
-    //     })
-    //       .catch((err) => {
-    //         console.log(err);
-    //       });
-    //     }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-      function handleChange(e) {
-        console.log(e.target.files);
-        setFile(URL.createObjectURL(e.target.files[0]));
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const arrayBuffer = event.target.result;
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          raw: true,
+        });
+        setExcelData(jsonData);
+      };
+      reader.readAsArrayBuffer(files[0].file);
     }
-    const files = acceptedFiles.map((file) => (
-      <li key={file.path}>
-        {file.path} - {file.size} bytes
-      </li>
-    ));
- 
-    const handleImport = ($event) => {
-        const files = $event.target.files;
-        if (files.length) {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const wb = read(event.target.result);
-                const sheets = wb.SheetNames;
+  };
 
-                if (sheets.length) {
-                    const rows = utils.sheet_to_json(wb.Sheets[sheets[0]]);
-                    setMovies(rows)
-                }
-            }
-            reader.readAsArrayBuffer(file);
-        }
-    }
-      
-    
-    const handleExport = () => {
-        const headings = [[
-            'id',
-            'eid',
-            'firstname',
-            'lastname',
-            'email',
-            'dept',
-            'adhr',
-            'username',
-            'password',
-            'bio',
-            'file',
-            'categorytype',
-            'timezonetype',
-            'langtype',
-            'isActive',
-        ]];
-        const wb = utils.book_new();
-        const ws = utils.json_to_sheet([]);
-        utils.sheet_add_aoa(ws, headings);
-        utils.sheet_add_json(ws, movies, { origin: 'A2', skipHeader: true });
-        utils.book_append_sheet(wb, ws, 'Report');
-        writeFile(wb, 'Sample File.xlsx');
-    }
+  const handleMouseEnter = () => {
+    console.log("inside mouse enter");
+    setIsHovered(true);
+  };
 
-    return (
-        <>
-      <Nav >
-        <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/users-list">Users List</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/export-user">Export Users</Link>
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const handleExport = () => {
+    const headings = [
+      [
+        "eid",
+        "sid",
+        "fullname",
+        "email",
+        "dept",
+        "adhr",
+        "username",
+        "password",
+        "bio",
+        "categorytype",
+        "timezonetype",
+        "langtype",
+        "isActive",
+        "isDeactive",
+        "excludeFromEmail",
+        "generate_token",
+      ],
+    ];
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet([]);
+    utils.sheet_add_aoa(ws, headings);
+    utils.sheet_add_json(ws, movies, { origin: "A2", skipHeader: true });
+    utils.book_append_sheet(wb, ws, "Report");
+    writeFile(wb, "Sample File.xlsx");
+  };
+
+  //Add user api
+  const handleSubmit = async () => {
+    // e.preventDefault();
+    console.log("inside handleSubmit");
+    if (selectedFile) {
+      setFileError("");
+      console.log(selectedFile);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      const url = "http://127.0.0.1:8000/lms-service/addusers_excel";
+      const authToken = window.localStorage.getItem("jwt_access_token");
+
+      await axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("✔️ Users Added Successfully!!!");
+          // history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to add user...");
+        });
+    } else {
+      console.log("No file selected.");
+      setFileError("Please Select file OR Submit the selected file.");
+    }
+  };
+  // const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const styles = {
+    dropzone: {
+      minHeight: 200,
+      maxHeight: 250,
+      width: "100%",
+      backgroundColor: "#f2f4fa",
+      border: "1px dashed #DDDFE1",
+      overflow: "hidden",
+    },
+    inputLabel: {
+      color: "#7e7e7e",
+      fontSize: "18px",
+      fontWeight: "normal",
+      backgroundColor: "#f2f4fa",
+    },
+  };
+
+  return (
+    <>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/users-list">
+            Users List
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/export-user">
+            Export Users
+          </Link>
         </Nav.Item>
       </Nav>
-        <Row>
+      <Row>
         <Col xxl={12}>
           <Card>
-            <div className="row">
-                <div className="col-lg-1">
+            <Card.Header>
+              <Card.Title>Import</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              {" "}
+              {/* <div>
+                <div {...getRootProps()} className="dropzone">
+                  <input {...getInputProps()} />
+                  <p>Drag & drop an Excel file here, or click to select one</p>
                 </div>
-                    <div className="col-lg-10">    
-                    <div className="container">
-                    <div {...getRootProps }>
-                            <input {...getInputProps()} required onChange={handleImport}/>
-                            <Dropzone styles={{
-                                dropzone: {
-                                minHeight: 200,
-                                maxHeight: 250,
-                                width: "100%",
-                                backgroundColor: "#f2f4fa",
-                                border: "1px dashed #DDDFE1",
-                                overflow: "hidden",
-                                },
-                                inputLabel: {
-                                color: "#7e7e7e",
-                                fontSize: "18px",
-                                fontWeight: "normal",
-                                backgroundColor: "#f2f4fa",
-                                },
-                            }} >
-                            Drag 'n' drop a Excel or CSV files here<br/> </Dropzone>
-                        </div>
-                        <aside>
-                            <ul>{files}</ul>
-                        </aside>
-                        </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="input-group">
-                                    <div className="custom-file">
-                                    <div className="container">
-                                    <form action="/import-excel" enctype="multipart/form-data" method="post" />
-                        {/* <input type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
-                                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"/> */}
-                                <input
-                                    type="file"
-                                    name="file"
-                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                    onChange={handleImport}
-                                    placeholder="Choose file Or Drag on Choose Button"
-                                /><br/><br/>
-                                {/* <label className="custom-file-label" htmlFor="inputGroupFile">Choose file Or Drag on Choose Button</label> */}
-                                </div>
-                                </div>
-                            </div>
-                        <div className="row">
-                            <div className="col-md-4">
-                                <button onClick={handleExport} className="btn btn-primary float-right">
-                                    Sample File <i className="fa fa-download"></i>
-                                </button>
-                                <br/>
-                                <br/>
-                            </div>
-                            </div>
-                        </div>
-                            </div>
-                        <div className="row">
-                        <form action="/import-excel" enctype="multipart/form-data" method="post">
-                                <div className="col-lg-12">
-                                
-                                <Table style={{ textAlign: "center" }} responsive striped bordered className="verticle-middle">
-                                    <thead>
-                                <tr>
-                                    <th scope="col">ID</th>
-                                    <th scope="col">Employee ID</th>
-                                    <th scope="col">FirstName</th>
-                                    <th scope="col">LastName</th>
-                                    <th scope="col">Email-Address</th>
-                                    <th scope="col">Department</th>
-                                    <th scope="col">Aadhar Card No.</th>
-                                    <th scope="col">Username</th>
-                                    <th scope="col">Password</th>
-                                    <th scope="col">Bio</th>
-                                    <th scope="col">Photo</th>
-                                    <th scope="col">User Type</th>
-                                    <th scope="col">TimeZone</th>
-                                    <th scope="col">Language</th>
-                                    <th scope="col">IsActive</th>
-                                </tr>
-                            </thead>
-                            <tbody> 
-                                            
-                                {
-                                    movies.length
-                                    ?
-                                    movies.map((movie, index) => (
-                                        <tr key={index}>
-                                        <td type="text" name="id" value={id} onChange={(e) => setId(e.target.value)}>{ movie.id }</td>
-                                        <td>{ movie.eid }</td>
-                                        <td>{ movie.firstname }</td>
-                                        <td>{ movie.lastname }</td>
-                                        <td>{ movie.email }</td>
-                                        <td>{ movie.dept }</td>
-                                        <td>{ movie.adhr }</td>
-                                        <td>{ movie.username }</td>
-                                        <td>{ movie.password }</td>
-                                        <td>{ movie.bio }</td>
-                                        <td>{ movie.file }</td>
-                                        <td>{ movie.categorytype }</td>
-                                        <td>{ movie.timezonetype }</td>
-                                        <td>{ movie.langtype }</td>
-                                        <td>{ movie.isActive }</td>
-                                        <td><span className="badge bg-warning text-dark">{ movie.Rating }</span></td>
-                                        </tr> 
-                                    ))
-                                    : 
-                                     
-                                    <tr>
-                                        <td colSpan="13" rowSpan="13" className="text-center">No File Found.</td>
-                                    </tr> 
-                                }
-                            </tbody>
-                        </Table>
-                        <br/>
-                        <br/>
-                        <div className="form-group mb-3 row">
-                            <div className="col-lg-3 ms-auto">
-                        <button type="submit" value="Store File" className="btn btn-primary float-right">
-                            Add Users&nbsp; <i className="bi bi-plus-circle"></i>
-                        </button>
-                        </div>
-                        </div>
-                    </div>
-                    </form>
+                <button onClick={handleUpload}>Upload</button>
+              </div> */}
+              <div className="dropzone-container">
+                <Dropzone
+                  onSubmit={handleFileDrop}
+                  ref={dropzoneRef}
+                  accept=".xlsx"
+                  // inputContent="Drag a Excel or CSV file or click to brows"
+                  styles={styles}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}>
+                  <p className="dropzone-message">
+                    {isHovered
+                      ? "Accepted Files : CSV, xls, xlsx - 1 MB"
+                      : "Drag an Excel or CSV file or click to browse"}
+                  </p>
+                </Dropzone>
+              </div>
+              <br />
+              <div className="d-flex align-items-center justify-content-center fs-18">
+                {" "}
+                {selectedFile ? selectedFile.name : ""}
+              </div>
+              <div className="col-lg-12">
+                <Table
+                  style={{ textAlign: "center" }}
+                  responsive
+                  striped
+                  bordered
+                  className="verticle-middle">
+                  {/* <thead>
+                    <tr>
+                      <th scope="col">EID</th>
+                      <th scope="col">SID</th>
+                      <th scope="col">Full Name</th>
+                      <th scope="col">Email ID</th>
+                      <th scope="col">Department</th>
+                      <th scope="col">Aadhar Card No.</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Password</th>
+                      <th scope="col">Bio</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Time Zone</th>
+                      <th scope="col">Language</th>
+                      <th scope="col">IsActive</th>
+                      <th scope="col">IsDeactive</th>
+                      <th scope="col">ExcludeFromEmail</th>
+                    </tr>
+                  </thead> */}
+                  <tbody>
+                    {/* {excelData.length > 0 ? (
+                      excelData[0].map((data, index) => (
+                        <tr key={index}>
+                          <td>{data.eid}</td>
+                          <td>{data.sid}</td>
+                          <td>{data.full_name}</td>
+                          <td>{data.email}</td>
+                          <td>{data.dept}</td>
+                          <td>{data.adhr}</td>
+                          <td>{data.username}</td>
+                          <td>{data.password}</td>
+                          <td>{data.bio}</td>
+                          <td>{data.role}</td>
+                          <td>{data.timezone}</td>
+                          <td>{data.langtype}</td>
+                          <td>{data.active}</td>
+                          <td>{data.deactive}</td>
+                          <td>{data.exclude_from_email}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="15" rowSpan="15" className="text-center">
+                          No File Selected.
+                        </td>
+                      </tr>
+                    )} */}
+                    <tbody>
+                      {excelData.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={cellIndex}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </tbody>
+                </Table>
+              </div>
+              {/* {excelData.length > 0 && (
+                <div>
+                  <table>
+                    <thead>
+                      <tr>
+                        {excelData[0].map((header, index) => (
+                          <th key={index}>{header}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {excelData.slice(1).map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {row.map((cell, cellIndex) => (
+                            <td key={cellIndex}>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-            </div>
+              )} */}
+              <div className="d-flex justify-content-between mt-3">
+                <Button onClick={handleSubmit} className="btn btn-primary ">
+                  Add Users&nbsp; <i className="bi bi-plus-circle"></i>
+                </Button>
+                <Button onClick={handleExport} className="btn btn-primary ">
+                  Sample File&nbsp;<i className="fa fa-download"></i>
+                </Button>
+              </div>
+              <br />
+              {fileError && (
+                <div className="text-danger fs-14">{fileError}</div>
+              )}
+            </Card.Body>
           </Card>
         </Col>
       </Row>
-        </>
-
-    );
+    </>
+  );
 };
 
 export default ImportUser;
