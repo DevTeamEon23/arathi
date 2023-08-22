@@ -3,19 +3,8 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Nav, Button } from "react-bootstrap";
+import { Nav, Button, Tab, Tabs } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
-
-// const loginSchema = Yup.object().shape({
-//   username: Yup.string()
-//     .min(3, "Your username must consist of at least 3 characters ")
-//     .max(50, "Your username must consist of at least 3 characters ")
-//     .required("Please enter a username"),
-//   password: Yup.string()
-//     .min(5, "Your password must be at least 5 characters long")
-//     .max(50, "Your password must be at least 5 characters long")
-//     .required("Please provide a password"),
-// });
 
 // const categorytype = [
 //   { value: "Superadmin", label: "SuperAdmin" },
@@ -59,13 +48,13 @@ const EditUser = (props) => {
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [showPassword, setShowPassword] = useState(false);
-
   const [userData, setUserData] = useState(); //user list data
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   // const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
+  const [activeTab, setActiveTab] = useState("edit-user/:id");
   const backendBaseUrl = "https://v1.eonlearning.tech";
   const history = useHistory();
 
@@ -224,6 +213,18 @@ const EditUser = (props) => {
     setSelectedOptionLang(null);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
   return (
     <Fragment>
       <Nav>
@@ -237,7 +238,6 @@ const EditUser = (props) => {
             to="/edit-user/:id">
             Info
           </Link>
-
           <Link
             as="button"
             className="nav-link  nt-unseen"
@@ -271,6 +271,12 @@ const EditUser = (props) => {
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
+            {/* <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey="/edit-user/:id" title="Info"></Tab>
+              <Tab eventKey="/user-courses-info" title="Courses"></Tab>
+              <Tab eventKey="/user-groups" title="Groups"></Tab>
+              <Tab eventKey="/user-files" title="Files"></Tab>
+            </Tabs> */}
             <div className="card-header">
               <h4 className="card-title">Edit User Form (Admin)</h4>
             </div>
