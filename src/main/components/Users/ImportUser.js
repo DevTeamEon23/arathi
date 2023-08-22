@@ -1,13 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { utils, writeFile } from "xlsx";
 import Dropzone from "react-dropzone-uploader";
 import "react-dropzone-uploader/dist/styles.css";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Nav, Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
-
 import Swal from "sweetalert2";
 
 const ImportUser = () => {
@@ -15,10 +14,9 @@ const ImportUser = () => {
   const [selectedFile, setSelectedFile] = useState(null); //excel file
   const [excelData, setExcelData] = useState([]);
   const dropzoneRef = useRef(null);
-  const [activeTab, setActiveTab] = useState("/import-user");
-  const [importError, setImportError] = useState("");
+  const [activeTab, setActiveTab] = useState("import-user");
 
-  let history = useHistory();
+  const history = useHistory();
 
   const handleFileDrop = async (files, allFiles) => {
     if (files.length > 0) {
@@ -88,7 +86,7 @@ const ImportUser = () => {
         })
         .then((response) => {
           console.log(response.data, response.data.message);
-          setImportError(response.data.message);
+
           // toast.success(" Users Added Successfully!!!");
 
           Swal.fire({
@@ -96,12 +94,15 @@ const ImportUser = () => {
             text: response.data.message,
             icon: "success",
             confirmButtonText: "OK",
+          }).then(() => {
+            history.push(`/users-list`);
           });
-          // history.push(`/users-list`);
         })
         .catch((error) => {
           console.error(error);
-          toast.error("Failed !!! Unable to add user...");
+          toast.error("An error occurred. Please try again later.", {
+            position: toast.POSITION.TOP_CENTER,
+          });
         });
     } else {
       console.log("No file selected.");
@@ -130,6 +131,13 @@ const ImportUser = () => {
     setActiveTab(tab);
     history.push(`/${tab}`);
   };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   return (
     <>
