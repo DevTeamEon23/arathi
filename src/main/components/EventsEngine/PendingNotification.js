@@ -12,7 +12,6 @@ import {
   Nav,
 } from "react-bootstrap";
 
-
 const PendingNotification = () => {
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
@@ -45,13 +44,29 @@ const PendingNotification = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+  let history = useHistory();
   return (
     <Fragment>
-        <Nav >
-	      <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/events">Notification</Link>
-          <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/pending-notification">Pending Notification</Link>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/events">
+            Notification
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/pending-notification">
+            Pending Notification
+          </Link>
         </Nav.Item>
       </Nav>
       <Row>
@@ -59,11 +74,6 @@ let history = useHistory();
           <Card>
             <Card.Header>
               <Card.Title>Pending Notifications</Card.Title>
-              <div>
-                <Link to="/customize-system-notification">
-                  <Button variant="primary">Customize system Notification</Button>
-                </Link>
-              </div>
             </Card.Header>
             <Card.Body>
               <Table responsive>
@@ -83,15 +93,14 @@ let history = useHistory();
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
               </Table>
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Cancel</Button>
+        <Button onClick={() => history.goBack()}>Cancel</Button>
       </div>
     </Fragment>
   );

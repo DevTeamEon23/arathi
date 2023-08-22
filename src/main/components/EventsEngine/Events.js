@@ -121,12 +121,6 @@ const Events = () => {
                 <Link to="/add-events">
                   <Button variant="primary">Add Notification</Button>
                 </Link>
-                &nbsp;&nbsp;
-                <Link to="/customize-system-notification">
-                  <Button variant="primary">
-                    Customize system Notification
-                  </Button>
-                </Link>
               </div>
             </Card.Header>
             <Card.Body>
@@ -144,9 +138,6 @@ const Events = () => {
                 <Table responsive>
                   <thead>
                     <tr>
-                      {/* <th className="width80">
-                      <strong>#</strong>
-                    </th> */}
                       <th>
                         <center>
                           <strong>NAME</strong>
