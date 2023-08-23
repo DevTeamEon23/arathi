@@ -229,7 +229,9 @@ const Info = () => {
                       </Dropdown>
                       </center> */}
                               <center>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Clone">
                                   <i
                                     class="fa-solid fa-plus"
                                     onClick={(e) =>
@@ -238,16 +240,19 @@ const Info = () => {
                                 </div>
                                 <Link
                                   to="/course-reports"
-                                  className="btn btn-primary shadow btn-xs sharp me-1">
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Reports">
                                   <i class="fa-regular fa-clipboard"></i>
                                 </Link>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                  <i
-                                    className="fas fa-pencil-alt"
-                                    onClick={(e) => handleEdit(data.id)}></i>
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(data.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
                                   onClick={() => deleteOperation(data.id)}>
                                   <i className="fa fa-trash"></i>
                                 </div>
@@ -307,7 +312,7 @@ const Info = () => {
             onClick={() => setShowCloneModal(false)}>
             Close
           </Button>
-          <Button variant="btn btn-success " onClick={handleCatClone}>
+          <Button variant="btn me-2 btn-primary" onClick={handleCatClone}>
             Clone
           </Button>
         </Modal.Footer>

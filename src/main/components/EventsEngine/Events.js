@@ -121,12 +121,6 @@ const Events = () => {
                 <Link to="/add-events">
                   <Button variant="primary">Add Notification</Button>
                 </Link>
-                &nbsp;&nbsp;
-                <Link to="/customize-system-notification">
-                  <Button variant="primary">
-                    Customize system Notification
-                  </Button>
-                </Link>
               </div>
             </Card.Header>
             <Card.Body>
@@ -144,9 +138,6 @@ const Events = () => {
                 <Table responsive>
                   <thead>
                     <tr>
-                      {/* <th className="width80">
-                      <strong>#</strong>
-                    </th> */}
                       <th>
                         <center>
                           <strong>NAME</strong>
@@ -188,16 +179,16 @@ const Events = () => {
                           </td>
                           <td>
                             <center>
-                              <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i
-                                  className="fas fa-pencil-alt"
-                                  onClick={(e) => handleEdit(item.id)}></i>
+                              <div
+                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                onClick={(e) => handleEdit(item.id)}>
+                                <i className="fas fa-pencil-alt"></i>
                               </div>
 
-                              <div className="btn btn-danger shadow btn-xs sharp">
-                                <i
-                                  className="fa fa-trash"
-                                  onClick={() => deleteEvent(item.id)}></i>
+                              <div
+                                className="btn btn-danger shadow btn-xs sharp"
+                                onClick={() => deleteEvent(item.id)}>
+                                <i className="fa fa-trash"></i>
                               </div>
                             </center>
                           </td>

@@ -1,94 +1,44 @@
-import React, { useState } from "react";
-import { read, utils, writeFile } from "xlsx";
-// import { useDropzone } from "react-dropzone";
-// import Dropzone from "react-dropzone-uploader";
-import { Link, useHistory } from "react-router-dom";
-import { Nav, Row, Col, Card, Table, Button } from "react-bootstrap";
+import React, { useState, useRef, useEffect } from "react";
+import { utils, writeFile } from "xlsx";
+import Dropzone from "react-dropzone-uploader";
+import "react-dropzone-uploader/dist/styles.css";
+import { useHistory } from "react-router-dom";
+import { Nav, Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-import Dropzone from "react-dropzone";
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2";
 
 const ImportUser = () => {
-  const [id, setId] = useState("");
-  const [eid, setEid] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [dept, setDept] = useState("");
-  const [adhr, setAdhr] = useState("");
-  const [bio, setBio] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [categorytype, setCategoryType] = useState("");
-  const [timezonetype, setTimezoneType] = useState("");
-  const [langtype, setLangType] = useState("");
-  const [file, setFile] = useState([]); //excel file
-  const [isActive, setIsActive] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [movies, setMovies] = useState([]);
-  //   const { getRootProps, getInputProps, acceptedFiles } = useDropzone({});
+  const [fileError, setFileError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null); //excel file
+  const [excelData, setExcelData] = useState([]);
+  const dropzoneRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("import-user");
+
   const history = useHistory();
-  const [excelData, setExcelData] = useState(null);
 
-  //Add user api
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("file", movies);
-    const url = "http://127.0.0.1:8000/lms-service/addusers_excel";
-    const authToken = window.localStorage.getItem("jwt_access_token");
-    console.log(movies);
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("✔️ Users Added Successfully!!!");
-        history.push(`/users-list`);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to add user...");
-      });
-  };
+  const handleFileDrop = async (files, allFiles) => {
+    if (files.length > 0) {
+      setSelectedFile(files[0].file);
 
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(URL.createObjectURL(e.target.files[0]));
-  }
-  //   const files = acceptedFiles.map((file) => (
-  //     <li key={file.path}>
-  //       {file.path} - {file.size} bytes
-  //     </li>
-  //   ));
-
-  const handleImport = ($event) => {
-    const files = $event.target.files;
-    if (files.length) {
-      const file = files[0];
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const wb = read(event.target.result);
-        const sheets = wb.SheetNames;
-
-        if (sheets.length) {
-          const rows = utils.sheet_to_json(wb.Sheets[sheets[0]]);
-          setMovies(rows);
-        }
+      reader.onload = async (event) => {
+        const arrayBuffer = event.target.result;
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          raw: true,
+        });
+        setExcelData(jsonData);
       };
-      reader.readAsArrayBuffer(file);
+      reader.readAsArrayBuffer(files[0].file);
     }
   };
 
-  //sample excel btn
   const handleExport = () => {
     const headings = [
       [
@@ -110,35 +60,88 @@ const ImportUser = () => {
         "generate_token",
       ],
     ];
+
     const wb = utils.book_new();
-    const ws = utils.json_to_sheet([]);
-    utils.sheet_add_aoa(ws, headings);
-    utils.sheet_add_json(ws, movies, { origin: "A2", skipHeader: true });
+    const ws = utils.aoa_to_sheet(headings); // Convert headings array to a worksheet
     utils.book_append_sheet(wb, ws, "Report");
     writeFile(wb, "Sample File.xlsx");
   };
 
-  const handleDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    const reader = new FileReader();
+  //Add user api
+  const handleSubmit = async () => {
+    if (selectedFile) {
+      setFileError("");
+      console.log(selectedFile);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      const url = "http://127.0.0.1:8000/lms-service/addusers_excel";
+      const authToken = window.localStorage.getItem("jwt_access_token");
 
-    reader.onload = (event) => {
-      const data = new Uint8Array(event.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const firstSheetName = workbook.SheetNames[0];
-      const excelData = XLSX.utils.sheet_to_json(
-        workbook.Sheets[firstSheetName]
-      );
-      setMovies(excelData);
-      //   setExcelData(excelData);
-    };
+      await axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data, response.data.message);
 
-    reader.readAsArrayBuffer(file);
+          // toast.success(" Users Added Successfully!!!");
+
+          Swal.fire({
+            title: "Success!",
+            text: response.data.message,
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            history.push(`/users-list`);
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("An error occurred. Please try again later.", {
+            position: toast.POSITION.TOP_CENTER,
+          });
+        });
+    } else {
+      console.log("No file selected.");
+      setFileError("Please Select file OR Submit the selected file.");
+    }
   };
+
+  const styles = {
+    dropzone: {
+      minHeight: 200,
+      maxHeight: 250,
+      width: "100%",
+      backgroundColor: "#f2f4fa",
+      border: "4px dashed #DDDFE1",
+      overflow: "hidden",
+    },
+    inputLabel: {
+      color: "#7e7e7e",
+      fontSize: "18px",
+      fontWeight: "normal",
+      backgroundColor: "#f2f4fa",
+    },
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   return (
     <>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -159,151 +162,75 @@ const ImportUser = () => {
             Export Users
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
+
       <Row>
         <Col xxl={12}>
           <Card>
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey="import-user" title="Import"></Tab>
+              <Tab eventKey="export-user" title="Export"></Tab>
+            </Tabs>
             <Card.Header>
-              <Card.Title>Import</Card.Title>
+              <Card.Title>Import User</Card.Title>
             </Card.Header>
             <Card.Body>
-              <div className="row">
-                <div className="col-lg-12">
-                  <div className="container">
-                    {/* <div {...getRootProps}>
-                      <input
-                        {...getInputProps()}
-                        required
-                        onChange={handleImport}
-                      />
-                      <Dropzone
-                        styles={{
-                          dropzone: {
-                            minHeight: 200,
-                            maxHeight: 250,
-                            width: "100%",
-                            backgroundColor: "#f2f4fa",
-                            border: "1px dashed #DDDFE1",
-                            overflow: "hidden",
-                          },
-                          inputLabel: {
-                            color: "#7e7e7e",
-                            fontSize: "18px",
-                            fontWeight: "normal",
-                            backgroundColor: "#f2f4fa",
-                          },
-                        }}></Dropzone>
-                    </div> */}
-                  </div>
-                </div>
-                {/* <input
-                            type="file"
-                            name="file"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                            onChange={handleImport}
-                          /> */}
-                <br />
-                <br />
-                <div>
-                  <h1>Excel File Uploader</h1>
-
-                  <Dropzone onDrop={handleDrop}>
-                    {({ getRootProps, getInputProps }) => (
-                      <div className="dropzone" {...getRootProps()}>
-                        <input {...getInputProps()} />
-                        <p>
-                          Drag and drop an Excel file here, or click to select
-                          one.
-                        </p>
-                      </div>
-                    )}
-                  </Dropzone>
-                  {excelData && (
-                    <div>
-                      <h2>Excel Data:</h2>
-                      <pre>{JSON.stringify(excelData, null, 2)}</pre>
-                    </div>
-                  )}
-                </div>
-                <h5 style={{ textAlign: "center", marginTop: "10px" }}>
-                  Preview Excel file
-                </h5>
-                <br />
-                <form onSubmit={handleSubmit}>
-                  <div className="col-lg-12">
-                    <Table
-                      style={{ textAlign: "center" }}
-                      responsive
-                      striped
-                      bordered
-                      className="verticle-middle">
-                      <thead>
-                        <tr>
-                          <th scope="col">EID</th>
-                          <th scope="col">SID</th>
-                          <th scope="col">Full Name</th>
-                          <th scope="col">Email ID</th>
-                          <th scope="col">Department</th>
-                          <th scope="col">Aadhar Card No.</th>
-                          <th scope="col">Username</th>
-                          <th scope="col">Password</th>
-                          <th scope="col">Bio</th>
-                          <th scope="col">Role</th>
-                          <th scope="col">Time Zone</th>
-                          <th scope="col">Language</th>
-                          <th scope="col">IsActive</th>
-                          <th scope="col">IsDeactive</th>
-                          <th scope="col">ExcludeFromEmail</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {movies.length ? (
-                          movies.map((movie, index) => (
-                            <tr key={index}>
-                              <td>{movie.eid}</td>
-                              <td>{movie.sid}</td>
-                              <td>{movie.full_name}</td>
-                              <td>{movie.email}</td>
-                              <td>{movie.dept}</td>
-                              <td>{movie.adhr}</td>
-                              <td>{movie.username}</td>
-                              <td>{movie.password}</td>
-                              <td>{movie.bio}</td>
-                              <td>{movie.role}</td>
-                              <td>{movie.timezone}</td>
-                              <td>{movie.langtype}</td>
-                              <td>{movie.active}</td>
-                              <td>{movie.deactive}</td>
-                              <td>{movie.exclude_from_email}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="15"
-                              rowSpan="15"
-                              className="text-center">
-                              No File Selected.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                    <br />
-                    <br />
-                    <div className="d-flex justify-content-between">
-                      <Button type="submit" className="btn btn-primary ">
-                        Add Users&nbsp; <i className="bi bi-plus-circle"></i>
-                      </Button>
-                      <Button
-                        onClick={handleExport}
-                        className="btn btn-primary ">
-                        Sample File&nbsp;<i className="fa fa-download"></i>
-                      </Button>
-                    </div>
-                  </div>
-                </form>
+              {" "}
+              <Dropzone
+                onSubmit={handleFileDrop}
+                ref={dropzoneRef}
+                accept=".csv, .xls, .xlsx"
+                inputContent="Drag a Excel or CSV file or click to brows"
+                styles={styles}></Dropzone>
+              <div className="text-end fs-6">
+                Accepted Files : CSV, xls, xlsx - 1 MB
               </div>
+              <br />
+              <div className="d-flex align-items-center justify-content-center fs-18">
+                {" "}
+                {selectedFile ? selectedFile.name : ""}
+              </div>
+              <div className="col-lg-12">
+                <Table
+                  style={{ textAlign: "center" }}
+                  responsive
+                  striped
+                  bordered
+                  className="verticle-middle">
+                  <tbody>
+                    {excelData.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+              <br />
+              <div className="d-flex justify-content-between mt-3">
+                <div>
+                  <Button onClick={handleSubmit} className="btn btn-primary">
+                    Import&nbsp; <i className="bi bi-plus-circle"></i>
+                  </Button>
+                  &nbsp;&nbsp; or &nbsp;&nbsp;
+                  <Button
+                    className="btn me-2 btn-light"
+                    onClick={() => history.goBack()}>
+                    Cancel
+                  </Button>
+                </div>
+                <div>
+                  <Button onClick={handleExport} className="btn btn-primary">
+                    <i className="fa fa-download"></i>&nbsp;Sample Excel File
+                  </Button>
+                </div>
+              </div>
+              <br />
+              {!selectedFile && fileError && (
+                <div className="text-danger fs-14">{fileError}</div>
+              )}
             </Card.Body>
           </Card>
         </Col>

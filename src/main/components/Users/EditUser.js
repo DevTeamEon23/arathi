@@ -3,26 +3,15 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Nav, Button } from "react-bootstrap";
+import { Nav, Button, Tab, Tabs } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 
-// const loginSchema = Yup.object().shape({
-//   username: Yup.string()
-//     .min(3, "Your username must consist of at least 3 characters ")
-//     .max(50, "Your username must consist of at least 3 characters ")
-//     .required("Please enter a username"),
-//   password: Yup.string()
-//     .min(5, "Your password must be at least 5 characters long")
-//     .max(50, "Your password must be at least 5 characters long")
-//     .required("Please provide a password"),
-// });
-
-const categorytype = [
-  { value: "Superadmin", label: "SuperAdmin" },
-  { value: "Admin", label: "Admin" },
-  { value: "Instructor", label: "Instructor" },
-  { value: "Learner", label: "Learner" },
-];
+// const categorytype = [
+//   { value: "Superadmin", label: "SuperAdmin" },
+//   { value: "Admin", label: "Admin" },
+//   { value: "Instructor", label: "Instructor" },
+//   { value: "Learner", label: "Learner" },
+// ];
 
 const timezonetype = [
   { value: "ist", label: "India Standard Time (IST)" },
@@ -59,16 +48,13 @@ const EditUser = (props) => {
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [showPassword, setShowPassword] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
-  // const [isFilePicked, setIsFilePicked] = useState(false);
-  const [data, setData] = useState([]);
-  const [users, setUsers] = useState([]);
   const [userData, setUserData] = useState(); //user list data
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-  const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
+  // const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
+  const [activeTab, setActiveTab] = useState("edit-user/:id");
   const backendBaseUrl = "https://v1.eonlearning.tech";
   const history = useHistory();
 
@@ -109,7 +95,7 @@ const EditUser = (props) => {
         setAdhr(res.adhr);
         setBio(res.bio);
         setUsername(res.username);
-        setSelectedOptionRole({ value: res.role, label: res.role });
+        // setSelectedOptionRole({ value: res.role, label: res.role });
         setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
         // setFile(res.file);
@@ -137,48 +123,45 @@ const EditUser = (props) => {
   //Update User info API
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (file === null) {
-      alert("Please add Photo");
-    } else {
-      const formData = new FormData();
-      formData.append("id", id);
-      formData.append("eid", eid);
-      formData.append("sid", sid);
-      formData.append("full_name", userName);
-      formData.append("email", email);
-      formData.append("dept", dept);
-      formData.append("adhr", adhr);
-      formData.append("username", username);
-      formData.append("password", password);
-      formData.append("bio", bio);
-      formData.append("role", selectedOptionRole.value);
-      formData.append("timezone", selectedOptionTimeZone.value);
-      formData.append("langtype", selectedOptionLang.value);
-      formData.append("active", isActive);
-      formData.append("deactive", isDeactive === false ? 0 : 1);
-      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
-      formData.append("file", file);
 
-      const url = "https://v1.eonlearning.tech/lms-service/update_users";
-      const authToken = token;
-      axios
-        .post(url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Auth-Token": authToken,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          toast.success("User updated successfully!!!");
-          clearAllState();
-          history.push(`/users-list`);
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error("Failed !!! Unable to update user...");
-        });
-    }
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("eid", eid);
+    formData.append("sid", sid);
+    formData.append("full_name", userName);
+    formData.append("email", email);
+    formData.append("dept", dept);
+    formData.append("adhr", adhr);
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("bio", bio);
+    formData.append("role", "admin");
+    formData.append("timezone", selectedOptionTimeZone.value);
+    formData.append("langtype", selectedOptionLang.value);
+    formData.append("active", isActive);
+    formData.append("deactive", isDeactive === false ? 0 : 1);
+    formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+    formData.append("file", file);
+
+    const url = "https://v1.eonlearning.tech/lms-service/update_users";
+    const authToken = token;
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("User updated successfully!!!");
+        clearAllState();
+        history.push(`/users-list`);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to update user...");
+      });
   };
 
   function handleChange(e) {
@@ -225,10 +208,22 @@ const EditUser = (props) => {
     setShowPassword(false);
     setNameErrorMsg("");
     setAadharNoErrorMsg("");
-    setSelectedOptionRole(null);
+    // setSelectedOptionRole(null);
     setSelectedOptionTimeZone(null);
     setSelectedOptionLang(null);
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   return (
     <Fragment>
@@ -243,7 +238,6 @@ const EditUser = (props) => {
             to="/edit-user/:id">
             Info
           </Link>
-
           <Link
             as="button"
             className="nav-link  nt-unseen"
@@ -277,8 +271,14 @@ const EditUser = (props) => {
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
+            {/* <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey="/edit-user/:id" title="Info"></Tab>
+              <Tab eventKey="/user-courses-info" title="Courses"></Tab>
+              <Tab eventKey="/user-groups" title="Groups"></Tab>
+              <Tab eventKey="/user-files" title="Files"></Tab>
+            </Tabs> */}
             <div className="card-header">
-              <h4 className="card-title">Edit User Form </h4>
+              <h4 className="card-title">Edit User Form (Admin)</h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
@@ -476,7 +476,7 @@ const EditUser = (props) => {
                           <br />
 
                           <div className="form-group mb-3 row"></div>
-                          <div className="form-group mb-3 row">
+                          {/* <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
                               htmlFor="val-username">
@@ -494,7 +494,7 @@ const EditUser = (props) => {
                                 className="invalid-feedback animated fadeInUp"
                                 style={{ display: "block" }}></div>
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className="form-group mb-3 row">
                             <label
@@ -600,7 +600,7 @@ const EditUser = (props) => {
                               Deactive
                             </label>
                           </div>
-                          <div className="col-lg-2 d-flex mt-3">
+                          <div className="col-lg-3 d-flex mt-3">
                             <input
                               type="checkbox"
                               className="form-check-input"
@@ -614,8 +614,12 @@ const EditUser = (props) => {
                             <label
                               className="form-check css-control-primary css-checkbox mt-1"
                               htmlFor="exclude">
-                              Exclude from Email
+                              Exclude from Email&nbsp;&nbsp;
                             </label>
+                            <i
+                              className="fa-regular fa-circle-question fa-xl mt-3 "
+                              style={{ color: "#3065d0" }}
+                              title="check if you'd like to exclude the user from all automated notification,except for essential system emails.(i.e- password and username reset)"></i>
                           </div>
                         </div>
 
