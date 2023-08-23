@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-import * as Yup from "yup";
+
 import TimePickerPicker from "react-time-picker";
 import {
   Dropdown,
@@ -11,22 +11,13 @@ import {
   Nav,
   Modal,
   Table,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 import Url from "../../../../src/auth/authService/Url";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
 
 const certificate = [
   { value: "certificate1", label: "Certificate 1" },
@@ -72,6 +63,7 @@ const EditcourseForm = (props) => {
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const backendBaseUrl = "https://v1.eonlearning.tech";
+  const [activeTab, setActiveTab] = useState("edit-courses/:id");
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -281,52 +273,28 @@ const EditcourseForm = (props) => {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          {/* <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/courses-info">
-            Courses
-          </Link> */}
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/course_users">
-            Users
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/course_groups">
-            Groups
-          </Link>
-        </Nav.Item>
-      </Nav>
-
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+              <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
+              <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
+            </Tabs>
             <div className="card-header">
               <h4 className="card-title">Edit Course</h4>
             </div>

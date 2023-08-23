@@ -285,18 +285,16 @@ const Users = () => {
                               <center>
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Edit">
-                                  <i
-                                    className="fas fa-pencil-alt"
-                                    onClick={(e) => handleEdit(item.id)}></i>
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(item.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
 
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
-                                  title="Delete">
-                                  <i
-                                    className="fa fa-trash"
-                                    onClick={() => deleteUser(item.id)}></i>
+                                  title="Delete"
+                                  onClick={() => deleteUser(item.id)}>
+                                  <i className="fa fa-trash"></i>
                                 </div>
                               </center>
                             </td>

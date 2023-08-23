@@ -246,10 +246,9 @@ const Info = () => {
                                 </Link>
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Edit">
-                                  <i
-                                    className="fas fa-pencil-alt"
-                                    onClick={(e) => handleEdit(data.id)}></i>
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(data.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
@@ -313,7 +312,7 @@ const Info = () => {
             onClick={() => setShowCloneModal(false)}>
             Close
           </Button>
-          <Button variant="btn btn-success " onClick={handleCatClone}>
+          <Button variant="btn me-2 btn-primary" onClick={handleCatClone}>
             Clone
           </Button>
         </Modal.Footer>

@@ -117,7 +117,7 @@ import Courseusers from "./components/Courses/Courseusers";
 import EnrollUsers from "./components/Courses/EnrollUsers";
 import Coursegroups from "./components/Courses/Coursegroups";
 import UsersCourseProgress from "./components/Courses/UsersCourseProgress";
-import RulesPath from "./components/Courses/RulesPath";
+// import RulesPath from "./components/Courses/RulesPath";
 import CourseUserReports from "./components/Courses/CourseUserReports";
 import CourseFiles from "./components/Courses/CourseFiles";
 import CourseOverview from "./components/Courses/CourseOverview";
@@ -190,7 +190,7 @@ import InstGroupFiles from "./components/IGroups/InstGroupFiles";
 import Events from "./components/EventsEngine/Events";
 import AddNotification from "./components/EventsEngine/AddNotification";
 import EditNotification from "./components/EventsEngine/EditNotification";
-import CustomizeNotification from "./components/EventsEngine/CustomizeNotification";
+// import CustomizeNotification from "./components/EventsEngine/CustomizeNotification";
 import PendingNotification from "./components/EventsEngine/PendingNotification";
 
 //Admin Events Engine----
@@ -432,11 +432,11 @@ const Markup = () => {
     { url: "instructor-led", component: InstructorLed },
     { url: "inst-options", component: InstOptions },
     { url: "add-sessions", component: AddSessions },
-    { url: "course_users", component: Courseusers },
+    { url: "course_users/:id", component: Courseusers },
     { url: "enroll_users", component: EnrollUsers },
-    { url: "course_groups", component: Coursegroups },
+    { url: "course_groups/:id", component: Coursegroups },
     { url: "users_course_progress", component: UsersCourseProgress },
-    { url: "rules-path", component: RulesPath },
+    // { url: "rules-path", component: RulesPath },
     { url: "course_user_report", component: CourseUserReports },
     { url: "course_files", component: CourseFiles },
     { url: "course_overview", component: CourseOverview },
@@ -509,7 +509,7 @@ const Markup = () => {
     { url: "events", component: Events },
     { url: "add-events", component: AddNotification },
     { url: "edit-events/:id", component: EditNotification },
-    { url: "customize-system-notification", component: CustomizeNotification },
+    // { url: "customize-system-notification", component: CustomizeNotification },
     { url: "pending-notification", component: PendingNotification },
 
     //Admin Events -----

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import {
@@ -12,15 +12,21 @@ import {
   Button,
   Nav,
   Modal,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 
-
-const Coursegroups = () => {
-    const [sendMessage, setSendMessage] = useState(false);
+const Coursegroups = (props) => {
+  const courseID = props.match.params.id;
+  console.log({ courseID });
+  const [sendMessage, setSendMessage] = useState(false);
   const [popup, setPopup] = useState({
     show: false, // initial values set to false and null
     id: null,
-      });
+  });
+  const [activeTab, setActiveTab] = useState("course_groups/:id");
+  const history = useHistory();
+
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
   const chackboxFun = (type) => {
@@ -53,24 +59,65 @@ const Coursegroups = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
   return (
     <Fragment>
-      <Nav >
-		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/edit-courses">Courses</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_users">Users</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_groups">Groups</Link>
+      {/* <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/edit-courses">
+            Courses
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_users">
+            Users
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/course_groups">
+            Groups
+          </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
       <Row>
         <Col lg={12}>
           <Card>
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+              <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
+              <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
+            </Tabs>
             <Card.Body>
               <Table responsive>
                 <thead>
                   <tr>
-                    <th className="width80">
+                    <th>
                       <strong>GROUP</strong>
                     </th>
                     <th></th>
@@ -89,56 +136,108 @@ let history = useHistory();
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
-                          className="light sharp i-false"
-                        >
+                          className="light sharp i-false">
                           {svg1}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => setSendMessage(true)}><i class="bi bi-plus-circle">&nbsp;</i>Add</Dropdown.Item>
+                          <Dropdown.Item onClick={() => setSendMessage(true)}>
+                            <i class="bi bi-plus-circle">&nbsp;</i>Add
+                          </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     </td>
                   </tr>
                   {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message to Add User in Group</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="author" className="text-black font-w600">  Name <span className="required">*</span> </label>
-												<input type="text" className="form-control" defaultValue="Author" name="Author" placeholder="Author" required/>
-											  </div>
-											</div>
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="email" className="text-black font-w600"> Email <span className="required">*</span></label>
-												<input type="text" className="form-control" defaultValue="Email" placeholder="Email" name="Email" required/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Add User in Group" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
+                  <Modal className="modal fade" show={sendMessage}>
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title">
+                          Send Message to Add User in Group
+                        </h5>
+                        <Button
+                          variant=""
+                          type="button"
+                          className="close"
+                          data-dismiss="modal"
+                          onClick={() => setSendMessage(false)}>
+                          <span>×</span>
+                        </Button>
+                      </div>
+                      <div className="modal-body">
+                        <form
+                          className="comment-form"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            setSendMessage(false);
+                          }}>
+                          <div className="row">
+                            <div className="col-lg-6">
+                              <div className="form-group mb-3">
+                                <label
+                                  htmlFor="author"
+                                  className="text-black font-w600">
+                                  {" "}
+                                  Name <span className="required">*</span>{" "}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  defaultValue="Author"
+                                  name="Author"
+                                  placeholder="Author"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6">
+                              <div className="form-group mb-3">
+                                <label
+                                  htmlFor="email"
+                                  className="text-black font-w600">
+                                  {" "}
+                                  Email <span className="required">*</span>
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  defaultValue="Email"
+                                  placeholder="Email"
+                                  name="Email"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-12">
+                              <div className="form-group mb-3">
+                                <label
+                                  htmlFor="comment"
+                                  className="text-black font-w600">
+                                  Comment
+                                </label>
+                                <textarea
+                                  rows={8}
+                                  className="form-control"
+                                  name="comment"
+                                  placeholder="Comment"
+                                  defaultValue={""}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-12">
+                              <div className="form-group mb-3">
+                                <input
+                                  type="submit"
+                                  value="Add User in Group"
+                                  className="submit btn btn-primary"
+                                  name="submit"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </Modal>
                 </tbody>
               </Table>
             </Card.Body>
@@ -146,7 +245,7 @@ let history = useHistory();
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );
