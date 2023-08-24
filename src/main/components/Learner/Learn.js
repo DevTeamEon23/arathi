@@ -21,7 +21,7 @@ import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
-import badges from "@images/Badges.jpeg";
+import badges from "@images/Badges.svg";
 
 const reviewsData = [
   { image: pic3, title: "Jordan Nico ", commentTime: "2 Month Ago" },

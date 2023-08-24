@@ -199,10 +199,6 @@ const Courseusers = (props) => {
                           ) : (
                             <span className="enrolled-label">Enrolled</span>
                           )}
-                          {/* {courseNames.course === null
-                            ? " Enrolled"
-                            : "Not Enrolled"}
-                          {courseNames.course} */}
                         </td>
                         <td>{item.role}</td>
                         <td>
