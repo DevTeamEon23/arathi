@@ -24,6 +24,7 @@ const Courseusers = (props) => {
   const [token, setToken] = useState(); //auth token
   const [activeTab, setActiveTab] = useState("course_users/:id");
   const [enrolledUserId, setEnrolledUserId] = useState(null);
+  const [courseNames, setCourseNames] = useState([]);
   const history = useHistory();
 
   useEffect(() => {
@@ -44,10 +45,14 @@ const Courseusers = (props) => {
     axios
       .get("http://127.0.0.1:8000/lms-service/fetch_enrollusers_course", config)
       .then((response) => {
-        console.log(response.data.data.user_ids);
+        console.log(response.data.data);
         const allUsers = response.data.data.user_ids;
         // const adminUsers = allUsers.filter((user) => user.role === "Admin");
         setAdminUsers(allUsers);
+        const courses = response.data.data.user_ids.map((user) => ({
+          course: user.coursename,
+        }));
+        setCourseNames(courses);
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
@@ -189,9 +194,15 @@ const Courseusers = (props) => {
                       <tr>
                         <td>
                           {item.full_name}
-                          {enrolledUserId === item.user_id && (
+                          {item.coursename === null ? (
+                            ""
+                          ) : (
                             <span className="enrolled-label">Enrolled</span>
                           )}
+                          {/* {courseNames.course === null
+                            ? " Enrolled"
+                            : "Not Enrolled"}
+                          {courseNames.course} */}
                         </td>
                         <td>{item.role}</td>
                         <td>
