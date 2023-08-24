@@ -88,7 +88,38 @@ const Info = () => {
     setCourseCloneId(id);
   };
 
-  const handleCatClone = () => {};
+  const handleCatClone = () => {
+    console.log("modal clone", courseId);
+    const config = {
+      headers: {
+        "Auth-Token": token, // Attach the JWT token in the Authorization header
+      },
+    };
+    const requestBody = {
+      id: courseId,
+    };
+    console.log("config", config, requestBody);
+    axios
+      .post(`https://v1.eonlearning.tech/lms-service/clonecourse`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowCloneModal(false);
+        console.log(response.data.status);
+        getAllCourses();
+        toast.success("Course Clone successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+        toast.error("Failed to Clone Course!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
 
   const handleEdit = (id) => {
     console.log("inside course handle edit page", id);
