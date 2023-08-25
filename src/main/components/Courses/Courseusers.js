@@ -1,14 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import {
   Row,
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
   Button,
   Modal,
   Tab,
@@ -16,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 
 const Courseusers = (props) => {
   const courseID = props.match.params.id;
@@ -23,13 +20,15 @@ const Courseusers = (props) => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [token, setToken] = useState(); //auth token
   const [activeTab, setActiveTab] = useState("course_users/:id");
-  const [enrolledUserId, setEnrolledUserId] = useState(null);
+  const [totalUserData, setTotalUserData] = useState(); //user list data
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    // getAllUsers(courseID, token)
     getAllUsers();
   }, []);
 
@@ -44,47 +43,26 @@ const Courseusers = (props) => {
     axios
       .get("http://127.0.0.1:8000/lms-service/fetch_enrollusers_course", config)
       .then((response) => {
-        console.log(response.data.data.user_ids);
+        console.log(response.data.data);
         const allUsers = response.data.data.user_ids;
         // const adminUsers = allUsers.filter((user) => user.role === "Admin");
         setAdminUsers(allUsers);
+        setTotalUserData(response.data.data.user_ids.length);
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
   };
 
-  // const getAllUsers = async (id, authToken) => {
-  //   console.log('@@', id, authToken)
-  //   try {
-  //     const response = await axios.get(
-  //       'http://127.0.0.1:8000/lms-service/enrollusers_course_by_onlyid',
-  //       {
-  //         headers: {
-  //           'Auth-Token': authToken,
-  //         },
-  //         params: {
-  //           course_id: courseID,
-  //         },
-  //       }
-  //     )
-
-  //     console.log('res', response.data.data)
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
-
   const handleEnroll = (e, user_id) => {
     e.preventDefault();
-    console.log("inside handle enroll");
+    setBtnLoader(true);
     const formData = new FormData();
     formData.append("user_id", user_id);
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
     const url = "http://127.0.0.1:8000/lms-service/enroll_course";
     const authToken = token;
-    console.log(user_id, courseID);
     axios
       .post(url, formData, {
         headers: {
@@ -94,12 +72,14 @@ const Courseusers = (props) => {
       })
       .then((response) => {
         console.log(response.data);
+        setBtnLoader(false);
         toast.success("Course Enroll successfully!!!");
-        setEnrolledUserId(user_id);
+        getAllUsers();
       })
       .catch((error) => {
         console.error(error);
         toast.error("Failed !!! Unable to enroll course...");
+        setBtnLoader(false);
       });
   };
 
@@ -114,16 +94,15 @@ const Courseusers = (props) => {
     setActiveTab(tab);
   }, [history.location.pathname]);
 
-  const handleUnEnroll = (e) => {
+  const handleUnEnroll = (e, id) => {
     e.preventDefault();
-    console.log("inside handle unenroll");
     const config = {
       headers: {
         "Auth-Token": token,
       },
     };
     const requestBody = {
-      id: "",
+      id: id,
     };
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/unenroll_user_course`, {
@@ -131,11 +110,10 @@ const Courseusers = (props) => {
         data: requestBody,
       })
       .then((response) => {
-        // setShowModal(false)
-        getAllUsers();
         toast.success("Unenroll successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        getAllUsers();
       })
       .catch((error) => {
         // Handle the error
@@ -145,6 +123,10 @@ const Courseusers = (props) => {
         });
       });
   };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = adminUsers.slice(startIndex, endIndex);
 
   return (
     <Fragment>
@@ -184,12 +166,14 @@ const Courseusers = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {adminUsers?.map((item, index) => {
+                  {currentData?.map((item, index) => {
                     return (
                       <tr>
                         <td>
                           {item.full_name}
-                          {enrolledUserId === item.user_id && (
+                          {item.coursename === null ? (
+                            ""
+                          ) : (
                             <span className="enrolled-label">Enrolled</span>
                           )}
                         </td>
@@ -199,20 +183,37 @@ const Courseusers = (props) => {
                         </td>
                         <td>
                           <center>
-                            {enrolledUserId === item.user_id ? (
+                            {item.coursename === null ? (
+                              <>
+                                {btnLoader ? (
+                                  <CircularProgress
+                                    style={{
+                                      width: "20px",
+                                      height: "20px",
+                                      color: "#fff",
+                                    }}
+                                  />
+                                ) : (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Enroll"
+                                    onClick={(e) =>
+                                      handleEnroll(e, item.user_id)
+                                    }>
+                                    <i class="fa-solid fa-plus"></i>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
                               <div
                                 className="btn btn-danger shadow btn-xs sharp"
                                 onClick={(e) =>
-                                  handleUnEnroll(e, item.user_id)
+                                  handleUnEnroll(
+                                    e,
+                                    item.user_course_enrollment_id
+                                  )
                                 }>
                                 <i class="fa-solid fa-minus"></i>
-                              </div>
-                            ) : (
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                title="Enroll"
-                                onClick={(e) => handleEnroll(e, item.user_id)}>
-                                <i class="fa-solid fa-plus"></i>
                               </div>
                             )}
                           </center>
@@ -222,6 +223,33 @@ const Courseusers = (props) => {
                   })}
                 </tbody>
               </Table>
+              <br />
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from <span>{totalUserData} </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    <Button
+                      className="ml-2"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={endIndex >= adminUsers.length}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>

@@ -21,6 +21,7 @@ import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
+import badges from "@images/Badges.svg";
 
 const reviewsData = [
   { image: pic3, title: "Jordan Nico ", commentTime: "2 Month Ago" },
@@ -138,8 +139,7 @@ const Learn = () => {
                   <div className="d-flex justify-content-center my-3 mt-4">
                     <span
                       className="btn info-box text-start style-1"
-                      onClick={() => setLargeModal(true)}
-                    >
+                      onClick={() => setLargeModal(true)}>
                       <span>Points</span>
                       <h4>2300</h4>
                     </span>
@@ -239,8 +239,7 @@ const Learn = () => {
                         height="12"
                         viewBox="0 0 12 12"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                        xmlns="http://www.w3.org/2000/svg">
                         <rect
                           x="1.5"
                           y="1.5"
@@ -261,8 +260,7 @@ const Learn = () => {
                         height="12"
                         viewBox="0 0 12 12"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                        xmlns="http://www.w3.org/2000/svg">
                         <rect
                           x="1.5"
                           y="1.5"
@@ -281,25 +279,21 @@ const Learn = () => {
                     <Dropdown className="select-dropdown me-2">
                       <Dropdown.Toggle
                         as="div"
-                        className="i-false dashboard-select  selectBtn btn-dark"
-                      >
+                        className="i-false dashboard-select  selectBtn btn-dark">
                         {dropSelect}{" "}
                         <i className="fa-solid fa-angle-down ms-2" />
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item
-                          onClick={() => setDropSelect("This Month")}
-                        >
+                          onClick={() => setDropSelect("This Month")}>
                           This Month
                         </Dropdown.Item>
                         <Dropdown.Item
-                          onClick={() => setDropSelect("This Weekly")}
-                        >
+                          onClick={() => setDropSelect("This Weekly")}>
                           This Weekly
                         </Dropdown.Item>
                         <Dropdown.Item
-                          onClick={() => setDropSelect("This Day")}
-                        >
+                          onClick={() => setDropSelect("This Day")}>
                           This Day
                         </Dropdown.Item>
                       </Dropdown.Menu>
@@ -314,15 +308,13 @@ const Learn = () => {
               <Modal
                 className="fade bd-example-modal-lg"
                 show={largeModal}
-                size="lg"
-              >
+                size="lg">
                 <Modal.Header>
                   <Modal.Title>Leaderboard</Modal.Title>
                   <Button
                     variant=""
                     className="btn-close"
-                    onClick={() => setLargeModal(false)}
-                  ></Button>
+                    onClick={() => setLargeModal(false)}></Button>
                 </Modal.Header>
                 <Modal.Body>
                   <Tab.Container defaultActiveKey="About">
@@ -331,39 +323,35 @@ const Learn = () => {
                         <Nav
                           as="div"
                           className="nav nav-tabs tab-auto"
-                          id="nav-tab"
-                        >
+                          id="nav-tab">
                           <Nav.Link
                             as="button"
                             className="nav-link"
                             id="nav-about-tab"
-                            key="About"
-                            type="button"
-                          >
+                            eventKey="About"
+                            type="button">
                             Points
                           </Nav.Link>
                           <Nav.Link
                             as="button"
                             className="nav-link"
                             id="nav-reviews-tab"
-                            key="Review"
-                            type="button"
-                          >
+                            eventKey="Review"
+                            type="button">
                             Levels
                           </Nav.Link>
                           <Nav.Link
                             as="button"
                             className="nav-link"
                             id="nav-discussion-tab"
-                            key="Discussion"
-                            type="button"
-                          >
+                            eventKey="Discussion"
+                            type="button">
                             Badges
                           </Nav.Link>
                         </Nav>
                       </nav>
                       <Tab.Content className="tab-content" id="nav-tabContent">
-                        <Tab.Pane id="nav-about" key="About">
+                        <Tab.Pane id="nav-about" eventKey="About">
                           <div className="about-content">
                             <h6>💎 Each login gives 25 points</h6>
                             <h6>💎 Each unit completion gives 25 points</h6>
@@ -391,7 +379,7 @@ const Learn = () => {
                             </h6>
                           </div>
                         </Tab.Pane>
-                        <Tab.Pane key="Review">
+                        <Tab.Pane eventKey="Review">
                           <div className="reviews-content">
                             <br />
                             <h6>💎 Upgrade level every 3000 points</h6>
@@ -399,10 +387,11 @@ const Learn = () => {
                             <h6>💎 Upgrade level every 5 badges</h6>
                           </div>
                         </Tab.Pane>
-                        <Tab.Pane id="nav-discussion" key="Discussion">
-                          <div className="about-content">
-                            <AboutTabContent title="About This Users Earned Badges" />
-                            <AboutTabContent title="Users Course’s Objectives and activity" />
+                        <Tab.Pane id="nav-discussion" eventKey="Discussion">
+                          <div className="about-content mb-1">
+                            <img src={badges} width="750" height="600" alt="" />
+                            {/* <AboutTabContent title='About This Users Earned Badges' />
+												<AboutTabContent title="Users Course’s Objectives and activity" /> */}
                           </div>
                         </Tab.Pane>
                       </Tab.Content>

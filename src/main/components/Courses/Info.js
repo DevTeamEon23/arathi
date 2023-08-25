@@ -89,14 +89,14 @@ const Info = () => {
   };
 
   const handleCatClone = () => {
-    console.log("modal clone", courseId);
+    console.log("modal clone", courseCloneId);
     const config = {
       headers: {
         "Auth-Token": token, // Attach the JWT token in the Authorization header
       },
     };
     const requestBody = {
-      id: courseId,
+      id: courseCloneId,
     };
     console.log("config", config, requestBody);
     axios
@@ -113,7 +113,7 @@ const Info = () => {
         });
       })
       .catch((error) => {
-        // Handle the error
+        setShowCloneModal(false);
         console.error(error);
         toast.error("Failed to Clone Course!", {
           position: toast.POSITION.TOP_RIGHT,
