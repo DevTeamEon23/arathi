@@ -2,7 +2,17 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
-import { Row, Col, Card, Table, Button, Modal, Nav } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Modal,
+  Nav,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import axios from "axios";
 
 const Info = () => {
@@ -13,6 +23,8 @@ const Info = () => {
   const [showCloneModal, setShowCloneModal] = useState(false); //clone modal
   const [courseCloneId, setCourseCloneId] = useState(); //course id save for clone
   const [courseId, setCourseId] = useState(); //course id save for delete
+  const [activeTab, setActiveTab] = useState("/add-courses");
+  let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -33,13 +45,24 @@ const Info = () => {
       console.log("getAllCourses", response.data);
       // const names = courseData.map((course) => course.coursename);
       // setCourseName(names);
-      setAllCourseData(response.data.data);
+      setAllCourseData(courseData);
     } catch (error) {
       // Handle errors if any
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const deleteOperation = (courseId) => {
     setShowModal(true);
@@ -89,20 +112,14 @@ const Info = () => {
   };
 
   const handleCatClone = () => {
-    console.log("modal clone", courseCloneId);
-    const config = {
-      headers: {
-        "Auth-Token": token, // Attach the JWT token in the Authorization header
-      },
-    };
-    const requestBody = {
-      id: courseCloneId,
-    };
-    console.log("config", config, requestBody);
+    const id = courseCloneId;
+    const authToken = token;
+    const url = `http://127.0.0.1:8000/lms-service/clonecourse/${id}`;
     axios
-      .post(`https://v1.eonlearning.tech/lms-service/clonecourse`, {
-        ...config,
-        data: requestBody,
+      .post(url, null, {
+        headers: {
+          "Auth-Token": authToken,
+        },
       })
       .then((response) => {
         setShowCloneModal(false);
@@ -115,9 +132,12 @@ const Info = () => {
       .catch((error) => {
         setShowCloneModal(false);
         console.error(error);
-        toast.error("Failed to Clone Course!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.error(
+          "Failed to Clone Course...! One course can clone one time only",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
       });
   };
 
@@ -126,10 +146,9 @@ const Info = () => {
     history.push(`/edit-courses/${id}`);
   };
 
-  let history = useHistory();
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -150,7 +169,11 @@ const Info = () => {
             Add Course
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-courses" title="Add Course"></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
@@ -336,6 +359,10 @@ const Info = () => {
         <Modal.Body>
           Are you sure you want to clone the course{" "}
           <strong>{courseName}</strong> ?
+          <p className="text-danger text-center mt-2">
+            {" "}
+            (one course can clone one time only)
+          </p>
         </Modal.Body>
         <Modal.Footer>
           <Button

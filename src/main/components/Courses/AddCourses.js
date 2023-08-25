@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import {
@@ -13,19 +12,9 @@ import {
   Modal,
   Table,
   Image,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
-import DateRangePicker from "react-bootstrap-daterangepicker";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
 
 const certificate = [
   { value: "certificate1", label: "Certificate 1" },
@@ -52,7 +41,6 @@ const AddCourses = () => {
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
     useState(null); //Certificate
   const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
-  const [categories, setCategory] = useState(null);
   const [coursename, setCoursename] = useState("");
   const [coursecode, setCoursecode] = useState("");
   const [description, setDescription] = useState(""); //Description
@@ -66,13 +54,12 @@ const AddCourses = () => {
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
-  const [selected, setSelected] = useState("");
-  const [courses, setCourses] = useState([]);
   const [token, setToken] = useState(); //auth token
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   let history = useHistory();
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
+  const [activeTab, setActiveTab] = useState("/add-courses");
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -102,6 +89,17 @@ const AddCourses = () => {
       toast.error("Failed to fetch Categories !"); // Handle the error
     }
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   //video file handle
   const handleFileChange = (event) => {
@@ -251,7 +249,7 @@ const AddCourses = () => {
 
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -272,28 +270,12 @@ const AddCourses = () => {
             Course
           </Link>
         </Nav.Item>
-      </Nav>
-      {/* <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/course_users"
-          >
-            Users
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/course_groups"
-          >
-            Groups
-          </Link> */}
+      </Nav> */}
 
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="courses-info" title="Course"></Tab>
+      </Tabs>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
