@@ -13,6 +13,10 @@ const Users = () => {
   const [userData, setUserData] = useState([]); //user list data
   const [showModal, setShowModal] = useState(false); //delete button modal
   const history = useHistory();
+  const [selectedFilter, setSelectedFilter] = useState(""); // Initialize with an empty string or default filter value
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [totalUserData, setTotalUserData] = useState(); //user list data
+  const itemsPerPage = 20; // Number of items to display per page
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -31,6 +35,8 @@ const Users = () => {
     axios
       .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
+        console.log(response.data.data.length);
+        setTotalUserData(response.data.data.length);
         setUserData(response.data.data);
       })
       .catch((error) => {
@@ -76,6 +82,10 @@ const Users = () => {
         });
       });
   };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = userData.slice(startIndex, endIndex);
 
   return (
     <>
@@ -168,7 +178,24 @@ const Users = () => {
                         </th>
                         <th>
                           <strong>
-                            <center>USER TYPE</center>
+                            <center>
+                              ROLE&nbsp;
+                              <select
+                                value={selectedFilter}
+                                style={{
+                                  width: "21px",
+                                  borderRadius: "6px",
+                                }}
+                                onChange={(e) =>
+                                  setSelectedFilter(e.target.value)
+                                }>
+                                <option value="">All</option>{" "}
+                                <option value="Superadmin">SuperAdmin</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Instructor">Instructor</option>
+                                <option value="Learner">Learner</option>
+                              </select>
+                            </center>
                           </strong>
                         </th>
                         <th>
@@ -189,7 +216,7 @@ const Users = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {userData.map((item, index) => {
+                      {currentData.map((item, index) => {
                         const dateTimeString = item.created_at; //1
                         const date = new Date(dateTimeString);
                         const day = date.getDate();
@@ -223,6 +250,9 @@ const Users = () => {
                         const amPm = hours >= 12 ? "PM" : "AM";
                         hours = hours % 12 || 12;
                         const formattedTime = `${hours}:${minutes} ${amPm}`;
+                        if (selectedFilter && item.role !== selectedFilter) {
+                          return null; // Skip rendering this row
+                        }
                         return (
                           <tr key={index}>
                             <td>
@@ -253,16 +283,18 @@ const Users = () => {
                             </td>
                             <td>
                               <center>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                  <i
-                                    className="fas fa-pencil-alt"
-                                    onClick={(e) => handleEdit(item.id)}></i>
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(item.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
 
-                                <div className="btn btn-danger shadow btn-xs sharp">
-                                  <i
-                                    className="fa fa-trash"
-                                    onClick={() => deleteUser(item.id)}></i>
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
+                                  onClick={() => deleteUser(item.id)}>
+                                  <i className="fa fa-trash"></i>
                                 </div>
                               </center>
                             </td>
@@ -281,6 +313,32 @@ const Users = () => {
                     </div>
                   </>
                 )}
+                <div className="pagination-down">
+                  <div className="d-flex align-items-center  ">
+                    <h4 className=" ">
+                      Showing <span>1-20 </span>from{" "}
+                      <span>{totalUserData} </span>data
+                    </h4>
+                    <div className="d-flex align-items-center ms-auto mt-2">
+                      <Button
+                        className="mr-2"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}>
+                        Previous
+                      </Button>
+                      &nbsp;&nbsp;
+                      <span className=" fs-18 fw-bold ">
+                        Page {currentPage} &nbsp;&nbsp;
+                      </span>
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= userData.length}>
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </Card.Body>
             </Card>
           </Col>

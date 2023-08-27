@@ -1,24 +1,12 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Select from "react-select";
 import { Link, useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Nav,
-  Button,
-  Modal,
-} from "react-bootstrap";
+import { Row, Col, Card, Table, Nav, Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "react-toastify";
 
 const options = [
-  // { value: "mass", label: "Mass Action" },
   { value: "all", label: "Add a course to all groups" },
   { value: "removeall", label: "Remove a course from all groups" },
 ];
@@ -170,15 +158,15 @@ const Groups = () => {
                           <td>{item.groupdesc}</td>
                           <td>
                             <div className="d-flex">
-                              <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                <i
-                                  className="fas fa-pencil-alt"
-                                  onClick={(e) => handleEdit(item.id)}></i>
+                              <div
+                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                onClick={(e) => handleEdit(item.id)}>
+                                <i className="fas fa-pencil-alt"></i>
                               </div>
-                              <div className="btn btn-danger shadow btn-xs sharp">
-                                <i
-                                  className="fa fa-trash"
-                                  onClick={() => deleteGrp(item.id)}></i>
+                              <div
+                                className="btn btn-danger shadow btn-xs sharp"
+                                onClick={() => deleteGrp(item.id)}>
+                                <i className="fa fa-trash"></i>
                               </div>
                             </div>
                           </td>

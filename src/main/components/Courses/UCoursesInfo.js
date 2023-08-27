@@ -12,7 +12,9 @@ import {
   Nav,
 } from 'react-bootstrap'
 
-const UCoursesInfo = () => {
+const UCoursesInfo = (props) => {
+  const userId = props.match.params.id
+  console.log({ userId })
   const [courses, setCourses] = useState([])
 
   useEffect(() => {
@@ -73,7 +75,7 @@ const UCoursesInfo = () => {
             id='nav-following-tab'
             eventKey='Follow'
             type='button'
-            to='/edit-user/:id'
+            to={`/edit-user/${userId}`}
           >
             Info
           </Link>
@@ -83,7 +85,7 @@ const UCoursesInfo = () => {
             id='nav-following-tab'
             eventKey='Follow'
             type='button'
-            to='/courses-info'
+            to={`/user-courses-info/${userId}`}
           >
             Courses
           </Link>

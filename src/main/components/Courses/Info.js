@@ -2,7 +2,17 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
-import { Row, Col, Card, Table, Button, Modal, Nav } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Modal,
+  Nav,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import axios from "axios";
 
 const Info = () => {
@@ -13,6 +23,8 @@ const Info = () => {
   const [showCloneModal, setShowCloneModal] = useState(false); //clone modal
   const [courseCloneId, setCourseCloneId] = useState(); //course id save for clone
   const [courseId, setCourseId] = useState(); //course id save for delete
+  const [activeTab, setActiveTab] = useState("/add-courses");
+  let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -33,13 +45,24 @@ const Info = () => {
       console.log("getAllCourses", response.data);
       // const names = courseData.map((course) => course.coursename);
       // setCourseName(names);
-      setAllCourseData(response.data.data);
+      setAllCourseData(courseData);
     } catch (error) {
       // Handle errors if any
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const deleteOperation = (courseId) => {
     setShowModal(true);
@@ -88,17 +111,44 @@ const Info = () => {
     setCourseCloneId(id);
   };
 
-  const handleCatClone = () => {};
+  const handleCatClone = () => {
+    const id = courseCloneId;
+    const authToken = token;
+    const url = `http://127.0.0.1:8000/lms-service/clonecourse/${id}`;
+    axios
+      .post(url, null, {
+        headers: {
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        setShowCloneModal(false);
+        console.log(response.data.status);
+        getAllCourses();
+        toast.success("Course Clone successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        setShowCloneModal(false);
+        console.error(error);
+        toast.error(
+          "Failed to Clone Course...! One course can clone one time only",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+      });
+  };
 
   const handleEdit = (id) => {
     console.log("inside course handle edit page", id);
     history.push(`/edit-courses/${id}`);
   };
 
-  let history = useHistory();
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -119,7 +169,11 @@ const Info = () => {
             Add Course
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-courses" title="Add Course"></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
@@ -229,7 +283,9 @@ const Info = () => {
                       </Dropdown>
                       </center> */}
                               <center>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Clone">
                                   <i
                                     class="fa-solid fa-plus"
                                     onClick={(e) =>
@@ -238,16 +294,19 @@ const Info = () => {
                                 </div>
                                 <Link
                                   to="/course-reports"
-                                  className="btn btn-primary shadow btn-xs sharp me-1">
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Reports">
                                   <i class="fa-regular fa-clipboard"></i>
                                 </Link>
-                                <div className="btn btn-primary shadow btn-xs sharp me-1">
-                                  <i
-                                    className="fas fa-pencil-alt"
-                                    onClick={(e) => handleEdit(data.id)}></i>
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(data.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
                                   onClick={() => deleteOperation(data.id)}>
                                   <i className="fa fa-trash"></i>
                                 </div>
@@ -300,6 +359,10 @@ const Info = () => {
         <Modal.Body>
           Are you sure you want to clone the course{" "}
           <strong>{courseName}</strong> ?
+          <p className="text-danger text-center mt-2">
+            {" "}
+            (one course can clone one time only)
+          </p>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -307,7 +370,7 @@ const Info = () => {
             onClick={() => setShowCloneModal(false)}>
             Close
           </Button>
-          <Button variant="btn btn-success " onClick={handleCatClone}>
+          <Button variant="btn me-2 btn-primary" onClick={handleCatClone}>
             Clone
           </Button>
         </Modal.Footer>

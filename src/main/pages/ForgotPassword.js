@@ -16,7 +16,7 @@ function ForgotPassword() {
   const [OTPError, setOTPError] = useState("");
   const [otpReceived, setOtpReceived] = useState();
   const history = useHistory();
-  // const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
+  const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
   const [otp, setOtp] = useState(new Array(4).fill("")); //for otp
   const [isShown, setIsShown] = useState(false); //OTP UI
   const [disabled, setDisabled] = useState(false); //btn disabled
@@ -35,9 +35,13 @@ function ForgotPassword() {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
+      const OTP = Math.floor(Math.random() * 9000 + 1000);
+      console.log(OTP);
+      setOTPinput(OTP);
       axios
-        .post("http://localhost:8000/auth/send_mail", {
+        .post("https://v1.eonlearning.tech/auth/send_mail", {
           email: [email],
+          // OTP,
         })
         .then((res) => {
           console.log(res, res.data.OTP, res.data.status);

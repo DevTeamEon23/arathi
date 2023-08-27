@@ -1,216 +1,283 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import {
   Row,
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
   Button,
-  Nav,
   Modal,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
+import { RotatingLines } from "react-loader-spinner";
 
+const Courseusers = (props) => {
+  const courseID = props.match.params.id;
+  console.log({ courseID });
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [token, setToken] = useState(); //auth token
+  const [activeTab, setActiveTab] = useState("course_users/:id");
+  const [totalUserData, setTotalUserData] = useState(); //user list data
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const itemsPerPage = 10; // Number of items to display per page
+  const history = useHistory();
 
-const Courseusers = () => {
-    const [sendMessage, setSendMessage] = useState(false);
-  const [popup, setPopup] = useState({
-    show: false, // initial values set to false and null
-    id: null,
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getAllUsers();
+  }, []);
+
+  // User List Api
+  const getAllUsers = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("http://127.0.0.1:8000/lms-service/fetch_enrollusers_course", config)
+      .then((response) => {
+        console.log(response.data.data);
+        const allUsers = response.data.data.user_ids;
+        // const adminUsers = allUsers.filter((user) => user.role === "Admin");
+        setAdminUsers(allUsers);
+        setTotalUserData(response.data.data.user_ids.length);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!");
       });
-      const [users, setUsers] = useState([]);
-
-      const getUsers = async () => {
-        const requestOptions = {
-          method:"GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-        const response = await fetch("/api", requestOptions);
-        const data = await response.json();
-    
-        console.log(data);
-      };
-      const [data, setData] = useState([]);
-    
-      const fetchData = () => {
-        fetch(`https://localhost:8000/users`)
-        //This function is used while fetching data from FASTAPI (HTTP/HTTPS) 3.110.124.80
-          // .then((response) => response.json())
-          // .then((actualData) => {
-          //   console.log(actualData);
-          //   setUsers(actualData.data);
-          //   console.log(data);
-    
-          // This is used for fetching data from json-server port 4000 fastAPI 8000
-          .then((res) => res.json())
-          .then((data) => {
-             console.log(data);
-             setData(data);
-          })
-          .catch((err) => {
-            console.log(err.message);
-          });
-      };
-    
-      // useEffect( async () => {
-      //   fetchData();
-      // }, []);
-    
-      async function deleteOperation(id)
-      {
-        if (window.confirm('Are you sure?'))
-        {
-          let result=await fetch("https://localhost:8000/users/"+id,{
-            method:'DELETE'
-          });
-          result=await result.json();
-          console.warn(result)
-          fetchData();
-        }
-      }
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
   };
 
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
-let history = useHistory();
+  const handleEnroll = (e, user_id) => {
+    e.preventDefault();
+    setBtnLoader(true);
+    const formData = new FormData();
+    formData.append("user_id", user_id);
+    formData.append("course_id", courseID);
+    formData.append("generate_token", true);
+    const url = "http://127.0.0.1:8000/lms-service/enroll_course";
+    const authToken = token;
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setBtnLoader(false);
+        toast.success("Course Enroll successfully!!!");
+        getAllUsers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to enroll course...");
+        setBtnLoader(false);
+      });
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
+  const handleUnEnroll = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/unenroll_user_course`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        toast.success("Unenroll successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        getAllUsers();
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+        toast.error("Failed to Unenroll!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = adminUsers.slice(startIndex, endIndex);
+
   return (
     <Fragment>
-      <Nav >
-		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/edit-courses">Courses</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_users">Users</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/course_groups">Groups</Link>
-        </Nav.Item>
-      </Nav>
       <Row>
         <Col lg={12}>
           <Card>
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+              <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
+              <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
+            </Tabs>
+            <Card.Header>
+              <Card.Title>Enroll Course</Card.Title>
+            </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>USER</strong>
-                    </th>
-                    <th></th>
-                    <th>
-                      <strong>COMPLETION DATE</strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {data?.map((item, index) => {
-               return (
-                  <tr>
-                    <td>
-                      <strong>{item.firstname} {item.lastname}</strong>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      <div className="d-flex">
-                        <Link
-                          href="#"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i class="fa-solid fa-plus"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i class="fa-solid fa-minus"></i>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-               );
-                })}
-                  								  {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message to Enroll this User</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="author" className="text-black font-w600">  Name <span className="required">*</span> </label>
-												<input type="text" className="form-control" defaultValue="Author" name="Author" placeholder="Author" required/>
-											  </div>
-											</div>
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="email" className="text-black font-w600"> Email <span className="required">*</span></label>
-												<input type="text" className="form-control" defaultValue="Email" placeholder="Email" name="Email" required/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Enroll User" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
-                </tbody>
-              </Table>
+              {currentData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : currentData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>USER</strong>
+                        </th>
+                        <th>
+                          <strong>ROLE</strong>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>COMPLETION DATE</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>OPTION</strong>
+                          </center>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData?.map((item, index) => {
+                        return (
+                          <tr>
+                            <td>
+                              {item.full_name}
+                              {item.coursename === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">Enrolled</span>
+                              )}
+                            </td>
+                            <td>{item.role}</td>
+                            <td>
+                              <center>-</center>
+                            </td>
+                            <td>
+                              <center>
+                                {item.coursename === null ? (
+                                  <>
+                                    {btnLoader ? (
+                                      <CircularProgress
+                                        style={{
+                                          width: "20px",
+                                          height: "20px",
+                                          color: "#fff",
+                                        }}
+                                      />
+                                    ) : (
+                                      <div
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                        title="Enroll"
+                                        onClick={(e) =>
+                                          handleEnroll(e, item.user_id)
+                                        }>
+                                        <i class="fa-solid fa-plus"></i>
+                                      </div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Unenroll"
+                                    onClick={(e) =>
+                                      handleUnEnroll(
+                                        e,
+                                        item.user_course_enrollment_id
+                                      )
+                                    }>
+                                    <i class="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              )}
+              <br />
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from <span>{totalUserData} </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    <Button
+                      className="ml-2"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={endIndex >= adminUsers.length}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );

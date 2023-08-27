@@ -3,6 +3,7 @@ import Utils from "../../utils";
 import axios from "axios";
 import Url from "./Url";
 import Swal from "sweetalert2";
+
 /* eslint-disable camelcase */
 
 const liveUrl = Url();
@@ -138,8 +139,15 @@ signInWithEmailAndPassword = (data) => {
             reject(response.data.error);
           }
         })
-        .catch(({ response }) => {
-          reject(response.data);
+        .catch(({ error }) => {
+          console.log(error, "@@@");
+          Swal.fire({
+            title: "Failed!",
+            text: "Email or Password invaild.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+          // reject(error.response);
         });
     });
   };
