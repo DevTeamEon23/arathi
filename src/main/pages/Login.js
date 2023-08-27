@@ -1,132 +1,121 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import loginbg from "@images/bg-1.jpg";
-import logo from "@images/log.png";
-import logofull from "@images/Asset.png";
-import jwtService from "src/auth/authService/jwtService";
-import showPwdImg from "@images/eye.svg";
-import hidePwdImg from "@images/eye-slash.svg";
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import loginbg from '@images/bg-1.jpg'
+import logo from '@images/log.png'
+import logofull from '@images/Asset.png'
+import jwtService from 'src/auth/authService/jwtService'
+import showPwdImg from '@images/eye.svg'
+import hidePwdImg from '@images/eye-slash.svg'
+import Swal from 'sweetalert2'
 
-function Login(props) {
-  const [email, setEmail] = useState("");
-  let errorsObj = { email: "", password: "" };
-  const [errors, setErrors] = useState(errorsObj);
-  const [password, setPassword] = useState("");
-  const [isRevealPwd, setIsRevealPwd] = useState(false);
+const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isRevealPwd, setIsRevealPwd] = useState(false)
 
-  function onLogin(e) {
-    e.preventDefault();
-    let error = false;
-    const errorObj = { ...errorsObj };
-    if (email === "") {
-      errorObj.email = "Email is Required";
-      error = true;
-    }
-    if (password === "") {
-      errorObj.password = "Password is Required";
-      error = true;
-    }
-    setErrors(errorObj);
-    if (error) {
-      return;
-    }
-    // dispatch(loadingToggleAction(true));
-    // dispatch(loginAction(email, password, props.history));
-    jwtService.signInWithEmailAndPassword({ email, password }).then((res) => {console.log(res,"inside login page");
-      // Sign in successfull
-    });
+  //sign up code
+  const onLogin = (e) => {
+    e.preventDefault()
+    jwtService
+      .signInWithEmailAndPassword({ email, password })
+      .then((res) => {
+        console.log('role', res.role, res.user_id, res)
+        localStorage.setItem('role', res.role)
+        Swal.fire({
+          title: 'Success!',
+          text: 'Login successful',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        })
+      })
+      .catch((error) => {
+        console.error('Error during sign-in:', error)
+        Swal.fire({
+          title: 'Failed!',
+          text: 'Email or Password invaild.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        })
+      })
   }
 
   return (
     <div
-      className="login-main-page"
+      className='login-main-page'
       style={{
-        backgroundImage: "url(" + loginbg + ")",
-        backgroundSize: "cover",
+        backgroundImage: 'url(' + loginbg + ')',
+        backgroundSize: 'cover',
       }}
     >
-      <div className="login-wrapper">
-        <div className="container h-100">
-          <div className="row h-100 align-items-center justify-contain-center">
-            <div className="col-xl-12 mt-3">
-              <div className="card">
-                <div className="card-body p-0">
-                  <div className="row m-0">
-                    <div className="col-xl-6 col-md-6 sign text-center">
+      <div className='login-wrapper'>
+        <div className='container h-100'>
+          <div className='row h-100 align-items-center justify-contain-center'>
+            <div className='col-xl-12 mt-3'>
+              <div className='card'>
+                <div className='card-body p-0'>
+                  <div className='row m-0'>
+                    <div className='col-xl-6 col-md-6 sign text-center'>
                       <div>
-                        <div className="text-center my-5">
-                          <Link to="/dashboard">
+                        <div className='text-center my-5'>
+                          <div>
                             <img
-                              width="300"
-                              height="50"
+                              width='300'
+                              height='50'
                               src={logofull}
-                              alt=""
+                              alt=''
                             />
-                          </Link>
+                          </div>
                         </div>
                         <img
                           src={logo}
-                          alt="Logo"
-                          className="education-img"
+                          alt='Logo'
+                          className='education-img'
                         ></img>
                       </div>
                     </div>
-                    <div className="col-xl-6 col-md-6">
-                      <div className="sign-in-your">
-                        <h4 className="fs-20 font-w800 text-black">
+                    <div className='col-xl-6 col-md-6'>
+                      <div className='sign-in-your'>
+                        <h4 className='fs-20 font-w800 text-black'>
                           Sign in your account
                         </h4>
                         <span>
-                          Welcome back! Login with your data that you entered
+                          Welcome back! <br />
+                          Login with your data that you entered
                           <br /> during registration
                         </span>
-                        <div className="login-social">
-                          <Link to={"#"} className="btn font-w800 d-block my-4">
-                            <i className="fab fa-google me-2 text-primary"></i>
+                        <div className='login-social'>
+                          <Link to={'#'} className='btn font-w800 d-block my-4'>
+                            <i className='fab fa-google me-2 text-primary'></i>
                             Login with Google
                           </Link>
-                          <Link to={"#"} className="btn font-w800 d-block my-4">
-                            <i className="fab fa-facebook-f me-2 facebook-log"></i>
+                          <Link to={'#'} className='btn font-w800 d-block my-4'>
+                            <i className='fab fa-facebook-f me-2 facebook-log'></i>
                             Login with Facebook
                           </Link>
                         </div>
-                        {props.errorMessage && (
-                          <div className="bg-red-300 text-red-900 border border-red-900 p-1 my-2">
-                            {props.errorMessage}
-                          </div>
-                        )}
-                        {props.successMessage && (
-                          <div className="bg-green-300 text-green-900 border border-green-900 p-1 my-2">
-                            {props.successMessage}
-                          </div>
-                        )}
                         <form onSubmit={onLogin}>
-                          <div className="mb-3">
-                            <label className="mb-1">
+                          <div className='mb-3'>
+                            <label className='mb-1'>
                               <strong>Email</strong>
                             </label>
                             <input
-                              type="email"
-                              className="form-control"
+                              type='email'
+                              className='form-control'
                               value={email}
                               onChange={(e) => setEmail(e.target.value)}
+                              required
                             />
-                            {errors.email && (
-                              <div className="text-danger fs-12">
-                                {errors.email}
-                              </div>
-                            )}
                           </div>
                           <div
-                            className="mb-3"
-                            style={{ position: "relative" }}
+                            className='mb-3'
+                            style={{ position: 'relative' }}
                           >
-                          <label className="mb-1">
-                            <strong>Password</strong>
-                          </label>
+                            <label className='mb-1'>
+                              <strong>Password</strong>
+                            </label>
                             <input
-                              type={isRevealPwd ? "text" : "password"}
-                              className="form-control"
+                              type={isRevealPwd ? 'text' : 'password'}
+                              className='form-control'
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                               required
@@ -136,28 +125,23 @@ function Login(props) {
                               onClick={() =>
                                 setIsRevealPwd((prevState) => !prevState)
                               }
-                              alt="eyebtn"
-                              className="password-toggle"
+                              alt='eyebtn'
+                              className='password-toggle'
                             />
                           </div>
-                          {errors.password && (
-                              <div className="text-danger fs-12">
-                                {errors.password}
-                              </div>
-                            )}
-                          <div className="text-center">
+                          <div className='text-center'>
                             <button
-                              type="submit"
-                              className="btn btn-primary btn-block"
+                              type='submit'
+                              className='btn btn-primary btn-block'
                             >
                               Sign Me In
                             </button>
                           </div>
-                          <div className="text-primary mt-3">
-                            <Link to="./page-register">Sign up</Link>
+                          <div className='text-primary mt-3'>
+                            <Link to='./page-register'>Sign up</Link>
                           </div>
-                          <div className="text-primary mb-2 mt-1">
-                            <Link to="./page-forgot-password">
+                          <div className='text-primary mb-2 mt-1'>
+                            <Link to='./page-forgot-password'>
                               Forgot Password
                             </Link>
                           </div>
@@ -172,7 +156,7 @@ function Login(props) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login

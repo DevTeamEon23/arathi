@@ -2,30 +2,30 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 // image
 import logo from "@images/Asset.png";
 // import Reset from "./Reset";
 import axios from "axios";
 // import Reset from "./Reset";
 import jwtService from "src/auth/authService/jwtService";
+import Swal from "sweetalert2";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [OTPError, setOTPError] = useState("");
   const [otpReceived, setOtpReceived] = useState();
   const history = useHistory();
   // const [OTPinput, setOTPinput] = useState(["", "", "", ""]);
   const [otp, setOtp] = useState(new Array(4).fill("")); //for otp
-  const [isShown, setIsShown] = useState(false);//OTP UI
-  const [disabled, setDisabled] = useState(false);//btn disabled
-  const [btnLoader, setBtnLoader] = useState(false);//Loader
-  const [verifyBtnLoader, setVerifyBtnLoader] = useState(false);//Loader
+  const [isShown, setIsShown] = useState(false); //OTP UI
+  const [disabled, setDisabled] = useState(false); //btn disabled
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const [verifyBtnLoader, setVerifyBtnLoader] = useState(false); //Loader
   const [resendDisabled, setResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
-  // const [resetPg, setResetPg] = useState(false)
-  
+
+  const otpExpirationTime = 3 * 60 * 1000; // 3 minutes in milliseconds
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -35,41 +35,54 @@ function ForgotPassword() {
       setEmailError("Please enter a valid email address");
     } else {
       setEmailError("");
-      // axios
-      //   .post("http://localhost:8000/auth/send_mail", {
-      //     email: [email],
-      //   })
+      axios
+        .post("http://localhost:8000/auth/send_mail", {
+          email: [email],
+        })
+        .then((res) => {
+          console.log(res, res.data.OTP, res.data.status);
+          setOtpReceived(res.data.OTP);
+          setIsShown(true);
+          setBtnLoader(false);
+          setDisabled(true);
+          handleotp();
+        })
+        .catch((error) => {
+          console.log(error, error.response, error.response.status);
+          setBtnLoader(false);
+        });
+
+      // jwtService
+      //   .forgotPassword({ email: [email] })
       //   .then((res) => {
-      //     console.log(res, res.data.OTP, res.data.status);
-      //     setOtpReceived(res.data.OTP);
-      //     setIsShown(true);
-      //     setBtnLoader(false);
-      //     setDisabled(true);
+      //     console.log(res, "on forgotpwd page");
+      //     // Handle the success response here
+      //     Swal.fire({
+      //       title: "Success!",
+      //       text: "Password reset email sent",
+      //       icon: "success",
+      //       confirmButtonText: "OK",
+      //     });
       //   })
       //   .catch((error) => {
-      //     console.log(error, error.response, error.response.status);
-      //     toast.error("Invalid credentials!", {
-      //       position: toast.POSITION.TOP_CENTER,
-      //       className: "toast-message",
+      //     // Handle errors that occur during the password reset process
+      //     console.error("Password reset failed:", error);
+      //     Swal.fire({
+      //       title: "Error!",
+      //       text: "Password reset email could not be sent",
+      //       icon: "error",
+      //       confirmButtonText: "OK",
       //     });
-      //     setBtnLoader(false);
       //   });
-      jwtService
-      .forgotPassword({
-      email:[email]
-      // generate_token: true
-      })
-      .then((response) => {
-        console.log(response, response.data.OTP, response.data.status);
-          setOtpReceived(response.data.OTP);
-          setIsShown(true);
-           setBtnLoader(false);
-           setDisabled(true);
-      });
-    
     }
   };
 
+  const handleotp = () => {
+    // Check if OTP has expired
+    if (Date.now() - otpReceived.timestamp > otpExpirationTime) {
+      console.log("@@@@");
+    }
+  };
   // Function to start the resend OTP timer
   const startResendTimer = () => {
     setResendDisabled(true); // Disable the resend button initially
@@ -102,10 +115,10 @@ function ForgotPassword() {
       })
       .catch((error) => {
         console.log(error, error.response, error.response.status);
-        toast.error("Invalid credentials!", {
-          position: toast.POSITION.TOP_CENTER,
-          className: "toast-message",
-        });
+        // toast.error("Invalid credentials!", {
+        //   position: toast.POSITION.TOP_CENTER,
+        //   className: "toast-message",
+        // });
       });
   };
 
@@ -119,29 +132,29 @@ function ForgotPassword() {
     }
   };
 
+  const handleClear = (e) => {
+    setOtp([...otp.map((v) => "")]);
+    setOTPError("");
+  };
+
   const handleVerifyOtp = (e) => {
     e.preventDefault();
-    setVerifyBtnLoader(true)
+    setVerifyBtnLoader(true);
     console.log(
       "inside handleVerifyOtp",
       otp.length,
-      otp.length - 1,
       otp.join(""),
       otpReceived
     );
+
     if (otpReceived === otp.join("")) {
-      console.log("inside if verify otp");
-      // return <Reset mail={email}/>
-      // setResetPg(true)
+      setOTPError("");
       localStorage.setItem("email", email);
-      setVerifyBtnLoader(false)
+      setVerifyBtnLoader(false);
       history.push("/page-reset-password");
     } else {
       console.log("inside error");
-      toast.error("Incorrect OTP! Please try again...", {
-        position: toast.POSITION.TOP_CENTER,
-        className: "toast-message",
-      });
+      setOTPError("Incorrect OTP! Please try again...");
     }
   };
 
@@ -156,7 +169,7 @@ function ForgotPassword() {
                 <div className="col-xl-12">
                   <div className="auth-form">
                     <div className="text-center mb-3">
-                      <Link to="/dashboard">
+                      <Link to="/login">
                         <img src={logo} height="40" alt="" />
                       </Link>
                     </div>
@@ -185,8 +198,7 @@ function ForgotPassword() {
                         <button
                           type="submit"
                           className="btn btn-primary btn-block"
-                          disabled={disabled}
-                        >
+                          disabled={disabled}>
                           {btnLoader ? (
                             <CircularProgress
                               style={{
@@ -206,17 +218,19 @@ function ForgotPassword() {
                       <form onSubmit={handleVerifyOtp}>
                         <div className="text-center">
                           <div className="mt-3">
-                            <strong>{verifyBtnLoader? (
-                            <CircularProgress
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                                color: "#fff",
-                              }}
-                            />
-                          ) : (
-                            "Verify your Identity"
-                          )}</strong>
+                            <strong>
+                              {verifyBtnLoader ? (
+                                <CircularProgress
+                                  style={{
+                                    width: "20px",
+                                    height: "20px",
+                                    color: "#fff",
+                                  }}
+                                />
+                              ) : (
+                                "Verify your Identity"
+                              )}
+                            </strong>
                           </div>
                           <div className="fs-18">
                             <p>
@@ -256,31 +270,35 @@ function ForgotPassword() {
                                 OTP Entered - {otp.join("")}
                               </p>
                               <div className="align-items-center">
-                              <button className="btn btn-link"
-                                onClick={handleResendOTP}
-                                disabled={resendDisabled}
-                              >
-                                Resend OTP
-                              </button>
-                              {resendDisabled && (
-                                <p className="">Resend OTP in {resendTimer} seconds</p>
-                              )}</div>
+                                <button
+                                  className="btn btn-link"
+                                  onClick={handleResendOTP}
+                                  disabled={resendDisabled}>
+                                  Resend OTP
+                                </button>
+                                {resendDisabled && (
+                                  <p className="">
+                                    Resend OTP in {resendTimer} seconds
+                                  </p>
+                                )}
+                              </div>
                               <div className="d-flex justify-content-around mb-2">
                                 <button
                                   className="btn btn-secondary btn-block-half"
-                                  onClick={(e) =>
-                                    setOtp([...otp.map((v) => "")])
-                                  }
-                                >
+                                  onClick={handleClear}>
                                   Clear
                                 </button>
                                 <button
                                   className="btn btn-primary btn-block-half"
-                                  type="submit"
-                                >
+                                  type="submit">
                                   Verify OTP
                                 </button>
                               </div>
+                              {OTPError && (
+                                <div className="text-danger fs-18">
+                                  {OTPError}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -302,8 +320,6 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      {/* <ToastContainer /> */}
-      {/* {resetPg?<Reset/>:""} */}
     </div>
   );
 }

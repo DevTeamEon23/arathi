@@ -1,115 +1,125 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { toast } from 'react-toastify'
-import { RotatingLines } from 'react-loader-spinner'
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Button
-} from "react-bootstrap";
-import axios from 'axios';
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
+import { Row, Col, Card, Table, Button, Modal, Nav } from "react-bootstrap";
+import axios from "axios";
 
 const Info = () => {
-  const [courses, setCourses] = useState([]);
-  const [popup, setPopup] = useState({
-    show: false, // initial values set to false and null
-    id: null,
-  });
-  const [token, setToken] = useState() //auth token
-  const [allCategoriesData,setAllCategoriesData] = useState([])
+  const [token, setToken] = useState(); //auth token
+  const [allCourseData, setAllCourseData] = useState([]); //set course data
+  const [courseName, setCourseName] = useState(""); //course name
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [showCloneModal, setShowCloneModal] = useState(false); //clone modal
+  const [courseCloneId, setCourseCloneId] = useState(); //course id save for clone
+  const [courseId, setCourseId] = useState(); //course id save for delete
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllCourses();
-    console.log(allCategoriesData);
   }, []);
-
 
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/courses";
+    const url = "https://v1.eonlearning.tech/lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
           "Auth-Token": jwtToken,
         },
       });
-
-      // Handle the response data here
+      const courseData = response.data.data;
       console.log("getAllCourses", response.data);
-      setAllCategoriesData(response.data.data);
+      // const names = courseData.map((course) => course.coursename);
+      // setCourseName(names);
+      setAllCourseData(response.data.data);
     } catch (error) {
       // Handle errors if any
       console.error("Error fetching data:", error);
-      toast.error('Failed to fetch Courses !') // Handle the error
+      toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
 
-  const getUsers = async () => {
-    const requestOptions = {
-      method: "GET",
+  const deleteOperation = (courseId) => {
+    setShowModal(true);
+    console.log("inside delete course", courseId);
+    setCourseId(courseId);
+  };
+
+  const handleCatDelete = () => {
+    console.log("modal delete", courseId);
+    const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Auth-Token": token, // Attach the JWT token in the Authorization header
       },
     };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
-
-    console.log(data);
-  };
-
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id) {
-    if (window.confirm("Are you sure?")) {
-      let result = await fetch("https://localhost:8000/courses/" + id, {
-        method: "DELETE",
+    const requestBody = {
+      id: courseId,
+    };
+    console.log("config", config, requestBody);
+    // Make the Axios DELETE request
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        console.log(response.data.status);
+        getAllCourses();
+        toast.success("Course deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+        toast.error("Failed to delete Course!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
-      result = await result.json();
-      console.warn(result);
-      // fetchData();
-    }
-  }
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
   };
 
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
+  const handleClone = (id, coursename) => {
+    setShowCloneModal(true);
+    console.log("inside course handle clone", id, coursename);
+    setCourseName(coursename);
+    setCourseCloneId(id);
+  };
+
+  const handleCatClone = () => {};
+
+  const handleEdit = (id) => {
+    console.log("inside course handle edit page", id);
+    history.push(`/edit-courses/${id}`);
+  };
+
   let history = useHistory();
   return (
     <Fragment>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/dashboard">
+            Dashboard
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventkey="Follow"
+            type="button"
+            to="/add-courses">
+            Add Course
+          </Link>
+        </Nav.Item>
+      </Nav>
       <Row>
         <Col lg={12}>
           <Card>
@@ -122,91 +132,87 @@ const Info = () => {
               </div>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>
-                        <center>COURSE ID</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>COURSE NAME</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>CATEGORY</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>LAST UPDATED ON</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>OPTION</center>
-                      </strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {allCategoriesData === [] || allCategoriesData === null? <div className="loader-container">
-                    <RotatingLines
-                      strokeColor='grey'
-                      strokeWidth='5'
-                      animationDuration='0.75'
-                      width='96'
-                      visible={true}
-                    /></div>:<>
-                  {allCategoriesData.map((data) => {
-                    // Input date and time string
-                    const inputDateTime = data.updated_at //2
+              {allCourseData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : allCourseData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>
+                            <center>COURSE NAME</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>CATEGORY</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>LAST UPDATED ON</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>OPTION</center>
+                          </strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allCourseData.map((data) => {
+                        // Input date and time string
+                        const inputDateTime = data.updated_at; //2
                         // Convert inputDateTime to a JavaScript Date object
-                        const dateObj = new Date(inputDateTime)
+                        const dateObj = new Date(inputDateTime);
                         // Get the date in dd-mm-yyyy format
                         const day1 = dateObj
                           .getDate()
                           .toString()
-                          .padStart(2, '0')
+                          .padStart(2, "0");
                         const month1 = (dateObj.getMonth() + 1)
                           .toString()
-                          .padStart(2, '0') // Months are zero-based
-                        const year1 = dateObj.getFullYear().toString()
-                        const formattedDate = `${day1}-${month1}-${year1}`
+                          .padStart(2, "0"); // Months are zero-based
+                        const year1 = dateObj.getFullYear().toString();
+                        const formattedDate = `${day1}-${month1}-${year1}`;
 
-                          // Get the time in 12-hour format
-                          let hours = dateObj.getHours()
+                        // Get the time in 12-hour format
+                        let hours = dateObj.getHours();
                         const minutes = dateObj
                           .getMinutes()
                           .toString()
-                          .padStart(2, '0')
-                        const amPm = hours >= 12 ? 'PM' : 'AM'
-                        hours = hours % 12 || 12
-                        const formattedTime = `${hours}:${minutes} ${amPm}`
+                          .padStart(2, "0");
+                        const amPm = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedTime = `${hours}:${minutes} ${amPm}`;
 
-                    return (
-                      <tr key={data.id}>
-                        <td>
-                          <center>{data.id}</center>
-                        </td>
-                        <td>
-                          <center>
-                            <Link to={"/edit-courses"}>
-                              <strong>{data.coursename}</strong>
-                            </Link>
-                          </center>
-                        </td>
-                        <td>
-                          <center>Sample</center>
-                        </td>
-                        <td>
-                          <center>{formattedDate}&nbsp;&nbsp;{formattedTime}</center>
-                        </td>
-                        <td>
-                          {/* <center>
+                        return (
+                          <tr key={data.id}>
+                            <td>
+                              <center>
+                                <strong>{data.coursename}</strong>
+                              </center>
+                            </td>
+                            <td>
+                              <center>{data.category}</center>
+                            </td>
+                            <td>
+                              <center>
+                                {formattedDate}&nbsp;&nbsp;{formattedTime}
+                              </center>
+                            </td>
+                            <td>
+                              {/* <center>
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="success"
@@ -222,39 +228,46 @@ const Info = () => {
                         </Dropdown.Menu>
                       </Dropdown>
                       </center> */}
-                          <center>
-                            <Link
-                              to="/add-courses"
-                              className="btn btn-primary shadow btn-xs sharp me-1"
-                            >
-                              <i class="fa-solid fa-plus"></i>
-                            </Link>
-                            <Link
-                              to="/course_overview"
-                              className="btn btn-primary shadow btn-xs sharp me-1"
-                            >
-                              <i class="fa-regular fa-clipboard"></i>
-                            </Link>
-                            <Link
-                              to="/edit-courses"
-                              className="btn btn-primary shadow btn-xs sharp me-1"
-                            >
-                              <i className="fas fa-pencil-alt"></i>
-                            </Link>
-                            <Link
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
-                              onClick={() => deleteOperation(data.id)}
-                            >
-                              <i className="fa fa-trash"></i>
-                            </Link>
-                          </center>
-                        </td>
-                      </tr>
-                    );
-                  })}</>}
-                </tbody>
-              </Table>
+                              <center>
+                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                  <i
+                                    class="fa-solid fa-plus"
+                                    onClick={(e) =>
+                                      handleClone(data.id, data.coursename)
+                                    }></i>
+                                </div>
+                                <Link
+                                  to="/course-reports"
+                                  className="btn btn-primary shadow btn-xs sharp me-1">
+                                  <i class="fa-regular fa-clipboard"></i>
+                                </Link>
+                                <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                  <i
+                                    className="fas fa-pencil-alt"
+                                    onClick={(e) => handleEdit(data.id)}></i>
+                                </div>
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  onClick={() => deleteOperation(data.id)}>
+                                  <i className="fa fa-trash"></i>
+                                </div>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
@@ -262,8 +275,53 @@ const Info = () => {
       <div>
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
+      {/* Delete Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Course</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete this Course?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleCatDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Clone Modal */}
+      <Modal show={showCloneModal} onHide={() => setShowCloneModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Clone</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to clone the course{" "}
+          <strong>{courseName}</strong> ?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger light"
+            onClick={() => setShowCloneModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-success " onClick={handleCatClone}>
+            Clone
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Fragment>
   );
 };
 
 export default Info;
+
+{
+  /* <Link
+to="/add-courses"
+className="btn btn-primary shadow btn-xs sharp me-1">
+<i class="fa-solid fa-plus"></i>
+</Link> */
+}

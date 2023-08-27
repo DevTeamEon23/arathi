@@ -1,118 +1,107 @@
-import { useState, useEffect } from 'react'
-import React, { Fragment } from 'react'
-import { toast } from 'react-toastify'
-import { Row, Col, Card, Table, Button, Nav, Modal } from 'react-bootstrap'
-import axios from 'axios'
-import { Link } from 'react-router-dom'
-import { useHistory } from 'react-router-dom'
-import { RotatingLines } from 'react-loader-spinner'
+import { useState, useEffect } from "react";
+import React, { Fragment } from "react";
+import { toast } from "react-toastify";
+import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
 const Users = () => {
-  const [uid, setUId] = useState() //user id save for delete
-  const [token, setToken] = useState() //auth token
-  const [userData, setUserData] = useState([]) //user list data
-  const [showModal, setShowModal] = useState(false) //delete button modal
-  const history = useHistory()
+  const [uid, setUId] = useState(); //user id save for delete
+  const [token, setToken] = useState(); //auth token
+  const [userData, setUserData] = useState([]); //user list data
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getAllUsers();
+  }, []);
 
   //User List Api
   const getAllUsers = () => {
-    const jwtToken = window.localStorage.getItem('jwt_access_token')
-    console.log(jwtToken)
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
-        'Auth-Token': jwtToken, // Attach the JWT token in the Authorization header
+        "Auth-Token": jwtToken, // Attach the JWT token in the Authorization header
       },
-    }
+    };
     axios
-      .get('https://v1.eonlearning.tech/lms-service/users', config)
+      .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
-        console.log(response, response.data, response.data.data)
-        setUserData(response.data.data)
+        setUserData(response.data.data);
       })
       .catch((error) => {
-        console.log(error)
-        toast.error('Failed to fetch users!') // Handle the error
-      })
-  }
+        toast.error("Failed to fetch users!"); // Handle the error
+      });
+  };
 
   const handleEdit = (id) => {
-    console.log('inside user handle edit page', id)
-    history.push(`/edit-user/${id}`)
-  }
-
-  useEffect(() => {
-    let token = window.localStorage.getItem('jwt_access_token')
-    setToken(token)
-    getAllUsers()
-  }, [])
+    history.push(`/edit-user/${id}`);
+  };
 
   const deleteUser = (userId) => {
-    setShowModal(true)
-    console.log('inside delete user', userId)
-    setUId(userId)
-  }
+    setShowModal(true);
+    setUId(userId);
+  };
 
   const handleDelete = () => {
-    console.log('modal delete', uid)
     const config = {
       headers: {
-        'Auth-Token': token, // Attach the JWT token in the Authorization header
+        "Auth-Token": token, // Attach the JWT token in the Authorization header
       },
-    }
+    };
     const requestBody = {
       id: uid,
-    }
-    // Make the Axios DELETE request
+    };
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/delete_user`, {
         ...config,
         data: requestBody,
       })
       .then((response) => {
-        setShowModal(false)
-        console.log(response.data.status)
-        getAllUsers()
-        toast.success('User deleted successfully!', {
+        setShowModal(false);
+        getAllUsers();
+        toast.success("User deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
+        });
       })
       .catch((error) => {
         // Handle the error
-        console.error(error)
-        toast.error('Failed to delete user!', {
+        console.error(error);
+        toast.error("Failed to delete user!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
-      })
-  }
+        });
+      });
+  };
 
   return (
     <>
       <Fragment>
         <Nav>
           <Nav.Item
-            as='div'
-            className='nav nav-tabs'
-            id='nav-tab'
-            role='tablist'
-          >
+            as="div"
+            className="nav nav-tabs"
+            id="nav-tab"
+            role="tablist">
             <Link
-              as='button'
-              className='nav-link  nt-unseen'
-              id='nav-following-tab'
-              eventkey='Follow'
-              type='button'
-              to='/dashboard'
-            >
+              as="button"
+              className="nav-link  nt-unseen"
+              id="nav-following-tab"
+              eventkey="Follow"
+              type="button"
+              to="/dashboard">
               Dashboard
             </Link>
             <Link
-              as='button'
-              className='nav-link  nt-unseen'
-              id='nav-following-tab'
-              eventkey='Follow'
-              type='button'
-              to='/add-user'
-            >
+              as="button"
+              className="nav-link  nt-unseen"
+              id="nav-following-tab"
+              eventkey="Follow"
+              type="button"
+              to="/add-user">
               Add Users
             </Link>
           </Nav.Item>
@@ -124,126 +113,116 @@ const Users = () => {
               <Card.Header>
                 <Card.Title>All Users List</Card.Title>
                 <div>
-                  <Link to='/add-user'>
-                    <Button variant='primary'>Add Users</Button>
+                  <Link to="/add-user">
+                    <Button variant="primary">Add Users</Button>
                   </Link>
                   &nbsp;&nbsp;
-                  <Link to='/import-user'>
-                    <Button variant='primary'>Import Users</Button>
+                  <Link to="/import-user">
+                    <Button variant="primary">Import Users</Button>
                   </Link>
                   &nbsp;&nbsp;
-                  <Link to='/export-user'>
-                    <Button variant='primary'>Export Users</Button>
+                  <Link to="/export-user">
+                    <Button variant="primary">Export Users</Button>
                   </Link>
                 </div>
               </Card.Header>
-              <Table responsive striped bordered className='verticle-middle'>
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>
-                        <center>EID</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>SID</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>USER</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>DEPARTMENT</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>EMAIL</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>USER TYPE</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>REGISTRATION</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>LAST LOGIN</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>OPTIONS</center>
-                      </strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  { userData === undefined && userData === null &&(
-                    <div className="loader-container">
+              <Card.Body>
+                {userData.length === undefined ? (
+                  <div className="loader-container">
                     <RotatingLines
-                      strokeColor='grey'
-                      strokeWidth='5'
-                      animationDuration='0.75'
-                      width='96'
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="130"
                       visible={true}
-                    /></div>
-                  )}
-                  {userData.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan='13'
-                        rowSpan='13'
-                        className='text-center fs-16'
-                      >
-                        No File Found.
-                      </td>
-                    </tr>
-                  ) : (
-                    <>
+                    />
+                  </div>
+                ) : userData.length > 0 ? (
+                  <Table responsive striped bordered>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>
+                            <center>EID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>SID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>USER</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>DEPARTMENT</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>EMAIL</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>USER TYPE</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>REGISTRATION</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>LAST LOGIN</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>OPTIONS</center>
+                          </strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {userData.map((item, index) => {
-                        const dateTimeString = item.created_at //1
-                        const date = new Date(dateTimeString)
-                        const day = date.getDate()
-                        const month = date.getMonth() + 1 // Months are zero-based, so add 1
-                        const year = date.getFullYear()
-                        const formattedDate = `${day < 10 ? '0' + day : day}-${
-                          month < 10 ? '0' + month : month
-                        }-${year}`
+                        const dateTimeString = item.created_at; //1
+                        const date = new Date(dateTimeString);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1; // Months are zero-based, so add 1
+                        const year = date.getFullYear();
+                        const formattedDate = `${day < 10 ? "0" + day : day}-${
+                          month < 10 ? "0" + month : month
+                        }-${year}`;
 
                         // Input date and time string
-                        const inputDateTime = item.updated_at //2
+                        const inputDateTime = item.updated_at; //2
                         // Convert inputDateTime to a JavaScript Date object
-                        const dateObj = new Date(inputDateTime)
+                        const dateObj = new Date(inputDateTime);
                         // Get the date in dd-mm-yyyy format
                         const day1 = dateObj
                           .getDate()
                           .toString()
-                          .padStart(2, '0')
+                          .padStart(2, "0");
                         const month1 = (dateObj.getMonth() + 1)
                           .toString()
-                          .padStart(2, '0') // Months are zero-based
-                        const year1 = dateObj.getFullYear().toString()
-                        const formattedDate1 = `${day1}-${month1}-${year1}`
+                          .padStart(2, "0"); // Months are zero-based
+                        const year1 = dateObj.getFullYear().toString();
+                        const formattedDate1 = `${day1}-${month1}-${year1}`;
 
                         // Get the time in 12-hour format
-                        let hours = dateObj.getHours()
+                        let hours = dateObj.getHours();
                         const minutes = dateObj
                           .getMinutes()
                           .toString()
-                          .padStart(2, '0')
-                        const amPm = hours >= 12 ? 'PM' : 'AM'
-                        hours = hours % 12 || 12
-                        const formattedTime = `${hours}:${minutes} ${amPm}`
+                          .padStart(2, "0");
+                        const amPm = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedTime = `${hours}:${minutes} ${amPm}`;
                         return (
                           <tr key={index}>
                             <td>
@@ -274,33 +253,35 @@ const Users = () => {
                             </td>
                             <td>
                               <center>
-                                {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
-                                {/* <Link
-                                  to="/edit-user"
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                ></Link> */}
-                                <div className='btn btn-primary shadow btn-xs sharp me-1'>
+                                <div className="btn btn-primary shadow btn-xs sharp me-1">
                                   <i
-                                    className='fas fa-pencil-alt'
-                                    onClick={(e) => handleEdit(item.id)}
-                                  ></i>
+                                    className="fas fa-pencil-alt"
+                                    onClick={(e) => handleEdit(item.id)}></i>
                                 </div>
 
-                                <div
-                                  className='btn btn-danger shadow btn-xs sharp'
-                                  onClick={() => deleteUser(item.id)}
-                                >
-                                  <i className='fa fa-trash'></i>
+                                <div className="btn btn-danger shadow btn-xs sharp">
+                                  <i
+                                    className="fa fa-trash"
+                                    onClick={() => deleteUser(item.id)}></i>
                                 </div>
                               </center>
                             </td>
                           </tr>
-                        )
+                        );
                       })}
-                    </>
-                  )}{' '}
-                </tbody>
-              </Table>
+                    </tbody>
+                  </Table>
+                ) : (
+                  <>
+                    {" "}
+                    <div>
+                      <p className="text-center fs-20 fw-bold">
+                        No User Found.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </Card.Body>
             </Card>
           </Col>
         </Row>
@@ -313,15 +294,15 @@ const Users = () => {
           <strong>Are you sure you want to delete User?</strong>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='danger light' onClick={() => setShowModal(false)}>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant='btn btn-primary' onClick={handleDelete}>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
             Delete
           </Button>
         </Modal.Footer>
       </Modal>
     </>
-  )
-}
-export default Users
+  );
+};
+export default Users;

@@ -37347,6 +37347,7 @@ button:focus {
   justify-content: center;
   align-items: center;
   height: 70vh;
+  max-width: 100%;
 }
 .password-toggle {
   position: absolute;
@@ -37356,6 +37357,18 @@ button:focus {
   cursor: pointer;
 }
 
+.video-player {
+  width: 100%;
+  height: auto;
+}
+
+.dropdown-item-content {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* ******************** */
 .light.tp-btn {
   background-color: transparent;
 }

@@ -6,11 +6,10 @@ import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 
-
 const Categories = () => {
   const [getAllCategoriesData, setGetAllCategoriesData] = useState([]);
   const [token, setToken] = useState(); //auth token
-  const [uid, setUId] = useState(); //user id save for delete
+  const [categoryId, setCategoryId] = useState(); //cat id save for delete
   const [showModal, setShowModal] = useState(false); //delete button modal
   const history = useHistory();
 
@@ -24,7 +23,7 @@ const Categories = () => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/categories";
+    const url = "https://v1.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -38,30 +37,29 @@ const Categories = () => {
     } catch (error) {
       // Handle errors if any
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Courses !"); // Handle the error
+      toast.error("Failed to fetch Categories !"); // Handle the error
     }
   };
 
-  const deleteOperation = (userId) => {
+  const deleteOperation = (catId) => {
     setShowModal(true);
-    console.log("inside delete user", userId);
-    setUId(userId);
+    setCategoryId(catId);
   };
 
   const handleCatDelete = () => {
-    console.log("modal delete", uid);
+    console.log("modal delete", categoryId);
     const config = {
       headers: {
         "Auth-Token": token, // Attach the JWT token in the Authorization header
       },
     };
     const requestBody = {
-      id: uid,
+      id: categoryId,
     };
     console.log("config", config, requestBody);
     // Make the Axios DELETE request
     axios
-      .delete(`http://127.0.0.1:8000/lms-service/delete_category`, {
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_category`, {
         ...config,
         data: requestBody,
       })
@@ -83,9 +81,9 @@ const Categories = () => {
   };
 
   const handleEdit = (id) => {
-    console.log('inside category handle edit page', id)
-    history.push(`/edit-category/${id}`)
-  }
+    console.log("inside category handle edit page", id);
+    history.push(`/edit-category/${id}`);
+  };
 
   return (
     <Fragment>
@@ -97,8 +95,7 @@ const Categories = () => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/dashboard"
-          >
+            to="/dashboard">
             Dashboard
           </Link>
           <Link
@@ -107,8 +104,7 @@ const Categories = () => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/add-category"
-          >
+            to="/add-category">
             Add Category
           </Link>
         </Nav.Item>
@@ -131,61 +127,79 @@ const Categories = () => {
               </Link>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    {/* <th></th> */}
-                    {/* <th className='width80'>
+              {getAllCategoriesData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : getAllCategoriesData.length > 0 ? (
+                <Table responsive>
+                  <thead>
+                    <tr>
+                      {/* <th></th> */}
+                      {/* <th className='width80'>
                       <strong>#</strong>
                     </th> */}
-                    <th>
-                      <center>
-                        <strong>NAME</strong>
-                      </center>
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getAllCategoriesData?.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        {/* <td></td> */}
-                        {/* <td>
+                      <th>
+                        <center>
+                          <strong>NAME</strong>
+                        </center>
+                      </th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th>
+                        <strong>OPTION</strong>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getAllCategoriesData?.map((item, index) => {
+                      return (
+                        <tr key={index}>
+                          {/* <td></td> */}
+                          {/* <td>
                           <strong>{item.id}</strong>
                         </td> */}
-                        <td>
-                          <center>{item.name}</center>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          <div className="d-flex">
-                          <div className='btn btn-primary shadow btn-xs sharp me-1'>
-                                  <i
-                                    className='fas fa-pencil-alt'
-                                    onClick={(e) => handleEdit(item.id)}
-                                  ></i>
-                                </div>        
-                            <div
-                              className="btn btn-danger shadow btn-xs sharp"
-                              onClick={() => deleteOperation(item.id)}
-                            >
-                              <i className="fa fa-trash"></i>
+                          <td>
+                            <center>{item.name}</center>
+                          </td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td>
+                            <div className="d-flex">
+                              <div className="btn btn-primary shadow btn-xs sharp me-1">
+                                <i
+                                  className="fas fa-pencil-alt"
+                                  onClick={(e) => handleEdit(item.id)}></i>
+                              </div>
+                              <div
+                                className="btn btn-danger shadow btn-xs sharp"
+                                onClick={() => deleteOperation(item.id)}>
+                                <i className="fa fa-trash"></i>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Category Found.
+                    </p>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
@@ -214,16 +228,3 @@ const Categories = () => {
 };
 
 export default Categories;
-
-// async function deleteOperation(id)
-//   {
-//     if (window.confirm('Are you sure?'))
-//     {
-//       let result=await fetch("https://localhost:8000/categories/"+id,{
-//         method:'DELETE'
-//       });
-//       result=await result.json();
-//       console.warn(result)
-//       fetchData();
-//     }
-//   }

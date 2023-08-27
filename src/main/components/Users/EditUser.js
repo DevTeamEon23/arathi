@@ -69,7 +69,7 @@ const EditUser = (props) => {
   const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
-  const backendBaseUrl = "http://127.0.0.1:8000";
+  const backendBaseUrl = "https://v1.eonlearning.tech";
   const history = useHistory();
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const EditUser = (props) => {
     console.log("inside get user by id", id, authToken);
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/users_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/users_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -100,10 +100,6 @@ const EditUser = (props) => {
       if (response.data.status === "success") {
         console.log(response.data.data);
         const res = response.data.data;
-        //         const url = res.file
-        //         const parts = url.split('\\').pop();
-        //         const onlypath = parts.split('/').pop();
-        // console.log(onlypath);
         setEid(res.eid);
         setSid(res.sid);
         setUserName(res.full_name);
@@ -141,45 +137,48 @@ const EditUser = (props) => {
   //Update User info API
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("eid", eid);
-    formData.append("sid", sid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", selectedOptionRole.value);
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive === false ? 0 : 1);
-    formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
-    formData.append("file", file);
-    console.log(isActive, isDeactive, excludeFromEmail, file);
+    if (file === null) {
+      alert("Please add Photo");
+    } else {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("eid", eid);
+      formData.append("sid", sid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", selectedOptionRole.value);
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
 
-    const url = "http://127.0.0.1:8000/lms-service/update_users";
-    const authToken = token;
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("User updated successfully!!!");
-        clearAllState();
-        history.push(`/users-list`)
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to update user...");
-      });
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
+      const authToken = token;
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("User updated successfully!!!");
+          clearAllState();
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
   };
 
   function handleChange(e) {
@@ -239,20 +238,19 @@ const EditUser = (props) => {
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
-            eventkey="Follow"
+            eventKey="Follow"
             type="button"
-            to="/edit-user"
-          >
+            to="/edit-user/:id">
             Info
           </Link>
+
           <Link
             as="button"
             className="nav-link  nt-unseen"
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/user-courses-info"
-          >
+            to="/user-courses-info">
             Courses
           </Link>
           <Link
@@ -261,8 +259,7 @@ const EditUser = (props) => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/user-groups"
-          >
+            to="/user-groups">
             Groups
           </Link>
           <Link
@@ -271,8 +268,7 @@ const EditUser = (props) => {
             id="nav-following-tab"
             eventkey="Follow"
             type="button"
-            to="/user-files"
-          >
+            to="/user-files">
             Files
           </Link>
         </Nav.Item>
@@ -292,7 +288,7 @@ const EditUser = (props) => {
                       strokeColor="grey"
                       strokeWidth="5"
                       animationDuration="0.75"
-                      width="96"
+                      width="100"
                       visible={true}
                     />
                   </div>
@@ -304,8 +300,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email"
-                            >
+                              htmlFor="val-email">
                               Employee ID <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
@@ -323,8 +318,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-username"
-                            >
+                              htmlFor="val-username">
                               Full Name <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
@@ -335,7 +329,6 @@ const EditUser = (props) => {
                                 value={userName}
                                 onChange={(e) => setUserName(e.target.value)}
                                 onBlur={validateName}
-                                required
                               />
                               {nameErrorMsg && (
                                 <span className="text-danger fs-14 m-2">
@@ -348,8 +341,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email"
-                            >
+                              htmlFor="val-email">
                               Email Address{" "}
                               <span className="text-danger">*</span>
                             </label>
@@ -369,8 +361,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email"
-                            >
+                              htmlFor="val-email">
                               Department <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
@@ -389,8 +380,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email"
-                            >
+                              htmlFor="val-email">
                               Aadhar Card No.{" "}
                               <span className="text-danger">*</span>
                             </label>
@@ -400,7 +390,7 @@ const EditUser = (props) => {
                                 className="form-control"
                                 id="adhr"
                                 value={adhr}
-                                placeholder="e.g. 0123 3456 6789"
+                                placeholder="e.g. 012334566789"
                                 onChange={(e) => setAdhr(e.target.value)}
                                 onBlur={handleAadhaarNo}
                               />
@@ -414,8 +404,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-username"
-                            >
+                              htmlFor="val-username">
                               Username <span className="text-danger">*</span>
                             </label>
                             <div className="input-group col-lg-6">
@@ -429,7 +418,6 @@ const EditUser = (props) => {
                                 value={username}
                                 placeholder="Enter Username"
                                 onChange={(e) => setUsername(e.target.value)}
-                                required
                               />
                             </div>
                           </div>
@@ -470,8 +458,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-suggestions"
-                            >
+                              htmlFor="val-suggestions">
                               Bio <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-8">
@@ -480,9 +467,10 @@ const EditUser = (props) => {
                                 id="bio"
                                 value={bio}
                                 rows="5"
+                                maxLength={300}
                                 placeholder="Short Description about user..."
                                 onChange={(e) => setBio(e.target.value)}
-                              ></textarea>
+                                style={{ resize: "none" }}></textarea>
                             </div>
                           </div>
                           <br />
@@ -491,8 +479,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-username"
-                            >
+                              htmlFor="val-username">
                               User Type
                               <span className="text-danger">*</span>
                             </label>
@@ -501,22 +488,18 @@ const EditUser = (props) => {
                                 value={selectedOptionRole}
                                 options={categorytype}
                                 onChange={setSelectedOptionRole}
-                                name="categorytype"
-                                required
-                              ></Select>
+                                name="categorytype"></Select>
                               <div
                                 id="val-username1-error"
                                 className="invalid-feedback animated fadeInUp"
-                                style={{ display: "block" }}
-                              ></div>
+                                style={{ display: "block" }}></div>
                             </div>
                           </div>
 
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-website"
-                            >
+                              htmlFor="val-website">
                               Time Zone
                             </label>
                             <div className="col-lg-6">
@@ -528,15 +511,13 @@ const EditUser = (props) => {
                                     selectedOptionTimeZone
                                   )
                                 }
-                                name="timezonetype"
-                              ></Select>
+                                name="timezonetype"></Select>
                             </div>
                           </div>
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-currency"
-                            >
+                              htmlFor="val-currency">
                               Language
                             </label>
                             <div className="col-lg-6">
@@ -546,8 +527,7 @@ const EditUser = (props) => {
                                   setSelectedOptionLang(selectedOptionLang)
                                 }
                                 options={langtype}
-                                name="langtype"
-                              ></Select>
+                                name="langtype"></Select>
                             </div>
                           </div>
                         </div>
@@ -555,8 +535,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-suggestions"
-                            >
+                              htmlFor="val-suggestions">
                               Add Photo<span className="text-danger">*</span>
                             </label>
                             <div className="profile-info col-lg-6">
@@ -584,7 +563,6 @@ const EditUser = (props) => {
                                   ref={fileRef}
                                   accept=".jpeg, .png, .jpg"
                                   onChange={handleChange}
-                                  required
                                 />
                               </div>
                             </div>
@@ -603,8 +581,7 @@ const EditUser = (props) => {
                             />
                             <label
                               className="form-check css-control-primary css-checkbox mt-1"
-                              htmlFor="isActive"
-                            >
+                              htmlFor="isActive">
                               Active
                             </label>
                           </div>
@@ -619,8 +596,7 @@ const EditUser = (props) => {
                             />
                             <label
                               className="form-check css-control-primary css-checkbox mt-1"
-                              htmlFor="isDeactive"
-                            >
+                              htmlFor="isDeactive">
                               Deactive
                             </label>
                           </div>
@@ -637,8 +613,7 @@ const EditUser = (props) => {
                             />
                             <label
                               className="form-check css-control-primary css-checkbox mt-1"
-                              htmlFor="exclude"
-                            >
+                              htmlFor="exclude">
                               Exclude from Email
                             </label>
                           </div>
@@ -651,8 +626,7 @@ const EditUser = (props) => {
                             <Button
                               type="submit"
                               value="submit"
-                              className="btn me-2 btn-primary"
-                            >
+                              className="btn me-2 btn-primary">
                               Update User
                             </Button>{" "}
                             or &nbsp;&nbsp;
