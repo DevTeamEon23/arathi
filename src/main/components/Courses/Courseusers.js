@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import axios from "axios";
 import { CircularProgress } from "@material-ui/core";
+import { RotatingLines } from "react-loader-spinner";
 
 const Courseusers = (props) => {
   const courseID = props.match.params.id;
@@ -142,87 +143,108 @@ const Courseusers = (props) => {
               <Card.Title>Enroll Course</Card.Title>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>USER</strong>
-                    </th>
-                    <th>
-                      <strong>ROLE</strong>
-                    </th>
-                    <th>
-                      <center>
-                        {" "}
-                        <strong>COMPLETION DATE</strong>
-                      </center>
-                    </th>
-                    <th>
-                      <center>
-                        {" "}
-                        <strong>OPTION</strong>
-                      </center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentData?.map((item, index) => {
-                    return (
+              {currentData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : currentData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
                       <tr>
-                        <td>
-                          {item.full_name}
-                          {item.coursename === null ? (
-                            ""
-                          ) : (
-                            <span className="enrolled-label">Enrolled</span>
-                          )}
-                        </td>
-                        <td>{item.role}</td>
-                        <td>
-                          <center>-</center>
-                        </td>
-                        <td>
+                        <th>
+                          <strong>USER</strong>
+                        </th>
+                        <th>
+                          <strong>ROLE</strong>
+                        </th>
+                        <th>
                           <center>
-                            {item.coursename === null ? (
-                              <>
-                                {btnLoader ? (
-                                  <CircularProgress
-                                    style={{
-                                      width: "20px",
-                                      height: "20px",
-                                      color: "#fff",
-                                    }}
-                                  />
+                            {" "}
+                            <strong>COMPLETION DATE</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>OPTION</strong>
+                          </center>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData?.map((item, index) => {
+                        return (
+                          <tr>
+                            <td>
+                              {item.full_name}
+                              {item.coursename === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">Enrolled</span>
+                              )}
+                            </td>
+                            <td>{item.role}</td>
+                            <td>
+                              <center>-</center>
+                            </td>
+                            <td>
+                              <center>
+                                {item.coursename === null ? (
+                                  <>
+                                    {btnLoader ? (
+                                      <CircularProgress
+                                        style={{
+                                          width: "20px",
+                                          height: "20px",
+                                          color: "#fff",
+                                        }}
+                                      />
+                                    ) : (
+                                      <div
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                        title="Enroll"
+                                        onClick={(e) =>
+                                          handleEnroll(e, item.user_id)
+                                        }>
+                                        <i class="fa-solid fa-plus"></i>
+                                      </div>
+                                    )}
+                                  </>
                                 ) : (
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Enroll"
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Unenroll"
                                     onClick={(e) =>
-                                      handleEnroll(e, item.user_id)
+                                      handleUnEnroll(
+                                        e,
+                                        item.user_course_enrollment_id
+                                      )
                                     }>
-                                    <i class="fa-solid fa-plus"></i>
+                                    <i class="fa-solid fa-minus"></i>
                                   </div>
                                 )}
-                              </>
-                            ) : (
-                              <div
-                                className="btn btn-danger shadow btn-xs sharp"
-                                onClick={(e) =>
-                                  handleUnEnroll(
-                                    e,
-                                    item.user_course_enrollment_id
-                                  )
-                                }>
-                                <i class="fa-solid fa-minus"></i>
-                              </div>
-                            )}
-                          </center>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              )}
               <br />
               <div className="pagination-down">
                 <div className="d-flex align-items-center  ">

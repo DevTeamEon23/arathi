@@ -1,14 +1,24 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { read, utils, writeFile } from "xlsx";
-import { AboutTabContent } from "../Courses/CourseDetail1";
-import { Dropdown, Button, Tab, Modal, Nav } from "react-bootstrap";
+import {
+  Dropdown,
+  Button,
+  Tab,
+  Modal,
+  Nav,
+  Table,
+  Container,
+} from "react-bootstrap";
 import DropDownBlog from "../Dashboard/DropDownBlog";
-
+import { SlBadge } from "react-icons/sl";
+import { FiPlay } from "react-icons/fi";
 import DonutChart from "../Dashboard/Dashboard/DonutChart";
 //import ProfileActivityChart from './Dashboard/ProfileActivityChart';
+import axios from "axios";
+import { toast } from "react-toastify";
 
 //images
 import pic2 from "@images/courses/pic2.jpg";
@@ -22,6 +32,7 @@ import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
 import badges from "@images/Badges.svg";
+const backendBaseUrl = "https://v1.eonlearning.tech";
 
 const reviewsData = [
   { image: pic3, title: "Jordan Nico ", commentTime: "2 Month Ago" },
@@ -94,6 +105,18 @@ const Learn = () => {
   const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
   const [dropSelect, setDropSelect] = useState("This Month");
+  const [showAboutPane, setShowAboutPane] = useState(false); // About(Points)
+  const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
+  const [showDiscussionPane, setShowDiscussionPane] = useState(false); // Discussion(Badges)
+  const [userData, setUserData] = useState([]); //user list data
+  const [token, setToken] = useState(); //auth token
+  let history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getUsers();
+  }, []);
 
   const handleExport = () => {
     const headings = [
@@ -120,6 +143,42 @@ const Learn = () => {
     utils.book_append_sheet(wb, ws, "Report");
     writeFile(wb, "Export Report.xlsx");
   };
+
+  //User List Api
+  const getUsers = () => {
+    axios
+      .get("http://127.0.0.1:8000/auth/fetch_userpoints_by_userid")
+      .then((response) => {
+        console.log(response.data.data);
+        let allUsers = response.data.data.user_ids;
+        const learnerUsers = allUsers.filter((user) => user.role === "Learner");
+        setUserData(learnerUsers);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!"); // Handle the error
+      });
+  };
+
+  const handlePointsRule = () => {
+    setShowAboutPane(true); // Toggle the visibility
+  };
+  const handlePointsBackBtn = () => {
+    setShowAboutPane(false); // Toggle the visibility
+  };
+  const handleLevelsRule = () => {
+    setShowReviewPane(true); // Toggle the visibility
+  };
+  const handleLevelsBackBtn = () => {
+    setShowReviewPane(false); // Toggle the visibility
+  };
+  const handleBadgesRule = () => {
+    setShowDiscussionPane(true); // Toggle the visibility
+  };
+  const handleBadgesBackBtn = () => {
+    setShowDiscussionPane(false); // Toggle the visibility
+  };
+
+  const handleBadges = () => {};
 
   return (
     <>
@@ -352,46 +411,241 @@ const Learn = () => {
                       </nav>
                       <Tab.Content className="tab-content" id="nav-tabContent">
                         <Tab.Pane id="nav-about" eventKey="About">
-                          <div className="about-content">
-                            <h6>💎 Each login gives 25 points</h6>
-                            <h6>💎 Each unit completion gives 25 points</h6>
-                            <h6>💎 Each course completion gives 150 points</h6>
-                            <h6>💎 Each certificate gives 150 points</h6>
-                            <h6>
-                              💎 Each successful test completion gives 1 point
-                              &nbsp; <i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each successful assignment completion gives 1
-                              point &nbsp;<i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each successful ILT completion gives 1 point
-                              &nbsp; <i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each discussion topic or comment gives 25
-                              points
-                            </h6>
-                            <h6>
-                              💎 Each upvote on discussion comments gives 10
-                              points
-                            </h6>
-                          </div>
+                          {showAboutPane === false ? (
+                            <div>
+                              <Table responsive>
+                                <thead>
+                                  <tr></tr>
+                                </thead>
+                                <tbody>
+                                  {userData?.map((item, index) => {
+                                    const img = `${backendBaseUrl}/${item.file}`;
+                                    return (
+                                      <tr key={index}>
+                                        <td>
+                                          <center>
+                                            <SlBadge
+                                              style={{
+                                                color: "red",
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          </center>
+                                        </td>
+                                        <td
+                                          style={{
+                                            width: "20%",
+                                          }}>
+                                          {" "}
+                                          <center>
+                                            <img
+                                              src={img}
+                                              style={{
+                                                width: "90px",
+                                                height: "60px",
+                                                borderRadius: " 0.625rem",
+                                              }}
+                                              alt=" img"
+                                            />
+                                          </center>
+                                        </td>
+                                        <td>
+                                          <center>{item.full_name}</center>
+                                        </td>
+                                        <td>
+                                          <center> {item.points}</center>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </Table>
+                            </div>
+                          ) : (
+                            <div className="about-content">
+                              <h6>💎 Each login gives 25 points</h6>
+                              <h6>💎 Each unit completion gives 25 points</h6>
+                              <h6>
+                                💎 Each course completion gives 150 points
+                              </h6>
+                              <h6>💎 Each certificate gives 150 points</h6>
+                              <h6>
+                                💎 Each successful test completion gives 1 point
+                                &nbsp; <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each successful assignment completion gives 1
+                                point &nbsp;
+                                <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each successful ILT completion gives 1 point
+                                &nbsp; <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each discussion topic or comment gives 25
+                                points
+                              </h6>
+                              <h6>
+                                💎 Each upvote on discussion comments gives 10
+                                points
+                              </h6>
+                            </div>
+                          )}
+                          {showAboutPane === false ? (
+                            <Container className="d-flex justify-content-center align-items-center mt-1">
+                              <Button onClick={handlePointsRule}>
+                                How to collect points
+                              </Button>
+                            </Container>
+                          ) : (
+                            <Container className="d-flex justify-content-center align-items-center mt-3">
+                              <Button onClick={handlePointsBackBtn}>
+                                Back
+                              </Button>
+                            </Container>
+                          )}
                         </Tab.Pane>
                         <Tab.Pane eventKey="Review">
-                          <div className="reviews-content">
-                            <br />
-                            <h6>💎 Upgrade level every 3000 points</h6>
-                            <h6>💎 Upgrade level every 5 completed courses</h6>
-                            <h6>💎 Upgrade level every 5 badges</h6>
-                          </div>
+                          {showReviewPane === false ? (
+                            <div>
+                              <Table responsive>
+                                <thead>
+                                  <tr></tr>
+                                </thead>
+                                <tbody>
+                                  {userData?.map((item, index) => {
+                                    const img = `${backendBaseUrl}/${item.file}`;
+                                    return (
+                                      <tr key={index}>
+                                        <td>
+                                          <center>
+                                            <SlBadge
+                                              style={{
+                                                color: "red",
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          </center>
+                                        </td>
+                                        <td
+                                          style={{
+                                            width: "20%",
+                                          }}>
+                                          {" "}
+                                          <center>
+                                            <img
+                                              src={img}
+                                              style={{
+                                                width: "90px",
+                                                height: "60px",
+                                                borderRadius: " 0.625rem",
+                                              }}
+                                              alt="img"
+                                            />
+                                          </center>
+                                        </td>
+                                        <td>
+                                          <center>{item.full_name}</center>
+                                        </td>
+                                        <td>
+                                          <center>1</center>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </Table>
+                            </div>
+                          ) : (
+                            <div className="reviews-content">
+                              <br />
+                              <h6>💎 Upgrade level every 3000 points</h6>
+                              <h6>
+                                💎 Upgrade level every 5 completed courses
+                              </h6>
+                              <h6>💎 Upgrade level every 5 badges</h6>
+                            </div>
+                          )}
+
+                          {showReviewPane === false ? (
+                            <Container className="d-flex justify-content-center align-items-center mt-1">
+                              <Button
+                                className="d-flex justify-content-center align-items-center"
+                                onClick={handleLevelsRule}>
+                                How to level up
+                              </Button>
+                            </Container>
+                          ) : (
+                            <Container className="d-flex justify-content-center align-items-center mt-3">
+                              <Button
+                                className="d-flex justify-content-center align-items-center"
+                                onClick={handleLevelsBackBtn}>
+                                Back
+                              </Button>
+                            </Container>
+                          )}
                         </Tab.Pane>
                         <Tab.Pane id="nav-discussion" eventKey="Discussion">
-                          <div className="about-content mb-1">
-                            <img src={badges} width="750" height="600" alt="" />
-                            {/* <AboutTabContent title='About This Users Earned Badges' />
-												<AboutTabContent title="Users Course’s Objectives and activity" /> */}
+                          <div className="about-content">
+                            <Table responsive>
+                              <tbody>
+                                {userData?.map((item, index) => {
+                                  const img = `${backendBaseUrl}/${item.file}`;
+                                  return (
+                                    <tr key={index}>
+                                      <td>
+                                        <center>
+                                          <SlBadge
+                                            style={{
+                                              color: "red",
+                                              fontSize: "28px",
+                                              fontWeight: "bold",
+                                            }}
+                                          />
+                                        </center>
+                                      </td>
+                                      <td
+                                        style={{
+                                          width: "20%",
+                                        }}>
+                                        {" "}
+                                        <center>
+                                          <img
+                                            src={img}
+                                            style={{
+                                              width: "90px",
+                                              height: "60px",
+                                              borderRadius: " 0.625rem",
+                                            }}
+                                            alt="img"
+                                          />
+                                        </center>
+                                      </td>
+                                      <td>
+                                        <center>{item.full_name}</center>
+                                      </td>
+                                      <td>
+                                        <center> 3</center>
+                                      </td>
+                                      <td>
+                                        <center>
+                                          <FiPlay
+                                            style={{
+                                              fontSize: "22px",
+                                              fontWeight: "bold",
+                                            }}
+                                            onClick={handleBadges}
+                                          />
+                                        </center>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </Table>
                           </div>
                         </Tab.Pane>
                       </Tab.Content>
