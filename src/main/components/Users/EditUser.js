@@ -227,7 +227,7 @@ const EditUser = (props) => {
 
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -266,17 +266,19 @@ const EditUser = (props) => {
             Files
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
 
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
-            {/* <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey="/edit-user/:id" title="Info"></Tab>
-              <Tab eventKey="/user-courses-info" title="Courses"></Tab>
-              <Tab eventKey="/user-groups" title="Groups"></Tab>
-              <Tab eventKey="/user-files" title="Files"></Tab>
-            </Tabs> */}
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
+              <Tab
+                eventKey={`user-courses-info/${userId}`}
+                title="Courses"></Tab>
+              <Tab eventKey={`user-groups/${userId}`} title="Groups"></Tab>
+              <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
+            </Tabs>
             <div className="card-header">
               <h4 className="card-title">Edit User Form (Admin)</h4>
             </div>

@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react'
-import { Link } from 'react-router-dom'
-import pic1 from '@images/Users/Filessvg.svg'
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
+import pic1 from "@images/Users/Filessvg.svg";
 
 import {
   Dropdown,
@@ -9,12 +9,30 @@ import {
   Nav,
   Button,
   FormCheck,
-} from 'react-bootstrap'
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 
-const UserFiles = () => {
+const UserFiles = (props) => {
+  const userId = props.match.params.id;
+  console.log({ userId });
+  const [activeTab, setActiveTab] = useState("user-files/:id");
+  let history = useHistory();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as='div' className='nav nav-tabs' id='nav-tab' role='tablist'>
           <Link
             as='button'
@@ -57,19 +75,27 @@ const UserFiles = () => {
             Files
           </Link>
         </Nav.Item>
-      </Nav>
-      <div className='row'>
-        <div className='col-lg-12'>
-          <div className='card'>
-            <div className='card-header'>
-              <h4 className='card-title'>Saved Files </h4>
+      </Nav> */}
+      <div className="row">
+        <div className="col-lg-12">
+          <div className="card">
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
+              <Tab
+                eventKey={`user-courses-info/${userId}`}
+                title="Courses"></Tab>
+              <Tab eventKey={`user-groups/${userId}`} title="Groups"></Tab>
+              <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
+            </Tabs>
+            <div className="card-header">
+              <h4 className="card-title">Saved Files </h4>
             </div>
 
-            <div className='row mb-5'>
-              <div className='col-lg-3'></div>
-              <div className='col-lg-7'>
+            <div className="row mb-5">
+              <div className="col-lg-3"></div>
+              <div className="col-lg-7">
                 <img src={pic1} height={500} width={500} />
-                <h4 className='mb-10'>
+                <h4 className="mb-10">
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You
                   dont have saved any files
                 </h4>
@@ -79,7 +105,7 @@ const UserFiles = () => {
         </div>
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default UserFiles
+export default UserFiles;
