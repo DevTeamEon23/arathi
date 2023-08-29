@@ -589,64 +589,64 @@ const Learn = () => {
                           )}
                         </Tab.Pane>
                         <Tab.Pane id="nav-discussion" eventKey="Discussion">
-                          <div className="about-content">
-                            <Table responsive>
-                              <tbody>
-                                {userData?.map((item, index) => {
-                                  const img = `${backendBaseUrl}/${item.file}`;
-                                  return (
-                                    <tr key={index}>
-                                      <td>
-                                        <center>
-                                          <SlBadge
-                                            style={{
-                                              color: "red",
-                                              fontSize: "28px",
-                                              fontWeight: "bold",
-                                            }}
-                                          />
-                                        </center>
-                                      </td>
-                                      <td
-                                        style={{
-                                          width: "20%",
-                                        }}>
-                                        {" "}
-                                        <center>
-                                          <img
-                                            src={img}
-                                            style={{
-                                              width: "90px",
-                                              height: "60px",
-                                              borderRadius: " 0.625rem",
-                                            }}
-                                            alt="img"
-                                          />
-                                        </center>
-                                      </td>
-                                      <td>
-                                        <center>{item.full_name}</center>
-                                      </td>
-                                      <td>
-                                        <center> 3</center>
-                                      </td>
-                                      <td>
-                                        <center>
-                                          <FiPlay
-                                            style={{
-                                              fontSize: "22px",
-                                              fontWeight: "bold",
-                                            }}
-                                            onClick={handleBadges}
-                                          />
-                                        </center>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </Table>
-                          </div>
+                          {/* <div className="about-content"> */}
+                          <Table responsive>
+                            <tbody>
+                              {userData?.map((item, index) => {
+                                const img = `${backendBaseUrl}/${item.file}`;
+                                return (
+                                  <tr key={index}>
+                                    <td>
+                                      <center>
+                                        <SlBadge
+                                          style={{
+                                            color: "red",
+                                            fontSize: "28px",
+                                            fontWeight: "bold",
+                                          }}
+                                        />
+                                      </center>
+                                    </td>
+                                    <td
+                                      style={{
+                                        width: "20%",
+                                      }}>
+                                      {" "}
+                                      <center>
+                                        <img
+                                          src={img}
+                                          style={{
+                                            width: "90px",
+                                            height: "60px",
+                                            borderRadius: " 0.625rem",
+                                          }}
+                                          alt="img"
+                                        />
+                                      </center>
+                                    </td>
+                                    <td>
+                                      <center>{item.full_name}</center>
+                                    </td>
+                                    <td>
+                                      <center> 3</center>
+                                    </td>
+                                    <td>
+                                      <center>
+                                        <FiPlay
+                                          style={{
+                                            fontSize: "22px",
+                                            fontWeight: "bold",
+                                          }}
+                                          onClick={handleBadges}
+                                        />
+                                      </center>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </Table>
+                          {/* </div> */}
                         </Tab.Pane>
                       </Tab.Content>
                     </div>
