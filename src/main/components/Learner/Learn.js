@@ -1,14 +1,27 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { read, utils, writeFile } from "xlsx";
-import { AboutTabContent } from "../Courses/CourseDetail1";
-import { Dropdown, Button, Tab, Modal, Nav } from "react-bootstrap";
+import {
+  Dropdown,
+  Button,
+  Tab,
+  Modal,
+  Nav,
+  Table,
+  Container,
+} from "react-bootstrap";
 import DropDownBlog from "../Dashboard/DropDownBlog";
-
+import { SlBadge } from "react-icons/sl";
+import { FiPlay } from "react-icons/fi";
+import { FaMedal } from "react-icons/fa";
+import { BiSolidBadgeCheck } from "react-icons/bi";
 import DonutChart from "../Dashboard/Dashboard/DonutChart";
 //import ProfileActivityChart from './Dashboard/ProfileActivityChart';
+import axios from "axios";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 //images
 import pic2 from "@images/courses/pic2.jpg";
@@ -21,7 +34,11 @@ import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
-import badges from "@images/Badges.svg";
+import badge1 from "@images/svg/LearningNewbie.svg";
+import badge2 from "@images/svg/LearningGrower.svg";
+import badge3 from "@images/svg/LearningAdventurer.svg";
+
+const backendBaseUrl = "https://v1.eonlearning.tech";
 
 const reviewsData = [
   { image: pic3, title: "Jordan Nico ", commentTime: "2 Month Ago" },
@@ -94,6 +111,19 @@ const Learn = () => {
   const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
   const [dropSelect, setDropSelect] = useState("This Month");
+  const [showAboutPane, setShowAboutPane] = useState(false); // About(Points)
+  const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
+  const [userData, setUserData] = useState([]); //user list data
+  const [token, setToken] = useState(); //auth token
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [userImg, setUserImg] = useState(null);
+  let history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getUsers();
+  }, []);
 
   const handleExport = () => {
     const headings = [
@@ -119,6 +149,44 @@ const Learn = () => {
     utils.sheet_add_json(ws, movies, { origin: "A2", skipHeader: true });
     utils.book_append_sheet(wb, ws, "Report");
     writeFile(wb, "Export Report.xlsx");
+  };
+
+  //User List Api
+  const getUsers = () => {
+    axios
+      .get("http://127.0.0.1:8000/auth/fetch_userpoints_by_userid")
+      .then((response) => {
+        console.log(response.data.data);
+        let allUsers = response.data.data.user_ids;
+        const learnerUsers = allUsers.filter((user) => user.role === "Learner");
+        setUserData(learnerUsers);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!"); // Handle the error
+      });
+  };
+
+  const handlePointsRule = () => {
+    setShowAboutPane(true);
+  };
+  const handlePointsBackBtn = () => {
+    setShowAboutPane(false);
+  };
+  const handleLevelsRule = () => {
+    setShowReviewPane(true);
+  };
+  const handleLevelsBackBtn = () => {
+    setShowReviewPane(false);
+  };
+
+  const handleBadgesBackBtn = () => {
+    setSelectedItem(null);
+  };
+
+  const handleBadges = (name, img) => {
+    console.log(name, img);
+    setSelectedItem(name);
+    setUserImg(img);
   };
 
   return (
@@ -319,80 +387,433 @@ const Learn = () => {
                 <Modal.Body>
                   <Tab.Container defaultActiveKey="About">
                     <div className="course-details-tab style-2 mb-2">
-                      <nav>
-                        <Nav
-                          as="div"
-                          className="nav nav-tabs tab-auto"
-                          id="nav-tab">
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-about-tab"
-                            eventKey="About"
-                            type="button">
-                            Points
-                          </Nav.Link>
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-reviews-tab"
-                            eventKey="Review"
-                            type="button">
-                            Levels
-                          </Nav.Link>
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-discussion-tab"
-                            eventKey="Discussion"
-                            type="button">
-                            Badges
-                          </Nav.Link>
-                        </Nav>
-                      </nav>
+                      <Nav
+                        as="div"
+                        className="nav nav-tabs tab-auto"
+                        id="nav-tab">
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-about-tab"
+                          eventKey="About"
+                          type="button">
+                          Points
+                        </Nav.Link>
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-reviews-tab"
+                          eventKey="Review"
+                          type="button">
+                          Levels
+                        </Nav.Link>
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-discussion-tab"
+                          eventKey="Discussion"
+                          type="button">
+                          Badges
+                        </Nav.Link>
+                      </Nav>
+
                       <Tab.Content className="tab-content" id="nav-tabContent">
                         <Tab.Pane id="nav-about" eventKey="About">
-                          <div className="about-content">
-                            <h6>💎 Each login gives 25 points</h6>
-                            <h6>💎 Each unit completion gives 25 points</h6>
-                            <h6>💎 Each course completion gives 150 points</h6>
-                            <h6>💎 Each certificate gives 150 points</h6>
-                            <h6>
-                              💎 Each successful test completion gives 1 point
-                              &nbsp; <i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each successful assignment completion gives 1
-                              point &nbsp;<i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each successful ILT completion gives 1 point
-                              &nbsp; <i class="bi bi-info-circle-fill"></i>
-                            </h6>
-                            <h6>
-                              💎 Each discussion topic or comment gives 25
-                              points
-                            </h6>
-                            <h6>
-                              💎 Each upvote on discussion comments gives 10
-                              points
-                            </h6>
-                          </div>
+                          {showAboutPane === false ? (
+                            <div>
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <Table responsive>
+                                  <tbody>
+                                    {userData
+                                      ?.sort((a, b) => b.points - a.points)
+                                      .map((item, index) => {
+                                        const img = `${backendBaseUrl}/${item.file}`;
+                                        let medalIcon = null;
+                                        if (index === 0) {
+                                          medalIcon = (
+                                            <FaMedal
+                                              style={{
+                                                color: "gold",
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 1) {
+                                          medalIcon = (
+                                            <FaMedal
+                                              style={{
+                                                color: "silver",
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 2) {
+                                          medalIcon = (
+                                            <FaMedal
+                                              style={{
+                                                color: "#cd7f32", // bronze color
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        }
+                                        return (
+                                          <tr key={index}>
+                                            <td>
+                                              <center>{medalIcon}</center>
+                                            </td>
+                                            <td
+                                              style={{
+                                                width: "20%",
+                                              }}>
+                                              {" "}
+                                              <center>
+                                                <img
+                                                  src={img}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: " 0.625rem",
+                                                  }}
+                                                  alt=" img"
+                                                />
+                                              </center>
+                                            </td>
+                                            <td>
+                                              <center>{item.full_name}</center>
+                                            </td>
+                                            <td>
+                                              <center> {item.points}</center>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                  </tbody>
+                                </Table>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="about-content">
+                              <h6>💎 Each login gives 25 points</h6>
+                              <h6>💎 Each unit completion gives 25 points</h6>
+                              <h6>
+                                💎 Each course completion gives 150 points
+                              </h6>
+                              <h6>💎 Each certificate gives 150 points</h6>
+                              <h6>
+                                💎 Each successful test completion gives 1 point
+                                &nbsp; <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each successful assignment completion gives 1
+                                point &nbsp;
+                                <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each successful ILT completion gives 1 point
+                                &nbsp; <i class="bi bi-info-circle-fill"></i>
+                              </h6>
+                              <h6>
+                                💎 Each discussion topic or comment gives 25
+                                points
+                              </h6>
+                              <h6>
+                                💎 Each upvote on discussion comments gives 10
+                                points
+                              </h6>
+                            </div>
+                          )}
+                          {showAboutPane === false ? (
+                            <Container className="d-flex justify-content-center align-items-center mt-1">
+                              <Button onClick={handlePointsRule}>
+                                How to collect points
+                              </Button>
+                            </Container>
+                          ) : (
+                            <Container className="d-flex justify-content-center align-items-center mt-3">
+                              <Button onClick={handlePointsBackBtn}>
+                                Back
+                              </Button>
+                            </Container>
+                          )}
                         </Tab.Pane>
                         <Tab.Pane eventKey="Review">
-                          <div className="reviews-content">
-                            <br />
-                            <h6>💎 Upgrade level every 3000 points</h6>
-                            <h6>💎 Upgrade level every 5 completed courses</h6>
-                            <h6>💎 Upgrade level every 5 badges</h6>
-                          </div>
+                          {showReviewPane === false ? (
+                            <div>
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <Table responsive>
+                                  <tbody>
+                                    {userData?.map((item, index) => {
+                                      const img = `${backendBaseUrl}/${item.file}`;
+                                      let medalStyle = {
+                                        fontSize: "28px",
+                                        fontWeight: "bold",
+                                      };
+
+                                      switch (item.user_level) {
+                                        case 0:
+                                          medalStyle.color = "#8C94D7";
+                                          break;
+                                        case 1:
+                                          medalStyle.color = "#cd7f32"; //(bronze)
+                                          break;
+                                        case 2:
+                                          medalStyle.color = "silver";
+                                          break;
+                                        case 3:
+                                          medalStyle.color = "gold";
+                                          break;
+                                        default:
+                                          break;
+                                      }
+
+                                      let level = null;
+                                      if (item.user_level === 0) {
+                                        level = "Beginner";
+                                      } else if (item.user_level === 1) {
+                                        level = "Intermediate";
+                                      } else if (item.user_level === 2) {
+                                        level = "Advanced";
+                                      } else if (item.user_level === 3) {
+                                        level = "Proficient";
+                                      }
+
+                                      return (
+                                        <tr key={index}>
+                                          <td>
+                                            <center>
+                                              <SlBadge style={medalStyle} />
+                                            </center>
+                                          </td>
+                                          <td style={{ width: "20%" }}>
+                                            <center>
+                                              <img
+                                                src={img}
+                                                style={{
+                                                  width: "70px",
+                                                  height: "50px",
+                                                  borderRadius: "0.625rem",
+                                                }}
+                                                alt="img"
+                                              />
+                                            </center>
+                                          </td>
+                                          <td>
+                                            <center>{item.full_name}</center>
+                                          </td>
+                                          <td>
+                                            <center>{level}</center>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </Table>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="reviews-content">
+                              <br />
+                              <h6>💎 Upgrade level every 3000 points</h6>
+                              <h6>
+                                💎 Upgrade level every 5 completed courses
+                              </h6>
+                              <h6>💎 Upgrade level every 5 badges</h6>
+                            </div>
+                          )}
+
+                          {showReviewPane === false ? (
+                            <Container className="d-flex justify-content-center align-items-center mt-1">
+                              <Button
+                                className="d-flex justify-content-center align-items-center"
+                                onClick={handleLevelsRule}>
+                                How to level up
+                              </Button>
+                            </Container>
+                          ) : (
+                            <Container className="d-flex justify-content-center align-items-center mt-3">
+                              <Button
+                                className="d-flex justify-content-center align-items-center"
+                                onClick={handleLevelsBackBtn}>
+                                Back
+                              </Button>
+                            </Container>
+                          )}
                         </Tab.Pane>
                         <Tab.Pane id="nav-discussion" eventKey="Discussion">
-                          <div className="about-content mb-1">
-                            <img src={badges} width="750" height="600" alt="" />
-                            {/* <AboutTabContent title='About This Users Earned Badges' />
-												<AboutTabContent title="Users Course’s Objectives and activity" /> */}
-                          </div>
+                          {selectedItem === null ? (
+                            <>
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <>
+                                  <Table responsive>
+                                    <tbody>
+                                      {userData?.map((item, index) => {
+                                        const img = `${backendBaseUrl}/${item.file}`;
+
+                                        let medalIcon = null;
+                                        if (index === 0) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "gold",
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 1) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "silver",
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 2) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "#cd7f32", // bronze color
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        }
+
+                                        return (
+                                          <tr key={index}>
+                                            <td>
+                                              <center>{medalIcon}</center>
+                                            </td>
+                                            <td
+                                              style={{
+                                                width: "20%",
+                                              }}>
+                                              {" "}
+                                              <center>
+                                                <img
+                                                  src={img}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: " 0.625rem",
+                                                  }}
+                                                  alt="img"
+                                                />
+                                              </center>
+                                            </td>
+                                            <td>
+                                              <center>{item.full_name}</center>
+                                            </td>
+                                            <td>
+                                              <center> 3</center>
+                                            </td>
+                                            <td>
+                                              <center>
+                                                <FiPlay
+                                                  style={{
+                                                    fontSize: "22px",
+                                                    fontWeight: "bold",
+                                                  }}
+                                                  onClick={() =>
+                                                    handleBadges(
+                                                      item.full_name,
+                                                      item.file
+                                                    )
+                                                  }
+                                                />
+                                              </center>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </Table>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <div className="about-content">
+                              {" "}
+                              {/* const img = `${backendBaseUrl}/${img}`; */}
+                              <Table responsive>
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <strong>{selectedItem}</strong>
+                                    </td>
+                                    <td>
+                                      <center> 3</center>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    {" "}
+                                    <img
+                                      src={badge1}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={badge2}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={badge3}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Container className="d-flex justify-content-center align-items-center mt-3">
+                                <Button
+                                  className="d-flex justify-content-center align-items-center"
+                                  onClick={handleBadgesBackBtn}>
+                                  Back
+                                </Button>
+                              </Container>
+                            </div>
+                          )}
                         </Tab.Pane>
                       </Tab.Content>
                     </div>
@@ -407,3 +828,8 @@ const Learn = () => {
   );
 };
 export default Learn;
+
+// Beginner
+// Intermediate
+// Advanced
+// Proficient

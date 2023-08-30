@@ -78,8 +78,8 @@ const UserProg = () => {
             id="nav-following-tab"
             eventKey="Follow"
             type="button"
-            to="/user-timeline">
-            Timeline
+            to="/badges-list">
+            Badges
           </Link>
           <Link
             as="button"
@@ -87,8 +87,8 @@ const UserProg = () => {
             id="nav-following-tab"
             eventKey="Follow"
             type="button"
-            to="/badges-list">
-            Badges
+            to="/user-timeline">
+            Timeline
           </Link>
         </Nav.Item>
       </Nav>

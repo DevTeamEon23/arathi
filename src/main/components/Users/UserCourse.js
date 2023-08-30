@@ -13,7 +13,6 @@ import {
   Nav,
 } from "react-bootstrap";
 
-
 const options_1 = [
   { value: "ist", label: "India Standard Time (IST)" },
   { value: "nst", label: "New Zealand Standard Time (NST)" },
@@ -56,17 +55,58 @@ const UserCourse = () => {
       </g>
     </svg>
   );
-let history = useHistory();
+  let history = useHistory();
   return (
     <Fragment>
-    <Nav >
-      <Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-      <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/user-progress">Overview</Link>
-      <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/user-course">Courses</Link>
-      <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/user-certificates">Certificates</Link>
-      <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/user-timeline">Timeline</Link>
-      </Nav.Item>
-    </Nav>
+      <Nav>
+        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/user-progress">
+            Overview
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/user-course">
+            Courses
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/user-certificates">
+            Certificates
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/badges-list">
+            Badges
+          </Link>
+          <Link
+            as="button"
+            className="nav-link  nt-unseen"
+            id="nav-following-tab"
+            eventKey="Follow"
+            type="button"
+            to="/user-timeline">
+            Timeline
+          </Link>
+        </Nav.Item>
+      </Nav>
       <Row>
         <Col lg={12}>
           <Card>
@@ -74,7 +114,7 @@ let history = useHistory();
               <Card.Title>Courses</Card.Title>
             </Card.Header>
             <Card.Body>
-              <Table table-borderless >
+              <Table table-borderless>
                 <thead>
                   <tr>
                     <th scope="col">
@@ -108,22 +148,23 @@ let history = useHistory();
                     <td>
                       <strong>Employee Training</strong>
                     </td>
-                    <small><td className="progress-bar p-0 bg-primary"><td
-                      className="bg-light p-0"
-                      style={{ width: "50%" }}
-                    >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50%</td></td></small>
-                    <td >-</td>
+                    <small>
+                      <td className="progress-bar p-0 bg-primary">
+                        <td className="bg-light p-0" style={{ width: "50%" }}>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50%
+                        </td>
+                      </td>
+                    </small>
+                    <td>-</td>
                     <td>2/1/2023</td>
                     <td>30/1/2023</td>
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
                   </tr>
                   <tr>
@@ -137,12 +178,10 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
                   </tr>
                   <tr>
@@ -156,12 +195,10 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
                   </tr>
                   <tr>
@@ -175,12 +212,10 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
                   </tr>
                   <tr>
@@ -194,14 +229,13 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
-                  </tr>                  <tr>
+                  </tr>{" "}
+                  <tr>
                     <td>
                       <strong>Employee Training</strong>
                     </td>
@@ -212,14 +246,13 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
-                  </tr>                  <tr>
+                  </tr>{" "}
+                  <tr>
                     <td>
                       <strong>Employee Training</strong>
                     </td>
@@ -230,14 +263,13 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
-                  </tr>                  <tr>
+                  </tr>{" "}
+                  <tr>
                     <td>
                       <strong>Employee Training</strong>
                     </td>
@@ -248,14 +280,13 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
-                  </tr>                  <tr>
+                  </tr>{" "}
+                  <tr>
                     <td>
                       <strong>Employee Training</strong>
                     </td>
@@ -266,14 +297,13 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
-                  </tr>                  <tr>
+                  </tr>{" "}
+                  <tr>
                     <td>
                       <strong>Employee Training</strong>
                     </td>
@@ -284,12 +314,10 @@ let history = useHistory();
                     <td>-</td>
                     <td>1m 35s</td>
                     <td className="col-lg-4">
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options_1}
-                        >
-                        </Select>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options_1}></Select>
                     </td>
                   </tr>
                 </tbody>
@@ -299,7 +327,7 @@ let history = useHistory();
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Cancel</Button>
+        <Button onClick={() => history.goBack()}>Cancel</Button>
       </div>
     </Fragment>
   );
