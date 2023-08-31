@@ -15,10 +15,13 @@ import {
 import DropDownBlog from "../Dashboard/DropDownBlog";
 import { SlBadge } from "react-icons/sl";
 import { FiPlay } from "react-icons/fi";
+import { FaMedal } from "react-icons/fa";
+import { BiSolidBadgeCheck } from "react-icons/bi";
 import DonutChart from "../Dashboard/Dashboard/DonutChart";
 //import ProfileActivityChart from './Dashboard/ProfileActivityChart';
 import axios from "axios";
 import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 //images
 import pic2 from "@images/courses/pic2.jpg";
@@ -31,7 +34,10 @@ import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
-import badges from "@images/Badges.svg";
+import badge1 from "@images/svg/LearningNewbie.svg";
+import badge2 from "@images/svg/LearningGrower.svg";
+import badge3 from "@images/svg/LearningAdventurer.svg";
+
 const backendBaseUrl = "https://v1.eonlearning.tech";
 
 const reviewsData = [
@@ -107,9 +113,10 @@ const Learn = () => {
   const [dropSelect, setDropSelect] = useState("This Month");
   const [showAboutPane, setShowAboutPane] = useState(false); // About(Points)
   const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
-  const [showDiscussionPane, setShowDiscussionPane] = useState(false); // Discussion(Badges)
   const [userData, setUserData] = useState([]); //user list data
   const [token, setToken] = useState(); //auth token
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [userImg, setUserImg] = useState(null);
   let history = useHistory();
 
   useEffect(() => {
@@ -160,25 +167,27 @@ const Learn = () => {
   };
 
   const handlePointsRule = () => {
-    setShowAboutPane(true); // Toggle the visibility
+    setShowAboutPane(true);
   };
   const handlePointsBackBtn = () => {
-    setShowAboutPane(false); // Toggle the visibility
+    setShowAboutPane(false);
   };
   const handleLevelsRule = () => {
-    setShowReviewPane(true); // Toggle the visibility
+    setShowReviewPane(true);
   };
   const handleLevelsBackBtn = () => {
-    setShowReviewPane(false); // Toggle the visibility
-  };
-  const handleBadgesRule = () => {
-    setShowDiscussionPane(true); // Toggle the visibility
-  };
-  const handleBadgesBackBtn = () => {
-    setShowDiscussionPane(false); // Toggle the visibility
+    setShowReviewPane(false);
   };
 
-  const handleBadges = () => {};
+  const handleBadgesBackBtn = () => {
+    setSelectedItem(null);
+  };
+
+  const handleBadges = (name, img) => {
+    console.log(name, img);
+    setSelectedItem(name);
+    setUserImg(img);
+  };
 
   return (
     <>
@@ -378,89 +387,123 @@ const Learn = () => {
                 <Modal.Body>
                   <Tab.Container defaultActiveKey="About">
                     <div className="course-details-tab style-2 mb-2">
-                      <nav>
-                        <Nav
-                          as="div"
-                          className="nav nav-tabs tab-auto"
-                          id="nav-tab">
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-about-tab"
-                            eventKey="About"
-                            type="button">
-                            Points
-                          </Nav.Link>
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-reviews-tab"
-                            eventKey="Review"
-                            type="button">
-                            Levels
-                          </Nav.Link>
-                          <Nav.Link
-                            as="button"
-                            className="nav-link"
-                            id="nav-discussion-tab"
-                            eventKey="Discussion"
-                            type="button">
-                            Badges
-                          </Nav.Link>
-                        </Nav>
-                      </nav>
+                      <Nav
+                        as="div"
+                        className="nav nav-tabs tab-auto"
+                        id="nav-tab">
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-about-tab"
+                          eventKey="About"
+                          type="button">
+                          Points
+                        </Nav.Link>
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-reviews-tab"
+                          eventKey="Review"
+                          type="button">
+                          Levels
+                        </Nav.Link>
+                        <Nav.Link
+                          as="button"
+                          className="nav-link"
+                          id="nav-discussion-tab"
+                          eventKey="Discussion"
+                          type="button">
+                          Badges
+                        </Nav.Link>
+                      </Nav>
+
                       <Tab.Content className="tab-content" id="nav-tabContent">
                         <Tab.Pane id="nav-about" eventKey="About">
                           {showAboutPane === false ? (
                             <div>
-                              <Table responsive>
-                                <thead>
-                                  <tr></tr>
-                                </thead>
-                                <tbody>
-                                  {userData?.map((item, index) => {
-                                    const img = `${backendBaseUrl}/${item.file}`;
-                                    return (
-                                      <tr key={index}>
-                                        <td>
-                                          <center>
-                                            <SlBadge
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <Table responsive>
+                                  <tbody>
+                                    {userData
+                                      ?.sort((a, b) => b.points - a.points)
+                                      .map((item, index) => {
+                                        const img = `${backendBaseUrl}/${item.file}`;
+                                        let medalIcon = null;
+                                        if (index === 0) {
+                                          medalIcon = (
+                                            <FaMedal
                                               style={{
-                                                color: "red",
+                                                color: "gold",
                                                 fontSize: "28px",
                                                 fontWeight: "bold",
                                               }}
                                             />
-                                          </center>
-                                        </td>
-                                        <td
-                                          style={{
-                                            width: "20%",
-                                          }}>
-                                          {" "}
-                                          <center>
-                                            <img
-                                              src={img}
+                                          );
+                                        } else if (index === 1) {
+                                          medalIcon = (
+                                            <FaMedal
                                               style={{
-                                                width: "90px",
-                                                height: "60px",
-                                                borderRadius: " 0.625rem",
+                                                color: "silver",
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
                                               }}
-                                              alt=" img"
                                             />
-                                          </center>
-                                        </td>
-                                        <td>
-                                          <center>{item.full_name}</center>
-                                        </td>
-                                        <td>
-                                          <center> {item.points}</center>
-                                        </td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </Table>
+                                          );
+                                        } else if (index === 2) {
+                                          medalIcon = (
+                                            <FaMedal
+                                              style={{
+                                                color: "#cd7f32", // bronze color
+                                                fontSize: "28px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        }
+                                        return (
+                                          <tr key={index}>
+                                            <td>
+                                              <center>{medalIcon}</center>
+                                            </td>
+                                            <td
+                                              style={{
+                                                width: "20%",
+                                              }}>
+                                              {" "}
+                                              <center>
+                                                <img
+                                                  src={img}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: " 0.625rem",
+                                                  }}
+                                                  alt=" img"
+                                                />
+                                              </center>
+                                            </td>
+                                            <td>
+                                              <center>{item.full_name}</center>
+                                            </td>
+                                            <td>
+                                              <center> {item.points}</center>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                  </tbody>
+                                </Table>
+                              )}
                             </div>
                           ) : (
                             <div className="about-content">
@@ -510,54 +553,86 @@ const Learn = () => {
                         <Tab.Pane eventKey="Review">
                           {showReviewPane === false ? (
                             <div>
-                              <Table responsive>
-                                <thead>
-                                  <tr></tr>
-                                </thead>
-                                <tbody>
-                                  {userData?.map((item, index) => {
-                                    const img = `${backendBaseUrl}/${item.file}`;
-                                    return (
-                                      <tr key={index}>
-                                        <td>
-                                          <center>
-                                            <SlBadge
-                                              style={{
-                                                color: "red",
-                                                fontSize: "28px",
-                                                fontWeight: "bold",
-                                              }}
-                                            />
-                                          </center>
-                                        </td>
-                                        <td
-                                          style={{
-                                            width: "20%",
-                                          }}>
-                                          {" "}
-                                          <center>
-                                            <img
-                                              src={img}
-                                              style={{
-                                                width: "90px",
-                                                height: "60px",
-                                                borderRadius: " 0.625rem",
-                                              }}
-                                              alt="img"
-                                            />
-                                          </center>
-                                        </td>
-                                        <td>
-                                          <center>{item.full_name}</center>
-                                        </td>
-                                        <td>
-                                          <center>1</center>
-                                        </td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </Table>
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <Table responsive>
+                                  <tbody>
+                                    {userData?.map((item, index) => {
+                                      const img = `${backendBaseUrl}/${item.file}`;
+                                      let medalStyle = {
+                                        fontSize: "28px",
+                                        fontWeight: "bold",
+                                      };
+
+                                      switch (item.user_level) {
+                                        case 0:
+                                          medalStyle.color = "#8C94D7";
+                                          break;
+                                        case 1:
+                                          medalStyle.color = "#cd7f32"; //(bronze)
+                                          break;
+                                        case 2:
+                                          medalStyle.color = "silver";
+                                          break;
+                                        case 3:
+                                          medalStyle.color = "gold";
+                                          break;
+                                        default:
+                                          break;
+                                      }
+
+                                      let level = null;
+                                      if (item.user_level === 0) {
+                                        level = "Beginner";
+                                      } else if (item.user_level === 1) {
+                                        level = "Intermediate";
+                                      } else if (item.user_level === 2) {
+                                        level = "Advanced";
+                                      } else if (item.user_level === 3) {
+                                        level = "Proficient";
+                                      }
+
+                                      return (
+                                        <tr key={index}>
+                                          <td>
+                                            <center>
+                                              <SlBadge style={medalStyle} />
+                                            </center>
+                                          </td>
+                                          <td style={{ width: "20%" }}>
+                                            <center>
+                                              <img
+                                                src={img}
+                                                style={{
+                                                  width: "70px",
+                                                  height: "50px",
+                                                  borderRadius: "0.625rem",
+                                                }}
+                                                alt="img"
+                                              />
+                                            </center>
+                                          </td>
+                                          <td>
+                                            <center>{item.full_name}</center>
+                                          </td>
+                                          <td>
+                                            <center>{level}</center>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </Table>
+                              )}
                             </div>
                           ) : (
                             <div className="reviews-content">
@@ -589,64 +664,156 @@ const Learn = () => {
                           )}
                         </Tab.Pane>
                         <Tab.Pane id="nav-discussion" eventKey="Discussion">
-                          {/* <div className="about-content"> */}
-                          <Table responsive>
-                            <tbody>
-                              {userData?.map((item, index) => {
-                                const img = `${backendBaseUrl}/${item.file}`;
-                                return (
-                                  <tr key={index}>
+                          {selectedItem === null ? (
+                            <>
+                              {userData?.length === 0 ? (
+                                <div className="loader-container">
+                                  <RotatingLines
+                                    strokeColor="grey"
+                                    strokeWidth="5"
+                                    animationDuration="0.75"
+                                    width="140"
+                                    visible={true}
+                                  />
+                                </div>
+                              ) : (
+                                <>
+                                  <Table responsive>
+                                    <tbody>
+                                      {userData?.map((item, index) => {
+                                        const img = `${backendBaseUrl}/${item.file}`;
+
+                                        let medalIcon = null;
+                                        if (index === 0) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "gold",
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 1) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "silver",
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        } else if (index === 2) {
+                                          medalIcon = (
+                                            <BiSolidBadgeCheck
+                                              style={{
+                                                color: "#cd7f32", // bronze color
+                                                fontSize: "30px",
+                                                fontWeight: "bold",
+                                              }}
+                                            />
+                                          );
+                                        }
+
+                                        return (
+                                          <tr key={index}>
+                                            <td>
+                                              <center>{medalIcon}</center>
+                                            </td>
+                                            <td
+                                              style={{
+                                                width: "20%",
+                                              }}>
+                                              {" "}
+                                              <center>
+                                                <img
+                                                  src={img}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: " 0.625rem",
+                                                  }}
+                                                  alt="img"
+                                                />
+                                              </center>
+                                            </td>
+                                            <td>
+                                              <center>{item.full_name}</center>
+                                            </td>
+                                            <td>
+                                              <center> 3</center>
+                                            </td>
+                                            <td>
+                                              <center>
+                                                <FiPlay
+                                                  style={{
+                                                    fontSize: "22px",
+                                                    fontWeight: "bold",
+                                                  }}
+                                                  onClick={() =>
+                                                    handleBadges(
+                                                      item.full_name,
+                                                      item.file
+                                                    )
+                                                  }
+                                                />
+                                              </center>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </Table>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <div className="about-content">
+                              {" "}
+                              {/* const img = `${backendBaseUrl}/${img}`; */}
+                              <Table responsive>
+                                <tbody>
+                                  <tr>
                                     <td>
-                                      <center>
-                                        <SlBadge
-                                          style={{
-                                            color: "red",
-                                            fontSize: "28px",
-                                            fontWeight: "bold",
-                                          }}
-                                        />
-                                      </center>
-                                    </td>
-                                    <td
-                                      style={{
-                                        width: "20%",
-                                      }}>
-                                      {" "}
-                                      <center>
-                                        <img
-                                          src={img}
-                                          style={{
-                                            width: "90px",
-                                            height: "60px",
-                                            borderRadius: " 0.625rem",
-                                          }}
-                                          alt="img"
-                                        />
-                                      </center>
-                                    </td>
-                                    <td>
-                                      <center>{item.full_name}</center>
+                                      <strong>{selectedItem}</strong>
                                     </td>
                                     <td>
                                       <center> 3</center>
                                     </td>
-                                    <td>
-                                      <center>
-                                        <FiPlay
-                                          style={{
-                                            fontSize: "22px",
-                                            fontWeight: "bold",
-                                          }}
-                                          onClick={handleBadges}
-                                        />
-                                      </center>
-                                    </td>
                                   </tr>
-                                );
-                              })}
-                            </tbody>
-                          </Table>
-                          {/* </div> */}
+                                  <tr>
+                                    {" "}
+                                    <img
+                                      src={badge1}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={badge2}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={badge3}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                  </tr>
+                                </tbody>
+                              </Table>
+                              <Container className="d-flex justify-content-center align-items-center mt-3">
+                                <Button
+                                  className="d-flex justify-content-center align-items-center"
+                                  onClick={handleBadgesBackBtn}>
+                                  Back
+                                </Button>
+                              </Container>
+                            </div>
+                          )}
                         </Tab.Pane>
                       </Tab.Content>
                     </div>
@@ -661,3 +828,8 @@ const Learn = () => {
   );
 };
 export default Learn;
+
+// Beginner
+// Intermediate
+// Advanced
+// Proficient
