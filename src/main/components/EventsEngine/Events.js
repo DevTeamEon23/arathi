@@ -11,6 +11,8 @@ import {
   Button,
   Nav,
   Modal,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
@@ -23,6 +25,8 @@ const Events = () => {
   const [token, setToken] = useState(); //auth token
   const [eventData, setEventData] = useState([]);
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [activeTab, setActiveTab] = useState("events");
+  const history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -46,6 +50,17 @@ const Events = () => {
       toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleEdit = (id) => {
     console.log("inside event handle edit page", id);
@@ -86,35 +101,17 @@ const Events = () => {
       });
   };
 
-  let history = useHistory();
-
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/events">
-            Notification
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/pending-notification">
-            Pending Notification
-          </Link>
-        </Nav.Item>
-      </Nav>
       <Row>
         <Col lg={12}>
           <Card>
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey="events" title="Notification"></Tab>
+              <Tab
+                eventKey="pending-notification"
+                title="Pending Notification"></Tab>
+            </Tabs>
             <Card.Header>
               <Card.Title>Notifications</Card.Title>
               <div>

@@ -7,22 +7,13 @@ import {
   ButtonGroup,
   Button,
   Nav,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
 
 const AddGroups = () => {
   // const [id, setId] = useState("");
@@ -31,11 +22,23 @@ const AddGroups = () => {
   const [groupkey, setGroupkey] = useState("");
   const unique_id = uuid();
   const small_id = unique_id.slice(0, 8);
+  const [activeTab, setActiveTab] = useState("dashboard");
   let history = useHistory();
 
   useEffect(() => {
     setGroupkey(small_id);
   }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,28 +77,10 @@ const AddGroups = () => {
 
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/groups">
-            Groups
-          </Link>{" "}
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="groups" title="Groups"></Tab>
+      </Tabs>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">

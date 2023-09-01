@@ -1,23 +1,10 @@
-import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import * as Yup from "yup";
-
-import { Button, Nav } from "react-bootstrap";
+import { Button, Nav, Tab, Tabs } from "react-bootstrap";
 import DateRangePicker from "react-bootstrap-daterangepicker";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
 
 const parentcategory = [
   { value: "ParentCategory1", label: "Parent Category 1" },
@@ -29,7 +16,19 @@ const parentcategory = [
 const AddCategory = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const history = useHistory();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,28 +64,10 @@ const AddCategory = () => {
 
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/categories">
-            Categories
-          </Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-groups" title="Add Groups"></Tab>
+      </Tabs>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">

@@ -1,7 +1,17 @@
 import React, { Fragment, useState, useEffect } from "react";
 import Select from "react-select";
 import { Link, useHistory } from "react-router-dom";
-import { Row, Col, Card, Table, Nav, Button, Modal } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Nav,
+  Button,
+  Modal,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -17,6 +27,8 @@ const Groups = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [grpData, setGrpData] = useState([]);
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [activeTab, setActiveTab] = useState("dashboard");
+  let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -39,6 +51,17 @@ const Groups = () => {
       toast.error("Failed to fetch Groups !"); // Handle the error
     }
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleEdit = (id) => {
     console.log("inside course handle edit page", id);
@@ -79,31 +102,12 @@ const Groups = () => {
       });
   };
 
-  let history = useHistory();
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/add-groups">
-            Add Groups
-          </Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-groups" title="Add Groups"></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
