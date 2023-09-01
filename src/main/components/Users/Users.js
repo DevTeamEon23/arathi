@@ -3,8 +3,7 @@ import React, { Fragment } from "react";
 import { toast } from "react-toastify";
 import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 
 const Users = () => {
