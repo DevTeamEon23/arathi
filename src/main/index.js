@@ -52,9 +52,6 @@ import LearnerTimeline from "./components/Learn/LearnTimeline/LearnerTimeline";
 import Users from "./components/Users/Users";
 import AddUser from "./components/Users/AddUser";
 import EditUser from "./components/Users/EditUser";
-import UserTypes from "./components/Users/UserTypes";
-import AddUserType from "./components/Users/AddUserType";
-import EditUserType from "./components/Users/EditUserType";
 import ImportUser from "./components/Users/ImportUser";
 import ExportUser from "./components/Users/ExportUser";
 import UserFiles from "./components/Users/UserFiles";
@@ -62,7 +59,6 @@ import UserGroups from "./components/Users/UserGroups";
 import UserCourse from "./components/Users/UserCourse";
 import UserProg from "./components/Users/UserProg";
 import UserCertificate from "./components/Users/UserCertificate";
-import UserTimeline from "./components/Users/UserTimeline";
 import UserInfographics from "./components/Users/UserInfographics";
 import Badges from "./components/Users/Badges";
 
@@ -370,9 +366,6 @@ const Markup = () => {
     { url: "users-list", component: Users },
     { url: "add-user", component: AddUser },
     { url: "edit-user/:id", component: EditUser },
-    { url: "user-types", component: UserTypes },
-    { url: "add-user-type", component: AddUserType },
-    { url: "edit-user-type", component: EditUserType },
     { url: "import-user", component: ImportUser },
     { url: "export-user", component: ExportUser },
     { url: "user-files/:id", component: UserFiles },
@@ -380,7 +373,6 @@ const Markup = () => {
     { url: "user-course", component: UserCourse },
     { url: "user-progress", component: UserProg },
     { url: "user-certificates", component: UserCertificate },
-    { url: "user-timeline", component: UserTimeline },
     { url: "user-infographic", component: UserInfographics },
     { url: "badges-list", component: Badges },
 
