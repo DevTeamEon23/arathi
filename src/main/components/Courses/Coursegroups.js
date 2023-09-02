@@ -1,27 +1,13 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Nav,
-  Modal,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 
 const Coursegroups = (props) => {
   const courseID = props.match.params.id;
-  console.log({ courseID });
 
   const [allGrps, setAllGrps] = useState([]);
   const [totalGrpData, setTotalGrpData] = useState(); //user list data
@@ -41,9 +27,8 @@ const Coursegroups = (props) => {
   };
 
   useEffect(() => {
-    // When the component mounts, set the active tab based on the current route
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
 
@@ -67,10 +52,8 @@ const Coursegroups = (props) => {
         config
       )
       .then((response) => {
-        console.log(response.data.data);
         const grps = response.data.data.course_ids;
         setAllGrps(grps);
-        // const adminUsers = allUsers.filter((user) => user.role === "Admin");
         setTotalGrpData(response.data.data.course_ids.length);
       })
       .catch((error) => {
@@ -95,14 +78,13 @@ const Coursegroups = (props) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setBtnLoader(false);
-        toast.success("Course Enroll successfully!!!");
+        toast.success("Course Added to group successfully!!!");
         getAllGroups();
       })
       .catch((error) => {
         console.error(error);
-        toast.error("Failed !!! Unable to enroll course...");
+        toast.error("Failed !!! Unable to add course...");
         setBtnLoader(false);
       });
   };
@@ -127,7 +109,7 @@ const Coursegroups = (props) => {
         }
       )
       .then((response) => {
-        toast.success("Unenroll successfully!", {
+        toast.success("Course remove from group successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
         getAllGroups();
@@ -135,7 +117,7 @@ const Coursegroups = (props) => {
       .catch((error) => {
         // Handle the error
         console.error(error);
-        toast.error("Failed to Unenroll!", {
+        toast.error("Failed to remove!!!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       });
@@ -152,102 +134,119 @@ const Coursegroups = (props) => {
               <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
             </Tabs>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>GROUP</strong>
-                    </th>
-
-                    <th>
-                      <center>
-                        {" "}
-                        <strong>OPTION</strong>
-                      </center>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentData?.map((item, index) => {
-                    return (
+              {currentData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : (
+                <>
+                  <Table responsive>
+                    <thead>
                       <tr>
-                        <td>
-                          <strong>{item.groupname}</strong>
-                          {item.coursename === null ? (
-                            ""
-                          ) : (
-                            <span className="enrolled-label">Group Member</span>
-                          )}
-                        </td>
-                        <td>
+                        <th>
+                          <strong>GROUP</strong>
+                        </th>
+
+                        <th>
                           <center>
-                            {item.course_group_enrollment_id === null ? (
-                              <>
-                                {btnLoader ? (
-                                  <CircularProgress
-                                    style={{
-                                      width: "20px",
-                                      height: "20px",
-                                      color: "#fff",
-                                    }}
-                                  />
+                            {" "}
+                            <strong>OPTION</strong>
+                          </center>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData?.map((item, index) => {
+                        return (
+                          <tr>
+                            <td>
+                              <strong>{item.groupname}</strong>
+                              {item.coursename === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">
+                                  Group Member
+                                </span>
+                              )}
+                            </td>
+                            <td>
+                              <center>
+                                {item.course_group_enrollment_id === null ? (
+                                  <>
+                                    {btnLoader ? (
+                                      <CircularProgress
+                                        style={{
+                                          width: "20px",
+                                          height: "20px",
+                                          color: "#fff",
+                                        }}
+                                      />
+                                    ) : (
+                                      <div
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                        title="Add to group"
+                                        onClick={(e) =>
+                                          handleEnroll(e, item.group_id)
+                                        }>
+                                        <i class="fa-solid fa-plus"></i>
+                                      </div>
+                                    )}
+                                  </>
                                 ) : (
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Add to group"
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
                                     onClick={(e) =>
-                                      handleEnroll(e, item.group_id)
+                                      handleUnEnroll(
+                                        e,
+                                        item.course_group_enrollment_id
+                                      )
                                     }>
-                                    <i class="fa-solid fa-plus"></i>
+                                    <i class="fa-solid fa-minus"></i>
                                   </div>
                                 )}
-                              </>
-                            ) : (
-                              <div
-                                className="btn btn-danger shadow btn-xs sharp"
-                                title="Remove from group"
-                                onClick={(e) =>
-                                  handleUnEnroll(
-                                    e,
-                                    item.course_group_enrollment_id
-                                  )
-                                }>
-                                <i class="fa-solid fa-minus"></i>
-                              </div>
-                            )}
-                          </center>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <div className="pagination-down">
-                <div className="d-flex align-items-center  ">
-                  <h4 className=" ">
-                    Showing <span>1-10 </span>from <span>{totalGrpData} </span>
-                    data
-                  </h4>
-                  <div className="d-flex align-items-center ms-auto mt-2">
-                    <Button
-                      className="mr-2"
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      disabled={currentPage === 1}>
-                      Previous
-                    </Button>
-                    &nbsp;&nbsp;
-                    <span className=" fs-18 fw-bold ">
-                      Page {currentPage} &nbsp;&nbsp;
-                    </span>
-                    <Button
-                      className="ml-2"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= allGrps.length}>
-                      Next
-                    </Button>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                  <div className="pagination-down">
+                    <div className="d-flex align-items-center  ">
+                      <h4 className=" ">
+                        Showing <span>1-10 </span>from{" "}
+                        <span>{totalGrpData} </span>
+                        data
+                      </h4>
+                      <div className="d-flex align-items-center ms-auto mt-2">
+                        <Button
+                          className="mr-2"
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          disabled={currentPage === 1}>
+                          Previous
+                        </Button>
+                        &nbsp;&nbsp;
+                        <span className=" fs-18 fw-bold ">
+                          Page {currentPage} &nbsp;&nbsp;
+                        </span>
+                        <Button
+                          className="ml-2"
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          disabled={endIndex >= allGrps.length}>
+                          Next
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
