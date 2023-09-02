@@ -235,14 +235,14 @@ import AdmGroupReports from "./components/AReports/AdmGroupReports";
 import AdmInfographics from "./components/AReports/AdmInfographics";
 
 /////Accounts & Settings----
-import BasicSettings from "./components/AccountSettings/BasicSettings";
-import Certificates from "./components/AccountSettings/Certificates";
-import Domain from "./components/AccountSettings/Domain";
-import Ecommerce from "./components/AccountSettings/Ecommerce";
-import Gamification from "./components/AccountSettings/Gamifications";
-import Subscription from "./components/AccountSettings/Subscription";
-import Thoms from "./components/AccountSettings/Thoms";
-import UserSettings from "./components/AccountSettings/UserSettings";
+// import BasicSettings from "./components/AccountSettings/BasicSettings";
+// import Certificates from "./components/AccountSettings/Certificates";
+// import Domain from "./components/AccountSettings/Domain";
+// import Ecommerce from "./components/AccountSettings/Ecommerce";
+// import Gamification from "./components/AccountSettings/Gamifications";
+// import Subscription from "./components/AccountSettings/Subscription";
+// import Thoms from "./components/AccountSettings/Thoms";
+// import UserSettings from "./components/AccountSettings/UserSettings";
 
 /////Admin Accounts & Settings----
 import AdmBasicSettings from "./components/AdmAccountSettings/AdmBasicSettings";
@@ -554,14 +554,14 @@ const Markup = () => {
     { url: "adm_infographics", component: AdmInfographics },
 
     /////Accounts & Settings----
-    { url: "basic-settings", component: BasicSettings },
-    { url: "certificates", component: Certificates },
-    { url: "domains", component: Domain },
-    { url: "ecommerce", component: Ecommerce },
-    { url: "gamification", component: Gamification },
-    { url: "subscriptions", component: Subscription },
-    { url: "thoms-page", component: Thoms },
-    { url: "user-settings", component: UserSettings },
+    // { url: "basic-settings", component: BasicSettings },
+    // { url: "certificates", component: Certificates },
+    // { url: "domains", component: Domain },
+    // { url: "ecommerce", component: Ecommerce },
+    // { url: "gamification", component: Gamification },
+    // { url: "subscriptions", component: Subscription },
+    // { url: "thoms-page", component: Thoms },
+    // { url: "user-settings", component: UserSettings },
 
     /////Admin Accounts & Settings----
     { url: "adm_basic-settings", component: AdmBasicSettings },
