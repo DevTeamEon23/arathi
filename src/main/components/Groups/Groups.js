@@ -25,15 +25,23 @@ const Groups = () => {
   const [grpId, setGrpId] = useState(); //grp id save for delete
   const [token, setToken] = useState(); //auth token
   const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(null);
   const [grpData, setGrpData] = useState([]);
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [showMassActionModal, setShowMassActionModal] = useState(false); //mass action modal
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectCourseData, setSelectCourseData] = useState(null); //course
+  const [getAllCourseData, setGetAllCourseData] = useState({}); //save all course data
+  const [courseId, setCourseId] = useState(); //course id save for mass action
   let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllGroups();
+    if (accessToken !== undefined) {
+      getAllCourses();
+    }
   }, []);
 
   const getAllGroups = async () => {
@@ -45,10 +53,34 @@ const Groups = () => {
           "Auth-Token": jwtToken,
         },
       });
+      console.log(response.data.data);
       setGrpData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Groups !"); // Handle the error
+    }
+  };
+
+  // All Course List
+  const getAllCourses = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "https://v1.eonlearning.tech/lms-service/courses";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+      console.log("getAllCourses", response.data.data, response.data.data.id);
+      const expectedOutput = response?.data?.data.map(({ coursename }) => ({
+        value: coursename,
+        label: coursename,
+      }));
+      setGetAllCourseData(expectedOutput);
+      setCourseId(response.data.data.id);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
 
@@ -102,6 +134,23 @@ const Groups = () => {
       });
   };
 
+  const handleSelectChange = (selected) => {
+    setSelectedOption(selected);
+    setSelectedValue(selected.value);
+    // Check if the selected option is "Add a course to all groups" and show the modal.
+    if (selected.value === "all") {
+      setShowMassActionModal(true);
+    }
+    if (selected.value === "removeall") {
+      setShowMassActionModal(true);
+    }
+  };
+
+  const handleMassAction = (grpId) => {
+    setShowMassActionModal(true);
+    setGrpId(grpId);
+  };
+
   return (
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
@@ -121,7 +170,7 @@ const Groups = () => {
               </Card.Title>
               <Select
                 defaultValue={selectedOption}
-                onChange={setSelectedOption}
+                onChange={handleSelectChange}
                 options={options}
                 placeholder="Mass Action"
                 className="col-lg-5"></Select>
@@ -194,6 +243,7 @@ const Groups = () => {
       <div>
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
+      {/* Delete Group Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Delete Group</Modal.Title>
@@ -207,6 +257,42 @@ const Groups = () => {
           </Button>
           <Button variant="btn btn-primary" onClick={handleDelete}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Mass Action Modal */}
+      <Modal
+        show={showMassActionModal}
+        onHide={() => setShowMassActionModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {selectedValue === "all" ? (
+              <>Add a course to all groups</>
+            ) : (
+              <>Remove a course to all groups</>
+            )}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Select
+            value={selectCourseData}
+            id="categories"
+            name="categories"
+            options={getAllCourseData}
+            onChange={(selectCategoriesData) =>
+              setSelectCourseData(selectCategoriesData)
+            }
+            placeholder="Select a category"
+            required></Select>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="btn btn-primary" onClick={handleMassAction}>
+            Add
+          </Button>
+          <Button
+            variant="danger light"
+            onClick={() => setShowMassActionModal(false)}>
+            Cancel
           </Button>
         </Modal.Footer>
       </Modal>
