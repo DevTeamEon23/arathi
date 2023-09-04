@@ -124,6 +124,7 @@ const AddCourses = () => {
     setBtnSubmitLoader(true);
     if (file === null || selectedVideo === null) {
       alert("Please add valid Photo or Video");
+      setBtnSubmitLoader(false);
     } else {
       const formData = new FormData();
       formData.append("coursename", coursename);

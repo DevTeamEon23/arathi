@@ -83,6 +83,7 @@ const EditcourseForm = (props) => {
     setBtnSubmitLoader(true);
     if (file === null || selectedVideo === null) {
       alert("Please add Photo or Video");
+      setBtnSubmitLoader(false);
     } else {
       const formData = new FormData();
       formData.append("id", id);
