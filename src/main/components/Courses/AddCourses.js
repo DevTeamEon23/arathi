@@ -15,6 +15,7 @@ import {
   Tab,
   Tabs,
 } from "react-bootstrap";
+import { CircularProgress } from "@material-ui/core";
 
 const certificate = [
   { value: "certificate1", label: "Certificate 1" },
@@ -38,6 +39,8 @@ const AddCourses = () => {
   const [largeModal, setLargeModal] = useState(false);
   const [file, setFile] = useState(null); //image
   const fileRef = useRef(null); //for image
+  const [errorImg, setErrorImg] = useState(null);
+  const [errorVideo, setErrorVideo] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
     useState(null); //Certificate
   const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
@@ -60,6 +63,7 @@ const AddCourses = () => {
   let history = useHistory();
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
   const [activeTab, setActiveTab] = useState("/add-courses");
+  const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -104,64 +108,66 @@ const AddCourses = () => {
   //video file handle
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setSelectedVideo(file);
-    // const maxFileSize = 15 * 1024 * 1024 // 15MB in bytes
-    // if (file.size > maxFileSize) {
-    //   alert('File size exceeds the limit')
-    //   return
-    // }
-    // if (file && file.type.startsWith("video/")) {
-    //   setSelectedVideo(file);
-    // } else {
-    //   setSelectedVideo(null);
-    //   alert("Please select a valid video file.");
-    // }
+    const maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
+    if (file.size > maxFileSize) {
+      setErrorVideo("File size exceeds the 100MB limit");
+      setSelectedVideo(null);
+    } else {
+      setErrorVideo("");
+      setSelectedVideo(file);
+    }
   };
 
   // Add course API
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("coursename", coursename);
-    formData.append("file", file);
-    formData.append("description", description);
-    formData.append("coursecode", coursecode);
-    formData.append("price", price);
-    formData.append(
-      "courselink",
-      !courselink === undefined ? courselink : null
-    );
-    formData.append("coursevideo", selectedVideo);
-    formData.append("capacity", capacity);
-    formData.append("startdate", startdate);
-    formData.append("enddate", enddate);
-    formData.append("timelimit", timelimit);
-    formData.append("certificate", selectedOptionCertificate.value);
-    formData.append("level", selectedOptionLevel.value);
-    formData.append("category", selectCategoriesData.value);
-    formData.append("isActive", isActive);
-    formData.append("isHide", isHide);
-    formData.append("generate_token", true);
+    setBtnSubmitLoader(true);
+    if (file === null || selectedVideo === null) {
+      alert("Please add valid Photo or Video");
+    } else {
+      const formData = new FormData();
+      formData.append("coursename", coursename);
+      formData.append("file", file);
+      formData.append("description", description);
+      formData.append("coursecode", coursecode);
+      formData.append("price", price);
+      formData.append(
+        "courselink",
+        !courselink === undefined ? courselink : null
+      );
+      formData.append("coursevideo", selectedVideo);
+      formData.append("capacity", capacity);
+      formData.append("startdate", startdate);
+      formData.append("enddate", enddate);
+      formData.append("timelimit", timelimit);
+      formData.append("certificate", selectedOptionCertificate.value);
+      formData.append("level", selectedOptionLevel.value);
+      formData.append("category", selectCategoriesData.value);
+      formData.append("isActive", isActive);
+      formData.append("isHide", isHide);
+      formData.append("generate_token", true);
 
-    // const url = "https://v1.eonlearning.tech/lms-service/addcourses";
-    const url = "http://127.0.0.1:8000/lms-service/addcourses";
-    const authToken = window.localStorage.getItem("jwt_access_token");
-    await axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("Course added successfully!!!");
-        clearAllState();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to add course...");
-      });
+      const url = "https://v1.eonlearning.tech/lms-service/addcourses";
+      const authToken = window.localStorage.getItem("jwt_access_token");
+      await axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setBtnSubmitLoader(false);
+          toast.success("Course added successfully!!!");
+          clearAllState();
+        })
+        .catch((error) => {
+          console.error(error);
+          setBtnSubmitLoader(false);
+          toast.error("Failed !!! Unable to add course...");
+        });
+    }
   };
 
   const clearAllState = () => {
@@ -199,17 +205,21 @@ const AddCourses = () => {
   //image file handle
   const handleChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile && isValidFileType(selectedFile)) {
+    if (selectedFile && isValidFile(selectedFile)) {
       setFile(selectedFile);
+      setErrorImg("");
     } else {
       setFile(null);
-      toast.error("Please select a valid image file (jpeg, jpg, png).");
+      setErrorImg(
+        "Please select a valid image file (jpeg, jpg, png) that is no larger than 3MB."
+      );
     }
   };
 
-  const isValidFileType = (file) => {
+  const isValidFile = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    return allowedTypes.includes(file.type);
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
   // youtube link handle
@@ -478,6 +488,11 @@ const AddCourses = () => {
                               required
                             />
                             <br />
+                            {errorVideo && (
+                              <div className="error-message text-danger fs-14">
+                                {errorVideo}
+                              </div>
+                            )}
                             <br />
                             {selectedVideo && (
                               <video controls className="video-player">
@@ -660,6 +675,12 @@ const AddCourses = () => {
                               onChange={handleChange}
                               required
                             />
+                            <br />
+                            {errorImg && (
+                              <div className="error-message text-danger fs-14">
+                                {errorImg}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -675,7 +696,19 @@ const AddCourses = () => {
                         type="submit"
                         className="btn me-2 btn-primary"
                         value="submit">
-                        Add Course
+                        {btnSubmitLoader ? (
+                          <div className="w-25">
+                            <CircularProgress
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                color: "#fff",
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          "Add Course"
+                        )}
                       </Button>{" "}
                       or &nbsp;&nbsp;
                       <Link to="/courses-info">

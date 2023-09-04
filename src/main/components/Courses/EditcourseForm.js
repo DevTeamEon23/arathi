@@ -18,6 +18,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 import Url from "../../../../src/auth/authService/Url";
+import { CircularProgress } from "@material-ui/core";
 
 const certificate = [
   { value: "certificate1", label: "Certificate 1" },
@@ -64,6 +65,7 @@ const EditcourseForm = (props) => {
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const backendBaseUrl = "https://v1.eonlearning.tech";
   const [activeTab, setActiveTab] = useState("edit-courses/:id");
+  const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -77,9 +79,9 @@ const EditcourseForm = (props) => {
 
   // edit form data submit
   const handleEditFormSubmit = (event) => {
-    console.log(file, selectedVideo);
     event.preventDefault();
-    if (file === null && selectedVideo === null) {
+    setBtnSubmitLoader(true);
+    if (file === null || selectedVideo === null) {
       alert("Please add Photo or Video");
     } else {
       const formData = new FormData();
@@ -116,11 +118,13 @@ const EditcourseForm = (props) => {
         })
         .then((response) => {
           console.log(response.data);
+          setBtnSubmitLoader(false);
           toast.success("Course updated successfully!!!");
           history.push(`/courses-info`);
         })
         .catch((error) => {
           console.error(error);
+          setBtnSubmitLoader(false);
           toast.error("Failed !!! Unable to update course...");
         });
     }
@@ -668,9 +672,21 @@ const EditcourseForm = (props) => {
                         <div className="col-lg-5 ms-auto">
                           <Button
                             type="submit"
-                            className="btn me-2 btn-primary"
+                            className="btn me-2 btn-primary "
                             value="submit">
-                            update Course
+                            {btnSubmitLoader ? (
+                              <div className="w-25">
+                                <CircularProgress
+                                  style={{
+                                    width: "20px",
+                                    height: "20px",
+                                    color: "#fff",
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              " update Course"
+                            )}
                           </Button>{" "}
                           or &nbsp;&nbsp;
                           <Link to="/courses-info">
