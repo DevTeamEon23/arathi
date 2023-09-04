@@ -9,20 +9,11 @@ import {
   ButtonGroup,
   Nav,
   Button,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import { RotatingLines } from "react-loader-spinner";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
 
 const EditGroups = (props) => {
   const grpId = props.match.params.id;
@@ -33,6 +24,7 @@ const EditGroups = (props) => {
   const [groupname, setGroupname] = useState("");
   const [groupdesc, setGroupdesc] = useState("");
   const [groupkey, setGroupkey] = useState("");
+  const [activeTab, setActiveTab] = useState("edit-groups/:id");
   const history = useHistory();
 
   useEffect(() => {
@@ -44,6 +36,18 @@ const EditGroups = (props) => {
       getGrpById(grpId, token);
     }
   }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    // When the component mounts, set the active tab based on the current route
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1); // Remove the leading slash
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   // Group details by ID
   const getGrpById = async (id, authToken) => {
@@ -106,7 +110,7 @@ const EditGroups = (props) => {
 
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -141,10 +145,16 @@ const EditGroups = (props) => {
             Files
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-groups/${grpId}`} title="Info"></Tab>
+              <Tab eventKey={`groups-users/${grpId}`} title="Users"></Tab>
+              <Tab eventKey={`group-courses/${grpId}`} title="Courses"></Tab>
+              <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
+            </Tabs>
             <div className="card-header">
               <h4 className="card-title">Edit Groups</h4>
             </div>

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import {
   Row,
@@ -10,30 +10,14 @@ import {
   ProgressBar,
   Button,
   Nav,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 
 const PendingNotification = () => {
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
-  };
+  let history = useHistory();
+  const [activeTab, setActiveTab] = useState("pending-notification");
+
   const svg1 = (
     <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
       <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -44,34 +28,29 @@ const PendingNotification = () => {
       </g>
     </svg>
   );
-  let history = useHistory();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/events">
-            Notification
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/pending-notification">
-            Pending Notification
-          </Link>
-        </Nav.Item>
-      </Nav>
       <Row>
         <Col lg={12}>
           <Card>
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey="events" title="Notification"></Tab>
+              <Tab
+                eventKey="pending-notification"
+                title="Pending Notification"></Tab>
+            </Tabs>
             <Card.Header>
               <Card.Title>Pending Notifications</Card.Title>
             </Card.Header>

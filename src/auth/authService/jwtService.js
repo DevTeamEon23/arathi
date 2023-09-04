@@ -251,12 +251,14 @@ signInWithEmailAndPassword = (data) => {
           headers: { ["auth-token"]: this.getAccessToken() },
         })
         .then((response) => {
-          console.log(response, response.data.data.user);
-          if (response.data.data.user) {
-            this.setSession(response.data.token);
+          if (response.data.status === "success") {
+            const token = this.getAccessToken();
+            this.setSession(token);
             resolve(response.data.data.user);
+            // this.emit('onLogin', response.data.data);
           } else {
             this.logout();
+
             reject(new Error("Failed to login with token."));
           }
         })

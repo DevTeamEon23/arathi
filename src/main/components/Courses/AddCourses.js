@@ -104,12 +104,18 @@ const AddCourses = () => {
   //video file handle
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith("video/")) {
-      setSelectedVideo(file);
-    } else {
-      setSelectedVideo(null);
-      alert("Please select a valid video file.");
-    }
+    setSelectedVideo(file);
+    // const maxFileSize = 15 * 1024 * 1024 // 15MB in bytes
+    // if (file.size > maxFileSize) {
+    //   alert('File size exceeds the limit')
+    //   return
+    // }
+    // if (file && file.type.startsWith("video/")) {
+    //   setSelectedVideo(file);
+    // } else {
+    //   setSelectedVideo(null);
+    //   alert("Please select a valid video file.");
+    // }
   };
 
   // Add course API
@@ -137,7 +143,8 @@ const AddCourses = () => {
     formData.append("isHide", isHide);
     formData.append("generate_token", true);
 
-    const url = "https://v1.eonlearning.tech/lms-service/addcourses";
+    // const url = "https://v1.eonlearning.tech/lms-service/addcourses";
+    const url = "http://127.0.0.1:8000/lms-service/addcourses";
     const authToken = window.localStorage.getItem("jwt_access_token");
     await axios
       .post(url, formData, {

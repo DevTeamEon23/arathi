@@ -52,9 +52,6 @@ import LearnerTimeline from "./components/Learn/LearnTimeline/LearnerTimeline";
 import Users from "./components/Users/Users";
 import AddUser from "./components/Users/AddUser";
 import EditUser from "./components/Users/EditUser";
-import UserTypes from "./components/Users/UserTypes";
-import AddUserType from "./components/Users/AddUserType";
-import EditUserType from "./components/Users/EditUserType";
 import ImportUser from "./components/Users/ImportUser";
 import ExportUser from "./components/Users/ExportUser";
 import UserFiles from "./components/Users/UserFiles";
@@ -62,7 +59,6 @@ import UserGroups from "./components/Users/UserGroups";
 import UserCourse from "./components/Users/UserCourse";
 import UserProg from "./components/Users/UserProg";
 import UserCertificate from "./components/Users/UserCertificate";
-import UserTimeline from "./components/Users/UserTimeline";
 import UserInfographics from "./components/Users/UserInfographics";
 import Badges from "./components/Users/Badges";
 
@@ -239,14 +235,14 @@ import AdmGroupReports from "./components/AReports/AdmGroupReports";
 import AdmInfographics from "./components/AReports/AdmInfographics";
 
 /////Accounts & Settings----
-import BasicSettings from "./components/AccountSettings/BasicSettings";
-import Certificates from "./components/AccountSettings/Certificates";
-import Domain from "./components/AccountSettings/Domain";
-import Ecommerce from "./components/AccountSettings/Ecommerce";
-import Gamification from "./components/AccountSettings/Gamifications";
-import Subscription from "./components/AccountSettings/Subscription";
-import Thoms from "./components/AccountSettings/Thoms";
-import UserSettings from "./components/AccountSettings/UserSettings";
+// import BasicSettings from "./components/AccountSettings/BasicSettings";
+// import Certificates from "./components/AccountSettings/Certificates";
+// import Domain from "./components/AccountSettings/Domain";
+// import Ecommerce from "./components/AccountSettings/Ecommerce";
+// import Gamification from "./components/AccountSettings/Gamifications";
+// import Subscription from "./components/AccountSettings/Subscription";
+// import Thoms from "./components/AccountSettings/Thoms";
+// import UserSettings from "./components/AccountSettings/UserSettings";
 
 /////Admin Accounts & Settings----
 import AdmBasicSettings from "./components/AdmAccountSettings/AdmBasicSettings";
@@ -370,9 +366,6 @@ const Markup = () => {
     { url: "users-list", component: Users },
     { url: "add-user", component: AddUser },
     { url: "edit-user/:id", component: EditUser },
-    { url: "user-types", component: UserTypes },
-    { url: "add-user-type", component: AddUserType },
-    { url: "edit-user-type", component: EditUserType },
     { url: "import-user", component: ImportUser },
     { url: "export-user", component: ExportUser },
     { url: "user-files/:id", component: UserFiles },
@@ -380,7 +373,6 @@ const Markup = () => {
     { url: "user-course", component: UserCourse },
     { url: "user-progress", component: UserProg },
     { url: "user-certificates", component: UserCertificate },
-    { url: "user-timeline", component: UserTimeline },
     { url: "user-infographic", component: UserInfographics },
     { url: "badges-list", component: Badges },
 
@@ -487,9 +479,9 @@ const Markup = () => {
     { url: "groups", component: Groups },
     { url: "add-groups", component: AddGroups },
     { url: "edit-groups/:id", component: EditGroups },
-    { url: "groups-users", component: GroupsUsers },
-    { url: "group-courses", component: GroupCourses },
-    { url: "group-files", component: GroupFiles },
+    { url: "groups-users/:id", component: GroupsUsers },
+    { url: "group-courses/:id", component: GroupCourses },
+    { url: "group-files/:id", component: GroupFiles },
 
     // Admin Groups -----
     { url: "adm_groups", component: AdmGroups },
@@ -562,14 +554,14 @@ const Markup = () => {
     { url: "adm_infographics", component: AdmInfographics },
 
     /////Accounts & Settings----
-    { url: "basic-settings", component: BasicSettings },
-    { url: "certificates", component: Certificates },
-    { url: "domains", component: Domain },
-    { url: "ecommerce", component: Ecommerce },
-    { url: "gamification", component: Gamification },
-    { url: "subscriptions", component: Subscription },
-    { url: "thoms-page", component: Thoms },
-    { url: "user-settings", component: UserSettings },
+    // { url: "basic-settings", component: BasicSettings },
+    // { url: "certificates", component: Certificates },
+    // { url: "domains", component: Domain },
+    // { url: "ecommerce", component: Ecommerce },
+    // { url: "gamification", component: Gamification },
+    // { url: "subscriptions", component: Subscription },
+    // { url: "thoms-page", component: Thoms },
+    // { url: "user-settings", component: UserSettings },
 
     /////Admin Accounts & Settings----
     { url: "adm_basic-settings", component: AdmBasicSettings },

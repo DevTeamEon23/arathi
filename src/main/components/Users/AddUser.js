@@ -1,9 +1,9 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Nav, Button } from "react-bootstrap";
+import { Nav, Button, Tab, Tabs } from "react-bootstrap";
 
 //select dropdown
 const categorytype = [
@@ -45,14 +45,26 @@ const AddUser = () => {
   const [emailError, setEmailError] = useState(""); //show wrong email error
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const history = useHistory();
 
   useEffect(() => {
     console.log(file, "file");
   });
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleActiveChange = (e) => {
     setIsActive(e.target.checked);
@@ -194,29 +206,10 @@ const AddUser = () => {
 
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/users-list">
-            Users
-          </Link>
-        </Nav.Item>
-      </Nav>
-
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="users-list" title="Users"></Tab>
+      </Tabs>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">

@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import Select from "react-select";
 import {
@@ -8,6 +8,8 @@ import {
   ButtonGroup,
   Button,
   Nav,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -97,6 +99,19 @@ const AddNotification = () => {
   const [isActive, setIsActive] = useState(false);
   const [selectEvent, setSelectEvent] = useState(null); //set event list
   const [selectRecipient, setSelectRecipient] = useState(null); //recipient
+  const [activeTab, setActiveTab] = useState("dashboard");
+  let history = useHistory();
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -140,7 +155,7 @@ const AddNotification = () => {
 
   return (
     <Fragment>
-      <Nav>
+      {/* <Nav>
         <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
           <Link
             as="button"
@@ -161,7 +176,11 @@ const AddNotification = () => {
             Events
           </Link>
         </Nav.Item>
-      </Nav>
+      </Nav> */}
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="events" title="Events"></Tab>
+      </Tabs>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -192,7 +211,7 @@ const AddNotification = () => {
                       </div> */}
                       <div className="form-group mb-3 row">
                         <label
-                          className="col-lg-4 col-form-label"
+                          className="col-lg-3 col-form-label"
                           htmlFor="ename">
                           Name
                           <span className="text-danger">*</span>
@@ -212,7 +231,7 @@ const AddNotification = () => {
                       </div>
                       <div className="form-group mb-3 row">
                         <label
-                          className="col-lg-4 col-form-label"
+                          className="col-lg-3 col-form-label"
                           htmlFor="eventtype">
                           Event
                           <span className="text-danger">*</span>
@@ -231,7 +250,7 @@ const AddNotification = () => {
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label className="col-lg-4 col-form-label">
+                        <label className="col-lg-3 col-form-label">
                           Recipient
                           <span className="text-danger">*</span>
                         </label>
@@ -247,7 +266,7 @@ const AddNotification = () => {
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label className="col-lg-4 col-form-label">
+                        <label className="col-lg-3 col-form-label">
                           Description <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -260,10 +279,10 @@ const AddNotification = () => {
                             style={{ resize: "none" }}></textarea>
                         </div>
                       </div>
-                      <div className="col-lg-04"></div>
+
                       <br />
                       <div className="form-group mb-3 row">
-                        <div className="col-lg-8 ms-auto">
+                        <div className="col-lg-9 ms-auto">
                           <label
                             className="form-check css-control-primary css-checkbox"
                             htmlFor="isActive">
@@ -276,14 +295,14 @@ const AddNotification = () => {
                               onChange={(e) => setIsActive(e.target.checked)}
                               required
                             />
-                            Active
+                            &nbsp; Active
                           </label>
                         </div>
                       </div>
                       <br />
                     </div>
                     <div className="form-group mb-3 row">
-                      <div className="col-lg-8 ms-auto">
+                      <div className="col-lg-9 ms-auto">
                         <Button
                           type="submit"
                           className="btn me-2 btn-primary"

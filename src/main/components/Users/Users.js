@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import React, { Fragment } from "react";
 import { toast } from "react-toastify";
-import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Nav,
+  Modal,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 
 const Users = () => {
@@ -17,6 +26,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const [totalUserData, setTotalUserData] = useState(); //user list data
   const itemsPerPage = 20; // Number of items to display per page
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -44,6 +54,16 @@ const Users = () => {
       });
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
   const handleEdit = (id) => {
     history.push(`/edit-user/${id}`);
   };
@@ -90,33 +110,10 @@ const Users = () => {
   return (
     <>
       <Fragment>
-        <Nav>
-          <Nav.Item
-            as="div"
-            className="nav nav-tabs"
-            id="nav-tab"
-            role="tablist">
-            <Link
-              as="button"
-              className="nav-link  nt-unseen"
-              id="nav-following-tab"
-              eventkey="Follow"
-              type="button"
-              to="/dashboard">
-              Dashboard
-            </Link>
-            <Link
-              as="button"
-              className="nav-link  nt-unseen"
-              id="nav-following-tab"
-              eventkey="Follow"
-              type="button"
-              to="/add-user">
-              Add Users
-            </Link>
-          </Nav.Item>
-        </Nav>
-
+        <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+          <Tab eventKey="dashboard" title="Dashboard"></Tab>
+          <Tab eventKey="add-user" title="Add Users"></Tab>
+        </Tabs>
         <Row>
           <Col lg={12}>
             <Card>

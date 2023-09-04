@@ -1,7 +1,17 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import { Row, Col, Card, Table, Nav, Button, Modal } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Table,
+  Nav,
+  Button,
+  Modal,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 import { Link } from "react-router-dom";
@@ -11,6 +21,7 @@ const Categories = () => {
   const [token, setToken] = useState(); //auth token
   const [categoryId, setCategoryId] = useState(); //cat id save for delete
   const [showModal, setShowModal] = useState(false); //delete button modal
+  const [activeTab, setActiveTab] = useState("dashboard");
   const history = useHistory();
 
   useEffect(() => {
@@ -19,6 +30,17 @@ const Categories = () => {
     getAllCategories();
     console.log(getAllCategoriesData);
   }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   // All Categories List
   const getAllCategories = async () => {
@@ -87,28 +109,10 @@ const Categories = () => {
 
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/add-category">
-            Add Category
-          </Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-category" title="Add Category"></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
