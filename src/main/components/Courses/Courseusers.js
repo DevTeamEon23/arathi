@@ -42,7 +42,10 @@ const Courseusers = (props) => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/lms-service/fetch_enrollusers_course", config)
+      .get(
+        "http://127.0.0.1:8000/course_tab1/fetch_enroll_users_of_course",
+        config
+      )
       .then((response) => {
         console.log(response.data.data);
         const allUsers = response.data.data.user_ids;
@@ -62,7 +65,7 @@ const Courseusers = (props) => {
     formData.append("user_id", user_id);
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/lms-service/enroll_course";
+    const url = "http://127.0.0.1:8000/course_tab1/enroll_users_to_course";
     const authToken = token;
     axios
       .post(url, formData, {
@@ -106,7 +109,7 @@ const Courseusers = (props) => {
       id: id,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/unenroll_user_course`, {
+      .delete(`http://127.0.0.1:8000/course_tab1/remove_users_from_course`, {
         ...config,
         data: requestBody,
       })
@@ -181,7 +184,7 @@ const Courseusers = (props) => {
                     <tbody>
                       {currentData?.map((item, index) => {
                         return (
-                          <tr>
+                          <tr key={index}>
                             <td>
                               {item.full_name}
                               {item.coursename === null ? (

@@ -269,7 +269,7 @@ const Groups = () => {
             {selectedValue === "all" ? (
               <>Add a course to all groups</>
             ) : (
-              <>Remove a course to all groups</>
+              <>Remove a course from all groups</>
             )}
           </Modal.Title>
         </Modal.Header>
