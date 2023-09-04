@@ -47,28 +47,25 @@ const Coursegroups = (props) => {
       },
     };
     axios
-      .get(
-        "http://127.0.0.1:8000/lms-service/fetch_enrollcourses_group",
-        config
-      )
+      .get("http://127.0.0.1:8000/course_tab2/fetch_groups_of_course", config)
       .then((response) => {
-        const grps = response.data.data.course_ids;
+        const grps = response.data.data.groups_ids;
         setAllGrps(grps);
-        setTotalGrpData(response.data.data.course_ids.length);
+        setTotalGrpData(response.data.data.groups_ids.length);
       })
       .catch((error) => {
-        toast.error("Failed to fetch users!");
+        toast.error("Failed to fetch groups!!!");
       });
   };
 
-  const handleEnroll = (e, group_id) => {
+  const handleAddGrp = (e, group_id) => {
     e.preventDefault();
     setBtnLoader(true);
     const formData = new FormData();
     formData.append("group_id", group_id);
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/lms-service/enroll_course_group";
+    const url = "http://127.0.0.1:8000/course_tab2/enroll_group_to_course";
     const authToken = token;
     axios
       .post(url, formData, {
@@ -89,7 +86,7 @@ const Coursegroups = (props) => {
       });
   };
 
-  const handleUnEnroll = (e, id) => {
+  const handleRemoveGrp = (e, id) => {
     e.preventDefault();
     const config = {
       headers: {
@@ -101,7 +98,7 @@ const Coursegroups = (props) => {
     };
     axios
       .delete(
-        `http://127.0.0.1:8000/lms-service/unenroll_course_group
+        `http://127.0.0.1:8000/course_tab2/remove_groups_from_course
       `,
         {
           ...config,
@@ -192,7 +189,7 @@ const Coursegroups = (props) => {
                                         className="btn btn-primary shadow btn-xs sharp me-1"
                                         title="Add to group"
                                         onClick={(e) =>
-                                          handleEnroll(e, item.group_id)
+                                          handleAddGrp(e, item.group_id)
                                         }>
                                         <i class="fa-solid fa-plus"></i>
                                       </div>
@@ -203,7 +200,7 @@ const Coursegroups = (props) => {
                                     className="btn btn-danger shadow btn-xs sharp"
                                     title="Remove from group"
                                     onClick={(e) =>
-                                      handleUnEnroll(
+                                      handleRemoveGrp(
                                         e,
                                         item.course_group_enrollment_id
                                       )
