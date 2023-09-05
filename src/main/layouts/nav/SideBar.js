@@ -10,6 +10,8 @@ import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "@context/ThemeContext";
 
 import medal from "@images/medal.png";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 
 class MM extends Component {
   componentDidMount() {
@@ -31,28 +33,33 @@ class MM extends Component {
 const SideBar = () => {
   const { iconHover, sidebarposition, headerposition, sidebarLayout } =
     useContext(ThemeContext);
-  const [roleType, setRoleType] = useState();
+  const roleType = useSelector(selectUser).role[0];
 
   useEffect(() => {
-    var btn = document.querySelector(".nav-control");
-    var aaa = document.querySelector("#main-wrapper");
+    const btn = document.querySelector(".nav-control");
+    const aaa = document.querySelector("#main-wrapper");
     function toggleFunc() {
       return aaa.classList.toggle("menu-toggle");
     }
     btn.addEventListener("click", toggleFunc);
 
     //sidebar icon Heart blast
-    var handleheartBlast = document.querySelector(".heart");
+    const handleheartBlast = document.querySelector(".heart");
     function heartBlast() {
       return handleheartBlast.classList.toggle("heart-blast");
     }
     handleheartBlast.addEventListener("click", heartBlast);
+
+    return () => {btn.removeEventListener("click", toggleFunc)
+    handleheartBlast.removeEventListener("click", heartBlast)}
   }, []);
 
-  useEffect(() => {
-    let role = window.localStorage.getItem("role");
-    setRoleType(role);
-  }, [roleType]);
+  // useEffect(() => {
+  //   let role = window.localStorage.getItem("role");
+  //   setRType(role);
+  //   console.log("called");
+  // }, [rType]);
+
 
   //For scroll
   const [hideOnScroll, setHideOnScroll] = useState(true);
@@ -234,7 +241,8 @@ const SideBar = () => {
             </ul>
           </li>
           {/* *********************************** Superadmin Dashboard Options************************************ */}
-          {roleType === "Superadmin" && (
+          {console.log('roleType', roleType)}
+          {roleType === "Superadmin" ? (
             <>
               <li className={`${superadmin.includes(path) ? "mm-active" : ""}`}>
                 <Link className="has-arrow" to="#">
@@ -254,7 +262,7 @@ const SideBar = () => {
                       <i className="bi bi-person-circle"></i>
                       <span className="nav-text">USERS</span>
                     </Link>
-                    <ul>
+                    <ul className={`${users.includes(path) ? "mm-show" : ""}`}>
                       <li>
                         <Link
                           className={`${
@@ -297,410 +305,10 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li
-                    className={`${
-                      categories.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-list-ul"></i>
-                      <span className="nav-text">CATEGORIES</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "categories" ? "mm-active" : ""
-                          }`}
-                          to="/categories">
-                          {" "}
-                          Categories{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-category" ? "mm-active" : ""
-                          }`}
-                          to="/add-category">
-                          {" "}
-                          Add Category
-                        </Link>
-                      </li>
-                      {/* <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li> */}
-                    </ul>
-                  </li>
-                  <li
-                    className={`${courses.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-book"></i>
-                      <span className="nav-text">COURSES</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "courses-info" ? "mm-active" : ""
-                          }`}
-                          to="/courses-info">
-                          Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-courses" ? "mm-active" : ""
-                          }`}
-                          to="/add-courses">
-                          Add Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${path === "courses" ? "mm-active" : ""}`}
-                          to="/courses">
-                          Course Store
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          className={`${
-                            path === "users_course_progress" ? "mm-active" : ""
-                          }`}
-                          to="/users_course_progress">
-                          USER & PROGRESS
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course_files" ? "mm-active" : ""
-                          }`}
-                          to="/course_files">
-                          FILES
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course_overview" ? "mm-active" : ""
-                          }`}
-                          to="/course_overview">
-                          REPORTS
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className={`${groups.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-people"></i>
-                      <span className="nav-text">GROUPS</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${path === "groups" ? "mm-active" : ""}`}
-                          to="/groups">
-                          Groups
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-groups" ? "mm-active" : ""
-                          }`}
-                          to="/add-groups">
-                          Add Groups
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className={`${events.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-calendar-check"></i>
-                      <span className="nav-text">EVENT ENGINE</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${path === "events" ? "mm-active" : ""}`}
-                          to="/events">
-                          Events
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-events" ? "mm-active" : ""
-                          }`}
-                          to="/add-events">
-                          Add Notification
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  {/* <li
-                    className={`${
-                      usertypes.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-tags-fill"></i>
-                      <span className="nav-text">USER TYPES</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-types" ? "mm-active" : ""
-                          }`}
-                          to="/user-types">
-                          {" "}
-                          User Types
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-user-type" ? "mm-active" : ""
-                          }`}
-                          to="/add-user-type">
-                          Add User Types
-                        </Link>
-                      </li>
-                      <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li>
-                    </ul>
-                  </li> */}
-                  <li
-                    className={`${
-                      importexport.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-tags-fill"></i>
-                      <span className="nav-text">IMPORT/EXPORT</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "import-user" ? "mm-active" : ""
-                          }`}
-                          to="/import-user">
-                          {" "}
-                          Import{" "}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "export-user" ? "mm-active" : ""
-                          }`}
-                          to="/export-user">
-                          {" "}
-                          Export{" "}
-                        </Link>
-                      </li>
-                      {/* <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li> */}
-                    </ul>
-                  </li>
-                  <li
-                    className={`${reports.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-graph-up"></i>
-                      <span className="nav-text">REPORTS</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "reports-overview" ? "mm-active" : ""
-                          }`}
-                          to="/reports-overview">
-                          Overview
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-reports" ? "mm-active" : ""
-                          }`}
-                          to="/user-reports">
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course-reports" ? "mm-active" : ""
-                          }`}
-                          to="/course-reports">
-                          Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "group-reports" ? "mm-active" : ""
-                          }`}
-                          to="/group-reports">
-                          Groups
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "scorm-reports" ? "mm-active" : ""
-                          }`}
-                          to="/scorm-reports">
-                          Scorm
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "test-reports" ? "mm-active" : ""
-                          }`}
-                          to="/test-reports">
-                          Tests
-                        </Link>
-                      </li>
-                      {/* <li>
-                        <Link
-                          className={`${
-                            path === 'survey-reports' ? 'mm-active' : ''
-                          }`}
-                          to='/survey-reports'
-                        >
-                          Surveys
-                        </Link>
-                      </li> */}
-                      <li>
-                        <Link
-                          className={`${
-                            path === "assign-reports" ? "mm-active" : ""
-                          }`}
-                          to="/assign-reports">
-                          Assignments
-                        </Link>
-                      </li>
-                      {/* <li>
-                        <Link
-                          className={`${
-                            path === 'ilt-reports' ? 'mm-active' : ''
-                          }`}
-                          to='/ilt-reports'
-                        >
-                          ILTS
-                        </Link>
-                      </li> */}
-                      <li>
-                        <Link
-                          className={`${
-                            path === "infographics" ? "mm-active" : ""
-                          }`}
-                          to="/infographics">
-                          Info Graphics
-                        </Link>
-                      </li>
-                      {/* <li><Link className={`${path === "custom-reports" ? "mm-active" : ""}`} to="/custom-reports">Custom</Link></li> */}
-                    </ul>
-                  </li>
-                  {/* <li
-                    className={`${
-                      accountsettings.includes(path) ? 'mm-active' : ''
-                    }`}
-                  >
-                    <Link className='has-arrow' to='#'>
-                      {' '}
-                      <i className='bi bi-gear-fill'></i>
-                      <span className='nav-text'>Account & Setting</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'basic-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/basic-settings'
-                        >
-                          Basic Settings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'user-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/user-settings'
-                        >
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'thoms-page' ? 'mm-active' : ''
-                          }`}
-                          to='/thoms-page'
-                        >
-                          Themes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'certificates' ? 'mm-active' : ''
-                          }`}
-                          to='/certificates'
-                        >
-                          Certificates
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'gamification' ? 'mm-active' : ''
-                          }`}
-                          to='/gamification'
-                        >
-                          Gamifications
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'ecommerce' ? 'mm-active' : ''
-                          }`}
-                          to='/ecommerce'
-                        >
-                          E-commerce
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${path === 'domains' ? 'mm-active' : ''}`}
-                          to='/domains'
-                        >
-                          Domain
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'subscriptions' ? 'mm-active' : ''
-                          }`}
-                          to='/subscriptions'
-                        >
-                          Subscription
-                        </Link>
-                      </li>
-                    </ul>
-                  </li> */}
                 </ul>
               </li>
             </>
-          )}
+          ): null}
           {/* *********************************** Admin Dashboard Options************************************ */}
           {(roleType === "Admin" || roleType === "Superadmin") && (
             <>
