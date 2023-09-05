@@ -149,12 +149,11 @@ const AddCourses = () => {
       formData.append("generate_token", true);
 
       const url = "https://v1.eonlearning.tech/lms-service/addcourses";
-      const authToken = window.localStorage.getItem("jwt_access_token");
       await axios
         .post(url, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Auth-Token": authToken,
+            "Auth-Token": token,
           },
         })
         .then((response) => {
