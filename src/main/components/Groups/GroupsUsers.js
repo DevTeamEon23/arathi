@@ -1,26 +1,75 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Nav,
-  Modal,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
 const GroupsUsers = (props) => {
   const grpId = props.match.params.id;
-  console.log({ grpId });
-  const [sendMessage, setSendMessage] = useState(false);
   const [activeTab, setActiveTab] = useState("groups-users/:id");
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [token, setToken] = useState(); //auth token
+  const [totalUserData, setTotalUserData] = useState(0); //user list data
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getAllUsers();
+  }, []);
+
+  // User List Api
+  const getAllUsers = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+      params: {
+        group_id: grpId,
+      },
+    };
+    axios
+      .get("http://127.0.0.1:8000/group_tab1/fetch_users_of_group", config)
+      .then((response) => {
+        console.log(response.data.data);
+        const allUsers = response.data.data.user_ids;
+        // const adminUsers = allUsers.filter((user) => user.role === "Admin");
+        setAdminUsers(allUsers);
+        setTotalUserData(response.data.data.user_ids.length);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!");
+      });
+  };
+
+  const handleEnroll = (e, user_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("user_id", user_id);
+    formData.append("group_id", grpId);
+    formData.append("generate_token", true);
+    const url = "http://127.0.0.1:8000/group_tab1/add_users_to_group";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("User added successfully!!!");
+        getAllUsers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to add user...");
+      });
+  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -29,63 +78,45 @@ const GroupsUsers = (props) => {
 
   useEffect(() => {
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
 
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
+  const handleUnEnroll = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(`http://127.0.0.1:8000/group_tab1/remove_users_from_group`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        toast.success("User removed successfully!!!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        getAllUsers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to remove user!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = adminUsers.slice(startIndex, endIndex);
 
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/edit-groups">
-            Info
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/groups-users">
-            Users
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/group-courses">
-            Courses
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/group-files">
-            Files
-          </Link>
-        </Nav.Item>
-      </Nav> */}
       <Row>
         <Col lg={12}>
           <Card>
@@ -96,140 +127,114 @@ const GroupsUsers = (props) => {
               <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>USER</strong>
-                    </th>
-                    <th></th>
-                    <th>
-                      <strong>
-                        <center>SYNCHRONIZE USERS WITH COURSES</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>Hitesh Ingale</strong>
-                    </td>
-                    <td></td>
-                    <td>
-                      <center>1/1</center>
-                    </td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="light sharp i-false">
-                          {svg1}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => setSendMessage(true)}>
-                            <i class="bi bi-plus-circle">&nbsp;</i>Add
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </tr>
-                  {/* send Modal */}
-                  <Modal className="modal fade" show={sendMessage}>
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title">
-                          Send Message to Enroll this User
-                        </h5>
-                        <Button
-                          variant=""
-                          type="button"
-                          className="close"
-                          data-dismiss="modal"
-                          onClick={() => setSendMessage(false)}>
-                          <span>×</span>
-                        </Button>
-                      </div>
-                      <div className="modal-body">
-                        <form
-                          className="comment-form"
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            setSendMessage(false);
-                          }}>
-                          <div className="row">
-                            <div className="col-lg-6">
-                              <div className="form-group mb-3">
-                                <label
-                                  htmlFor="author"
-                                  className="text-black font-w600">
-                                  {" "}
-                                  Name <span className="required">*</span>{" "}
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  defaultValue="Author"
-                                  name="Author"
-                                  placeholder="Author"
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div className="col-lg-6">
-                              <div className="form-group mb-3">
-                                <label
-                                  htmlFor="email"
-                                  className="text-black font-w600">
-                                  {" "}
-                                  Email <span className="required">*</span>
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  defaultValue="Email"
-                                  placeholder="Email"
-                                  name="Email"
-                                  required
-                                />
-                              </div>
-                            </div>
-                            <div className="col-lg-12">
-                              <div className="form-group mb-3">
-                                <label
-                                  htmlFor="comment"
-                                  className="text-black font-w600">
-                                  Comment
-                                </label>
-                                <textarea
-                                  rows={8}
-                                  className="form-control"
-                                  name="comment"
-                                  placeholder="Comment"
-                                  defaultValue={""}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-lg-12">
-                              <div className="form-group mb-3">
-                                <input
-                                  type="submit"
-                                  value="Enroll User"
-                                  className="submit btn btn-primary"
-                                  name="submit"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </Modal>
-                </tbody>
-              </Table>
+              {currentData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : currentData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>USER</strong>
+                        </th>
+
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>OPTION</strong>
+                          </center>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData?.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>
+                              {item.full_name}
+                              {item.user_group_enrollment_id === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">
+                                  Group Member
+                                </span>
+                              )}
+                            </td>
+
+                            <td>
+                              <center>
+                                {item.user_group_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleEnroll(e, item.user_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleUnEnroll(
+                                        e,
+                                        item.user_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              )}
+              <br />
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from <span>{totalUserData} </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    <Button
+                      className="ml-2"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={endIndex >= adminUsers.length}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
