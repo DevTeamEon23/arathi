@@ -6,7 +6,6 @@ import {
   Col,
   Card,
   Table,
-  Nav,
   Button,
   Modal,
   Tab,
@@ -32,16 +31,14 @@ const Groups = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectCourseData, setSelectCourseData] = useState(null); //course
   const [getAllCourseData, setGetAllCourseData] = useState({}); //save all course data
-  const [courseId, setCourseId] = useState(); //course id save for mass action
+  const [selectCourseError, setselectCourseError] = useState(null);
   let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllGroups();
-    if (accessToken !== undefined) {
-      getAllCourses();
-    }
+    getAllCourses();
   }, []);
 
   const getAllGroups = async () => {
@@ -53,7 +50,7 @@ const Groups = () => {
           "Auth-Token": jwtToken,
         },
       });
-      console.log(response.data.data);
+
       setGrpData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -63,21 +60,19 @@ const Groups = () => {
 
   // All Course List
   const getAllCourses = async () => {
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
     const url = "https://v1.eonlearning.tech/lms-service/courses";
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
     try {
       const response = await axios.get(url, {
         headers: {
           "Auth-Token": jwtToken,
         },
       });
-      console.log("getAllCourses", response.data.data, response.data.data.id);
-      const expectedOutput = response?.data?.data.map(({ coursename }) => ({
-        value: coursename,
+      const expectedOutput = response?.data?.data.map(({ id, coursename }) => ({
+        value: id,
         label: coursename,
       }));
       setGetAllCourseData(expectedOutput);
-      setCourseId(response.data.data.id);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
@@ -137,7 +132,7 @@ const Groups = () => {
   const handleSelectChange = (selected) => {
     setSelectedOption(selected);
     setSelectedValue(selected.value);
-    // Check if the selected option is "Add a course to all groups" and show the modal.
+
     if (selected.value === "all") {
       setShowMassActionModal(true);
     }
@@ -146,10 +141,42 @@ const Groups = () => {
     }
   };
 
-  const handleMassAction = (grpId) => {
-    setShowMassActionModal(true);
-    setGrpId(grpId);
+  const handleSelectCourse = (selected) => {
+    setSelectCourseData(selected);
+    setselectCourseError(null);
   };
+
+  const handleMassActionAdd = (e) => {
+    e.preventDefault();
+    if (selectCourseData === null) {
+      setselectCourseError("Please select a course before adding");
+    } else {
+      setselectCourseError(null);
+      setShowMassActionModal(false);
+      const formData = new FormData();
+      formData.append("course_id", selectCourseData.value);
+      formData.append("generate_token", true);
+      const url = "http://127.0.0.1:8000/lms-service/mass_enroll_course_group";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("Course Add successfully!!!");
+        })
+        .catch((error) => {
+          console.error(error);
+          setShowMassActionModal(false);
+          toast.error("Failed !!! Unable to add course...");
+        });
+    }
+  };
+
+  const handleMassActionRemove = () => {};
 
   return (
     <Fragment>
@@ -276,24 +303,42 @@ const Groups = () => {
         <Modal.Body>
           <Select
             value={selectCourseData}
-            id="categories"
-            name="categories"
             options={getAllCourseData}
-            onChange={(selectCategoriesData) =>
-              setSelectCourseData(selectCategoriesData)
-            }
-            placeholder="Select a category"
+            onChange={handleSelectCourse}
+            placeholder="Select a Course"
             required></Select>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="btn btn-primary" onClick={handleMassAction}>
-            Add
-          </Button>
+          {selectedValue === "all" ? (
+            <>
+              {" "}
+              <Button
+                variant="btn btn-primary w-25"
+                onClick={handleMassActionAdd}>
+                Add
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="btn btn-primary w-25"
+                onClick={handleMassActionRemove}>
+                Remove
+              </Button>
+            </>
+          )}
+
           <Button
-            variant="danger light"
+            variant="danger light w-25"
             onClick={() => setShowMassActionModal(false)}>
             Cancel
           </Button>
+          <br />
+          {selectCourseError && (
+            <div className="error-message text-danger fs-14">
+              {selectCourseError}
+            </div>
+          )}
         </Modal.Footer>
       </Modal>
     </Fragment>
