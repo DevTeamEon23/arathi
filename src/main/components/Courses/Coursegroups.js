@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { CircularProgress } from "@material-ui/core";
 import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -13,7 +12,6 @@ const Coursegroups = (props) => {
   const [totalGrpData, setTotalGrpData] = useState(); //user list data
   const [activeTab, setActiveTab] = useState("course_groups/:id");
   const [token, setToken] = useState(); //auth token
-  const [btnLoader, setBtnLoader] = useState(false); //Loader
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
@@ -45,6 +43,9 @@ const Coursegroups = (props) => {
       headers: {
         "Auth-Token": jwtToken,
       },
+      params: {
+        course_id: courseID,
+      },
     };
     axios
       .get("http://127.0.0.1:8000/course_tab2/fetch_groups_of_course", config)
@@ -60,7 +61,6 @@ const Coursegroups = (props) => {
 
   const handleAddGrp = (e, group_id) => {
     e.preventDefault();
-    setBtnLoader(true);
     const formData = new FormData();
     formData.append("group_id", group_id);
     formData.append("course_id", courseID);
@@ -75,14 +75,12 @@ const Coursegroups = (props) => {
         },
       })
       .then((response) => {
-        setBtnLoader(false);
         toast.success("Course Added to group successfully!!!");
         getAllGroups();
       })
       .catch((error) => {
         console.error(error);
         toast.error("Failed !!! Unable to add course...");
-        setBtnLoader(false);
       });
   };
 
@@ -164,7 +162,7 @@ const Coursegroups = (props) => {
                           <tr>
                             <td>
                               <strong>{item.groupname}</strong>
-                              {item.coursename === null ? (
+                              {item.enrolled_coursename === null ? (
                                 ""
                               ) : (
                                 <span className="enrolled-label">
@@ -175,26 +173,14 @@ const Coursegroups = (props) => {
                             <td>
                               <center>
                                 {item.course_group_enrollment_id === null ? (
-                                  <>
-                                    {btnLoader ? (
-                                      <CircularProgress
-                                        style={{
-                                          width: "20px",
-                                          height: "20px",
-                                          color: "#fff",
-                                        }}
-                                      />
-                                    ) : (
-                                      <div
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                        title="Add to group"
-                                        onClick={(e) =>
-                                          handleAddGrp(e, item.group_id)
-                                        }>
-                                        <i class="fa-solid fa-plus"></i>
-                                      </div>
-                                    )}
-                                  </>
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, item.group_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
                                 ) : (
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
@@ -205,7 +191,7 @@ const Coursegroups = (props) => {
                                         item.course_group_enrollment_id
                                       )
                                     }>
-                                    <i class="fa-solid fa-minus"></i>
+                                    <i className="fa-solid fa-minus"></i>
                                   </div>
                                 )}
                               </center>

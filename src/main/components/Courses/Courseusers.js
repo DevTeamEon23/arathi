@@ -1,18 +1,8 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Button,
-  Modal,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { CircularProgress } from "@material-ui/core";
 import { RotatingLines } from "react-loader-spinner";
 
 const Courseusers = (props) => {
@@ -23,7 +13,6 @@ const Courseusers = (props) => {
   const [activeTab, setActiveTab] = useState("course_users/:id");
   const [totalUserData, setTotalUserData] = useState(); //user list data
   const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const [btnLoader, setBtnLoader] = useState(false); //Loader
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
 
@@ -39,6 +28,9 @@ const Courseusers = (props) => {
     const config = {
       headers: {
         "Auth-Token": jwtToken,
+      },
+      params: {
+        course_id: courseID,
       },
     };
     axios
@@ -60,7 +52,6 @@ const Courseusers = (props) => {
 
   const handleEnroll = (e, user_id) => {
     e.preventDefault();
-    setBtnLoader(true);
     const formData = new FormData();
     formData.append("user_id", user_id);
     formData.append("course_id", courseID);
@@ -76,14 +67,12 @@ const Courseusers = (props) => {
       })
       .then((response) => {
         console.log(response.data);
-        setBtnLoader(false);
         toast.success("Course Enroll successfully!!!");
         getAllUsers();
       })
       .catch((error) => {
         console.error(error);
         toast.error("Failed !!! Unable to enroll course...");
-        setBtnLoader(false);
       });
   };
 
@@ -187,7 +176,7 @@ const Courseusers = (props) => {
                           <tr key={index}>
                             <td>
                               {item.full_name}
-                              {item.coursename === null ? (
+                              {item.enrolled_coursename === null ? (
                                 ""
                               ) : (
                                 <span className="enrolled-label">Enrolled</span>
@@ -199,27 +188,15 @@ const Courseusers = (props) => {
                             </td>
                             <td>
                               <center>
-                                {item.coursename === null ? (
-                                  <>
-                                    {btnLoader ? (
-                                      <CircularProgress
-                                        style={{
-                                          width: "20px",
-                                          height: "20px",
-                                          color: "#fff",
-                                        }}
-                                      />
-                                    ) : (
-                                      <div
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                        title="Enroll"
-                                        onClick={(e) =>
-                                          handleEnroll(e, item.user_id)
-                                        }>
-                                        <i class="fa-solid fa-plus"></i>
-                                      </div>
-                                    )}
-                                  </>
+                                {item.enrolled_coursename === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Enroll"
+                                    onClick={(e) =>
+                                      handleEnroll(e, item.user_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
                                 ) : (
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
@@ -230,7 +207,7 @@ const Courseusers = (props) => {
                                         item.user_course_enrollment_id
                                       )
                                     }>
-                                    <i class="fa-solid fa-minus"></i>
+                                    <i className="fa-solid fa-minus"></i>
                                   </div>
                                 )}
                               </center>
