@@ -154,7 +154,7 @@ const Learn = () => {
   //User List Api
   const getUsers = () => {
     axios
-      .get("http://127.0.0.1:8000/auth/fetch_userpoints_by_userid")
+      .get("https://v1.eonlearning.tech/auth/fetch_userpoints_by_userid")
       .then((response) => {
         console.log(response.data.data);
         let allUsers = response.data.data.user_ids;

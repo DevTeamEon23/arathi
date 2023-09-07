@@ -21,7 +21,7 @@ const UCoursesInfo = (props) => {
     getAllCourses();
   }, []);
 
-  // User List Api
+  // Courses List Api
   const getAllCourses = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -34,7 +34,7 @@ const UCoursesInfo = (props) => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/user-tab1/fetch_enroll_courses_of_user",
+        "https://v1.eonlearning.tech/user-tab1/fetch_enroll_courses_of_user",
         config
       )
       .then((response) => {
@@ -54,7 +54,7 @@ const UCoursesInfo = (props) => {
     formData.append("user_id", userId);
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/user-tab1/enroll_courses_to_user";
+    const url = "https://v1.eonlearning.tech/user-tab1/enroll_courses_to_user";
     axios
       .post(url, formData, {
         headers: {
@@ -84,10 +84,13 @@ const UCoursesInfo = (props) => {
       id: id,
     };
     axios
-      .delete(`http://127.0.0.1:8000/user-tab1/unenroll_courses_from_user`, {
-        ...config,
-        data: requestBody,
-      })
+      .delete(
+        `https://v1.eonlearning.tech/user-tab1/unenroll_courses_from_user`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
       .then((response) => {
         toast.success("Course unenroll successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -189,53 +192,44 @@ const UCoursesInfo = (props) => {
                         return (
                           <tr key={index}>
                             <td>{data.coursename}</td>
-                            <td>
-                              <center>
-                                {data.user_course_enrollment_id === null ? (
-                                  "-"
-                                ) : (
-                                  <>{data.user_role}</>
-                                )}
-                              </center>
+                            <td className="text-center">
+                              {data.user_course_enrollment_id === null ? (
+                                "-"
+                              ) : (
+                                <>{data.user_role}</>
+                              )}
                             </td>
-                            <td>
-                              <center>
-                                {data.enrolled_on === null ? (
-                                  "-"
-                                ) : (
-                                  <>{formattedDate}</>
-                                )}
-                              </center>
+                            <td className="text-center">
+                              {data.enrolled_on === null ? (
+                                "-"
+                              ) : (
+                                <>{formattedDate}</>
+                              )}
                             </td>
-                            <td>
-                              <center>-</center>
-                            </td>
-                            <td>
-                              {" "}
-                              <center>
-                                {data.user_course_enrollment_id === null ? (
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Enroll"
-                                    onClick={(e) =>
-                                      handleEnroll(e, data.course_id)
-                                    }>
-                                    <i className="fa-solid fa-plus"></i>
-                                  </div>
-                                ) : (
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Unenroll"
-                                    onClick={(e) =>
-                                      handleUnEnroll(
-                                        e,
-                                        data.user_course_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa-solid fa-minus"></i>
-                                  </div>
-                                )}
-                              </center>
+                            <td className="text-center">-</td>
+                            <td className="text-center">
+                              {data.user_course_enrollment_id === null ? (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Enroll"
+                                  onClick={(e) =>
+                                    handleEnroll(e, data.course_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+                              ) : (
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Unenroll"
+                                  onClick={(e) =>
+                                    handleUnEnroll(
+                                      e,
+                                      data.user_course_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );

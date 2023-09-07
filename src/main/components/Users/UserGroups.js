@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
@@ -32,7 +32,7 @@ const UserGroups = (props) => {
     getAllGroups();
   }, []);
 
-  // User List Api
+  // Group List Api
   const getAllGroups = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -44,7 +44,7 @@ const UserGroups = (props) => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/user-tab2/fetch_groups_of_user", config)
+      .get("https://v1.eonlearning.tech/user-tab2/fetch_groups_of_user", config)
       .then((response) => {
         const grps = response.data.data.user_ids;
         setAllGrps(grps);
@@ -59,9 +59,58 @@ const UserGroups = (props) => {
   const endIndex = startIndex + itemsPerPage;
   const currentData = allGrps.slice(startIndex, endIndex);
 
-  const handleAddGrp = () => {};
+  const handleAddGrp = (e, group_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("group_id", group_id);
+    formData.append("user_id", userId);
+    formData.append("generate_token", true);
+    const url = "https://v1.eonlearning.tech/user-tab2/enroll_groups_to_user";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        toast.success("Added to group successfully!!!");
+        getAllGroups();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to add...");
+      });
+  };
 
-  const handleRemoveGrp = () => {};
+  const handleRemoveGrp = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(`https://v1.eonlearning.tech/user-tab2/remove_groups_from_user`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        toast.success("Removed from group successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        getAllGroups();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to remove...", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
 
   return (
     <Fragment>
@@ -95,14 +144,11 @@ const UserGroups = (props) => {
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th>
+                        <th className="text-center">
                           <strong>GROUP</strong>
                         </th>
-
-                        <th>
-                          <center>
-                            <strong>OPTIONS</strong>
-                          </center>
+                        <th className="text-center">
+                          <strong>OPTIONS</strong>
                         </th>
                       </tr>
                     </thead>
@@ -110,32 +156,30 @@ const UserGroups = (props) => {
                       {allGrps.map((data, index) => {
                         return (
                           <tr key={index}>
-                            <td>{data.groupname}</td>
-                            <td>
-                              <center>
-                                {data.user_group_enrollment_id === null ? (
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Add to group"
-                                    onClick={(e) =>
-                                      handleAddGrp(e, data.group_id)
-                                    }>
-                                    <i className="fa-solid fa-plus"></i>
-                                  </div>
-                                ) : (
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Remove from group"
-                                    onClick={(e) =>
-                                      handleRemoveGrp(
-                                        e,
-                                        data.user_group_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa-solid fa-minus"></i>
-                                  </div>
-                                )}
-                              </center>
+                            <td className="text-center">{data.groupname}</td>
+                            <td className="text-center">
+                              {data.user_group_enrollment_id === null ? (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Add to group"
+                                  onClick={(e) =>
+                                    handleAddGrp(e, data.group_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+                              ) : (
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Remove from group"
+                                  onClick={(e) =>
+                                    handleRemoveGrp(
+                                      e,
+                                      data.user_group_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
@@ -146,9 +190,7 @@ const UserGroups = (props) => {
               ) : (
                 <>
                   <div>
-                    <p className="text-center fs-20 fw-bold">
-                      No Course Found.
-                    </p>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
                   </div>
                 </>
               )}

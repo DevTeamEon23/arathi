@@ -410,7 +410,7 @@ const SideBar = () => {
                   <li className={`${events.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-calendar-check"></i>
-                      <span className="nav-text">EVENT ENGINE</span>
+                      <span className="nav-text">NOTIFICATION ENGINE</span>
                     </Link>
                     <ul>
                       <li>

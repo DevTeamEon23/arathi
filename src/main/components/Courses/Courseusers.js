@@ -35,7 +35,7 @@ const Courseusers = (props) => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/course_tab1/fetch_enroll_users_of_course",
+        "https://v1.eonlearning.tech/course_tab1/fetch_enroll_users_of_course",
         config
       )
       .then((response) => {
@@ -56,7 +56,8 @@ const Courseusers = (props) => {
     formData.append("user_id", user_id);
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/course_tab1/enroll_users_to_course";
+    const url =
+      "https://v1.eonlearning.tech/course_tab1/enroll_users_to_course";
     const authToken = token;
     axios
       .post(url, formData, {
@@ -98,10 +99,13 @@ const Courseusers = (props) => {
       id: id,
     };
     axios
-      .delete(`http://127.0.0.1:8000/course_tab1/remove_users_from_course`, {
-        ...config,
-        data: requestBody,
-      })
+      .delete(
+        `https://v1.eonlearning.tech/course_tab1/remove_users_from_course`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
       .then((response) => {
         toast.success("Unenroll successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -109,7 +113,6 @@ const Courseusers = (props) => {
         getAllUsers();
       })
       .catch((error) => {
-        // Handle the error
         console.error(error);
         toast.error("Failed to Unenroll!", {
           position: toast.POSITION.TOP_RIGHT,

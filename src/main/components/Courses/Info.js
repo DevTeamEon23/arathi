@@ -114,7 +114,7 @@ const Info = () => {
   const handleCatClone = () => {
     const id = courseCloneId;
     const authToken = token;
-    const url = `http://127.0.0.1:8000/lms-service/clonecourse/${id}`;
+    const url = `https://v1.eonlearning.tech/lms-service/clonecourse/${id}`;
     axios
       .post(url, null, {
         headers: {
@@ -357,9 +357,12 @@ const Info = () => {
           <Modal.Title>Clone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to clone the course{" "}
-          <strong>{courseName}</strong> ?
-          <p className="text-danger text-center mt-2">
+          <p className="fs-20 text-center">
+            {" "}
+            Are you sure you want to clone the course{" "}
+            <strong>{courseName}</strong> ?
+          </p>
+          <p className="text-danger text-center mt-2 fw-bold fs-14">
             {" "}
             (one course can clone one time only)
           </p>
@@ -380,11 +383,3 @@ const Info = () => {
 };
 
 export default Info;
-
-{
-  /* <Link
-to="/add-courses"
-className="btn btn-primary shadow btn-xs sharp me-1">
-<i class="fa-solid fa-plus"></i>
-</Link> */
-}
