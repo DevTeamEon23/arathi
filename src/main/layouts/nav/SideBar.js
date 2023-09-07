@@ -417,7 +417,7 @@ const SideBar = () => {
                         <Link
                           className={`${path === "events" ? "mm-active" : ""}`}
                           to="/events">
-                          Events
+                          Notifications
                         </Link>
                       </li>
                       <li>
