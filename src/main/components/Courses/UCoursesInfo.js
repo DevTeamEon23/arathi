@@ -1,28 +1,18 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Nav,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
 const UCoursesInfo = (props) => {
   const userId = props.match.params.id;
-  console.log({ userId });
-  const [courses, setCourses] = useState([]);
   const [activeTab, setActiveTab] = useState("user-courses-info/:id");
   const [coursesAll, setCoursesAll] = useState([]);
+  const [totalCourseData, setTotalCourseData] = useState(0);
   const [token, setToken] = useState(); //auth token
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
 
   useEffect(() => {
@@ -38,6 +28,9 @@ const UCoursesInfo = (props) => {
       headers: {
         "Auth-Token": jwtToken,
       },
+      params: {
+        user_id: userId,
+      },
     };
     axios
       .get(
@@ -47,25 +40,67 @@ const UCoursesInfo = (props) => {
       .then((response) => {
         console.log(response.data.data);
         const allUsers = response.data.data.course_ids;
-        // const adminUsers = allUsers.filter((user) => user.role === "Admin");
         setCoursesAll(allUsers);
-        // setTotalUserData(response.data.data.user_ids.length);
+        setTotalCourseData(response.data.data.course_ids.length);
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
   };
 
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
+  const handleEnroll = (e, course_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("course_id", course_id);
+    formData.append("generate_token", true);
+    const url = "http://127.0.0.1:8000/user-tab1/enroll_courses_to_user";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Course Enroll successfully!!!");
+        getAllCourses();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to enroll course...");
+      });
+  };
+
+  const handleUnEnroll = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(`http://127.0.0.1:8000/user-tab1/unenroll_courses_from_user`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        toast.success("Course unenroll successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        getAllCourses();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to Unenroll!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -73,11 +108,14 @@ const UCoursesInfo = (props) => {
   };
 
   useEffect(() => {
-    // When the component mounts, set the active tab based on the current route
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = coursesAll.slice(startIndex, endIndex);
 
   return (
     <Fragment>
@@ -96,62 +134,152 @@ const UCoursesInfo = (props) => {
               <Card.Title>Courses</Card.Title>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>COURSE</strong>
-                    </th>
-                    <th>
-                      <strong>ROLE</strong>
-                    </th>
-                    <th>
-                      <strong>ENROLLED ON</strong>
-                    </th>
-                    <th>
-                      <strong>COMPLETION DATE</strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {coursesAll.map((data) => {
-                    return (
-                      <tr key={data.id}>
-                        <td>
-                          <strong>{data.coursename}</strong>
-                        </td>
-                        <td>{data.role}</td>
-                        <td>1/11/2022</td>
-                        <td>-</td>
-                        <td>
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              variant="success"
-                              className="light sharp i-false">
-                              {svg1}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                              <Dropdown.Item href="#">
-                                <strong>
-                                  <i class="bi bi-dash"></i>
-                                </strong>
-                              </Dropdown.Item>
-                              <Dropdown.Item href="#">
-                                <strong>
-                                  <i class="bi bi-arrow-repeat"></i>
-                                </strong>
-                              </Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                        </td>
+              {currentData.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : currentData.length > 0 ? (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>COURSE</strong>
+                        </th>
+                        <th>
+                          <center>
+                            <strong>ROLE</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>ENROLLED ON</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            <strong>COMPLETION DATE</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>OPTIONS</strong>
+                          </center>
+                        </th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                    </thead>
+                    <tbody>
+                      {coursesAll.map((data, index) => {
+                        const dateTimeString = data.enrolled_on;
+                        const date = new Date(dateTimeString);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1;
+                        const year = date.getFullYear();
+                        const formattedDate = `${day < 10 ? "0" + day : day}-${
+                          month < 10 ? "0" + month : month
+                        }-${year}`;
+                        return (
+                          <tr key={index}>
+                            <td>{data.coursename}</td>
+                            <td>
+                              <center>
+                                {data.user_course_enrollment_id === null ? (
+                                  "-"
+                                ) : (
+                                  <>{data.user_role}</>
+                                )}
+                              </center>
+                            </td>
+                            <td>
+                              <center>
+                                {data.enrolled_on === null ? (
+                                  "-"
+                                ) : (
+                                  <>{formattedDate}</>
+                                )}
+                              </center>
+                            </td>
+                            <td>
+                              <center>-</center>
+                            </td>
+                            <td>
+                              {" "}
+                              <center>
+                                {data.user_course_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Enroll"
+                                    onClick={(e) =>
+                                      handleEnroll(e, data.course_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Unenroll"
+                                    onClick={(e) =>
+                                      handleUnEnroll(
+                                        e,
+                                        data.user_course_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              )}
+              <br />
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from{" "}
+                    <span>{totalCourseData} </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    <Button
+                      className="ml-2"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={endIndex >= coursesAll.length}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>

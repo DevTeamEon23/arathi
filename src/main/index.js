@@ -61,6 +61,7 @@ import UserProg from "./components/Users/UserProg";
 import UserCertificate from "./components/Users/UserCertificate";
 import UserInfographics from "./components/Users/UserInfographics";
 import Badges from "./components/Users/Badges";
+import UserTimeline from "./components/Users/UserTimeline";
 
 //Admin Users Pages
 import AUsers from "./components/AUsers/AUsers";
@@ -113,7 +114,7 @@ import AddSessions from "./components/Courses/AddSessions";
 import Courseusers from "./components/Courses/Courseusers";
 import EnrollUsers from "./components/Courses/EnrollUsers";
 import Coursegroups from "./components/Courses/Coursegroups";
-import UsersCourseProgress from "./components/Courses/UsersCourseProgress";
+// import UsersCourseProgress from "./components/Courses/UsersCourseProgress";
 // import RulesPath from "./components/Courses/RulesPath";
 import CourseUserReports from "./components/Courses/CourseUserReports";
 import CourseFiles from "./components/Courses/CourseFiles";
@@ -149,7 +150,7 @@ import AdmInstructorLed from "./components/ACourses/AdmInstructorLed";
 import AdmCourseusers from "./components/ACourses/AdmCourseusers";
 import AdmEnrollUsers from "./components/ACourses/AdmEnrollUsers";
 import AdmCoursegroups from "./components/ACourses/AdmCoursegroups";
-import AdmUsersCourseProgress from "./components/ACourses/AdmUsersCourseProgress";
+// import AdmUsersCourseProgress from "./components/ACourses/AdmUsersCourseProgress";
 import AdmRulesPath from "./components/ACourses/AdmRulesPath";
 import AdmCourseUserReports from "./components/ACourses/AdmCourseUserReports";
 import AdmCourseFiles from "./components/ACourses/AdmCourseFiles";
@@ -375,6 +376,7 @@ const Markup = () => {
     { url: "user-certificates", component: UserCertificate },
     { url: "user-infographic", component: UserInfographics },
     { url: "badges-list", component: Badges },
+    { url: "user-timeline", component: UserTimeline },
 
     //Users---
 
@@ -429,7 +431,7 @@ const Markup = () => {
     { url: "course_users/:id", component: Courseusers },
     { url: "enroll_users", component: EnrollUsers },
     { url: "course_groups/:id", component: Coursegroups },
-    { url: "users_course_progress", component: UsersCourseProgress },
+    // { url: "users_course_progress", component: UsersCourseProgress },
     // { url: "rules-path", component: RulesPath },
     { url: "course_user_report", component: CourseUserReports },
     { url: "course_files", component: CourseFiles },
@@ -465,7 +467,7 @@ const Markup = () => {
     { url: "adm_course_users", component: AdmCourseusers },
     { url: "adm_enroll_users", component: AdmEnrollUsers },
     { url: "adm_course_groups", component: AdmCoursegroups },
-    { url: "adm_users_course_progress", component: AdmUsersCourseProgress },
+    // { url: "adm_users_course_progress", component: AdmUsersCourseProgress },
     { url: "adm_rules-path", component: AdmRulesPath },
     { url: "adm_course_user_report", component: AdmCourseUserReports },
     { url: "adm_course_files", component: AdmCourseFiles },

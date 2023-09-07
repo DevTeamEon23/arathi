@@ -365,15 +365,6 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "users_course_progress" ? "mm-active" : ""
-                          }`}
-                          to="/users_course_progress">
-                          USER & PROGRESS
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
                             path === "course_files" ? "mm-active" : ""
                           }`}
                           to="/course_files">
@@ -809,17 +800,7 @@ const SideBar = () => {
                           Course Store
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_users_course_progress"
-                              ? "mm-active"
-                              : ""
-                          }`}
-                          to="/adm_users_course_progress">
-                          USER & PROGRESS
-                        </Link>
-                      </li>
+
                       <li>
                         <Link
                           className={`${
@@ -1101,15 +1082,7 @@ const SideBar = () => {
                           Add Courses
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "users_course_progress" ? "mm-active" : ""
-                          }`}
-                          to="/users_course_progress">
-                          USER & PROGRESS
-                        </Link>
-                      </li>
+
                       <li>
                         <Link
                           className={`${

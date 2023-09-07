@@ -1,40 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
-import { Row, Col, Card, Table, Button, Nav, Modal } from "react-bootstrap";
-
-//images
-import palette from "@images/svg/color-palette.svg";
-import education from "@images/svg/education-website.svg";
-import brain from "@images/svg/brain.svg";
-import microscope from "@images/svg/microscope.svg";
-
-const widgetData = [
-  { image: palette, title: "Graphic" },
-  { image: education, title: "Coading" },
-  { image: brain, title: "Soft Skill" },
-  { image: microscope, title: "Science" },
-];
-
-// const cardInfoBlog = [
-// 	{title:'Fullstack Developer',	subtitle: 'Karen Hope ', image: course1},
-// 	{title:'UI Design Beginner', 	subtitle: 'Jack and Sally', image: course2},
-// 	{title:'How to be Freelancer', 	subtitle: 'Cahaya Hikari', image: course3},
-// 	{title:'UX Research', 			subtitle: 'Johnny Ahmad', image: course4},
-// 	{title:'Basic Web Design',		subtitle: 'Jordan Nico', image: course5},
-// 	{title:'3D Character Design',	subtitle: 'Samantha William ', image: course6},
-// ];
+import { Button } from "react-bootstrap";
 
 const CoursesMain = () => {
   const [token, setToken] = useState(); //auth token
   const [data, setData] = useState([]); //Course data
-  const [courses, setCourses] = useState([]);
-  const [file, setFile] = useState([]);
-  const [query, setQuery] = useState("");
   const backendBaseUrl = "https://v1.eonlearning.tech";
   const [totalCourseData, setTotalCourseData] = useState(); //user list data
   const [currentPage, setCurrentPage] = useState(1); // Current page number
@@ -71,61 +44,7 @@ const CoursesMain = () => {
   return (
     <>
       <div className="widget-heading d-flex justify-content-between align-items-center">
-        <h3 className="m-0">Popular This Week</h3>
-        <Link to={"./course-details-1"} className="btn btn-primary btn-sm">
-          View all
-        </Link>
-      </div>
-      <div className="row">
-        <Swiper
-          iper
-          className="swiper course-slider"
-          speed={1500}
-          slidesPerView={4}
-          spaceBetween={20}
-          loop={false}
-          breakpoints={{
-            1600: {
-              slidesPerView: 4,
-            },
-
-            1200: {
-              slidesPerView: 3,
-            },
-            575: {
-              slidesPerView: 2,
-            },
-            360: {
-              slidesPerView: 1,
-            },
-          }}>
-          {widgetData.map((d, i) => (
-            <SwiperSlide key={i}>
-              <div className="card">
-                <div className="card-body">
-                  <div className="widget-courses align-items-center d-flex justify-content-between flex-wrap">
-                    <div className="d-flex align-items-center flex-wrap">
-                      <img src={d.image} alt="" />
-                      <div className="flex-1 ms-3">
-                        <h4>{d.title}</h4>
-                        <span>Lorem ipsum dolor</span>
-                      </div>
-                    </div>
-                    <Link to={"#"}>
-                      <i className="las la-angle-right text-primary"></i>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-      <div className="widget-heading d-flex justify-content-between align-items-center">
-        <h3 className="m-0">Course Store & Course Catalog</h3>
-        <Link to={"./course-details-1"} className="btn btn-primary btn-sm">
-          View all
-        </Link>
+        <h3 className="m-0">Course Store</h3>
       </div>
       <div className="row">
         {data.length === undefined ? (
