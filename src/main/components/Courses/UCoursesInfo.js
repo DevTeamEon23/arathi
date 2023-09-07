@@ -21,7 +21,7 @@ const UCoursesInfo = (props) => {
     getAllCourses();
   }, []);
 
-  // User List Api
+  // Courses List Api
   const getAllCourses = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {

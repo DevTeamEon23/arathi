@@ -32,7 +32,7 @@ const UserGroups = (props) => {
     getAllGroups();
   }, []);
 
-  // User List Api
+  // Group List Api
   const getAllGroups = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -59,9 +59,58 @@ const UserGroups = (props) => {
   const endIndex = startIndex + itemsPerPage;
   const currentData = allGrps.slice(startIndex, endIndex);
 
-  const handleAddGrp = () => {};
+  const handleAddGrp = (e, group_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("group_id", group_id);
+    formData.append("user_id", userId);
+    formData.append("generate_token", true);
+    const url = "http://127.0.0.1:8000/user-tab2/enroll_groups_to_user";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        toast.success("Added to group successfully!!!");
+        getAllGroups();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to add...");
+      });
+  };
 
-  const handleRemoveGrp = () => {};
+  const handleRemoveGrp = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(`http://127.0.0.1:8000/user-tab2/remove_groups_from_user`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        toast.success("Removed from group successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        getAllGroups();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to remove...", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
 
   return (
     <Fragment>
@@ -98,7 +147,6 @@ const UserGroups = (props) => {
                         <th>
                           <strong>GROUP</strong>
                         </th>
-
                         <th>
                           <center>
                             <strong>OPTIONS</strong>
@@ -146,9 +194,7 @@ const UserGroups = (props) => {
               ) : (
                 <>
                   <div>
-                    <p className="text-center fs-20 fw-bold">
-                      No Course Found.
-                    </p>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
                   </div>
                 </>
               )}
