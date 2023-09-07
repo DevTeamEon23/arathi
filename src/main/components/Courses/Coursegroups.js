@@ -48,7 +48,10 @@ const Coursegroups = (props) => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/course_tab2/fetch_groups_of_course", config)
+      .get(
+        "https://v1.eonlearning.tech/course_tab2/fetch_groups_of_course",
+        config
+      )
       .then((response) => {
         const grps = response.data.data.groups_ids;
         setAllGrps(grps);
@@ -65,7 +68,8 @@ const Coursegroups = (props) => {
     formData.append("group_id", group_id);
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/course_tab2/enroll_group_to_course";
+    const url =
+      "https://v1.eonlearning.tech/course_tab2/enroll_group_to_course";
     const authToken = token;
     axios
       .post(url, formData, {
@@ -96,7 +100,7 @@ const Coursegroups = (props) => {
     };
     axios
       .delete(
-        `http://127.0.0.1:8000/course_tab2/remove_groups_from_course
+        `https://v1.eonlearning.tech/course_tab2/remove_groups_from_course
       `,
         {
           ...config,

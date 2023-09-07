@@ -74,7 +74,7 @@ const ImportUser = () => {
       console.log(selectedFile);
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const url = "http://127.0.0.1:8000/lms-service/addusers_excel";
+      const url = "https://v1.eonlearning.tech/lms-service/addusers_excel";
       const authToken = window.localStorage.getItem("jwt_access_token");
 
       await axios

@@ -146,7 +146,7 @@ const Users = () => {
                   </div>
                 ) : userData.length > 0 ? (
                   <Table responsive striped bordered>
-                    <thead>
+                    <thead className="sticky-header">
                       <tr>
                         <th>
                           <strong>
