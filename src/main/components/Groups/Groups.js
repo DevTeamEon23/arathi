@@ -156,7 +156,8 @@ const Groups = () => {
       const formData = new FormData();
       formData.append("course_id", selectCourseData.value);
       formData.append("generate_token", true);
-      const url = "http://127.0.0.1:8000/lms-service/mass_enroll_course_group";
+      const url =
+        "https://v1.eonlearning.tech/lms-service/mass_enroll_course_group";
       axios
         .post(url, formData, {
           headers: {
@@ -176,7 +177,35 @@ const Groups = () => {
     }
   };
 
-  const handleMassActionRemove = () => {};
+  const handleMassActionRemove = async (e) => {
+    e.preventDefault();
+    if (selectCourseData === null) {
+      setselectCourseError("Please select a course before remove");
+    } else {
+      setselectCourseError(null);
+      setShowMassActionModal(false);
+      const url =
+        "https://v1.eonlearning.tech/lms-service/mass_unenroll_course_group";
+      const formData = new FormData();
+      formData.append("course_id", selectCourseData.value);
+      await axios
+        .delete(url, {
+          headers: {
+            "Auth-Token": token,
+          },
+          data: formData,
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("Course remove successfully!!!");
+        })
+        .catch((error) => {
+          console.error(error);
+          setShowMassActionModal(false);
+          toast.error("Failed !!! Unable to remove course...");
+        });
+    }
+  };
 
   return (
     <Fragment>
