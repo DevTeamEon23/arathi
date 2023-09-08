@@ -12,10 +12,7 @@ import profile06 from "@images/profile/6.jpg";
 import profile07 from "@images/profile/7.jpg";
 import profile08 from "@images/profile/8.jpg";
 import profile09 from "@images/profile/9.jpg";
-import profile from "@images/profile/profile.png";
-// import PageTitle from "../../../nav/PageTitle";
 import axios from "axios";
-import { toast } from "react-toastify";
 
 const AppProfile = () => {
   const [activeToggle, setActiveToggle] = useState("posts");
@@ -24,18 +21,12 @@ const AppProfile = () => {
   const [cameraModal, setCameraModal] = useState(false);
   const [linkModal, setLinkModal] = useState(false);
   const [replayModal, setReplayModal] = useState(false);
-  const options = {
-    settings: {
-      overlayColor: "#000000",
-    },
-  };
   const [token, setToken] = useState(); //auth token
   const [userEmail, setUserEmail] = useState(""); //email
   const [userName, setUserName] = useState(""); //name
   const [profileImg, setProfileImg] = useState(""); //img file
   const [userRole, setUserRole] = useState("");
   const user_id = localStorage.getItem("id");
-  const backendBaseUrl = "https://v1.eonlearning.tech";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -58,12 +49,11 @@ const AppProfile = () => {
         }
       );
       if (response.data.status === "success") {
-        console.log(response.data.data);
         const res = response.data.data;
         setUserName(res.full_name);
         setUserEmail(res.email);
         setUserRole(res.role);
-        setProfileImg(`${backendBaseUrl}/${res.file}`);
+        setProfileImg(res.file);
       }
     } catch (error) {
       console.error(error);
@@ -72,8 +62,6 @@ const AppProfile = () => {
 
   return (
     <Fragment>
-      {/* <PageTitle activeMenu="Profile" motherMenu="App" /> */}
-
       <div className="row">
         <div className="col-lg-12">
           <div className="profile card card-body px-3 pt-3 pb-0">
@@ -86,7 +74,7 @@ const AppProfile = () => {
                   <img
                     src={profileImg}
                     className="img-fluid rounded-circle"
-                    style={{ width: "150px" }}
+                    style={{ width: "140px" }}
                     alt="profile"
                   />
                 </div>
