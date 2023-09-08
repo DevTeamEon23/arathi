@@ -1,6 +1,9 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
-import pic1 from "@images/Users/Filessvg.svg";
+import Dropzone from "react-dropzone-uploader";
+import "react-dropzone-uploader/dist/styles.css";
+import { utils, writeFile } from "xlsx";
+import * as XLSX from "xlsx";
 
 import {
   Dropdown,
@@ -15,9 +18,11 @@ import {
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
-  console.log({ userId });
   const [activeTab, setActiveTab] = useState("user-files/:id");
-  let history = useHistory();
+  const [selectedFile, setSelectedFile] = useState(null); //excel file
+  const [excelData, setExcelData] = useState([]);
+  const dropzoneRef = useRef(null);
+  const history = useHistory();
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -30,52 +35,46 @@ const UserFiles = (props) => {
     setActiveTab(tab);
   }, [history.location.pathname]);
 
+  const handleFileDrop = async (files, allFiles) => {
+    if (files.length > 0) {
+      setSelectedFile(files[0].file);
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const arrayBuffer = event.target.result;
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          raw: true,
+        });
+        setExcelData(jsonData);
+      };
+      reader.readAsArrayBuffer(files[0].file);
+    }
+  };
+
+  const styles = {
+    dropzone: {
+      minHeight: 200,
+      maxHeight: 250,
+      width: "100%",
+      backgroundColor: "#f2f4fa",
+      border: "4px dashed #DDDFE1",
+      overflow: "hidden",
+    },
+    inputLabel: {
+      color: "#7e7e7e",
+      fontSize: "18px",
+      fontWeight: "normal",
+      backgroundColor: "#f2f4fa",
+    },
+  };
+
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as='div' className='nav nav-tabs' id='nav-tab' role='tablist'>
-          <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='edit-user/:id'
-          >
-            Info
-          </Link>
-          <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='/user-courses-info'
-          >
-            Courses
-          </Link>
-          <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='/user-groups'
-          >
-            Groups
-          </Link>
-          <Link
-            as='button'
-            className='nav-link  nt-unseen'
-            id='nav-following-tab'
-            eventKey='Follow'
-            type='button'
-            to='/user-files'
-          >
-            Files
-          </Link>
-        </Nav.Item>
-      </Nav> */}
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -88,18 +87,18 @@ const UserFiles = (props) => {
               <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <div className="card-header">
-              <h4 className="card-title">Saved Files </h4>
+              <h4 className="card-title">Files</h4>
             </div>
-
-            <div className="row mb-5">
-              <div className="col-lg-3"></div>
-              <div className="col-lg-7">
-                <img src={pic1} height={500} width={500} />
-                <h4 className="mb-10">
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You
-                  dont have saved any files
-                </h4>
-              </div>
+            <div className="card-body">
+              <Dropzone
+                onSubmit={handleFileDrop}
+                ref={dropzoneRef}
+                inputContent="Drag a Excel or CSV file or click to browse"
+                styles={styles}></Dropzone>
+              {/* <div className="text-end fs-6">
+                Accepted Files : CSV, xls, xlsx - 1 MB
+              </div> */}
+              <br />
             </div>
           </div>
         </div>
