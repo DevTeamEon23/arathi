@@ -426,9 +426,7 @@ const EditUser = (props) => {
                         </div>
                         <div className="col-xl-6">
                           <div className="form-group mb-3 row">
-                            <label
-                              className="col-lg-3 col-form-label"
-                              htmlFor="val-suggestions">
+                            <label className="col-lg-3 col-form-label">
                               Add Photo<span className="text-danger">*</span>
                             </label>
                             <div className="profile-info col-lg-6">

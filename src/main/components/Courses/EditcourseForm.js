@@ -1,14 +1,11 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-
-import TimePickerPicker from "react-time-picker";
 import {
   Dropdown,
   DropdownButton,
   ButtonGroup,
   Button,
-  Nav,
   Modal,
   Table,
   Tab,
@@ -17,7 +14,7 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
-import Url from "../../../../src/auth/authService/Url";
+import { RxCross2 } from "react-icons/rx";
 import { CircularProgress } from "@material-ui/core";
 
 const certificate = [
@@ -35,7 +32,6 @@ const level = [
 
 const EditcourseForm = (props) => {
   const courseID = props.match.params.id;
-  console.log({ courseID });
   const [largeModal, setLargeModal] = useState(false);
   const [courseData, setCourseData] = useState();
   const [id, setId] = useState();
@@ -43,7 +39,6 @@ const EditcourseForm = (props) => {
 
   const [coursename, setCoursename] = useState("");
   const [file, setFile] = useState(null);
-  const fileRef = useRef(null); //for image
   const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(
     {}
   ); //Certificate
@@ -55,7 +50,6 @@ const EditcourseForm = (props) => {
   const [isHide, setIsHide] = useState(false); //Hide
   const [price, setPrice] = useState("");
   const [courselink, setCourselink] = useState(""); //to save youtube link
-  const [isValidLink, setIsValidLink] = useState(true);
   const fileInputRef = useRef(null);
   const [capacity, setCapacity] = useState(""); //Capacity
   const [startdate, setStartdate] = useState(""); //Course StartDate
@@ -63,9 +57,10 @@ const EditcourseForm = (props) => {
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  const backendBaseUrl = "https://v1.eonlearning.tech";
   const [activeTab, setActiveTab] = useState("edit-courses/:id");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
+  const [imageUrl, setImageUrl] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -108,13 +103,12 @@ const EditcourseForm = (props) => {
       formData.append("file", file);
 
       const url = "https://v1.eonlearning.tech/lms-service/update_courses";
-      const authToken = token;
       console.log(file, selectedVideo);
       axios
         .post(url, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Auth-Token": authToken,
+            "Auth-Token": token,
           },
         })
         .then((response) => {
@@ -130,11 +124,6 @@ const EditcourseForm = (props) => {
         });
     }
   };
-
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(e.target.files[0]);
-  }
 
   // Course details by ID
   const getCourseById = async (id, authToken) => {
@@ -152,7 +141,7 @@ const EditcourseForm = (props) => {
         }
       );
       const res = response.data.data;
-      console.log(response.data.data);
+      console.log("editcourse", response.data.data);
       setCourseData(response.data.data);
 
       const dateObject = new Date(res.startdate);
@@ -183,8 +172,8 @@ const EditcourseForm = (props) => {
         setStartdate(formattedStart);
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
-        setFile(`${backendBaseUrl}/${res.file}`);
-        setSelectedVideo(`${backendBaseUrl}/${res.coursevideo}`);
+        setFile(res.file);
+        setSelectedVideo(res.coursevideo);
         setSelectedOptionCertificate({
           value: res.certificate,
           label: res.certificate,
@@ -255,7 +244,19 @@ const EditcourseForm = (props) => {
     }
   };
 
-  let history = useHistory();
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUrl(imageUrl);
+      setFile(file);
+    }
+  };
+  const handleImageDelete = () => {
+    setImageUrl("");
+    setFile(null); // Reset the selected file
+  };
+
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
   const chackboxFun = (type) => {
@@ -633,37 +634,44 @@ const EditcourseForm = (props) => {
 
                         <div className="col-xl-5">
                           <div className="form-group mb-3 row">
-                            <label
-                              className="col-lg-3 col-form-label"
-                              htmlFor="file">
+                            <label className="col-lg-3 col-form-label">
                               Add Photo<span className="text-danger">*</span>
                             </label>
-                            <div className="profile-info col-lg-7">
-                              <div className="profile-photo">
-                                {file ? (
-                                  <>
-                                    {" "}
-                                    <img
-                                      src={file}
-                                      width="250"
-                                      height="250"
-                                      alt="file"
-                                    />{" "}
-                                    <br />
-                                    <br />
-                                  </>
-                                ) : (
-                                  ""
-                                )}
 
-                                <input
-                                  type="file"
-                                  name="file"
-                                  id="file"
-                                  ref={fileRef}
-                                  accept=".jpeg, .png, .jpg"
-                                  onChange={handleChange}
-                                />
+                            <div className="profile-info col-lg-7">
+                              <div>
+                                {imageUrl && (
+                                  <div className="mb-3">
+                                    <img
+                                      src={imageUrl}
+                                      alt="Preview"
+                                      className="img-thumbnail"
+                                      width="250"
+                                      height="200"
+                                    />
+                                    <RxCross2
+                                      className="fs-18 fs-bold"
+                                      title="Delete"
+                                      style={{
+                                        marginBottom: "220px",
+                                        marginLeft: "18px",
+                                      }}
+                                      onClick={handleImageDelete}
+                                    />
+                                  </div>
+                                )}
+                                <label>
+                                  {file
+                                    ? `Selected File: ${file}`
+                                    : "Choose a file..."}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    style={{ display: "none" }}
+                                    className="form-control-file"
+                                  />
+                                </label>
                               </div>
                             </div>
                           </div>
@@ -707,7 +715,8 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/video">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-play-circle"> &nbsp;</i>Video
+                                  <i className="bi bi-play-circle"> &nbsp;</i>
+                                  Video
                                 </div>{" "}
                               </Link>
                             </Dropdown.Item>
@@ -715,7 +724,7 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/presentation">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-file-slides"> &nbsp;</i>
+                                  <i className="bi bi-file-slides"> &nbsp;</i>
                                   Presentation | Documents{" "}
                                 </div>{" "}
                               </Link>
@@ -723,8 +732,8 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/scorm">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-command"> &nbsp;</i>SCORM |
-                                  xAPI | cmi5
+                                  <i className="bi bi-command"> &nbsp;</i>SCORM
+                                  | xAPI | cmi5
                                 </div>{" "}
                               </Link>
                             </Dropdown.Item>
@@ -732,7 +741,8 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/test-question">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-journal-check"> &nbsp;</i>Test
+                                  <i className="bi bi-journal-check"> &nbsp;</i>
+                                  Test
                                 </div>{" "}
                               </Link>
                             </Dropdown.Item>
@@ -740,7 +750,7 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/assignment">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-clipboard"> &nbsp;</i>
+                                  <i className="bi bi-clipboard"> &nbsp;</i>
                                   Assignment
                                 </div>{" "}
                               </Link>
@@ -748,7 +758,10 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/instructor-led">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-calendar4-week"> &nbsp;</i>
+                                  <i className="bi bi-calendar4-week">
+                                    {" "}
+                                    &nbsp;
+                                  </i>
                                   Instructor-led training
                                 </div>{" "}
                               </Link>
@@ -769,7 +782,10 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/message_users">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-chat-right-text"> &nbsp;</i>
+                                  <i className="bi bi-chat-right-text">
+                                    {" "}
+                                    &nbsp;
+                                  </i>
                                   Message Users
                                 </div>{" "}
                               </Link>
@@ -777,8 +793,11 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="/ad_event">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-calendar4-week"> &nbsp;</i>Add
-                                  Event
+                                  <i className="bi bi-calendar4-week">
+                                    {" "}
+                                    &nbsp;
+                                  </i>
+                                  Add Event
                                 </div>{" "}
                               </Link>
                             </Dropdown.Item>
@@ -786,8 +805,8 @@ const EditcourseForm = (props) => {
                             <Dropdown.Item>
                               <Link to="#">
                                 <div className="dropdown-item-content">
-                                  <i class="bi bi-lock"> &nbsp;</i>Lock Course
-                                  Content
+                                  <i className="bi bi-lock"> &nbsp;</i>Lock
+                                  Course Content
                                 </div>{" "}
                               </Link>
                             </Dropdown.Item>
