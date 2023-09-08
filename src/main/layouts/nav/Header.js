@@ -63,7 +63,6 @@ const Header = ({ onNote }) => {
   const [profileImg, setProfileImg] = useState(""); //img file
   const [token, setToken] = useState(); //auth token
   const user_id = localStorage.getItem("id");
-  const backendBaseUrl = "https://v1.eonlearning.tech";
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -90,7 +89,7 @@ const Header = ({ onNote }) => {
       if (response.data.status === "success") {
         console.log(response.data.data);
         const res = response.data.data;
-        setProfileImg(`${backendBaseUrl}/${res.file}`);
+        setProfileImg(res.file);
       }
     } catch (error) {
       console.error(error);

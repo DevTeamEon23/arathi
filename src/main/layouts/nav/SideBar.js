@@ -888,7 +888,7 @@ const SideBar = () => {
                     className={`${areports.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
-                      <i class="bi bi-graph-up"></i>
+                      <i className="bi bi-graph-up"></i>
                       <span className="nav-text">REPORTS</span>
                     </Link>
                     <ul>

@@ -3,15 +3,9 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Nav, Button, Tab, Tabs } from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
-
-// const categorytype = [
-//   { value: "Superadmin", label: "SuperAdmin" },
-//   { value: "Admin", label: "Admin" },
-//   { value: "Instructor", label: "Instructor" },
-//   { value: "Learner", label: "Learner" },
-// ];
+import { RxCross2 } from "react-icons/rx";
 
 const timezonetype = [
   { value: "ist", label: "India Standard Time (IST)" },
@@ -29,7 +23,6 @@ const langtype = [
 
 const EditUser = (props) => {
   const userId = props.match.params.id;
-  console.log({ userId });
   const [id, setId] = useState();
   const [userName, setUserName] = useState(""); //Full name
   const [eid, setEid] = useState("");
@@ -41,21 +34,17 @@ const EditUser = (props) => {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState();
-  const fileRef = useRef(null);
   const [file, setFile] = useState(null);
-  // const [selectedOption, setSelectedOption] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
-  const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useState(); //user list data
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
-  // const [selectedOptionRole, setSelectedOptionRole] = useState({}); // role
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
   const [activeTab, setActiveTab] = useState("edit-user/:id");
-  const backendBaseUrl = "https://v1.eonlearning.tech";
   const history = useHistory();
 
   useEffect(() => {
@@ -69,7 +58,6 @@ const EditUser = (props) => {
 
   // User details by ID
   const getUsersById = async (id, authToken) => {
-    console.log("inside get user by id", id, authToken);
     try {
       const response = await axios.get(
         "https://v1.eonlearning.tech/lms-service/users_by_onlyid",
@@ -84,7 +72,6 @@ const EditUser = (props) => {
       );
       setUserData(response.data.data);
       if (response.data.status === "success") {
-        console.log(response.data.data);
         const res = response.data.data;
         setEid(res.eid);
         setSid(res.sid);
@@ -95,11 +82,10 @@ const EditUser = (props) => {
         setAdhr(res.adhr);
         setBio(res.bio);
         setUsername(res.username);
-        // setSelectedOptionRole({ value: res.role, label: res.role });
         setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
-        // setFile(res.file);
-        setFile(`${backendBaseUrl}/${res.file}`);
+        setFile(res.file);
+        setImageUrl(res.file);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
         setExcludeFromEmail(res.exclude_from_email);
@@ -123,7 +109,6 @@ const EditUser = (props) => {
   //Update User info API
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("id", id);
     formData.append("eid", eid);
@@ -143,19 +128,18 @@ const EditUser = (props) => {
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
 
+    console.log(file, "file");
     const url = "https://v1.eonlearning.tech/lms-service/update_users";
-    const authToken = token;
     axios
       .post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
+          "Auth-Token": token,
         },
       })
       .then((response) => {
         console.log(response.data);
         toast.success("User updated successfully!!!");
-        clearAllState();
         history.push(`/users-list`);
       })
       .catch((error) => {
@@ -163,11 +147,6 @@ const EditUser = (props) => {
         toast.error("Failed !!! Unable to update user...");
       });
   };
-
-  function handleChange(e) {
-    console.log(e.target.files);
-    setFile(e.target.files[0]);
-  }
 
   const validateName = () => {
     if (!/^[a-zA-Z\s]+$/.test(userName)) {
@@ -191,83 +170,33 @@ const EditUser = (props) => {
     }
   };
 
-  const clearAllState = () => {
-    setEid("");
-    setUserName("");
-    setEmail("");
-    setDept("");
-    setAdhr("");
-    setBio("");
-    setUsername("");
-    setPassword("");
-    setFile(null);
-    fileRef.current.value = "";
-    setIsActive(false);
-    setIsDeactive(false);
-    setExcludeFromEmail(false);
-    setShowPassword(false);
-    setNameErrorMsg("");
-    setAadharNoErrorMsg("");
-    // setSelectedOptionRole(null);
-    setSelectedOptionTimeZone(null);
-    setSelectedOptionLang(null);
-  };
-
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     history.push(`/${tab}`);
   };
 
   useEffect(() => {
-    // When the component mounts, set the active tab based on the current route
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUrl(imageUrl);
+      setFile(file);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setImageUrl("");
+    setFile(null); // Reset the selected file
+  };
+
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/edit-user/:id">
-            Info
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/user-courses-info">
-            Courses
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/user-groups">
-            Groups
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/user-files">
-            Files
-          </Link>
-        </Nav.Item>
-      </Nav> */}
-
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -353,7 +282,7 @@ const EditUser = (props) => {
                                 className="form-control"
                                 id="email"
                                 value={email}
-                                disabled // Add the disabled attribute here
+                                disabled
                                 onChange={(e) => setEmail(e.target.value)}
                                 style={{ cursor: "not-allowed" }}
                               />
@@ -428,32 +357,15 @@ const EditUser = (props) => {
                               Password <span className="text-danger">*</span>
                             </label>
                             <div className="input-group col-lg-6">
-                              {/* <span className='input-group-text'>
-                            {' '}
-                            <i className='fa fa-lock' />{' '}
-                          </span> */}
-
                               <input
-                                // type={`${showPassword ? 'text' : 'password'}`}
                                 type="password"
                                 className="form-control"
                                 id="password"
                                 value={password}
-                                disabled // Add the disabled attribute here
+                                disabled
                                 onChange={(e) => setPassword(e.target.value)}
                                 style={{ cursor: "not-allowed" }}
                               />
-                              {/* <div
-                            className='input-group-text '
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {' '}
-                            {showPassword === false ? (
-                              <i className='fa fa-eye-slash' />
-                            ) : (
-                              <i className='fa fa-eye' />
-                            )}
-                          </div> */}
                             </div>
                           </div>
 
@@ -476,27 +388,6 @@ const EditUser = (props) => {
                             </div>
                           </div>
                           <br />
-
-                          <div className="form-group mb-3 row"></div>
-                          {/* <div className="form-group mb-3 row">
-                            <label
-                              className="col-lg-4 col-form-label"
-                              htmlFor="val-username">
-                              User Type
-                              <span className="text-danger">*</span>
-                            </label>
-                            <div className="col-lg-6">
-                              <Select
-                                value={selectedOptionRole}
-                                options={categorytype}
-                                onChange={setSelectedOptionRole}
-                                name="categorytype"></Select>
-                              <div
-                                id="val-username1-error"
-                                className="invalid-feedback animated fadeInUp"
-                                style={{ display: "block" }}></div>
-                            </div>
-                          </div> */}
 
                           <div className="form-group mb-3 row">
                             <label
@@ -535,39 +426,46 @@ const EditUser = (props) => {
                         </div>
                         <div className="col-xl-6">
                           <div className="form-group mb-3 row">
-                            <label
-                              className="col-lg-4 col-form-label"
-                              htmlFor="val-suggestions">
-                              Add Photo<span className="text-danger">*</span>
-                            </label>
-                            <div className="profile-info col-lg-6">
-                              <div className="profile-photo">
-                                {file ? (
-                                  <>
-                                    {" "}
-                                    <img
-                                      // src={file && URL.createObjectURL(file)}
-                                      src={file}
-                                      width="250"
-                                      height="250"
-                                      alt="file"
-                                    />{" "}
-                                    <br />
-                                    <br />
-                                  </>
-                                ) : (
-                                  ""
-                                )}
-
+                            {/* <div className="profile-info col-lg-6"> */}
+                            <div>
+                              {imageUrl && (
+                                <div className="mb-3">
+                                  <img
+                                    src={imageUrl}
+                                    alt="Preview"
+                                    className="img-thumbnail"
+                                    width="250"
+                                    height="200"
+                                  />
+                                  <RxCross2
+                                    className="fs-18 fs-bold"
+                                    title="Delete"
+                                    style={{
+                                      marginBottom: "220px",
+                                      marginLeft: "18px",
+                                    }}
+                                    onClick={handleImageDelete}
+                                  />
+                                </div>
+                              )}
+                              <label>
+                                {file
+                                  ? `Selected File: ${file}`
+                                  : "Choose a file..."}
                                 <input
                                   type="file"
-                                  name="file"
-                                  ref={fileRef}
-                                  accept=".jpeg, .png, .jpg"
-                                  onChange={handleChange}
+                                  accept="image/*"
+                                  onChange={handleImageChange}
+                                  style={{ display: "none" }}
+                                  className="form-control-file"
                                 />
-                              </div>
+                              </label>
                             </div>
+                            <label className="col-lg-3 col-form-label">
+                              Add Photo<span className="text-danger">*</span>
+                            </label>
+                            <br />
+                            {/* </div> */}
                           </div>
                         </div>
 

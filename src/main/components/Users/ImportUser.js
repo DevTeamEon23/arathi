@@ -133,37 +133,13 @@ const ImportUser = () => {
   };
 
   useEffect(() => {
-    // When the component mounts, set the active tab based on the current route
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
 
   return (
     <>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/users-list">
-            Users List
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/export-user">
-            Export Users
-          </Link>
-        </Nav.Item>
-      </Nav> */}
-
       <Row>
         <Col xxl={12}>
           <Card>
@@ -180,7 +156,7 @@ const ImportUser = () => {
                 onSubmit={handleFileDrop}
                 ref={dropzoneRef}
                 accept=".csv, .xls, .xlsx"
-                inputContent="Drag a Excel or CSV file or click to brows"
+                inputContent="Drag a Excel or CSV file or click to browse"
                 styles={styles}></Dropzone>
               <div className="text-end fs-6">
                 Accepted Files : CSV, xls, xlsx - 1 MB
