@@ -426,45 +426,46 @@ const EditUser = (props) => {
                         </div>
                         <div className="col-xl-6">
                           <div className="form-group mb-3 row">
+                            {/* <div className="profile-info col-lg-6"> */}
+                            <div>
+                              {imageUrl && (
+                                <div className="mb-3">
+                                  <img
+                                    src={imageUrl}
+                                    alt="Preview"
+                                    className="img-thumbnail"
+                                    width="250"
+                                    height="200"
+                                  />
+                                  <RxCross2
+                                    className="fs-18 fs-bold"
+                                    title="Delete"
+                                    style={{
+                                      marginBottom: "220px",
+                                      marginLeft: "18px",
+                                    }}
+                                    onClick={handleImageDelete}
+                                  />
+                                </div>
+                              )}
+                              <label>
+                                {file
+                                  ? `Selected File: ${file}`
+                                  : "Choose a file..."}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageChange}
+                                  style={{ display: "none" }}
+                                  className="form-control-file"
+                                />
+                              </label>
+                            </div>
                             <label className="col-lg-3 col-form-label">
                               Add Photo<span className="text-danger">*</span>
                             </label>
-                            <div className="profile-info col-lg-6">
-                              <div>
-                                {imageUrl && (
-                                  <div className="mb-3">
-                                    <img
-                                      src={imageUrl}
-                                      alt="Preview"
-                                      className="img-thumbnail"
-                                      width="250"
-                                      height="200"
-                                    />
-                                    <RxCross2
-                                      className="fs-18 fs-bold"
-                                      title="Delete"
-                                      style={{
-                                        marginBottom: "220px",
-                                        marginLeft: "18px",
-                                      }}
-                                      onClick={handleImageDelete}
-                                    />
-                                  </div>
-                                )}
-                                <label>
-                                  {file
-                                    ? `Selected File: ${file}`
-                                    : "Choose a file..."}
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    style={{ display: "none" }}
-                                    className="form-control-file"
-                                  />
-                                </label>
-                              </div>
-                            </div>
+                            <br />
+                            {/* </div> */}
                           </div>
                         </div>
 
