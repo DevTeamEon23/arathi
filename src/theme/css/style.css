@@ -37336,7 +37336,7 @@ button:focus {
   width: 100%;
 }
 
-/* New classes */
+/* New css classes */
 .btn-block-half {
   display: block;
   width: 40%;
@@ -37368,7 +37368,6 @@ button:focus {
   cursor: pointer;
 }
 
-/* Add this CSS in your stylesheet */
 .enrolled-label {
   display: inline-block;
   padding: 3px 8px;
@@ -37377,6 +37376,14 @@ button:focus {
   border-radius: 4px;
   font-size: 12px;
   margin-left: 1rem;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
 }
 
 /* ******************** */
@@ -41917,7 +41924,7 @@ table.dataTable.display tbody td {
   width: 60px;
   height: 60px;
   display: inline-block;
-  background: url("../images/like.png");
+  background: url("/src/theme/images/like.png");
   cursor: pointer;
   margin: -25px -15px;
 }

@@ -87,7 +87,7 @@ const Users = () => {
   const handleDelete = () => {
     const config = {
       headers: {
-        "Auth-Token": token, // Attach the JWT token in the Authorization header
+        "Auth-Token": token,
       },
     };
     const requestBody = {
@@ -106,7 +106,6 @@ const Users = () => {
         });
       })
       .catch((error) => {
-        // Handle the error
         console.error(error);
         setShowModal(false);
         toast.error("Failed to delete user!", {
@@ -117,8 +116,6 @@ const Users = () => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  // const currentData = userAllData.slice(startIndex, endIndex);
-  // const currentData = {userRole === "Superadmin"?userAllData.slice(startIndex, endIndex):""}
   let currentData;
 
   if (userRole === "Superadmin") {

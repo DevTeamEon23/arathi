@@ -407,30 +407,7 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li className={`${events.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-calendar-check"></i>
-                      <span className="nav-text">NOTIFICATION ENGINE</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${path === "events" ? "mm-active" : ""}`}
-                          to="/events">
-                          Notifications
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-events" ? "mm-active" : ""
-                          }`}
-                          to="/add-events">
-                          Add Notification
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+
                   {/* <li
                     className={`${
                       usertypes.includes(path) ? "mm-active" : ""
@@ -494,109 +471,7 @@ const SideBar = () => {
                       {/* <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li> */}
                     </ul>
                   </li>
-                  <li
-                    className={`${reports.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-graph-up"></i>
-                      <span className="nav-text">REPORTS</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "reports-overview" ? "mm-active" : ""
-                          }`}
-                          to="/reports-overview">
-                          Overview
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-reports" ? "mm-active" : ""
-                          }`}
-                          to="/user-reports">
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course-reports" ? "mm-active" : ""
-                          }`}
-                          to="/course-reports">
-                          Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "group-reports" ? "mm-active" : ""
-                          }`}
-                          to="/group-reports">
-                          Groups
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "scorm-reports" ? "mm-active" : ""
-                          }`}
-                          to="/scorm-reports">
-                          Scorm
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "test-reports" ? "mm-active" : ""
-                          }`}
-                          to="/test-reports">
-                          Tests
-                        </Link>
-                      </li>
-                      {/* <li>
-                        <Link
-                          className={`${
-                            path === 'survey-reports' ? 'mm-active' : ''
-                          }`}
-                          to='/survey-reports'
-                        >
-                          Surveys
-                        </Link>
-                      </li> */}
-                      <li>
-                        <Link
-                          className={`${
-                            path === "assign-reports" ? "mm-active" : ""
-                          }`}
-                          to="/assign-reports">
-                          Assignments
-                        </Link>
-                      </li>
-                      {/* <li>
-                        <Link
-                          className={`${
-                            path === 'ilt-reports' ? 'mm-active' : ''
-                          }`}
-                          to='/ilt-reports'
-                        >
-                          ILTS
-                        </Link>
-                      </li> */}
-                      <li>
-                        <Link
-                          className={`${
-                            path === "infographics" ? "mm-active" : ""
-                          }`}
-                          to="/infographics">
-                          Info Graphics
-                        </Link>
-                      </li>
-                      {/* <li><Link className={`${path === "custom-reports" ? "mm-active" : ""}`} to="/custom-reports">Custom</Link></li> */}
-                    </ul>
-                  </li>
+
                   {/* <li
                     className={`${
                       accountsettings.includes(path) ? 'mm-active' : ''
@@ -1489,7 +1364,7 @@ const SideBar = () => {
             </>
           )}
         </MM>
-        <div className="plus-box">
+        {/* <div className="plus-box">
           <div className="d-flex align-items-center">
             <h5>Upgrade your Account to Pro</h5>
             <img src={medal} alt="" />
@@ -1498,14 +1373,14 @@ const SideBar = () => {
           <Link to={"#"} className="btn btn-primary btn-sm">
             Upgrade
           </Link>
-        </div>
+        </div> */}
+
         <div className="copyright">
-          <p>
-            <strong>GetSkills Online Learning Admin</strong> © 2022 All Rights
-            Reserved
-          </p>
-          <p className="fs-12">
-            Made with <span className="heart"></span> by DexignZone
+          {/* <p>
+            <strong>EonLearning&nbsp;</strong> © 2023 All Rights Reserved
+          </p> */}
+          <p className="fs-14">
+            Made with <span className="heart"></span> by EonLearning
           </p>
         </div>
       </PerfectScrollbar>
