@@ -40,6 +40,7 @@ const EditUser = (props) => {
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [userData, setUserData] = useState(); //user list data
+  const [userRole, setUserRole] = useState(); // For user base view Role
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
@@ -48,6 +49,8 @@ const EditUser = (props) => {
   const history = useHistory();
 
   useEffect(() => {
+    const role = window.localStorage.getItem("role");
+    setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     if (userId !== undefined) {
@@ -120,7 +123,7 @@ const EditUser = (props) => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", "admin");
+    formData.append("role", userRole === "Superadmin" ? "admin" : "Instructor");
     formData.append("timezone", selectedOptionTimeZone.value);
     formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
@@ -209,7 +212,10 @@ const EditUser = (props) => {
               <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <div className="card-header">
-              <h4 className="card-title">Edit User Form (Admin)</h4>
+              <h4 className="card-title">
+                Edit User Form{" "}
+                {userRole === "Superadmin" ? "(Admin)" : "(Instructor)"}
+              </h4>
             </div>
             <div className="card-body">
               <div className="form-validation">

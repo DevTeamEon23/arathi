@@ -93,7 +93,7 @@ const SideBar = () => {
       "add-user-type",
     ],
     ausers = [
-      "a-users-list",
+      "users-list",
       "ad-add-user",
       "ad-edit-user",
       "ad-user-types",
@@ -693,7 +693,7 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Admin Dashboard Options************************************ */}
-          {(roleType === "Admin" || roleType === "Superadmin") && (
+          {roleType === "Admin" && (
             <>
               <li className={`${admin.includes(path) ? "mm-active" : ""}`}>
                 <Link className="has-arrow" to="#">
@@ -717,9 +717,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "a-users-list" ? "mm-active" : ""
+                            path === "users-list" ? "mm-active" : ""
                           }`}
-                          to="/a-users-list">
+                          to="/users-list">
                           {" "}
                           Users{" "}
                         </Link>
@@ -1037,9 +1037,7 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Instructor Dashboard Options************************************ */}
-          {(roleType === "Admin" ||
-            roleType === "Instructor" ||
-            roleType === "Superadmin") && (
+          {roleType === "Instructor" && (
             <>
               <li
                 className={`${
@@ -1277,9 +1275,7 @@ const SideBar = () => {
             </>
           )}
           {/* *********************************** Learner Dashboard Options************************************ */}
-          {(roleType === "Superadmin" ||
-            roleType === "Admin" ||
-            roleType === "Learner") && (
+          {roleType === "Learner" && (
             <>
               <li className={`${learner.includes(path) ? "mm-active" : ""}`}>
                 <Link className="has-arrow" to="#">
