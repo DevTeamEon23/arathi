@@ -144,7 +144,7 @@ const UserGroups = (props) => {
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th className="text-center">
+                        <th>
                           <strong>GROUP</strong>
                         </th>
                         <th className="text-center">
@@ -156,7 +156,16 @@ const UserGroups = (props) => {
                       {allGrps.map((data, index) => {
                         return (
                           <tr key={index}>
-                            <td className="text-center">{data.groupname}</td>
+                            <td>
+                              {data.groupname}
+                              {data.user_group_enrollment_id === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">
+                                  Group Member
+                                </span>
+                              )}
+                            </td>
                             <td className="text-center">
                               {data.user_group_enrollment_id === null ? (
                                 <div

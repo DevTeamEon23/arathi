@@ -19,16 +19,21 @@ import { RotatingLines } from "react-loader-spinner";
 const Users = () => {
   const [uid, setUId] = useState(); //user id save for delete
   const [token, setToken] = useState(); //auth token
-  const [userData, setUserData] = useState([]); //user list data
+  const [userAllData, setUserAllData] = useState([]); //user list data
   const [showModal, setShowModal] = useState(false); //delete button modal
-  const history = useHistory();
+  const [userRole, setUserRole] = useState(); // For user base view Role
+  const [userAdminData, setUserAdminData] = useState([]); //user list admin data
   const [selectedFilter, setSelectedFilter] = useState(""); // Initialize with an empty string or default filter value
   const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const [totalUserData, setTotalUserData] = useState(); //user list data
+  const [totalUserData, setTotalUserData] = useState(); //user list data count
+  const [totalUserAdminData, setTotalUserAdminData] = useState(); //user list admin data count
   const itemsPerPage = 20; // Number of items to display per page
+  const history = useHistory();
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
+    const role = window.localStorage.getItem("role");
+    setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     getAllUsers();
@@ -39,18 +44,24 @@ const Users = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
-        "Auth-Token": jwtToken, // Attach the JWT token in the Authorization header
+        "Auth-Token": jwtToken,
       },
     };
     axios
       .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
+        const allUsers = response.data.data;
+        setUserAllData(allUsers);
+        setTotalUserData(allUsers.length);
+        const adminUsers = allUsers.filter(
+          (user) => user.role !== "Superadmin"
+        );
+        setUserAdminData(adminUsers);
         console.log(response.data.data.length);
-        setTotalUserData(response.data.data.length);
-        setUserData(response.data.data);
+        setTotalUserAdminData(adminUsers.length);
       })
       .catch((error) => {
-        toast.error("Failed to fetch users!"); // Handle the error
+        toast.error("Failed to fetch users!");
       });
   };
 
@@ -97,6 +108,7 @@ const Users = () => {
       .catch((error) => {
         // Handle the error
         console.error(error);
+        setShowModal(false);
         toast.error("Failed to delete user!", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -105,7 +117,15 @@ const Users = () => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = userData.slice(startIndex, endIndex);
+  // const currentData = userAllData.slice(startIndex, endIndex);
+  // const currentData = {userRole === "Superadmin"?userAllData.slice(startIndex, endIndex):""}
+  let currentData;
+
+  if (userRole === "Superadmin") {
+    currentData = userAllData.slice(startIndex, endIndex);
+  } else {
+    currentData = userAdminData.slice(startIndex, endIndex);
+  }
 
   return (
     <>
@@ -134,7 +154,7 @@ const Users = () => {
                 </div>
               </Card.Header>
               <Card.Body>
-                {userData.length === undefined ? (
+                {userAllData.length === undefined ? (
                   <div className="loader-container">
                     <RotatingLines
                       strokeColor="grey"
@@ -144,7 +164,7 @@ const Users = () => {
                       visible={true}
                     />
                   </div>
-                ) : userData.length > 0 ? (
+                ) : userAllData.length > 0 ? (
                   <Table responsive striped bordered>
                     <thead>
                       <tr>
@@ -186,11 +206,29 @@ const Users = () => {
                                 onChange={(e) =>
                                   setSelectedFilter(e.target.value)
                                 }>
-                                <option value="">All</option>{" "}
-                                <option value="Superadmin">SuperAdmin</option>
-                                <option value="Admin">Admin</option>
-                                <option value="Instructor">Instructor</option>
-                                <option value="Learner">Learner</option>
+                                {userRole === "Superadmin" && (
+                                  <>
+                                    <option value="">All</option>
+                                    <option value="Superadmin">
+                                      SuperAdmin
+                                    </option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Instructor">
+                                      Instructor
+                                    </option>
+                                    <option value="Learner">Learner</option>
+                                  </>
+                                )}
+                                {userRole === "Admin" && (
+                                  <>
+                                    <option value="">All</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Instructor">
+                                      Instructor
+                                    </option>
+                                    <option value="Learner">Learner</option>
+                                  </>
+                                )}
                               </select>
                             </center>
                           </strong>
@@ -280,13 +318,28 @@ const Users = () => {
                             </td>
                             <td>
                               <center>
-                                {item.role === "Admin" && (
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Edit"
-                                    onClick={(e) => handleEdit(item.id)}>
-                                    <i className="fas fa-pencil-alt"></i>
-                                  </div>
+                                {userRole === "Superadmin" ? (
+                                  <>
+                                    {item.role === "Admin" && (
+                                      <div
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                        title="Edit"
+                                        onClick={(e) => handleEdit(item.id)}>
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    {item.role === "Instructor" && (
+                                      <div
+                                        className="btn btn-primary shadow btn-xs sharp me-1"
+                                        title="Edit"
+                                        onClick={(e) => handleEdit(item.id)}>
+                                        <i className="fas fa-pencil-alt"></i>
+                                      </div>
+                                    )}
+                                  </>
                                 )}
 
                                 <div
@@ -316,7 +369,12 @@ const Users = () => {
                   <div className="d-flex align-items-center  ">
                     <h4 className=" ">
                       Showing <span>1-20 </span>from{" "}
-                      <span>{totalUserData} </span>data
+                      <span>
+                        {userRole === "Superadmin"
+                          ? totalUserData
+                          : totalUserAdminData}{" "}
+                      </span>
+                      data
                     </h4>
                     <div className="d-flex align-items-center ms-auto mt-2">
                       <Button
@@ -332,7 +390,7 @@ const Users = () => {
                       <Button
                         className="ml-2"
                         onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={endIndex >= userData.length}>
+                        disabled={endIndex >= userAllData.length}>
                         Next
                       </Button>
                     </div>
