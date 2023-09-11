@@ -74,7 +74,11 @@ const AppProfile = () => {
                   <img
                     src={profileImg}
                     className="img-fluid rounded-circle"
-                    style={{ width: "140px" }}
+                    style={{
+                      width: "180px",
+                      height: "150px",
+                      objectFit: "cover",
+                    }}
                     alt="profile"
                   />
                 </div>
