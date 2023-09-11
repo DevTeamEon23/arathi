@@ -233,7 +233,7 @@ const EditUser = (props) => {
                   <>
                     <form onSubmit={handleSubmit}>
                       <div className="row">
-                        <div className="col-xl-6">
+                        <div className="col-xl-7">
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
@@ -430,7 +430,7 @@ const EditUser = (props) => {
                             </div>
                           </div>
                         </div>
-                        <div className="col-xl-6">
+                        <div className="col-xl-5">
                           <div className="form-group mb-3 row">
                             {/* <div className="profile-info col-lg-6"> */}
                             <div>
@@ -440,8 +440,11 @@ const EditUser = (props) => {
                                     src={imageUrl}
                                     alt="Preview"
                                     className="img-thumbnail"
-                                    width="250"
-                                    height="200"
+                                    style={{
+                                      width: "250px",
+                                      height: "200px",
+                                      objectFit: "cover",
+                                    }}
                                   />
                                   <RxCross2
                                     className="fs-18 fs-bold"
@@ -467,7 +470,7 @@ const EditUser = (props) => {
                                 />
                               </label>
                             </div>
-                            <label className="col-lg-3 col-form-label">
+                            <label className="col-lg-4 col-form-label">
                               Add Photo<span className="text-danger">*</span>
                             </label>
                             <br />
