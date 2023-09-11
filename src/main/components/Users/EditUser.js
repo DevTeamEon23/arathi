@@ -40,6 +40,7 @@ const EditUser = (props) => {
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [userData, setUserData] = useState(); //user list data
+  const [userRole, setUserRole] = useState(); // For user base view Role
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
@@ -48,6 +49,8 @@ const EditUser = (props) => {
   const history = useHistory();
 
   useEffect(() => {
+    const role = window.localStorage.getItem("role");
+    setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     if (userId !== undefined) {
@@ -120,7 +123,7 @@ const EditUser = (props) => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", "admin");
+    formData.append("role", userRole === "Superadmin" ? "admin" : "Instructor");
     formData.append("timezone", selectedOptionTimeZone.value);
     formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
@@ -209,7 +212,10 @@ const EditUser = (props) => {
               <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <div className="card-header">
-              <h4 className="card-title">Edit User Form (Admin)</h4>
+              <h4 className="card-title">
+                Edit User Form{" "}
+                {userRole === "Superadmin" ? "(Admin)" : "(Instructor)"}
+              </h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
@@ -227,7 +233,7 @@ const EditUser = (props) => {
                   <>
                     <form onSubmit={handleSubmit}>
                       <div className="row">
-                        <div className="col-xl-6">
+                        <div className="col-xl-7">
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
@@ -424,7 +430,7 @@ const EditUser = (props) => {
                             </div>
                           </div>
                         </div>
-                        <div className="col-xl-6">
+                        <div className="col-xl-5">
                           <div className="form-group mb-3 row">
                             {/* <div className="profile-info col-lg-6"> */}
                             <div>
@@ -434,8 +440,11 @@ const EditUser = (props) => {
                                     src={imageUrl}
                                     alt="Preview"
                                     className="img-thumbnail"
-                                    width="250"
-                                    height="200"
+                                    style={{
+                                      width: "250px",
+                                      height: "200px",
+                                      objectFit: "cover",
+                                    }}
                                   />
                                   <RxCross2
                                     className="fs-18 fs-bold"
@@ -461,7 +470,7 @@ const EditUser = (props) => {
                                 />
                               </label>
                             </div>
-                            <label className="col-lg-3 col-form-label">
+                            <label className="col-lg-4 col-form-label">
                               Add Photo<span className="text-danger">*</span>
                             </label>
                             <br />
