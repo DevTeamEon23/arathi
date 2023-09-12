@@ -32,6 +32,7 @@ const SideBar = () => {
   const { iconHover, sidebarposition, headerposition, sidebarLayout } =
     useContext(ThemeContext)
   const [roleType, setRoleType] = useState()
+  const isLinksDisabled = true
 
   useEffect(() => {
     var btn = document.querySelector('.nav-control')
@@ -286,7 +287,7 @@ const SideBar = () => {
                           className={`${
                             path === 'user-progress' ? 'mm-active' : ''
                           }`}
-                          to='/user-progress'
+                          to={isLinksDisabled ? '#' : '/user-progress'}
                         >
                           {' '}
                           User Progress
@@ -297,7 +298,7 @@ const SideBar = () => {
                           className={`${
                             path === 'user-infographic' ? 'mm-active' : ''
                           }`}
-                          to='/user-infographic'
+                          to={isLinksDisabled ? '#' : '/user-infographic'}
                         >
                           {' '}
                           User Infographics
