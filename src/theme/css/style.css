@@ -11441,7 +11441,7 @@ label {
 }
 
 .brand-logo img {
-  width: 11rem;
+  width: 12rem;
 }
 
 .nav-header {
@@ -11705,7 +11705,7 @@ label {
   /*  background:var(--headerbg); */
   z-index: 3;
   padding-left: 18.563rem;
-  padding-right: 100px;
+  /* padding-right: 100px; */
   padding-top: 0rem;
   transition: all 0.2s ease;
 }
@@ -12485,10 +12485,10 @@ svg.pulse-svg .third-circle {
 }
 
 .header-profile img {
-  width: 2.813rem;
-  height: 2.813rem;
-  border: 3px solid var(--primary);
-  border-radius: 0.625rem;
+  width: 3.813rem;
+  height: 3.613rem;
+  border: 3px solid var(--bs-white);
+  border-radius: 0.725rem;
 }
 @media only screen and (max-width: 87.5rem) {
   .header-profile img {
@@ -12498,7 +12498,7 @@ svg.pulse-svg .third-circle {
 }
 @media only screen and (max-width: 47.9375rem) {
   .header-profile img {
-    border: 2px solid var(--primary);
+    border: 2px solid var(--bs-white);
   }
 }
 
@@ -15562,7 +15562,7 @@ html[dir="rtl"]
   margin-left: 18.563rem;
   z-index: 0;
   transition: all 0.2s ease;
-  padding-right: 5.625rem;
+  /* padding-right: 5.625rem; */
 }
 @media only screen and (max-width: 87.5rem) {
   .content-body {
@@ -37336,7 +37336,7 @@ button:focus {
   width: 100%;
 }
 
-/* New classes */
+/* New css classes */
 .btn-block-half {
   display: block;
   width: 40%;
@@ -37368,7 +37368,6 @@ button:focus {
   cursor: pointer;
 }
 
-/* Add this CSS in your stylesheet */
 .enrolled-label {
   display: inline-block;
   padding: 3px 8px;
@@ -37377,6 +37376,14 @@ button:focus {
   border-radius: 4px;
   font-size: 12px;
   margin-left: 1rem;
+}
+
+.copyright {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
 }
 
 /* ******************** */
@@ -41917,7 +41924,7 @@ table.dataTable.display tbody td {
   width: 60px;
   height: 60px;
   display: inline-block;
-  background: url("../images/like.png");
+  background: url("/src/theme/images/like.png");
   cursor: pointer;
   margin: -25px -15px;
 }

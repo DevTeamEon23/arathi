@@ -46,7 +46,10 @@ const GroupCourses = (props) => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/group_tab2/fetch_courses_of_group", config)
+      .get(
+        "https://v1.eonlearning.tech/group_tab2/fetch_courses_of_group",
+        config
+      )
       .then((response) => {
         const allUsers = response.data.data.courses_ids;
         setCoursesAll(allUsers);
@@ -74,7 +77,7 @@ const GroupCourses = (props) => {
     formData.append("group_id", grpId);
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
-    const url = "http://127.0.0.1:8000/group_tab2/add_courses_to_group";
+    const url = "https://v1.eonlearning.tech/group_tab2/add_courses_to_group";
     axios
       .post(url, formData, {
         headers: {
@@ -103,10 +106,13 @@ const GroupCourses = (props) => {
       id: id,
     };
     axios
-      .delete(`http://127.0.0.1:8000/group_tab2/remove_courses_from_group`, {
-        ...config,
-        data: requestBody,
-      })
+      .delete(
+        `https://v1.eonlearning.tech/group_tab2/remove_courses_from_group`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
       .then((response) => {
         toast.success("Course remove from group successfully!", {
           position: toast.POSITION.TOP_RIGHT,
