@@ -341,26 +341,26 @@ const Markup = () => {
     { url: "activity", component: Activity },
     { url: "profile", component: Profile },
 
-    /// Instructor
-    { url: "inst-dash", component: Inst },
+    // /// Instructor
+    // { url: "inst-dash", component: Inst },
 
-    /// Learner
-    { url: "learn-dash", component: Learn },
+    // /// Learner
+    // { url: "learn-dash", component: Learn },
 
-    // Learn Files
-    { url: "learn-files", component: LearnerFiles },
+    // // Learn Files
+    // { url: "learn-files", component: LearnerFiles },
 
-    // Learn Files
-    { url: "learn-course", component: LearnerCourse },
+    // // Learn Files
+    // { url: "learn-course", component: LearnerCourse },
 
-    // Learn Files
-    { url: "learn-group", component: Lgroups },
+    // // Learn Files
+    // { url: "learn-group", component: Lgroups },
 
-    // Learn Certificate
-    { url: "learn-certificate", component: LearnerCertificate },
+    // // Learn Certificate
+    // { url: "learn-certificate", component: LearnerCertificate },
 
-    // Learn Timeline
-    { url: "learn-timeline", component: LearnerTimeline },
+    // // Learn Timeline
+    // { url: "learn-timeline", component: LearnerTimeline },
 
     //Users (superadmin)
 
@@ -378,280 +378,280 @@ const Markup = () => {
     { url: "badges-list", component: Badges },
     { url: "user-timeline", component: UserTimeline },
 
-    //Users---
+    // //Users---
 
-    { url: "a-users-list", component: AUsers },
-    { url: "ad-add-user", component: AdAddUser },
-    { url: "ad-edit-user", component: AdEditUser },
-    { url: "ad-user-types", component: AdUserTypes },
-    { url: "ad-add-user-type", component: AdAddUserType },
-    { url: "ad-edit-user-type", component: AdEditUserType },
-    { url: "ad-import-user", component: AdImportUser },
-    { url: "ad-export-user", component: AdExportUser },
-    { url: "ad-user-files", component: AdUserFiles },
-    { url: "ad-user-groups", component: AdUserGroups },
-    { url: "ad-user-course", component: AdUserCourse },
-    { url: "ad-user-progress", component: AdUserProg },
-    { url: "ad-user-certificates", component: AdUserCertificate },
-    { url: "ad-user-timeline", component: AdUserTimeline },
-    { url: "ad-user-infographic", component: AdUserInfographics },
+    // { url: "a-users-list", component: AUsers },
+    // { url: "ad-add-user", component: AdAddUser },
+    // { url: "ad-edit-user", component: AdEditUser },
+    // { url: "ad-user-types", component: AdUserTypes },
+    // { url: "ad-add-user-type", component: AdAddUserType },
+    // { url: "ad-edit-user-type", component: AdEditUserType },
+    // { url: "ad-import-user", component: AdImportUser },
+    // { url: "ad-export-user", component: AdExportUser },
+    // { url: "ad-user-files", component: AdUserFiles },
+    // { url: "ad-user-groups", component: AdUserGroups },
+    // { url: "ad-user-course", component: AdUserCourse },
+    // { url: "ad-user-progress", component: AdUserProg },
+    // { url: "ad-user-certificates", component: AdUserCertificate },
+    // { url: "ad-user-timeline", component: AdUserTimeline },
+    // { url: "ad-user-infographic", component: AdUserInfographics },
 
-    //Categories---
+    // //Categories---
 
-    { url: "categories", component: Categories },
-    { url: "add-category", component: AddCategory },
-    { url: "edit-category/:id", component: EditCategory },
+    // { url: "categories", component: Categories },
+    // { url: "add-category", component: AddCategory },
+    // { url: "edit-category/:id", component: EditCategory },
 
-    // Courses ----
-    { url: "courses", component: CoursesMain },
-    { url: "course-details-1", component: CourseDetail1 },
-    { url: "course-details-2", component: CourseDetail2 },
-    { url: "add-courses", component: AddCourses },
-    { url: "edit-courses/:id", component: EditcourseForm },
-    { url: "courses-info", component: Info },
-    { url: "user-courses-info/:id", component: UCoursesInfo },
-    // { url: "content", component: Content },
-    // { url: "webcontent", component: WebContent },
-    { url: "video", component: Video },
-    // { url: "audio", component: Audio },
-    { url: "presentation", component: Presentation },
-    { url: "scorm", component: Scorm },
-    // { url: "iframe", component: Iframe },
-    { url: "test-question", component: SelectTestQuestion },
-    { url: "test-order", component: SetTestOrder },
-    { url: "test-weight", component: SetTestWeight },
-    { url: "test-option", component: TestOption },
-    // { url: "survey-question", component: SelectSurveyQuestion },
-    { url: "survey-order", component: SetSurveyOrder },
-    { url: "survey-option", component: SurveyOption },
-    { url: "assignment", component: Assignment },
-    { url: "instructor-led", component: InstructorLed },
-    { url: "inst-options", component: InstOptions },
-    { url: "add-sessions", component: AddSessions },
-    { url: "course_users/:id", component: Courseusers },
-    { url: "enroll_users", component: EnrollUsers },
-    { url: "course_groups/:id", component: Coursegroups },
+    // // Courses ----
+    // { url: "courses", component: CoursesMain },
+    // { url: "course-details-1", component: CourseDetail1 },
+    // { url: "course-details-2", component: CourseDetail2 },
+    // { url: "add-courses", component: AddCourses },
+    // { url: "edit-courses/:id", component: EditcourseForm },
+    // { url: "courses-info", component: Info },
+    // { url: "user-courses-info/:id", component: UCoursesInfo },
+    // // { url: "content", component: Content },
+    // // { url: "webcontent", component: WebContent },
+    // { url: "video", component: Video },
+    // // { url: "audio", component: Audio },
+    // { url: "presentation", component: Presentation },
+    // { url: "scorm", component: Scorm },
+    // // { url: "iframe", component: Iframe },
+    // { url: "test-question", component: SelectTestQuestion },
+    // { url: "test-order", component: SetTestOrder },
+    // { url: "test-weight", component: SetTestWeight },
+    // { url: "test-option", component: TestOption },
+    // // { url: "survey-question", component: SelectSurveyQuestion },
+    // { url: "survey-order", component: SetSurveyOrder },
+    // { url: "survey-option", component: SurveyOption },
+    // { url: "assignment", component: Assignment },
+    // { url: "instructor-led", component: InstructorLed },
+    // { url: "inst-options", component: InstOptions },
+    // { url: "add-sessions", component: AddSessions },
+    // { url: "course_users/:id", component: Courseusers },
+    // { url: "enroll_users", component: EnrollUsers },
+    // { url: "course_groups/:id", component: Coursegroups },
     // { url: "users_course_progress", component: UsersCourseProgress },
-    // { url: "rules-path", component: RulesPath },
-    { url: "course_user_report", component: CourseUserReports },
-    { url: "course_files", component: CourseFiles },
-    { url: "course_overview", component: CourseOverview },
-    { url: "courses_user", component: CoursesUser },
-    { url: "message_users", component: MessageUsers },
-    { url: "ad_event", component: AdEvent },
-    { url: "mobileapp_compt", component: MobileAppCompatibility },
+    // // { url: "rules-path", component: RulesPath },
+    // { url: "course_user_report", component: CourseUserReports },
+    // { url: "course_files", component: CourseFiles },
+    // { url: "course_overview", component: CourseOverview },
+    // { url: "courses_user", component: CoursesUser },
+    // { url: "message_users", component: MessageUsers },
+    // { url: "ad_event", component: AdEvent },
+    // { url: "mobileapp_compt", component: MobileAppCompatibility },
 
-    // Courses ----
-    { url: "adm_courses", component: AdmCoursesMain },
-    { url: "adm_course-details-1", component: AdmCourseDetail1 },
-    { url: "adm_course-details-2", component: AdmCourseDetail2 },
-    { url: "adm_add-courses", component: AdmAddCourses },
-    { url: "adm_edit-courses", component: AdmEditcourseForm },
-    { url: "adm_courses-info", component: AdmInfo },
-    { url: "adm_content", component: AdmContent },
-    { url: "adm_webcontent", component: AdmWebContent },
-    { url: "adm_video", component: AdmVideo },
-    { url: "adm_audio", component: AdmAudio },
-    { url: "adm_presentation", component: AdmPresentation },
-    { url: "adm_scorm", component: AdmScorm },
-    { url: "adm_iframe", component: AdmIframe },
-    { url: "adm_test-question", component: AdmSelectTestQuestion },
-    { url: "adm_test-order", component: AdmSetTestOrder },
-    { url: "adm_test-weight", component: AdmSetTestWeight },
-    { url: "adm_test-option", component: AdmTestOption },
-    { url: "adm_survey-question", component: AdmSelectSurveyQuestion },
-    { url: "adm_survey-order", component: AdmSetSurveyOrder },
-    { url: "adm_survey-option", component: AdmSurveyOption },
-    { url: "adm_assignment", component: AdmAssignment },
-    { url: "adm_instructor-led", component: AdmInstructorLed },
-    { url: "adm_course_users", component: AdmCourseusers },
-    { url: "adm_enroll_users", component: AdmEnrollUsers },
-    { url: "adm_course_groups", component: AdmCoursegroups },
+    // // Courses ----
+    // { url: "adm_courses", component: AdmCoursesMain },
+    // { url: "adm_course-details-1", component: AdmCourseDetail1 },
+    // { url: "adm_course-details-2", component: AdmCourseDetail2 },
+    // { url: "adm_add-courses", component: AdmAddCourses },
+    // { url: "adm_edit-courses", component: AdmEditcourseForm },
+    // { url: "adm_courses-info", component: AdmInfo },
+    // { url: "adm_content", component: AdmContent },
+    // { url: "adm_webcontent", component: AdmWebContent },
+    // { url: "adm_video", component: AdmVideo },
+    // { url: "adm_audio", component: AdmAudio },
+    // { url: "adm_presentation", component: AdmPresentation },
+    // { url: "adm_scorm", component: AdmScorm },
+    // { url: "adm_iframe", component: AdmIframe },
+    // { url: "adm_test-question", component: AdmSelectTestQuestion },
+    // { url: "adm_test-order", component: AdmSetTestOrder },
+    // { url: "adm_test-weight", component: AdmSetTestWeight },
+    // { url: "adm_test-option", component: AdmTestOption },
+    // { url: "adm_survey-question", component: AdmSelectSurveyQuestion },
+    // { url: "adm_survey-order", component: AdmSetSurveyOrder },
+    // { url: "adm_survey-option", component: AdmSurveyOption },
+    // { url: "adm_assignment", component: AdmAssignment },
+    // { url: "adm_instructor-led", component: AdmInstructorLed },
+    // { url: "adm_course_users", component: AdmCourseusers },
+    // { url: "adm_enroll_users", component: AdmEnrollUsers },
+    // { url: "adm_course_groups", component: AdmCoursegroups },
     // { url: "adm_users_course_progress", component: AdmUsersCourseProgress },
-    { url: "adm_rules-path", component: AdmRulesPath },
-    { url: "adm_course_user_report", component: AdmCourseUserReports },
-    { url: "adm_course_files", component: AdmCourseFiles },
-    { url: "adm_course_overview", component: AdmCourseOverview },
-    { url: "adm_courses_user", component: AdmCoursesUser },
-    { url: "adm_message_users", component: AdmMessageUsers },
-    { url: "adm_ad_event", component: AdmAdEvent },
-    { url: "adm_mobileapp_compt", component: AdmMobileAppCompatibility },
+    // { url: "adm_rules-path", component: AdmRulesPath },
+    // { url: "adm_course_user_report", component: AdmCourseUserReports },
+    // { url: "adm_course_files", component: AdmCourseFiles },
+    // { url: "adm_course_overview", component: AdmCourseOverview },
+    // { url: "adm_courses_user", component: AdmCoursesUser },
+    // { url: "adm_message_users", component: AdmMessageUsers },
+    // { url: "adm_ad_event", component: AdmAdEvent },
+    // { url: "adm_mobileapp_compt", component: AdmMobileAppCompatibility },
 
-    // Groups -----
-    { url: "groups", component: Groups },
-    { url: "add-groups", component: AddGroups },
-    { url: "edit-groups/:id", component: EditGroups },
-    { url: "groups-users/:id", component: GroupsUsers },
-    { url: "group-courses/:id", component: GroupCourses },
-    { url: "group-files/:id", component: GroupFiles },
+    // // Groups -----
+    // { url: "groups", component: Groups },
+    // { url: "add-groups", component: AddGroups },
+    // { url: "edit-groups/:id", component: EditGroups },
+    // { url: "groups-users/:id", component: GroupsUsers },
+    // { url: "group-courses/:id", component: GroupCourses },
+    // { url: "group-files/:id", component: GroupFiles },
 
-    // Admin Groups -----
-    { url: "adm_groups", component: AdmGroups },
-    { url: "adm_add-groups", component: AdmAddGroups },
-    { url: "adm_edit-groups", component: AdmEditGroups },
-    { url: "adm_groups-users", component: AdmGroupsUsers },
-    { url: "adm_group-courses", component: AdmGroupCourses },
-    { url: "adm_group-files", component: AdmGroupFiles },
+    // // Admin Groups -----
+    // { url: "adm_groups", component: AdmGroups },
+    // { url: "adm_add-groups", component: AdmAddGroups },
+    // { url: "adm_edit-groups", component: AdmEditGroups },
+    // { url: "adm_groups-users", component: AdmGroupsUsers },
+    // { url: "adm_group-courses", component: AdmGroupCourses },
+    // { url: "adm_group-files", component: AdmGroupFiles },
 
-    // Instructor Groups -----
-    { url: "inst_groups", component: InstGroups },
-    { url: "inst_add-groups", component: InstAddGroups },
-    { url: "inst_edit-groups", component: InstEditGroups },
-    { url: "inst_groups-users", component: InstGroupsUsers },
-    { url: "inst_group-courses", component: InstGroupCourses },
-    { url: "inst_group-files", component: InstGroupFiles },
+    // // Instructor Groups -----
+    // { url: "inst_groups", component: InstGroups },
+    // { url: "inst_add-groups", component: InstAddGroups },
+    // { url: "inst_edit-groups", component: InstEditGroups },
+    // { url: "inst_groups-users", component: InstGroupsUsers },
+    // { url: "inst_group-courses", component: InstGroupCourses },
+    // { url: "inst_group-files", component: InstGroupFiles },
 
-    // Events -----
-    { url: "events", component: Events },
-    { url: "add-events", component: AddNotification },
-    { url: "edit-events/:id", component: EditNotification },
-    // { url: "customize-system-notification", component: CustomizeNotification },
-    { url: "pending-notification", component: PendingNotification },
+    // // Events -----
+    // { url: "events", component: Events },
+    // { url: "add-events", component: AddNotification },
+    // { url: "edit-events/:id", component: EditNotification },
+    // // { url: "customize-system-notification", component: CustomizeNotification },
+    // { url: "pending-notification", component: PendingNotification },
 
-    //Admin Events -----
-    { url: "adm_events", component: AdmEvents },
-    { url: "adm_add-events", component: AdmAddNotification },
-    { url: "adm_edit-events", component: AdmEditNotification },
-    {
-      url: "adm_customize-system-notification",
-      component: AdmCustomizeNotification,
-    },
-    { url: "adm_pending-notification", component: AdmPendingNotification },
+    // //Admin Events -----
+    // { url: "adm_events", component: AdmEvents },
+    // { url: "adm_add-events", component: AdmAddNotification },
+    // { url: "adm_edit-events", component: AdmEditNotification },
+    // {
+    //   url: "adm_customize-system-notification",
+    //   component: AdmCustomizeNotification,
+    // },
+    // { url: "adm_pending-notification", component: AdmPendingNotification },
 
-    //Import-Export
-    { url: "su-import-user", component: SuImportUser },
-    { url: "su-export-user", component: SuExportUser },
+    // //Import-Export
+    // { url: "su-import-user", component: SuImportUser },
+    // { url: "su-export-user", component: SuExportUser },
 
-    ///Instructors  Pages path
-    { url: "instructor-dashboard", component: InstructorDashboard },
-    { url: "instructor-courses", component: InstructorCourses },
-    { url: "instructor-schedule", component: InstructorSchedule },
-    { url: "instructor-resources", component: InstructorResources },
-    { url: "instructor-students", component: InstructorStudents },
-    { url: "instructor-transactions", component: InstructorTransactions },
-    { url: "instructor-liveclass", component: LiveClass },
+    // ///Instructors  Pages path
+    // { url: "instructor-dashboard", component: InstructorDashboard },
+    // { url: "instructor-courses", component: InstructorCourses },
+    // { url: "instructor-schedule", component: InstructorSchedule },
+    // { url: "instructor-resources", component: InstructorResources },
+    // { url: "instructor-students", component: InstructorStudents },
+    // { url: "instructor-transactions", component: InstructorTransactions },
+    // { url: "instructor-liveclass", component: LiveClass },
 
-    // Reports -----
-    { url: "reports-overview", component: ReportOverview },
-    { url: "user-reports", component: UserReports },
-    { url: "course-reports", component: CourseReports },
-    { url: "group-reports", component: GroupReports },
-    { url: "scorm-reports", component: ScormReports },
-    { url: "test-reports", component: TestReports },
-    { url: "test-overview", component: TestOverview },
-    { url: "test-analysis", component: TestAnalysis },
-    { url: "survey-reports", component: SurveyReports },
-    { url: "survey-overview", component: SurveyOverview },
-    { url: "survey-analysis", component: SurveyAnalysis },
-    { url: "assign-reports", component: AssignmentReports },
-    { url: "ilt-reports", component: IltReports },
-    { url: "custom-reports", component: CustomReports },
-    { url: "infographics", component: Infographics },
+    // // Reports -----
+    // { url: "reports-overview", component: ReportOverview },
+    // { url: "user-reports", component: UserReports },
+    // { url: "course-reports", component: CourseReports },
+    // { url: "group-reports", component: GroupReports },
+    // { url: "scorm-reports", component: ScormReports },
+    // { url: "test-reports", component: TestReports },
+    // { url: "test-overview", component: TestOverview },
+    // { url: "test-analysis", component: TestAnalysis },
+    // { url: "survey-reports", component: SurveyReports },
+    // { url: "survey-overview", component: SurveyOverview },
+    // { url: "survey-analysis", component: SurveyAnalysis },
+    // { url: "assign-reports", component: AssignmentReports },
+    // { url: "ilt-reports", component: IltReports },
+    // { url: "custom-reports", component: CustomReports },
+    // { url: "infographics", component: Infographics },
 
-    //Admin Reports -----
-    { url: "adm_reports-overview", component: AdmReportOverview },
-    { url: "adm_user-reports", component: AdmUserReports },
-    { url: "adm_course-reports", component: AdmCourseReports },
-    { url: "adm_group-reports", component: AdmGroupReports },
-    { url: "adm_infographics", component: AdmInfographics },
+    // //Admin Reports -----
+    // { url: "adm_reports-overview", component: AdmReportOverview },
+    // { url: "adm_user-reports", component: AdmUserReports },
+    // { url: "adm_course-reports", component: AdmCourseReports },
+    // { url: "adm_group-reports", component: AdmGroupReports },
+    // { url: "adm_infographics", component: AdmInfographics },
 
-    /////Accounts & Settings----
-    // { url: "basic-settings", component: BasicSettings },
-    // { url: "certificates", component: Certificates },
-    // { url: "domains", component: Domain },
-    // { url: "ecommerce", component: Ecommerce },
-    // { url: "gamification", component: Gamification },
-    // { url: "subscriptions", component: Subscription },
-    // { url: "thoms-page", component: Thoms },
-    // { url: "user-settings", component: UserSettings },
+    // /////Accounts & Settings----
+    // // { url: "basic-settings", component: BasicSettings },
+    // // { url: "certificates", component: Certificates },
+    // // { url: "domains", component: Domain },
+    // // { url: "ecommerce", component: Ecommerce },
+    // // { url: "gamification", component: Gamification },
+    // // { url: "subscriptions", component: Subscription },
+    // // { url: "thoms-page", component: Thoms },
+    // // { url: "user-settings", component: UserSettings },
 
-    /////Admin Accounts & Settings----
-    { url: "adm_basic-settings", component: AdmBasicSettings },
-    { url: "adm_certificates", component: AdmCertificates },
-    { url: "adm_domains", component: AdmDomain },
-    { url: "adm_ecommerce", component: AdmEcommerce },
-    { url: "adm_gamification", component: AdmGamification },
-    { url: "adm_subscriptions", component: AdmSubscription },
-    { url: "adm_thoms-page", component: AdmThoms },
-    { url: "adm_user-settings", component: AdmUserSettings },
+    // /////Admin Accounts & Settings----
+    // { url: "adm_basic-settings", component: AdmBasicSettings },
+    // { url: "adm_certificates", component: AdmCertificates },
+    // { url: "adm_domains", component: AdmDomain },
+    // { url: "adm_ecommerce", component: AdmEcommerce },
+    // { url: "adm_gamification", component: AdmGamification },
+    // { url: "adm_subscriptions", component: AdmSubscription },
+    // { url: "adm_thoms-page", component: AdmThoms },
+    // { url: "adm_user-settings", component: AdmUserSettings },
 
-    /////Trainings-----
-    { url: "classroom", component: Classrooms },
-    { url: "conference", component: Conferences },
-    { url: "virtual-training", component: VirtualTraining },
-    { url: "add-classroom", component: AddClassrooms },
-    { url: "add-conference", component: AddConferences },
-    { url: "add-virtual-trainings", component: AddVirtualTraining },
-    { url: "edit-classroom", component: EditClassroom },
-    { url: "edit-conference", component: EditConference },
-    { url: "edit-virtual-trainings", component: EditVirtual },
-    { url: "info-classroom", component: ClassroomUsers },
-    { url: "info-conference", component: ConferenceUsers },
-    { url: "info-virtual-trainings", component: VirtualUsers },
+    // /////Trainings-----
+    // { url: "classroom", component: Classrooms },
+    // { url: "conference", component: Conferences },
+    // { url: "virtual-training", component: VirtualTraining },
+    // { url: "add-classroom", component: AddClassrooms },
+    // { url: "add-conference", component: AddConferences },
+    // { url: "add-virtual-trainings", component: AddVirtualTraining },
+    // { url: "edit-classroom", component: EditClassroom },
+    // { url: "edit-conference", component: EditConference },
+    // { url: "edit-virtual-trainings", component: EditVirtual },
+    // { url: "info-classroom", component: ClassroomUsers },
+    // { url: "info-conference", component: ConferenceUsers },
+    // { url: "info-virtual-trainings", component: VirtualUsers },
 
-    //Learner Training
-    { url: "lclassroom", component: Lclassroom },
-    { url: "lconference", component: Lconference },
-    { url: "lvirtualtraining", component: Lvirtualtraining },
+    // //Learner Training
+    // { url: "lclassroom", component: Lclassroom },
+    // { url: "lconference", component: Lconference },
+    // { url: "lvirtualtraining", component: Lvirtualtraining },
 
-    // Calenders -----
-    { url: "calender", component: Calender },
-    { url: "add-c-event", component: AddCEvents },
-    { url: "private-address", component: PrivateAddress },
+    // // Calenders -----
+    // { url: "calender", component: Calender },
+    // { url: "add-c-event", component: AddCEvents },
+    // { url: "private-address", component: PrivateAddress },
 
-    //Learner Calenders -----
-    { url: "learn_calender", component: LearnCalender },
+    // //Learner Calenders -----
+    // { url: "learn_calender", component: LearnCalender },
 
-    // Discussions -----
-    { url: "discussion", component: Discussions },
-    { url: "add-Discussion", component: AddDiscussion },
-    { url: "user-Discussion", component: UserDiscussion },
-    { url: "st-profile", component: Profile },
+    // // Discussions -----
+    // { url: "discussion", component: Discussions },
+    // { url: "add-Discussion", component: AddDiscussion },
+    // { url: "user-Discussion", component: UserDiscussion },
+    // { url: "st-profile", component: Profile },
 
-    //Learner Discussions -----
-    { url: "learn_discussion", component: LearnDiscussions },
-    { url: "learn_add-Discussion", component: LearnAddDiscussion },
-    { url: "learn_user-Discussion", component: LearnUserDiscussion },
+    // //Learner Discussions -----
+    // { url: "learn_discussion", component: LearnDiscussions },
+    // { url: "learn_add-Discussion", component: LearnAddDiscussion },
+    // { url: "learn_user-Discussion", component: LearnUserDiscussion },
 
-    /// Apps
-    { url: "app-profile", component: AppProfile },
-    { url: "email-compose", component: Compose },
-    { url: "email-inbox", component: Inbox },
-    { url: "email-read", component: Read },
-    { url: "app-calender", component: Calendar },
-    { url: "post-details", component: PostDetails },
+    // /// Apps
+    // { url: "app-profile", component: AppProfile },
+    // { url: "email-compose", component: Compose },
+    // { url: "email-inbox", component: Inbox },
+    // { url: "email-read", component: Read },
+    // { url: "app-calender", component: Calendar },
+    // { url: "post-details", component: PostDetails },
 
-    /// Chart
-    { url: "chart-sparkline", component: SparklineChart },
-    { url: "chart-chartist", component: Chartist },
-    { url: "chart-apexchart", component: ApexChart },
-    { url: "chart-rechart", component: RechartJs },
+    // /// Chart
+    // { url: "chart-sparkline", component: SparklineChart },
+    // { url: "chart-chartist", component: Chartist },
+    // { url: "chart-apexchart", component: ApexChart },
+    // { url: "chart-rechart", component: RechartJs },
 
-    /// Scorms
-    { url: "scorm-file", component: CoursesScorm },
+    // /// Scorms
+    // { url: "scorm-file", component: CoursesScorm },
 
-    /// Plugin
-    { url: "uc-select2", component: Select2 },
-    { url: "uc-toastr", component: Toastr },
+    // /// Plugin
+    // { url: "uc-select2", component: Select2 },
+    // { url: "uc-toastr", component: Toastr },
 
-    /// Shop
-    { url: "ecom-invoice", component: Invoice },
+    // /// Shop
+    // { url: "ecom-invoice", component: Invoice },
 
-    /// Form
-    { url: "form-element", component: Element },
-    { url: "form-editor-summernote", component: SummerNote },
+    // /// Form
+    // { url: "form-element", component: Element },
+    // { url: "form-editor-summernote", component: SummerNote },
 
-    /// pages
-    { url: "page-register", component: Registration },
-    { url: "page-lock-screen", component: LockScreen },
-    { url: "login", component: Login },
-    { url: "page-forgot-password", component: ForgotPassword },
-    { url: "page-reset-password", component: Reset },
-    { url: "page-error-400", component: Error400 },
-    { url: "page-error-403", component: Error403 },
-    { url: "page-error-404", component: Error404 },
-    { url: "page-error-500", component: Error500 },
-    { url: "page-error-503", component: Error503 },
+    // /// pages
+    // { url: "page-register", component: Registration },
+    // { url: "page-lock-screen", component: LockScreen },
+    // { url: "login", component: Login },
+    // { url: "page-forgot-password", component: ForgotPassword },
+    // { url: "page-reset-password", component: Reset },
+    // { url: "page-error-400", component: Error400 },
+    // { url: "page-error-403", component: Error403 },
+    // { url: "page-error-404", component: Error404 },
+    // { url: "page-error-500", component: Error500 },
+    // { url: "page-error-503", component: Error503 },
   ];
   let path = window.location.pathname;
   path = path.split("/");
@@ -683,6 +683,7 @@ const Markup = () => {
             </Switch>
           </div>
         </div>
+        <br />
         {!pagePath && <Footer />}
       </div>
       <ScrollToTop />

@@ -28,8 +28,12 @@ const options = {
 		},
 		title: {
 			display: false,
-		  },
-	},
+    },
+    streaming: {
+      // per-chart option
+      frameRate: 0, // chart is drawn 30 times every second
+    },
+  },
  
   scales: {
     y: 
@@ -54,12 +58,12 @@ const options = {
     ],
   },
   
-  plugins: {
-    streaming: {
-      // per-chart option
-      frameRate: 0, // chart is drawn 30 times every second
-    },
-  },
+  // plugins: {
+  //   streaming: {
+  //     // per-chart option
+  //     frameRate: 0, // chart is drawn 30 times every second
+  //   },
+  // },
 };
 
 export default createReactClass({
