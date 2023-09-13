@@ -3,7 +3,7 @@ import Ellipse from "./Ellipse";
 import SideBar from "./SideBar";
 import NavHader from "./NavHader";
 import Header from "./Header";
-import RightSideBar from "./RightSideBar";
+// import RightSideBar from "./RightSideBar";
 import ChatBox from "../ChatBox";
 
 const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3 }) => {
@@ -11,10 +11,10 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3 }) => {
   const onClick = (name) => setToggle(toggle === name ? "" : name);
   return (
     <Fragment>
-	  <Ellipse />	
+      <Ellipse />
       <NavHader />
       <ChatBox onClick={() => onClick("chatbox")} toggle={toggle} />
-	  <Header
+      <Header
         onNote={() => onClick("chatbox")}
         onNotification={() => onClick("notification")}
         onProfile={() => onClick("profile")}
@@ -22,8 +22,8 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3 }) => {
         title={title}
         onBox={() => onClick("box")}
         onClick={() => ClickToAddEvent()}
-      /> 
-      <SideBar/>
+      />
+      <SideBar />
     </Fragment>
   );
 };
