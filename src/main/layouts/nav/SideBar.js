@@ -1,14 +1,9 @@
-/// Menu
-import Metismenu from "metismenujs";
+import Metismenu from "metismenujs"; /// Menu
 import React, { Component, useContext, useEffect, useState } from "react";
-/// Scroll
-import PerfectScrollbar from "react-perfect-scrollbar";
-/// Link
+import PerfectScrollbar from "react-perfect-scrollbar"; /// Scroll
 import { Link } from "react-router-dom";
-
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "@context/ThemeContext";
-
 import { useSelector } from "react-redux";
 import { selectUser } from "src/store/user/userSlice";
 
@@ -86,6 +81,7 @@ const SideBar = () => {
     ],
     ausers = [
       "users-list",
+      "add-user",
       "ad-add-user",
       "ad-edit-user",
       "ad-user-types",
@@ -101,7 +97,7 @@ const SideBar = () => {
       "ad-user-timeline",
       "ad-user-infographic",
     ],
-    importexport = ["su-import-user", "su-export-user"],
+    importexport = ["import-user", "export-user"],
     usertypes = ["user-types", "add-user-type"],
     categories = ["categories", "add-category"],
     courses = [
@@ -267,26 +263,6 @@ const SideBar = () => {
                           Add User{" "}
                         </Link>
                       </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-progress" ? "mm-active" : ""
-                          }`}
-                          to="/user-progress">
-                          {" "}
-                          User Progress
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-infographic" ? "mm-active" : ""
-                          }`}
-                          to="/user-infographic">
-                          {" "}
-                          User Infographics
-                        </Link>
-                      </li>
                     </ul>
                   </li>
                   <li
@@ -318,7 +294,6 @@ const SideBar = () => {
                           Add Category
                         </Link>
                       </li>
-                      {/* <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li> */}
                     </ul>
                   </li>
                   <li
@@ -353,26 +328,6 @@ const SideBar = () => {
                           Course Store
                         </Link>
                       </li>
-
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course_files" ? "mm-active" : ""
-                          }`}
-                          to="/course_files">
-                          FILES
-                        </Link>
-                      </li>
-
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course_overview" ? "mm-active" : ""
-                          }`}
-                          to="/course_overview">
-                          REPORTS
-                        </Link>
-                      </li>
                     </ul>
                   </li>
                   <li className={`${groups.includes(path) ? "mm-active" : ""}`}>
@@ -400,37 +355,6 @@ const SideBar = () => {
                     </ul>
                   </li>
 
-                  {/* <li
-                    className={`${
-                      usertypes.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-tags-fill"></i>
-                      <span className="nav-text">USER TYPES</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "user-types" ? "mm-active" : ""
-                          }`}
-                          to="/user-types">
-                          {" "}
-                          User Types
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-user-type" ? "mm-active" : ""
-                          }`}
-                          to="/add-user-type">
-                          Add User Types
-                        </Link>
-                      </li>
-                      <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li>
-                    </ul>
-                  </li> */}
                   <li
                     className={`${
                       importexport.includes(path) ? "mm-active" : ""
@@ -460,101 +384,8 @@ const SideBar = () => {
                           Export{" "}
                         </Link>
                       </li>
-                      {/* <li><Link className={`${path === "task" ? "mm-active" : ""}`} to="/task">Task</Link></li> */}
                     </ul>
                   </li>
-
-                  {/* <li
-                    className={`${
-                      accountsettings.includes(path) ? 'mm-active' : ''
-                    }`}
-                  >
-                    <Link className='has-arrow' to='#'>
-                      {' '}
-                      <i className='bi bi-gear-fill'></i>
-                      <span className='nav-text'>Account & Setting</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'basic-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/basic-settings'
-                        >
-                          Basic Settings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'user-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/user-settings'
-                        >
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'thoms-page' ? 'mm-active' : ''
-                          }`}
-                          to='/thoms-page'
-                        >
-                          Themes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'certificates' ? 'mm-active' : ''
-                          }`}
-                          to='/certificates'
-                        >
-                          Certificates
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'gamification' ? 'mm-active' : ''
-                          }`}
-                          to='/gamification'
-                        >
-                          Gamifications
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'ecommerce' ? 'mm-active' : ''
-                          }`}
-                          to='/ecommerce'
-                        >
-                          E-commerce
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${path === 'domains' ? 'mm-active' : ''}`}
-                          to='/domains'
-                        >
-                          Domain
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'subscriptions' ? 'mm-active' : ''
-                          }`}
-                          to='/subscriptions'
-                        >
-                          Subscription
-                        </Link>
-                      </li>
-                    </ul>
-                  </li> */}
                 </ul>
               </li>
             </>
@@ -594,39 +425,10 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "ad-add-user" ? "mm-active" : ""
+                            path === "add-user" ? "mm-active" : ""
                           }`}
-                          to="/ad-add-user">
+                          to="/add-user">
                           Add User
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "ad-add-user-type" ? "mm-active" : ""
-                          }`}
-                          to="/ad-add-user-type">
-                          Add User Types
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "ad-user-progress" ? "mm-active" : ""
-                          }`}
-                          to="/ad-user-progress">
-                          {" "}
-                          User Progress
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "ad-user-infographic" ? "mm-active" : ""
-                          }`}
-                          to="/ad-user-infographic">
-                          {" "}
-                          User Infographics
                         </Link>
                       </li>
                     </ul>
@@ -667,34 +469,6 @@ const SideBar = () => {
                           Course Store
                         </Link>
                       </li>
-
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_course_files" ? "mm-active" : ""
-                          }`}
-                          to="/adm_course_files">
-                          FILES
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_rules-path" ? "mm-active" : ""
-                          }`}
-                          to="/adm_rules-path">
-                          RULES & PATH
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_course_overview" ? "mm-active" : ""
-                          }`}
-                          to="/adm_course_overview">
-                          REPORTS
-                        </Link>
-                      </li>
                     </ul>
                   </li>
                   <li
@@ -724,181 +498,6 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li
-                    className={`${aevents.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      <i className="bi bi-calendar-check"></i>
-                      <span className="nav-text">EVENT ENGINE</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_events" ? "mm-active" : ""
-                          }`}
-                          to="/adm_events">
-                          Events
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_add-events" ? "mm-active" : ""
-                          }`}
-                          to="/adm_add-events">
-                          Add Notification
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li
-                    className={`${areports.includes(path) ? "mm-active" : ""}`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-graph-up"></i>
-                      <span className="nav-text">REPORTS</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_reports-overview" ? "mm-active" : ""
-                          }`}
-                          to="/adm_reports-overview">
-                          Overview
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_user-reports" ? "mm-active" : ""
-                          }`}
-                          to="/adm_user-reports">
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_course-reports" ? "mm-active" : ""
-                          }`}
-                          to="/adm_course-reports">
-                          Courses
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_group-reports" ? "mm-active" : ""
-                          }`}
-                          to="/adm_group-reports">
-                          Groups
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "adm_infographics" ? "mm-active" : ""
-                          }`}
-                          to="/adm_infographics">
-                          Info Graphics
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  {/* <li
-                    className={`${
-                      admaccountsettings.includes(path) ? 'mm-active' : ''
-                    }`}
-                  >
-                    <Link className='has-arrow' to='#'>
-                      {' '}
-                      <i className='bi bi-gear-fill'></i>
-                      <span className='nav-text'>Account & Setting</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_basic-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_basic-settings'
-                        >
-                          Basic Settings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_user-settings' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_user-settings'
-                        >
-                          Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_thoms-page' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_thoms-page'
-                        >
-                          Themes
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_certificates' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_certificates'
-                        >
-                          Certificates
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_gamification' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_gamification'
-                        >
-                          Gamifications
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_ecommerce' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_ecommerce'
-                        >
-                          E-commerce
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_domains' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_domains'
-                        >
-                          Domain
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === 'adm_subscriptions' ? 'mm-active' : ''
-                          }`}
-                          to='/adm_subscriptions'
-                        >
-                          Subscription
-                        </Link>
-                      </li>
-                    </ul>
-                  </li> */}
                 </ul>
               </li>
             </>
@@ -921,6 +520,34 @@ const SideBar = () => {
                       to="/inst-dash">
                       Instructor Dashboard
                     </Link>
+                  </li>
+                  <li className={`${users.includes(path) ? "mm-active" : ""}`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-person-circle"></i>
+                      <span className="nav-text">USERS</span>
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "users-list" ? "mm-active" : ""
+                          }`}
+                          to="/users-list">
+                          {" "}
+                          Users{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "add-user" ? "mm-active" : ""
+                          }`}
+                          to="/add-user">
+                          {" "}
+                          Add User{" "}
+                        </Link>
+                      </li>
+                    </ul>
                   </li>
                   <li
                     className={`${courses.includes(path) ? "mm-active" : ""}`}>
@@ -947,41 +574,13 @@ const SideBar = () => {
                           Add Courses
                         </Link>
                       </li>
-
                       <li>
                         <Link
                           className={`${
-                            path === "course_files" ? "mm-active" : ""
+                            path === "adm_courses" ? "mm-active" : ""
                           }`}
-                          to="/course_files">
-                          FILES
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "rules-path" ? "mm-active" : ""
-                          }`}
-                          to="/rules-path">
-                          RULES & PATH
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "course_overview" ? "mm-active" : ""
-                          }`}
-                          to="/course_overview">
-                          REPORTS
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "scorm-file" ? "mm-active" : ""
-                          }`}
-                          to="/scorm-file">
-                          Course Scorm
+                          to="/adm_courses">
+                          Course Store
                         </Link>
                       </li>
                     </ul>
@@ -1079,36 +678,7 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li
-                    className={`${
-                      discussion.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-chat-quote-fill"></i>{" "}
-                      <span className="nav-text">Discussions</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "discussion" ? "mm-active" : ""
-                          }`}
-                          to="/discussion">
-                          Discussion
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "add-discussion" ? "mm-active" : ""
-                          }`}
-                          to="/add-discussion">
-                          Add Discussion
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+
                   <li
                     className={`${calender.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
