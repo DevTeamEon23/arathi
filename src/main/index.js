@@ -396,11 +396,11 @@ const Markup = () => {
     // { url: "ad-user-timeline", component: AdUserTimeline },
     // { url: "ad-user-infographic", component: AdUserInfographics },
 
-    // //Categories---
+    //Categories---
 
-    // { url: "categories", component: Categories },
-    // { url: "add-category", component: AddCategory },
-    // { url: "edit-category/:id", component: EditCategory },
+    { url: "categories", component: Categories },
+    { url: "add-category", component: AddCategory },
+    { url: "edit-category/:id", component: EditCategory },
 
     // // Courses ----
     // { url: "courses", component: CoursesMain },

@@ -5,11 +5,8 @@ import React, { Component, useContext, useEffect, useState } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
 /// Link
 import { Link } from "react-router-dom";
-
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "@context/ThemeContext";
-
-import medal from "@images/medal.png";
 import { useSelector } from "react-redux";
 import { selectUser } from "src/store/user/userSlice";
 
@@ -43,24 +40,10 @@ const SideBar = () => {
     }
     btn.addEventListener("click", toggleFunc);
 
-    //sidebar icon Heart blast
-    // const handleheartBlast = document.querySelector(".heart");
-    // function heartBlast() {
-    //   return handleheartBlast.classList.toggle("heart-blast");
-    // }
-    // handleheartBlast.addEventListener("click", heartBlast);
-
     return () => {
       btn.removeEventListener("click", toggleFunc);
-      // handleheartBlast.removeEventListener("click", heartBlast);
     };
   }, []);
-
-  // useEffect(() => {
-  //   let role = window.localStorage.getItem("role");
-  //   setRType(role);
-  //   console.log("called");
-  // }, [rType]);
 
   //For scroll
   const [hideOnScroll, setHideOnScroll] = useState(true);
@@ -95,6 +78,8 @@ const SideBar = () => {
     users = [
       "users-list",
       "add-user",
+      "user-progress",
+      "user-infographic",
       "import-user",
       "export-user",
       "user-types",
@@ -242,7 +227,6 @@ const SideBar = () => {
             </ul>
           </li>
           {/* *********************************** Superadmin Dashboard Options************************************ */}
-          {console.log("roleType", roleType)}
           {roleType === "Superadmin" ? (
             <>
               <li className={`${superadmin.includes(path) ? "mm-active" : ""}`}>
@@ -284,24 +268,35 @@ const SideBar = () => {
                           Add User{" "}
                         </Link>
                       </li>
+                    </ul>
+                  </li>
+                  <li
+                    className={`${
+                      categories.includes(path) ? "mm-active" : ""
+                    }`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-list-ul"></i>
+                      <span className="nav-text">CATEGORIES</span>
+                    </Link>
+                    <ul>
                       <li>
                         <Link
                           className={`${
-                            path === "user-progress" ? "mm-active" : ""
+                            path === "categories" ? "mm-active" : ""
                           }`}
-                          to="/user-progress">
+                          to="/categories">
                           {" "}
-                          User Progress
+                          Categories{" "}
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${
-                            path === "user-infographic" ? "mm-active" : ""
+                            path === "add-category" ? "mm-active" : ""
                           }`}
-                          to="/user-infographic">
+                          to="/add-category">
                           {" "}
-                          User Infographics
+                          Add Category
                         </Link>
                       </li>
                     </ul>
@@ -1107,23 +1102,6 @@ const SideBar = () => {
             </>
           )}
         </MM>
-        {/* <div className="plus-box">
-          <div className="d-flex align-items-center">
-            <h5>Upgrade your Account to Pro</h5>
-            <img src={medal} alt="" />
-          </div>
-          <p>Upgrade to premium to get premium features</p>
-          <Link to={"#"} className="btn btn-primary btn-sm">
-            Upgrade
-          </Link>
-        </div> */}
-
-        {/* <div className="copyright">
-          
-          <p className="fs-14">
-            Made with <span className="heart"></span> by EonLearning
-          </p>
-        </div> */}
       </PerfectScrollbar>
     </div>
   );
