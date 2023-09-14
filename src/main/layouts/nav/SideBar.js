@@ -529,6 +529,37 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
+                  <li
+                    className={`${
+                      importexport.includes(path) ? "mm-active" : ""
+                    }`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-tags-fill"></i>
+                      <span className="nav-text">IMPORT/EXPORT</span>
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "import-user" ? "mm-active" : ""
+                          }`}
+                          to="/import-user">
+                          {" "}
+                          Import{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "export-user" ? "mm-active" : ""
+                          }`}
+                          to="/export-user">
+                          {" "}
+                          Export{" "}
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
                 </ul>
               </li>
             </>
