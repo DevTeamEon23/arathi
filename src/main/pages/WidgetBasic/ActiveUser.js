@@ -48,7 +48,6 @@ const options = {
       frameRate: 0, // chart is drawn 30 times every second
     },
   },
-
   scales: {
     y: {
       display: false,
@@ -70,7 +69,6 @@ const options = {
       },
     ],
   },
-
   // plugins: {
   //   streaming: {
   //     // per-chart option

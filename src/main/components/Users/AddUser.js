@@ -51,10 +51,6 @@ const AddUser = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const history = useHistory();
 
-  useEffect(() => {
-    console.log(file, "file");
-  });
-
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     history.push(`/${tab}`);
