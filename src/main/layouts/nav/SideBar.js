@@ -899,27 +899,7 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li
-                    className={`${
-                      ldiscussion.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-chat-quote-fill"></i>{" "}
-                      <span className="nav-text">Discussions</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "learn_discussion" ? "mm-active" : ""
-                          }`}
-                          to="/learn_discussion">
-                          Discussion
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+
                   <li
                     className={`${
                       learncalender.includes(path) ? "mm-active" : ""
@@ -941,27 +921,7 @@ const SideBar = () => {
                       </li>
                     </ul>
                   </li>
-                  <li
-                    className={`${
-                      discussion.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-cursor-text"></i>{" "}
-                      <span className="nav-text">Transcript</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "discussion" ? "mm-active" : ""
-                          }`}
-                          to="/discussion">
-                          Transcript
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
+
                   <li
                     className={`${
                       learngroups.includes(path) ? "mm-active" : ""
@@ -1020,27 +980,6 @@ const SideBar = () => {
                           }`}
                           to="/learn-certificate">
                           Certificates
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li
-                    className={`${
-                      learntimeline.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-hourglass-split"></i>{" "}
-                      <span className="nav-text">Timeline</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "learn-timeline" ? "mm-active" : ""
-                          }`}
-                          to="/learn-timeline">
-                          Timeline
                         </Link>
                       </li>
                     </ul>
