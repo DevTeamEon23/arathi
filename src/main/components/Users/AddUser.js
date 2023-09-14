@@ -4,6 +4,8 @@ import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Nav, Button, Tab, Tabs } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 
 //select dropdown
 const categorytype = [
@@ -50,6 +52,7 @@ const AddUser = () => {
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
   const [activeTab, setActiveTab] = useState("dashboard");
   const [errorImg, setErrorImg] = useState(null);
+  const roleType = useSelector(selectUser).role[0];
   const history = useHistory();
 
   const handleTabChange = (tab) => {
@@ -61,6 +64,7 @@ const AddUser = () => {
     const currentPath = history.location.pathname;
     const tab = currentPath.substring(1);
     setActiveTab(tab);
+    console.log(roleType);
   }, [history.location.pathname]);
 
   const handleActiveChange = (e) => {
@@ -97,7 +101,7 @@ const AddUser = () => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", "admin");
+    formData.append("role", roleType === "Superadmin" ? "admin" : "instructor");
     formData.append("timezone", selectedOptionTimeZone.value);
     formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
@@ -215,7 +219,10 @@ const AddUser = () => {
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Add Users Form (Admin) </h4>
+              <h4 className="card-title">
+                Add Users Form{" "}
+                {roleType === "Superadmin" ? "(Admin)" : "(Instructor)"}
+              </h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
