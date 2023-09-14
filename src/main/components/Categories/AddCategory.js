@@ -15,7 +15,7 @@ const parentcategory = [
 
 const AddCategory = () => {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
   const history = useHistory();
 
@@ -132,7 +132,6 @@ const AddCategory = () => {
                             id="price"
                             name="price"
                             value={price}
-                            placeholder="₹21.60"
                             onChange={(e) => setPrice(e.target.value)}
                             required
                           />

@@ -49,6 +49,7 @@ const AddUser = () => {
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [errorImg, setErrorImg] = useState(null);
   const history = useHistory();
 
   const handleTabChange = (tab) => {
@@ -135,15 +136,19 @@ const AddUser = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile && isValidFileType(selectedFile)) {
       setFile(selectedFile);
+      setErrorImg("");
     } else {
       setFile(null);
-      toast.error("Please select a valid image file (jpeg, jpg, png).");
+      setErrorImg(
+        "Please select a valid image file (jpeg, jpg, png) that is no larger than 3 MB."
+      );
     }
   };
 
   const isValidFileType = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    return allowedTypes.includes(file.type);
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
   const handleEmail = () => {
@@ -484,6 +489,12 @@ const AddUser = () => {
                               onChange={handleChange}
                               required
                             />
+                            <br />
+                            {errorImg && (
+                              <div className="error-message text-danger fs-14">
+                                {errorImg}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

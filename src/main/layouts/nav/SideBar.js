@@ -435,6 +435,37 @@ const SideBar = () => {
                   </li>
                   <li
                     className={`${
+                      categories.includes(path) ? "mm-active" : ""
+                    }`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-list-ul"></i>
+                      <span className="nav-text">CATEGORIES</span>
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "categories" ? "mm-active" : ""
+                          }`}
+                          to="/categories">
+                          {" "}
+                          Categories{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "add-category" ? "mm-active" : ""
+                          }`}
+                          to="/add-category">
+                          {" "}
+                          Add Category
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li
+                    className={`${
                       admcourses.includes(path) ? "mm-active" : ""
                     }`}>
                     <Link className="has-arrow" to="#">
@@ -545,6 +576,37 @@ const SideBar = () => {
                           to="/add-user">
                           {" "}
                           Add User{" "}
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li
+                    className={`${
+                      categories.includes(path) ? "mm-active" : ""
+                    }`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-list-ul"></i>
+                      <span className="nav-text">CATEGORIES</span>
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "categories" ? "mm-active" : ""
+                          }`}
+                          to="/categories">
+                          {" "}
+                          Categories{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "add-category" ? "mm-active" : ""
+                          }`}
+                          to="/add-category">
+                          {" "}
+                          Add Category
                         </Link>
                       </li>
                     </ul>
@@ -703,6 +765,37 @@ const SideBar = () => {
                           }`}
                           to="/add-c-event">
                           Add Event
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li
+                    className={`${
+                      importexport.includes(path) ? "mm-active" : ""
+                    }`}>
+                    <Link className="has-arrow" to="#">
+                      <i className="bi bi-tags-fill"></i>
+                      <span className="nav-text">IMPORT/EXPORT</span>
+                    </Link>
+                    <ul>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "import-user" ? "mm-active" : ""
+                          }`}
+                          to="/import-user">
+                          {" "}
+                          Import{" "}
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "export-user" ? "mm-active" : ""
+                          }`}
+                          to="/export-user">
+                          {" "}
+                          Export{" "}
                         </Link>
                       </li>
                     </ul>
