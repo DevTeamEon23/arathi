@@ -4,39 +4,56 @@ import "chartjs-plugin-streaming";
 var createReactClass = require("create-react-class");
 
 const data = {
-	labels: ["0", "1", "2", "3", "4", "5", "6", "0", "1", "2", "3", "4", "5", "6"],
+  labels: [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+  ],
   datasets: [
     {
       label: "My First dataset",
-		backgroundColor: "rgba(58,223,174,1)",
-		strokeColor: "rgba(58,223,174,1)",
-		pointColor: "rgba(0,0,0,0)",
-		pointStrokeColor: "rgba(58,223,174,1)",
-		pointHighlightFill: "rgba(58,223,174,1)",
-		pointHighlightStroke: "rgba(58,223,174,1)",
-		data: [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40],
+      backgroundColor: "rgba(58,223,174,1)",
+      strokeColor: "rgba(58,223,174,1)",
+      pointColor: "rgba(0,0,0,0)",
+      pointStrokeColor: "rgba(58,223,174,1)",
+      pointHighlightFill: "rgba(58,223,174,1)",
+      pointHighlightStroke: "rgba(58,223,174,1)",
+      data: [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40],
     },
   ],
 };
 
 const options = {
-  
-	plugins:{
-		legend: false,
-		tooltips: {
-			enabled: false,
-		},
-		title: {
-			display: false,
-		  },
-	},
- 
+  plugins: {
+    legend: false,
+    tooltips: {
+      enabled: false,
+    },
+    title: {
+      display: false,
+    },
+    streaming: {
+      // per-chart option
+      frameRate: 0, // chart is drawn 30 times every second
+    },
+  },
+
   scales: {
-    y: 
-      {
-        display: false,
-      },
-    
+    y: {
+      display: false,
+    },
+
     xAxes: [
       {
         display: false,
@@ -53,13 +70,13 @@ const options = {
       },
     ],
   },
-  
-  plugins: {
-    streaming: {
-      // per-chart option
-      frameRate: 0, // chart is drawn 30 times every second
-    },
-  },
+
+  // plugins: {
+  //   streaming: {
+  //     // per-chart option
+  //     frameRate: 0, // chart is drawn 30 times every second
+  //   },
+  // },
 };
 
 export default createReactClass({
