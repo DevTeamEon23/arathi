@@ -1,41 +1,18 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import Select from "react-select";
-import * as Yup from "yup";
-import { Button, Nav } from "react-bootstrap";
+import { Button, Nav, Tab, Tabs } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
-
-const options = [
-  { value: "parent_category_1", label: "Parent Category 1" },
-  { value: "parent_category_2", label: "Parent Category 2" },
-  { value: "parent_category_3", label: "Parent Category 3" },
-  { value: "parent_category_4", label: "Parent Category 4" },
-];
-
 const EditCategory = (props) => {
   const catId = props.match.params.id;
-  console.log({ catId });
   const [categoryId, setCategoryId] = useState("");
   const [catData, setCatData] = useState(); //category data by id
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [value, onChange] = useState(new Date());
-  const [file, setFile] = useState();
-  const [selectedOption, setSelectedOption] = useState(null);
   const [token, setToken] = useState(); //auth token
+  const [activeTab, setActiveTab] = useState("edit-category/:id");
   const history = useHistory();
 
   useEffect(() => {
@@ -46,6 +23,17 @@ const EditCategory = (props) => {
       getCategoryById(catId, token);
     }
   }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   // Category details by ID
   const getCategoryById = async (id, authToken) => {
@@ -110,31 +98,15 @@ const EditCategory = (props) => {
 
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to="/add-category">
-            Add Category
-          </Link>
-        </Nav.Item>
-      </Nav>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`dashboard`} title="Dashboard"></Tab>
+              <Tab eventKey={`add-category`} title="Add Category"></Tab>
+            </Tabs>
             <div className="card-header">
-              <h4 className="card-title">Edit Category </h4>
+              <h4 className="card-title">Edit Category</h4>
             </div>
             <div className="card-body">
               <div className="form-validation">

@@ -66,7 +66,7 @@ const AddCategory = () => {
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
         <Tab eventKey="dashboard" title="Dashboard"></Tab>
-        <Tab eventKey="add-groups" title="Add Groups"></Tab>
+        <Tab eventKey="categories" title="Categories"></Tab>
       </Tabs>
       <div className="row">
         <div className="col-lg-12">
