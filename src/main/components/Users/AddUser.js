@@ -4,6 +4,8 @@ import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Nav, Button, Tab, Tabs } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 
 //select dropdown
 const categorytype = [
@@ -49,11 +51,9 @@ const AddUser = () => {
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [errorImg, setErrorImg] = useState(null);
+  const roleType = useSelector(selectUser).role[0];
   const history = useHistory();
-
-  useEffect(() => {
-    console.log(file, "file");
-  });
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -64,6 +64,7 @@ const AddUser = () => {
     const currentPath = history.location.pathname;
     const tab = currentPath.substring(1);
     setActiveTab(tab);
+    console.log(roleType);
   }, [history.location.pathname]);
 
   const handleActiveChange = (e) => {
@@ -100,7 +101,7 @@ const AddUser = () => {
     formData.append("username", username);
     formData.append("password", password);
     formData.append("bio", bio);
-    formData.append("role", "admin");
+    formData.append("role", roleType === "Superadmin" ? "admin" : "instructor");
     formData.append("timezone", selectedOptionTimeZone.value);
     formData.append("langtype", selectedOptionLang.value);
     formData.append("active", isActive);
@@ -139,15 +140,19 @@ const AddUser = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile && isValidFileType(selectedFile)) {
       setFile(selectedFile);
+      setErrorImg("");
     } else {
       setFile(null);
-      toast.error("Please select a valid image file (jpeg, jpg, png).");
+      setErrorImg(
+        "Please select a valid image file (jpeg, jpg, png) that is no larger than 3 MB."
+      );
     }
   };
 
   const isValidFileType = (file) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    return allowedTypes.includes(file.type);
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
   const handleEmail = () => {
@@ -214,7 +219,10 @@ const AddUser = () => {
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Add Users Form (Admin) </h4>
+              <h4 className="card-title">
+                Add Users Form{" "}
+                {roleType === "Superadmin" ? "(Admin)" : "(Instructor)"}
+              </h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
@@ -488,6 +496,12 @@ const AddUser = () => {
                               onChange={handleChange}
                               required
                             />
+                            <br />
+                            {errorImg && (
+                              <div className="error-message text-danger fs-14">
+                                {errorImg}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

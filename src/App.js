@@ -25,13 +25,10 @@ function App(props) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useAuth();
   useEffect(() => {
-    // checkAutoLogin(dispatch, props.history);
     if (isAuthenticated) {
-      console.log("inside app.js");
-      props.history.push("/dashboard");
+      props.history.replace("/dashboard");
     } else {
-      console.log("inside app.js@@@@@@@@@@@@@@@");
-      props.history.push("/login");
+      props.history.replace("/login");
     }
   }, [dispatch, props.history, isAuthenticated]);
 

@@ -45,7 +45,7 @@ const Home = () => {
           <div className="row">
             <div className="col-xl-12 col-xxl-6">
               <div className="card dlab-join-card h-auto">
-                <div className="card-body">
+                <div className="card-body" style={{ height: "280px" }}>
                   <div className="dlab-media d-flex justify-content-between">
                     <div className="dlab-content">
                       <h4>Join Now and Get Discount Voucher Up To 20%</h4>
@@ -208,7 +208,7 @@ const Home = () => {
                   <ProgressChart />
                   <div className="redial-content">
                     <h4>My Progress</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur...</p>
                     <Link to={"./course-details-2"} className="btn btn-primary">
                       More Details
                     </Link>

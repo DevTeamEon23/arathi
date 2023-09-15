@@ -60,6 +60,7 @@ const EditcourseForm = (props) => {
   const [activeTab, setActiveTab] = useState("edit-courses/:id");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [imageUrl, setImageUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -173,6 +174,8 @@ const EditcourseForm = (props) => {
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
         setFile(res.file);
+        setImageUrl(res.file);
+        setVideoUrl(res.coursevideo);
         setSelectedVideo(res.coursevideo);
         setSelectedOptionCertificate({
           value: res.certificate,
@@ -236,11 +239,10 @@ const EditcourseForm = (props) => {
   //video file handle
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith("video/")) {
+    if (file) {
+      const videoUrl = URL.createObjectURL(file);
+      setVideoUrl(videoUrl);
       setSelectedVideo(file);
-    } else {
-      setSelectedVideo(null);
-      alert("Please select a valid video file.");
     }
   };
 
@@ -252,9 +254,15 @@ const EditcourseForm = (props) => {
       setFile(file);
     }
   };
+
   const handleImageDelete = () => {
     setImageUrl("");
     setFile(null); // Reset the selected file
+  };
+
+  const handleVideoDelete = () => {
+    setVideoUrl("");
+    setSelectedVideo(null); // Reset the selected file
   };
 
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
@@ -285,9 +293,8 @@ const EditcourseForm = (props) => {
   };
 
   useEffect(() => {
-    // When the component mounts, set the active tab based on the current route
     const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1); // Remove the leading slash
+    const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
 
@@ -499,29 +506,54 @@ const EditcourseForm = (props) => {
                             </label>
                             <div className="input-group mb-3 col-lg-6 ">
                               <div>
-                                <input
-                                  type="file"
-                                  accept=".mp4, .mkv"
-                                  id="selectedVideo"
-                                  onChange={handleFileChange}
-                                  ref={fileInputRef}
-                                />
+                                <label>
+                                  {selectedVideo
+                                    ? `Selected File: ${selectedVideo}`
+                                    : "Choose a file..."}
+                                  <input
+                                    type="file"
+                                    accept=".mp4, .mkv"
+                                    id="selectedVideo"
+                                    onChange={handleFileChange}
+                                    ref={fileInputRef}
+                                    style={{ display: "none" }}
+                                    className="form-control-file"
+                                  />
+                                </label>
                                 <br />
-                                <br />
-                                {selectedVideo && (
-                                  <video controls className="video-player">
-                                    <source
-                                      // src={
-                                      //   selectedVideo &&
-                                      //   URL.createObjectURL(selectedVideo)
-                                      // }
-                                      src={selectedVideo}
-                                      type={selectedVideo.type}
-                                      alt="video"
-                                    />
-                                    Your browser does not support the video tag.
-                                  </video>
-                                )}
+
+                                <div className="embed-responsive embed-responsive-16by9 d-flex">
+                                  {videoUrl && (
+                                    <>
+                                      <video
+                                        controls
+                                        src={selectedVideo}
+                                        type={selectedVideo.type}
+                                        alt="video"
+                                        className="embed-responsive-item"
+                                        width="400"
+                                        height="200">
+                                        {/* <source
+                                        src={selectedVideo}
+                                        type={selectedVideo.type}
+                                        alt="video"
+                                        className="embed-responsive-item"
+                                        // width="250"
+                                        // height="200"
+                                      /> */}
+                                      </video>
+                                      <RxCross2
+                                        className="fs-18 fs-bold"
+                                        title="Delete"
+                                        style={{
+                                          marginBottom: "220px",
+                                          marginLeft: "18px",
+                                        }}
+                                        onClick={handleVideoDelete}
+                                      />
+                                    </>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>

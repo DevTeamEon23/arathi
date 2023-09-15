@@ -113,8 +113,13 @@ const AddCourses = () => {
       setErrorVideo("File size exceeds the 100MB limit");
       setSelectedVideo(null);
     } else {
+      const fileNameWithoutSpaces = file.name.replace(/\s+/g, ""); // Remove spaces from the file name
+      const modifiedFile = new File([file], fileNameWithoutSpaces, {
+        type: file.type,
+      });
+
       setErrorVideo("");
-      setSelectedVideo(file);
+      setSelectedVideo(modifiedFile);
     }
   };
 
@@ -657,7 +662,7 @@ const AddCourses = () => {
                                   width="250"
                                   height="250"
                                   alt="file"
-                                  objectFit="cover"
+                                  objectfit="cover"
                                 />{" "}
                                 <br />
                                 <br />

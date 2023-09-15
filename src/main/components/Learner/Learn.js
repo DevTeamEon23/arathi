@@ -63,9 +63,9 @@ const WidgetBlog = ({ changeImage, title }) => {
                   <span>{title}</span>
                 </div>
               </div>
-              <Link to={"./courses"}>
+              {/* <Link to={"./courses"}>
                 <i className="las la-angle-right text-primary"></i>
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
@@ -194,9 +194,7 @@ const Learn = () => {
       <div className="row">
         <div className="col-xl-4 col-xxl-5 col-lg-12">
           <div className="card instructors-box">
-            <div className="card-header border-0">
-              <DropDownBlog />
-            </div>
+            <div className="card-header border-0">{/* <DropDownBlog /> */}</div>
 
             <div className="card-body text-center pb-3">
               <div className="instructors-media">
@@ -213,7 +211,7 @@ const Learn = () => {
                     </span>
                     <div className="btn info-box text-start style-1">
                       <span>Certificate</span>
-                      <h4>50</h4>
+                      <h4>0</h4>
                     </div>
                   </div>
                 </div>
@@ -267,9 +265,9 @@ const Learn = () => {
               <Link to={"./courses"} className="btn btn-primary btn1">
                 View all
               </Link>
-              <Button className="btn btn-primary btn2" onClick={handleExport}>
+              {/* <Button className="btn btn-primary btn2" onClick={handleExport}>
                 Export in Excel
-              </Button>
+              </Button> */}
             </div>
             {/* <div className="row">
 							<div className="col-xl-4 ms-auto">

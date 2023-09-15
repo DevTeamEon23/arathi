@@ -15,7 +15,7 @@ const parentcategory = [
 
 const AddCategory = () => {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
   const history = useHistory();
 
@@ -66,7 +66,7 @@ const AddCategory = () => {
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
         <Tab eventKey="dashboard" title="Dashboard"></Tab>
-        <Tab eventKey="add-groups" title="Add Groups"></Tab>
+        <Tab eventKey="categories" title="Categories"></Tab>
       </Tabs>
       <div className="row">
         <div className="col-lg-12">
@@ -132,7 +132,6 @@ const AddCategory = () => {
                             id="price"
                             name="price"
                             value={price}
-                            placeholder="₹21.60"
                             onChange={(e) => setPrice(e.target.value)}
                             required
                           />

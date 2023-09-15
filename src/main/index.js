@@ -683,6 +683,7 @@ const Markup = () => {
             </Switch>
           </div>
         </div>
+        <br />
         {!pagePath && <Footer />}
       </div>
       <ScrollToTop />
