@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Dropdown } from "react-bootstrap";
-import PerfectScrollbar from "react-perfect-scrollbar";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { Dropdown } from 'react-bootstrap'
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import { Link } from 'react-router-dom'
 /// Scroll
 //import PerfectScrollbar from "react-perfect-scrollbar";
 
@@ -12,135 +12,136 @@ import { Link } from "react-router-dom";
 //import LogoutPage from './Logout';
 // import RightSideBar from "./RightSideBar";
 
-import LogoutPage from "./Logout";
+import LogoutPage from './Logout'
 
-import Indian from "@images/Indian.png";
-import avatar from "@images/avatar/1.jpg";
-import axios from "axios";
+import Indian from '@images/Indian.png'
+import avatar from '@images/avatar/1.jpg'
+import axios from 'axios'
 
 const NotificationBlog = ({ classChange }) => {
   return (
     <>
       <li>
-        <div className="timeline-panel">
-          <div className="media me-2">
-            <img alt="images" width={50} src={avatar} />
+        <div className='timeline-panel'>
+          <div className='media me-2'>
+            <img alt='images' width={50} src={avatar} />
           </div>
-          <div className="media-body">
-            <h6 className="mb-1">Dr sultads Send you Photo</h6>
-            <small className="d-block">29 July 2022 - 02:26 PM</small>
+          <div className='media-body'>
+            <h6 className='mb-1'>Dr sultads Send you Photo</h6>
+            <small className='d-block'>29 July 2022 - 02:26 PM</small>
           </div>
         </div>
       </li>
       <li>
-        <div className="timeline-panel">
+        <div className='timeline-panel'>
           <div className={`media me-2 ${classChange}`}>KG</div>
-          <div className="media-body">
-            <h6 className="mb-1">Resport created successfully</h6>
-            <small className="d-block">29 July 2022 - 02:26 PM</small>
+          <div className='media-body'>
+            <h6 className='mb-1'>Resport created successfully</h6>
+            <small className='d-block'>29 July 2022 - 02:26 PM</small>
           </div>
         </div>
       </li>
       <li>
-        <div className="timeline-panel">
+        <div className='timeline-panel'>
           <div className={`media me-2 ${classChange}`}>
-            <i className="fa fa-home" />
+            <i className='fa fa-home' />
           </div>
-          <div className="media-body">
-            <h6 className="mb-1">Reminder : Treatment Time!</h6>
-            <small className="d-block">29 July 2022 - 02:26 PM</small>
+          <div className='media-body'>
+            <h6 className='mb-1'>Reminder : Treatment Time!</h6>
+            <small className='d-block'>29 July 2022 - 02:26 PM</small>
           </div>
         </div>
       </li>
     </>
-  );
-};
+  )
+}
 
 const Header = ({ onNote }) => {
-  const [rightSelect, setRightSelect] = useState("Eng");
+  const [rightSelect, setRightSelect] = useState('Eng')
   //For fix header
-  const [headerFix, setheaderFix] = useState(false);
-  const [profileImg, setProfileImg] = useState(""); //img file
-  const [token, setToken] = useState(); //auth token
-  const user_id = localStorage.getItem("id");
+  const [headerFix, setheaderFix] = useState(false)
+  const [profileImg, setProfileImg] = useState('') //img file
+  const [token, setToken] = useState() //auth token
+  const user_id = localStorage.getItem('id')
 
   useEffect(() => {
-    let token = window.localStorage.getItem("jwt_access_token");
-    setToken(token);
-    getUsersById(token);
-  }, []);
+    let token = window.localStorage.getItem('jwt_access_token')
+    setToken(token)
+    getUsersById(token)
+  }, [])
 
   // User details by ID
   const getUsersById = async (authToken) => {
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/users_by_onlyid",
+        'https://v1.eonlearning.tech/lms-service/users_by_onlyid',
         {
           headers: {
-            "Auth-Token": authToken,
+            'Auth-Token': authToken,
           },
           params: {
             id: user_id,
           },
         }
-      );
+      )
       //   setUserData(response.data.data);
-      if (response.data.status === "success") {
-        console.log(response.data.data);
-        const res = response.data.data;
-        setProfileImg(res.file);
+      if (response.data.status === 'success') {
+        console.log(response.data.data)
+        const res = response.data.data
+        setProfileImg(res.cdn_file_link)
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
   useEffect(() => {
-    window.addEventListener("scroll", () => {
-      setheaderFix(window.scrollY > 50);
-    });
-  }, []);
+    window.addEventListener('scroll', () => {
+      setheaderFix(window.scrollY > 50)
+    })
+  }, [])
 
   //const [searchBut, setSearchBut] = useState(false);
-  var path = window.location.pathname.split("/");
-  var name = path[path.length - 1].split("-");
-  var filterName = name.length >= 3 ? name.filter((n, i) => i > 0) : name;
-  var finalName = filterName.includes("app")
-    ? filterName.filter((f) => f !== "app")
-    : filterName.includes("ui")
-    ? filterName.filter((f) => f !== "ui")
-    : filterName.includes("uc")
-    ? filterName.filter((f) => f !== "uc")
-    : filterName.includes("basic")
-    ? filterName.filter((f) => f !== "basic")
-    : filterName.includes("jquery")
-    ? filterName.filter((f) => f !== "jquery")
-    : filterName.includes("table")
-    ? filterName.filter((f) => f !== "table")
-    : filterName.includes("page")
-    ? filterName.filter((f) => f !== "page")
-    : filterName.includes("email")
-    ? filterName.filter((f) => f !== "email")
-    : filterName.includes("ecom")
-    ? filterName.filter((f) => f !== "ecom")
-    : filterName.includes("chart")
-    ? filterName.filter((f) => f !== "chart")
-    : filterName.includes("editor")
-    ? filterName.filter((f) => f !== "editor")
-    : filterName;
+  var path = window.location.pathname.split('/')
+  var name = path[path.length - 1].split('-')
+  var filterName = name.length >= 3 ? name.filter((n, i) => i > 0) : name
+  var finalName = filterName.includes('app')
+    ? filterName.filter((f) => f !== 'app')
+    : filterName.includes('ui')
+    ? filterName.filter((f) => f !== 'ui')
+    : filterName.includes('uc')
+    ? filterName.filter((f) => f !== 'uc')
+    : filterName.includes('basic')
+    ? filterName.filter((f) => f !== 'basic')
+    : filterName.includes('jquery')
+    ? filterName.filter((f) => f !== 'jquery')
+    : filterName.includes('table')
+    ? filterName.filter((f) => f !== 'table')
+    : filterName.includes('page')
+    ? filterName.filter((f) => f !== 'page')
+    : filterName.includes('email')
+    ? filterName.filter((f) => f !== 'email')
+    : filterName.includes('ecom')
+    ? filterName.filter((f) => f !== 'ecom')
+    : filterName.includes('chart')
+    ? filterName.filter((f) => f !== 'chart')
+    : filterName.includes('editor')
+    ? filterName.filter((f) => f !== 'editor')
+    : filterName
   return (
-    <div className={`header ${headerFix ? "is-fixed" : ""}`}>
-      <div className="header-content">
-        <nav className="navbar navbar-expand">
-          <div className="collapse navbar-collapse justify-content-between">
-            <div className="header-left">
+    <div className={`header ${headerFix ? 'is-fixed' : ''}`}>
+      <div className='header-content'>
+        <nav className='navbar navbar-expand'>
+          <div className='collapse navbar-collapse justify-content-between'>
+            <div className='header-left'>
               <div
-                className="dashboard_bar"
-                style={{ textTransform: "capitalize" }}>
+                className='dashboard_bar'
+                style={{ textTransform: 'capitalize' }}
+              >
                 LMS Dashboard
               </div>
             </div>
-            <div className="navbar-nav ">
-              <div className="nav-item d-flex align-items-center">
+            <div className='navbar-nav '>
+              <div className='nav-item d-flex align-items-center'>
                 {/* <div className="input-group search-area">
                   <span className="input-group-text">
                     <Link to={"#"}>
@@ -165,33 +166,36 @@ const Header = ({ onNote }) => {
                 </div> */}
               </div>
 
-              <Dropdown className="nav-item dropdown header-profile">
+              <Dropdown className='nav-item dropdown header-profile'>
                 <Dropdown.Toggle
-                  variant=""
-                  as="a"
-                  className="nav-link i-false c-pointer">
-                  <img src={profileImg} alt="" />
+                  variant=''
+                  as='a'
+                  className='nav-link i-false c-pointer'
+                >
+                  <img src={profileImg} alt='' />
                 </Dropdown.Toggle>
                 <Dropdown.Menu
-                  align="right"
-                  className="dropdown-menu dropdown-menu-end">
-                  <Link to="/app-profile" className="dropdown-item ai-icon">
+                  align='right'
+                  className='dropdown-menu dropdown-menu-end'
+                >
+                  <Link to='/app-profile' className='dropdown-item ai-icon'>
                     <svg
-                      id="icon-user1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="text-primary me-1"
+                      id='icon-user1'
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='text-primary me-1'
                       width={18}
                       height={18}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
                       strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                    >
+                      <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' />
                       <circle cx={12} cy={7} r={4} />
                     </svg>
-                    <span className="ms-2">Profile </span>
+                    <span className='ms-2'>Profile </span>
                   </Link>
                   {/* <Link to="/email-inbox" className="dropdown-item ai-icon">
                     <svg
@@ -570,7 +574,7 @@ const Header = ({ onNote }) => {
         </nav>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
