@@ -22,6 +22,7 @@ const Users = () => {
   const [userAllData, setUserAllData] = useState([]); //user list data
   const [showModal, setShowModal] = useState(false); //delete button modal
   const [userRole, setUserRole] = useState(); // For user base view Role
+  const [userDepartment, setUserDepartment] = useState(""); // Department
   const [userAdminData, setUserAdminData] = useState([]); //user list admin data
   const [selectedFilter, setSelectedFilter] = useState(""); // Initialize with an empty string or default filter value
   const [currentPage, setCurrentPage] = useState(1); // Current page number
@@ -36,11 +37,16 @@ const Users = () => {
     setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
+    const Department = window.localStorage.getItem("dept");
+    if (Department) {
+      setUserDepartment(Department);
+    }
     getAllUsers();
   }, []);
 
   //User List Api
   const getAllUsers = () => {
+    const Department = window.localStorage.getItem("dept");
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
@@ -54,11 +60,16 @@ const Users = () => {
         setUserAllData(allUsers);
         setTotalUserData(allUsers.length);
         const adminUsers = allUsers.filter(
-          (user) => user.role !== "Superadmin"
+          (user) => user.role !== "Superadmin" && user.role !== "Admin"
         );
-        setUserAdminData(adminUsers);
+
         console.log(response.data.data.length);
         setTotalUserAdminData(adminUsers.length);
+        const departmentList = adminUsers.filter(
+          (user) => user.dept === Department
+        );
+        setUserAdminData(departmentList);
+        console.log(departmentList, "dept");
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
@@ -219,7 +230,7 @@ const Users = () => {
                                 {userRole === "Admin" && (
                                   <>
                                     <option value="">All</option>
-                                    <option value="Admin">Admin</option>
+                                    {/* <option value="Admin">Admin</option> */}
                                     <option value="Instructor">
                                       Instructor
                                     </option>
