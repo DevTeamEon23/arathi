@@ -1,244 +1,345 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import React, { Fragment } from "react";
+import { toast } from "react-toastify";
 import {
   Row,
   Col,
   Card,
   Table,
   Button,
-  Nav,
+  Modal,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
+import axios from "axios";
+import { Link, useHistory } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
-import { Link } from "react-router-dom";
+const Users = () => {
+  const [uid, setUId] = useState(); //user id save for delete
+  const [token, setToken] = useState(); //auth token
+  const [userAllData, setUserAllData] = useState([]); //user list data
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [totalUserData, setTotalUserData] = useState(); //user list data count
+  const itemsPerPage = 20; // Number of items to display per page
+  const history = useHistory();
+  const [activeTab, setActiveTab] = useState("dashboard");
 
-const AUsers = () => {
-  const [id, setId] = useState('');
-  const [eid, setEid] = useState('');
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [dept, setDept] = useState('');
-  const [adhr, setAdhr] = useState('');
-  const [bio, setBio] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState();
-  const [file, setFile] = useState([]);
-  const [isActive, setIsActive] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [users, setUser] = useState([]);
-  const [userId, setUserId] = useState([]);
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getAllUsers();
+  }, []);
 
-  const getUsers = async () => {
-    const requestOptions = {
-      method:"GET",
+  //Instructor User List Api
+  const getAllUsers = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Auth-Token": jwtToken,
       },
     };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
-
-    console.log(data);
-  };
-  const [data, setData] = useState([]);
-
-  const fetchData = () => {
-    fetch(`https://localhost:8000/users`)
-    //This function is used while fetching data from FASTAPI (HTTP/HTTPS) 3.110.124.80
-      // .then((response) => response.json())
-      // .then((actualData) => {
-      //   console.log(actualData);
-      //   setUsers(actualData.data);
-      //   console.log(data);
-
-      // This is used for fetching data from json-server port 4000 fastAPI 8000
-      .then((res) => res.json())
-      .then((data) => {
-         console.log(data);
-         setData(data);
+    axios
+      .get("http://127.0.0.1:8000/lms-service/instructor_learner_data", config)
+      .then((response) => {
+        const allUsers = response.data.data;
+        setUserAllData(allUsers);
+        setTotalUserData(allUsers.length);
+        console.log(response.data.data.length);
       })
-      .catch((err) => {
-        console.log(err.message);
+      .catch((error) => {
+        toast.error("Failed to fetch users!");
       });
   };
 
-  // function selectUser(userId)
-  // {
-  //   let item=users[id-1];
-  //   setEid(item.eid);
-  //   setFirstname(item.firstname);
-  //   setLastname(item.lastname);
-  //   setEmail(item.email);
-  //   setDept(item.dept);
-  //   setAdhr(item.adhr);
-  //   setBio(item.bio);
-  //   setUsername(item.username);
-  //   setPassword(item.password);
-  //   setFile(item.file);
-  //   setIsActive(item.isActive);
-  //   setUserId(item.id)
-  // }
-  // function updateUser()
-  // {
-  //   let item={eid,firstname,lastname,email,dept,adhr,bio,username, password,file,isActive,userId}
-  //   console.warn("data",data)
-  //   fetch(`http://localhost:8000/users/${userId}`, {
-  //     method: 'PUT',
-  //   }).then((result) => {
-  //     result.json().then((resp) => {
-  //       console.warn(resp)
-  //       getUsers()
-  //     })
-  //   })
-  // }
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
 
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/users/"+id,{
-        method:'DELETE'
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+  const handleEdit = (id) => {
+    history.push(`/edit-user/${id}`);
+  };
+
+  const deleteUser = (userId) => {
+    setShowModal(true);
+    setUId(userId);
+  };
+
+  const handleDelete = () => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: uid,
+    };
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_user`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        getAllUsers();
+        toast.success("User deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setShowModal(false);
+        toast.error("Failed to delete user!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
-    }
-  }
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  let currentData = userAllData.slice(startIndex, endIndex);
 
   return (
     <>
-    <Fragment>
-      <Nav >
-		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/a-users-list">Users</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/ad-user-types">User Types</Link>
-        </Nav.Item>
-      </Nav>
-      <Row>
-        <Col lg={12}>
-          <Card>
-            <Card.Header>
-              <Card.Title>All Users List</Card.Title>
-              <div>
-              <Link to="/ad-add-user">
-                  <Button variant="primary">Add Users</Button>
-                </Link>&nbsp;&nbsp;
-                <Link to="ad-import-user">
-                  <Button variant="primary">Import Users</Button>
-                </Link>&nbsp;&nbsp;
-                <Link to="ad-export-user">
-                  <Button variant="primary">Export Users</Button>
-                </Link>
-              </div>
-            </Card.Header>
-              <Table responsive striped bordered className="verticle-middle">
-                <thead>
-                  <tr>
-                    <th>
-                      <strong><center>EID</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>SID</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>USER</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>DEPARTMENT</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>EMAIL</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>USER TYPE</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>REGISTRATION</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>LAST LOGIN</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>OPTIONS</center></strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {data?.map((item, index) => {
-               return (
-                <tr key={index}>
-                <td><center>{item.id}</center></td>
-                <td><center>{item.eid}</center></td>
-                <td><center>{item.firstname}  {item.lastname}</center></td>
-                <td><center>{item.dept}</center></td>
-                <td><center>{item.email}</center></td>
-                <td><center>{item.categorytype}</center></td>
-                <td><center>2/2/2022</center></td>
-                <td><center>3 hrs Ago</center></td>
-                {/* {users.map((data) => {
-               return (
-                <tr key={data.id}>
-                <td><center>{data.eid}</center></td>
-                <td><center>{data.eid}</center></td>
-                <td><center>{data.firstname}  {data.lastname}</center></td>
-                <td><center>{data.dept}</center></td>
-                <td><center>{data.email}</center></td>
-                <td><center>{data.categorytype}</center></td>
-                <td><center>2/2/2022</center></td>
-                <td><center>3 hrs Ago</center></td> */}
-                <td>
-                        <center>
-                        {/* <Button onClick={(e)=>selectUser(item.id)}>Select</Button> */}
-                        <Link
-                          to="/ad-user-progress"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fa-light fa-chart-pie"></i>
-                        </Link>
-                        <Link
-                          to="/ad-edit-user"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                        </center>
-                    </td>
-                  </tr>
-               );
-                })}
-                </tbody>
-              </Table>
-              {/* <div>
-                <form action="http://localhost:8000/users/${userId}" method='PUT' encType="multipart/form-data">
-                <input type="text" id="eid" name="eid" value={eid} onChange={(e) => setEid(e.target.value)} />
-                <input type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
-                <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} />
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <input type="text" value={dept} onChange={(e) => setDept(e.target.value)} />
-                <input type="text" value={adhr} onChange={(e) => setAdhr(e.target.value)} />
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} />
-                <input type="file" value={file} onChange={(e) => setFile(e.target.value)} />
-                <input type="text" value={isActive} onChange={(e) => setIsActive(e.target.value)} />
-                <button onClick={updateUser} >Update</button>
-                </form>
-              </div> */}
-          </Card>
-        </Col>
-      </Row>
-    </Fragment>
+      <Fragment>
+        <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+          <Tab eventKey="dashboard" title="Dashboard"></Tab>
+          <Tab eventKey="add-user" title="Add Users"></Tab>
+        </Tabs>
+        <Row>
+          <Col lg={12}>
+            <Card>
+              <Card.Header>
+                <Card.Title>All Users List</Card.Title>
+                <div>
+                  <Link to="/add-user">
+                    <Button variant="primary">Add Users</Button>
+                  </Link>
+                  &nbsp;&nbsp;
+                  <Link to="/import-user">
+                    <Button variant="primary">Import Users</Button>
+                  </Link>
+                  &nbsp;&nbsp;
+                  <Link to="/export-user">
+                    <Button variant="primary">Export Users</Button>
+                  </Link>
+                </div>
+              </Card.Header>
+              <Card.Body>
+                {userAllData.length === undefined ? (
+                  <div className="loader-container">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="130"
+                      visible={true}
+                    />
+                  </div>
+                ) : userAllData.length > 0 ? (
+                  <Table responsive striped bordered>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>
+                            <center>EID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>SID</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>USER</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>DEPARTMENT</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>EMAIL</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>ROLE&nbsp;</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>REGISTRATION</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>LAST LOGIN</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>OPTIONS</center>
+                          </strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentData.map((item, index) => {
+                        const dateTimeString = item.created_at; //1
+                        const date = new Date(dateTimeString);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1; // Months are zero-based, so add 1
+                        const year = date.getFullYear();
+                        const formattedDate = `${day < 10 ? "0" + day : day}-${
+                          month < 10 ? "0" + month : month
+                        }-${year}`;
+
+                        // Input date and time string
+                        const inputDateTime = item.updated_at; //2
+                        // Convert inputDateTime to a JavaScript Date object
+                        const dateObj = new Date(inputDateTime);
+                        // Get the date in dd-mm-yyyy format
+                        const day1 = dateObj
+                          .getDate()
+                          .toString()
+                          .padStart(2, "0");
+                        const month1 = (dateObj.getMonth() + 1)
+                          .toString()
+                          .padStart(2, "0"); // Months are zero-based
+                        const year1 = dateObj.getFullYear().toString();
+                        const formattedDate1 = `${day1}-${month1}-${year1}`;
+
+                        // Get the time in 12-hour format
+                        let hours = dateObj.getHours();
+                        const minutes = dateObj
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, "0");
+                        const amPm = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedTime = `${hours}:${minutes} ${amPm}`;
+                        return (
+                          <tr key={index}>
+                            <td>
+                              <center>{item.eid}</center>
+                            </td>
+                            <td>
+                              <center>{item.sid}</center>
+                            </td>
+                            <td>
+                              <center>{item.full_name}</center>
+                            </td>
+                            <td>
+                              <center>{item.dept}</center>
+                            </td>
+                            <td>
+                              <center>{item.email}</center>
+                            </td>
+                            <td>
+                              <center>{item.role}</center>
+                            </td>
+                            <td>
+                              <center>{formattedDate}</center>
+                            </td>
+                            <td>
+                              <center>
+                                {formattedDate1}&nbsp;&nbsp;{formattedTime}
+                              </center>
+                            </td>
+                            <td>
+                              <center>
+                                {item.role === "Learner" && (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Edit"
+                                    onClick={(e) => handleEdit(item.id)}>
+                                    <i className="fas fa-pencil-alt"></i>
+                                  </div>
+                                )}
+
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
+                                  onClick={() => deleteUser(item.id)}>
+                                  <i className="fa fa-trash"></i>
+                                </div>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <>
+                    {" "}
+                    <div>
+                      <p className="text-center fs-20 fw-bold">
+                        No User Found.
+                      </p>
+                    </div>
+                  </>
+                )}
+                <div className="pagination-down">
+                  <div className="d-flex align-items-center  ">
+                    <h4 className=" ">
+                      Showing <span>1-20 </span>from{" "}
+                      <span>{totalUserData}</span>
+                      data
+                    </h4>
+                    <div className="d-flex align-items-center ms-auto mt-2">
+                      <Button
+                        className="mr-2"
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}>
+                        Previous
+                      </Button>
+                      &nbsp;&nbsp;
+                      <span className=" fs-18 fw-bold ">
+                        Page {currentPage} &nbsp;&nbsp;
+                      </span>
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= userAllData.length}>
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Fragment>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete User?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
-}
-export default AUsers;
+};
+export default Users;
