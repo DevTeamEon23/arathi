@@ -292,12 +292,12 @@ const Info = () => {
                                       handleClone(data.id, data.coursename)
                                     }></i>
                                 </div>
-                                <Link
+                                {/* <Link
                                   to="/course-reports"
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   title="Reports">
                                   <i class="fa-regular fa-clipboard"></i>
-                                </Link>
+                                </Link> */}
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   title="Edit"
