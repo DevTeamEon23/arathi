@@ -32741,7 +32741,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
 }
 
 .profile-info {
-  padding: 0.9375rem 1.25rem;
+  padding: 1.9375rem 1.25rem;
 }
 @media only screen and (max-width: 35.9375rem) {
   .profile-info {

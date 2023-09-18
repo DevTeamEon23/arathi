@@ -592,9 +592,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "users-list" ? "mm-active" : ""
+                            path === "insusers-list" ? "mm-active" : ""
                           }`}
-                          to="/users-list">
+                          to="/insusers-list">
                           {" "}
                           Users{" "}
                         </Link>
@@ -602,9 +602,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "add-user" ? "mm-active" : ""
+                            path === "insadd-user" ? "mm-active" : ""
                           }`}
-                          to="/add-user">
+                          to="/insadd-user">
                           {" "}
                           Add User{" "}
                         </Link>

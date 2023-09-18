@@ -131,6 +131,7 @@ signInWithEmailAndPassword = (data) => {
         .then((response) => {
           console.log(response);
           localStorage.setItem("id", response.data.user_id);
+          localStorage.setItem("dept", response.data.user_dept.dept);
           if (response.data.data.user) {
             this.setSession(response.data.token);
             this.emit("onLogin", response.data.data.user);
