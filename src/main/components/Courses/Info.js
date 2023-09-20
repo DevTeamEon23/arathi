@@ -196,7 +196,7 @@ const Info = () => {
                     visible={true}
                   />
                 </div>
-              ) : allCourseData.length > 0 ? (
+              ) : allCourseData === null ? (
                 <>
                   <Table responsive>
                     <thead>

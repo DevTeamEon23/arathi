@@ -382,7 +382,7 @@ const Markup = () => {
 
     { url: "insusers-list", component: AUsers }, //instructors list
     { url: "insadd-user", component: AdAddUser }, //instructors add
-    { url: "ad-edit-user", component: AdEditUser },
+    { url: "insedit-user/:id", component: AdEditUser }, //instructors edit
     { url: "ad-user-types", component: AdUserTypes },
     { url: "ad-add-user-type", component: AdAddUserType },
     { url: "ad-edit-user-type", component: AdEditUserType },

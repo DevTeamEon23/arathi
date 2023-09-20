@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
+import axios from "axios";
 // import PageTitle from "../../layouts/PageTitle";
 import { Link, useHistory } from "react-router-dom";
 import { Rating } from "react-simple-star-rating";
@@ -8,13 +9,13 @@ import {
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
   Modal,
   Button,
   Nav,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
+import { RotatingLines } from "react-loader-spinner";
 
 /// imge
 // import avatar1 from "../../../images/avatar/1.jpg";
@@ -38,21 +39,52 @@ const LearnerCourse = () => {
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
 
-  const fetchData = () => {
-    fetch("https://localhost:8000/courses")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setCourses(data);
-      })
-      .catch((err) => {
-        console.log(err.message);
+  const [token, setToken] = useState(); //auth token
+  const [activeTab, setActiveTab] = useState("learn-course");
+  const history = useHistory();
+
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
+    setToken(accessToken);
+    fetchCourseData(accessToken, ID);
+  }, []);
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
+  const fetchCourseData = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "http://127.0.0.1:8000/lms-service/fetch_enrolled_courses_of_users"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      // Handle the response here
+      console.log("API Response:", response.data.data.course_ids);
+      setCourses(response.data.data.course_ids);
+    } catch (error) {
+      // Handle errors here
+      console.error("API Error:", error);
+    }
   };
 
-  // useEffect(async () => {
-  //   fetchData();
-  // }, []);
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
 
   // Catch Rating value
   const handleRating = ([rate] = 0) => {
@@ -102,131 +134,133 @@ const LearnerCourse = () => {
       color: "#ccc",
     },
   };
-  let history = useHistory();
+
   return (
     <Fragment>
-      <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/learn-course"
-          >
-            Info
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/adm_courses"
-          >
-            Course Catalog
-          </Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey="learn-course" title="Info"></Tab>
+        <Tab eventKey="adm_courses" title="Course Store"></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
             <Card.Header>
               <Card.Title>Courses</Card.Title>
+              {console.log(courses)}
             </Card.Header>
             <Card.Body>
-              <Table responsive className="verticle-middle">
-                <thead>
-                  <tr>
-                    <th>
-                      <strong>COURSE ID</strong>
-                    </th>
-                    <th>
-                      <strong>COURSE</strong>
-                    </th>
-                    <th>
-                      <strong>PROGRESS</strong>
-                    </th>
-                    <th>
-                      <strong>SCORE</strong>
-                    </th>
-                    <th>
-                      <strong>ENROLLED ON</strong>
-                    </th>
-                    <th>
-                      <strong>DUE DATE</strong>
-                    </th>
-                    <th>
-                      <strong>COMPLETION</strong>
-                    </th>
-                    <th>
-                      <strong>DURATION</strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>RATINGS</center>
-                      </strong>
-                    </th>
-                    <th>
-                      <strong>
-                        <center>FEEDBACK</center>
-                      </strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {courses.map((data) => {
-                    return (
-                      <tr key={data.id}>
-                        <td>{data.id}</td>
-                        <td>
-                          <strong>{data.coursename}</strong>
-                        </td>
-                        <small>
-                          <td className="progress-bar p-0 bg-primary">
-                            <td
-                              className="bg-light p-0"
-                              style={{ width: "50%" }}
-                            >
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50%
-                            </td>
-                          </td>
-                        </small>
-                        <td>
-                          <center>-</center>
-                        </td>
-                        <td>
-                          <center>2/1/2023</center>
-                        </td>
-                        <td>
-                          <center>30/1/2023</center>
-                        </td>
-                        <td>
-                          <center>30-DEC-2023</center>
-                        </td>
-                        <td>
-                          <center>1m 35s</center>
-                        </td>
-                        <td className="col-lg-4">
-                          <Rating
-                            onClick={handleRating}
-                            initialValue={rating}
-                          />
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-secondary"
-                            onClick={() => setFeedbackModal(true)}
-                          >
-                            <span className="me-2"></span>Feedback
-                          </button>
-                        </td>
+              {courses.length === 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : courses.length > 0 ? (
+                <>
+                  <Table responsive className="verticle-middle">
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>COURSE ID</strong>
+                        </th>
+                        <th>
+                          <strong>COURSE</strong>
+                        </th>
+                        <th>
+                          <strong>PROGRESS</strong>
+                        </th>
+                        <th>
+                          <strong>SCORE</strong>
+                        </th>
+                        <th>
+                          <strong>ENROLLED ON</strong>
+                        </th>
+                        <th>
+                          <strong>DUE DATE</strong>
+                        </th>
+                        <th>
+                          <strong>COMPLETION</strong>
+                        </th>
+                        <th>
+                          <strong>DURATION</strong>
+                        </th>
+                        {/* <th>
+                          <strong>
+                            <center>RATINGS</center>
+                          </strong>
+                        </th>
+                        <th>
+                          <strong>
+                            <center>FEEDBACK</center>
+                          </strong>
+                        </th> */}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                    </thead>
+                    <tbody>
+                      {courses?.map((data) => {
+                        return (
+                          <tr key={data.id}>
+                            <td>{data.course_id}</td>
+                            <td>
+                              <strong>{data.coursename}</strong>
+                            </td>
+                            <small>
+                              <td className="progress-bar p-0 bg-primary">
+                                <td
+                                  className="bg-light p-0"
+                                  // style={{ width: "50%" }}
+                                >
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0%
+                                </td>
+                              </td>
+                            </small>
+                            <td>
+                              <center>-</center>
+                            </td>
+                            <td>
+                              <center>2/1/2023</center>
+                            </td>
+                            <td>
+                              <center>30/1/2023</center>
+                            </td>
+                            <td>
+                              <center>30-DEC-2023</center>
+                            </td>
+                            <td>
+                              <center>1m 35s</center>
+                            </td>
+                            {/* <td className="col-lg-4">
+                              <Rating
+                                onClick={handleRating}
+                                initialValue={rating}
+                              />
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-secondary"
+                                onClick={() => setFeedbackModal(true)}>
+                                <span className="me-2"></span>Feedback
+                              </button>
+                            </td> */}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
@@ -241,8 +275,7 @@ const LearnerCourse = () => {
               type="button"
               className="btn-close"
               data-dismiss="modal"
-              onClick={() => setFeedbackModal(false)}
-            ></Button>
+              onClick={() => setFeedbackModal(false)}></Button>
           </div>
           <div className="modal-body">
             <form
@@ -250,8 +283,7 @@ const LearnerCourse = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 setFeedbackModal(false);
-              }}
-            >
+              }}>
               <div className="row">
                 <div className="col-lg-6">
                   <div className="form-group mb-3">

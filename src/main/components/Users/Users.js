@@ -172,7 +172,7 @@ const Users = () => {
                       visible={true}
                     />
                   </div>
-                ) : userAllData.length > 0 ? (
+                ) : userAllData === null ? (
                   <Table responsive striped bordered>
                     <thead>
                       <tr>

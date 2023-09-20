@@ -501,7 +501,7 @@ const EditcourseForm = (props) => {
                             <label
                               htmlFor="selectedVideo"
                               className="col-lg-4 col-form-label">
-                              Upload Your Video
+                              Update Your Video
                               <span className="text-danger">*</span>
                             </label>
                             <div className="input-group mb-3 col-lg-6 ">
@@ -667,13 +667,13 @@ const EditcourseForm = (props) => {
                         <div className="col-xl-5">
                           <div className="form-group mb-3 row">
                             <label className="col-lg-3 col-form-label">
-                              Add Photo<span className="text-danger">*</span>
+                              Update Photo<span className="text-danger">*</span>
                             </label>
 
                             <div className="profile-info col-lg-7">
                               <div>
                                 {imageUrl && (
-                                  <div className="mb-3">
+                                  <div className="">
                                     <img
                                       src={imageUrl}
                                       alt="Preview"
@@ -685,7 +685,7 @@ const EditcourseForm = (props) => {
                                       className="fs-18 fs-bold"
                                       title="Delete"
                                       style={{
-                                        marginBottom: "220px",
+                                        marginBottom: "180px",
                                         marginLeft: "18px",
                                       }}
                                       onClick={handleImageDelete}

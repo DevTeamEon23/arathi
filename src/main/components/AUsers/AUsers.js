@@ -19,6 +19,7 @@ const Users = () => {
   const [uid, setUId] = useState(); //user id save for delete
   const [token, setToken] = useState(); //auth token
   const [userAllData, setUserAllData] = useState([]); //user list data
+  const [userDepartment, setUserDepartment] = useState(""); // Department
   const [showModal, setShowModal] = useState(false); //delete button modal
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const [totalUserData, setTotalUserData] = useState(); //user list data count
@@ -29,11 +30,16 @@ const Users = () => {
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
+    const Department = window.localStorage.getItem("dept");
+    if (Department) {
+      setUserDepartment(Department);
+    }
     getAllUsers();
   }, []);
 
   //Instructor User List Api
   const getAllUsers = () => {
+    const Department = window.localStorage.getItem("dept");
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
@@ -44,8 +50,14 @@ const Users = () => {
       .get("http://127.0.0.1:8000/lms-service/instructor_learner_data", config)
       .then((response) => {
         const allUsers = response.data.data;
-        setUserAllData(allUsers);
-        setTotalUserData(allUsers.length);
+        const instrutorUsers = allUsers.filter(
+          (user) => user.role !== "Instructor"
+        );
+        const departmentList = instrutorUsers.filter(
+          (user) => user.dept === Department
+        );
+        setUserAllData(departmentList);
+        setTotalUserData(departmentList.length);
         console.log(response.data.data.length);
       })
       .catch((error) => {
@@ -64,7 +76,7 @@ const Users = () => {
     setActiveTab(tab);
   }, [history.location.pathname]);
   const handleEdit = (id) => {
-    history.push(`/edit-user/${id}`);
+    history.push(`/insedit-user/${id}`);
   };
 
   const deleteUser = (userId) => {
@@ -111,7 +123,7 @@ const Users = () => {
       <Fragment>
         <Tabs activeKey={activeTab} onSelect={handleTabChange}>
           <Tab eventKey="dashboard" title="Dashboard"></Tab>
-          <Tab eventKey="add-user" title="Add Users"></Tab>
+          <Tab eventKey="insadd-user" title="Add Users"></Tab>
         </Tabs>
         <Row>
           <Col lg={12}>
@@ -119,7 +131,7 @@ const Users = () => {
               <Card.Header>
                 <Card.Title>All Users List</Card.Title>
                 <div>
-                  <Link to="/add-user">
+                  <Link to="/insadd-user">
                     <Button variant="primary">Add Users</Button>
                   </Link>
                   &nbsp;&nbsp;
@@ -295,8 +307,7 @@ const Users = () => {
                   <div className="d-flex align-items-center  ">
                     <h4 className=" ">
                       Showing <span>1-20 </span>from{" "}
-                      <span>{totalUserData}</span>
-                      data
+                      <span>{totalUserData}</span>&nbsp;data
                     </h4>
                     <div className="d-flex align-items-center ms-auto mt-2">
                       <Button
