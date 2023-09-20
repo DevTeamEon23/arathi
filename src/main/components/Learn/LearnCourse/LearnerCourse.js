@@ -62,7 +62,7 @@ const LearnerCourse = () => {
         user_id: ID,
       };
       const url = new URL(
-        "http://127.0.0.1:8000/lms-service/fetch_enrolled_courses_of_users"
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
