@@ -476,27 +476,25 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "adm_courses-info" ? "mm-active" : ""
+                            path === "courses-info" ? "mm-active" : ""
                           }`}
-                          to="/adm_courses-info">
+                          to="/courses-info">
                           Courses
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${
-                            path === "adm_add-courses" ? "mm-active" : ""
+                            path === "add-courses" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-courses">
+                          to="/add-courses">
                           Add Courses
                         </Link>
                       </li>
                       <li>
                         <Link
-                          className={`${
-                            path === "adm_courses" ? "mm-active" : ""
-                          }`}
-                          to="/adm_courses">
+                          className={`${path === "courses" ? "mm-active" : ""}`}
+                          to="/courses">
                           Course Store
                         </Link>
                       </li>
