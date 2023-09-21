@@ -162,7 +162,7 @@ const Users = () => {
                 </div>
               </Card.Header>
               <Card.Body>
-                {userAllData.length === undefined ? (
+                {userAllData.length <= 0 ? (
                   <div className="loader-container">
                     <RotatingLines
                       strokeColor="grey"
@@ -173,204 +173,201 @@ const Users = () => {
                     />
                   </div>
                 ) : userAllData === null ? (
-                  <Table responsive striped bordered>
-                    <thead>
-                      <tr>
-                        <th>
-                          <strong>
-                            <center>EID</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>SID</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>USER</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>DEPARTMENT</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>EMAIL</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>
-                              ROLE&nbsp;
-                              <select
-                                value={selectedFilter}
-                                style={{
-                                  width: "21px",
-                                  borderRadius: "6px",
-                                }}
-                                onChange={(e) =>
-                                  setSelectedFilter(e.target.value)
-                                }>
-                                {userRole === "Superadmin" && (
-                                  <>
-                                    <option value="">All</option>
-                                    <option value="Superadmin">
-                                      SuperAdmin
-                                    </option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Instructor">
-                                      Instructor
-                                    </option>
-                                    <option value="Learner">Learner</option>
-                                  </>
-                                )}
-                                {userRole === "Admin" && (
-                                  <>
-                                    <option value="">All</option>
-                                    {/* <option value="Admin">Admin</option> */}
-                                    <option value="Instructor">
-                                      Instructor
-                                    </option>
-                                    <option value="Learner">Learner</option>
-                                  </>
-                                )}
-                              </select>
-                            </center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>REGISTRATION</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>LAST LOGIN</center>
-                          </strong>
-                        </th>
-                        <th>
-                          <strong>
-                            <center>OPTIONS</center>
-                          </strong>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentData.map((item, index) => {
-                        const dateTimeString = item.created_at; //1
-                        const date = new Date(dateTimeString);
-                        const day = date.getDate();
-                        const month = date.getMonth() + 1; // Months are zero-based, so add 1
-                        const year = date.getFullYear();
-                        const formattedDate = `${day < 10 ? "0" + day : day}-${
-                          month < 10 ? "0" + month : month
-                        }-${year}`;
-
-                        // Input date and time string
-                        const inputDateTime = item.updated_at; //2
-                        // Convert inputDateTime to a JavaScript Date object
-                        const dateObj = new Date(inputDateTime);
-                        // Get the date in dd-mm-yyyy format
-                        const day1 = dateObj
-                          .getDate()
-                          .toString()
-                          .padStart(2, "0");
-                        const month1 = (dateObj.getMonth() + 1)
-                          .toString()
-                          .padStart(2, "0"); // Months are zero-based
-                        const year1 = dateObj.getFullYear().toString();
-                        const formattedDate1 = `${day1}-${month1}-${year1}`;
-
-                        // Get the time in 12-hour format
-                        let hours = dateObj.getHours();
-                        const minutes = dateObj
-                          .getMinutes()
-                          .toString()
-                          .padStart(2, "0");
-                        const amPm = hours >= 12 ? "PM" : "AM";
-                        hours = hours % 12 || 12;
-                        const formattedTime = `${hours}:${minutes} ${amPm}`;
-                        if (selectedFilter && item.role !== selectedFilter) {
-                          return null; // Skip rendering this row
-                        }
-                        return (
-                          <tr key={index}>
-                            <td>
-                              <center>{item.eid}</center>
-                            </td>
-                            <td>
-                              <center>{item.sid}</center>
-                            </td>
-                            <td>
-                              <center>{item.full_name}</center>
-                            </td>
-                            <td>
-                              <center>{item.dept}</center>
-                            </td>
-                            <td>
-                              <center>{item.email}</center>
-                            </td>
-                            <td>
-                              <center>{item.role}</center>
-                            </td>
-                            <td>
-                              <center>{formattedDate}</center>
-                            </td>
-                            <td>
-                              <center>
-                                {formattedDate1}&nbsp;&nbsp;{formattedTime}
-                              </center>
-                            </td>
-                            <td>
-                              <center>
-                                {userRole === "Superadmin" ? (
-                                  <>
-                                    {item.role === "Admin" && (
-                                      <div
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                        title="Edit"
-                                        onClick={(e) => handleEdit(item.id)}>
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    {item.role === "Instructor" && (
-                                      <div
-                                        className="btn btn-primary shadow btn-xs sharp me-1"
-                                        title="Edit"
-                                        onClick={(e) => handleEdit(item.id)}>
-                                        <i className="fas fa-pencil-alt"></i>
-                                      </div>
-                                    )}
-                                  </>
-                                )}
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Delete"
-                                  onClick={() => deleteUser(item.id)}>
-                                  <i className="fa fa-trash"></i>
-                                </div>
-                              </center>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
                 ) : (
                   <>
-                    {" "}
-                    <div>
-                      <p className="text-center fs-20 fw-bold">
-                        No User Found.
-                      </p>
-                    </div>
+                    <Table responsive striped bordered>
+                      <thead>
+                        <tr>
+                          <th>
+                            <strong>
+                              <center>EID</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>SID</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>USER</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>DEPARTMENT</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>EMAIL</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>
+                                ROLE&nbsp;
+                                <select
+                                  value={selectedFilter}
+                                  style={{
+                                    width: "21px",
+                                    borderRadius: "6px",
+                                  }}
+                                  onChange={(e) =>
+                                    setSelectedFilter(e.target.value)
+                                  }>
+                                  {userRole === "Superadmin" && (
+                                    <>
+                                      <option value="">All</option>
+                                      <option value="Superadmin">
+                                        SuperAdmin
+                                      </option>
+                                      <option value="Admin">Admin</option>
+                                      <option value="Instructor">
+                                        Instructor
+                                      </option>
+                                      <option value="Learner">Learner</option>
+                                    </>
+                                  )}
+                                  {userRole === "Admin" && (
+                                    <>
+                                      <option value="">All</option>
+                                      {/* <option value="Admin">Admin</option> */}
+                                      <option value="Instructor">
+                                        Instructor
+                                      </option>
+                                      <option value="Learner">Learner</option>
+                                    </>
+                                  )}
+                                </select>
+                              </center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>REGISTRATION</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>LAST LOGIN</center>
+                            </strong>
+                          </th>
+                          <th>
+                            <strong>
+                              <center>OPTIONS</center>
+                            </strong>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {currentData.map((item, index) => {
+                          const dateTimeString = item.created_at; //1
+                          const date = new Date(dateTimeString);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1; // Months are zero-based, so add 1
+                          const year = date.getFullYear();
+                          const formattedDate = `${
+                            day < 10 ? "0" + day : day
+                          }-${month < 10 ? "0" + month : month}-${year}`;
+
+                          // Input date and time string
+                          const inputDateTime = item.updated_at; //2
+                          // Convert inputDateTime to a JavaScript Date object
+                          const dateObj = new Date(inputDateTime);
+                          // Get the date in dd-mm-yyyy format
+                          const day1 = dateObj
+                            .getDate()
+                            .toString()
+                            .padStart(2, "0");
+                          const month1 = (dateObj.getMonth() + 1)
+                            .toString()
+                            .padStart(2, "0"); // Months are zero-based
+                          const year1 = dateObj.getFullYear().toString();
+                          const formattedDate1 = `${day1}-${month1}-${year1}`;
+
+                          // Get the time in 12-hour format
+                          let hours = dateObj.getHours();
+                          const minutes = dateObj
+                            .getMinutes()
+                            .toString()
+                            .padStart(2, "0");
+                          const amPm = hours >= 12 ? "PM" : "AM";
+                          hours = hours % 12 || 12;
+                          const formattedTime = `${hours}:${minutes} ${amPm}`;
+                          if (selectedFilter && item.role !== selectedFilter) {
+                            return null; // Skip rendering this row
+                          }
+                          return (
+                            <tr key={index}>
+                              <td>
+                                <center>{item.eid}</center>
+                              </td>
+                              <td>
+                                <center>{item.sid}</center>
+                              </td>
+                              <td>
+                                <center>{item.full_name}</center>
+                              </td>
+                              <td>
+                                <center>{item.dept}</center>
+                              </td>
+                              <td>
+                                <center>{item.email}</center>
+                              </td>
+                              <td>
+                                <center>{item.role}</center>
+                              </td>
+                              <td>
+                                <center>{formattedDate}</center>
+                              </td>
+                              <td>
+                                <center>
+                                  {formattedDate1}&nbsp;&nbsp;{formattedTime}
+                                </center>
+                              </td>
+                              <td>
+                                <center>
+                                  {userRole === "Superadmin" ? (
+                                    <>
+                                      {item.role === "Admin" && (
+                                        <div
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                          title="Edit"
+                                          onClick={(e) => handleEdit(item.id)}>
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {item.role === "Instructor" && (
+                                        <div
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                          title="Edit"
+                                          onClick={(e) => handleEdit(item.id)}>
+                                          <i className="fas fa-pencil-alt"></i>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Delete"
+                                    onClick={() => deleteUser(item.id)}>
+                                    <i className="fa fa-trash"></i>
+                                  </div>
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
                   </>
                 )}
                 <div className="pagination-down">

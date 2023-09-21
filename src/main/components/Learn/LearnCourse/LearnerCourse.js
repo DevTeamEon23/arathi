@@ -11,7 +11,7 @@ import {
   Table,
   Modal,
   Button,
-  Nav,
+  ProgressBar,
   Tab,
   Tabs,
 } from "react-bootstrap";
@@ -41,6 +41,7 @@ const LearnerCourse = () => {
 
   const [token, setToken] = useState(); //auth token
   const [activeTab, setActiveTab] = useState("learn-course");
+  const [progress, setProgress] = useState(0);
   const history = useHistory();
 
   useEffect(() => {
@@ -71,12 +72,9 @@ const LearnerCourse = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Handle the response here
       console.log("API Response:", response.data.data.course_ids);
       setCourses(response.data.data.course_ids);
     } catch (error) {
-      // Handle errors here
       console.error("API Error:", error);
     }
   };
@@ -146,10 +144,9 @@ const LearnerCourse = () => {
           <Card>
             <Card.Header>
               <Card.Title>Courses</Card.Title>
-              {console.log(courses)}
             </Card.Header>
             <Card.Body>
-              {courses.length === 0 ? (
+              {courses.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -159,33 +156,41 @@ const LearnerCourse = () => {
                     visible={true}
                   />
                 </div>
-              ) : courses.length > 0 ? (
+              ) : courses === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              ) : (
                 <>
                   <Table responsive className="verticle-middle">
                     <thead>
                       <tr>
-                        <th>
+                        <th className="text-center">
                           <strong>COURSE ID</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>COURSE</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>PROGRESS</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>SCORE</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>ENROLLED ON</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>DUE DATE</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>COMPLETION</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>DURATION</strong>
                         </th>
                         {/* <th>
@@ -202,37 +207,40 @@ const LearnerCourse = () => {
                     </thead>
                     <tbody>
                       {courses?.map((data) => {
+                        const dateTimeString = data.enddate; //1
+                        const date = new Date(dateTimeString);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1;
+                        const year = date.getFullYear();
+                        const formattedDate = `${day < 10 ? "0" + day : day}-${
+                          month < 10 ? "0" + month : month
+                        }-${year}`;
+
+                        const dateTimeString2 = data.enrolled_on; //2
+                        const date2 = new Date(dateTimeString2);
+                        const day2 = date2.getDate();
+                        const month2 = date2.getMonth() + 1;
+                        const year2 = date2.getFullYear();
+                        const formattedDate2 = `${
+                          day2 < 10 ? "0" + day2 : day2
+                        }-${month2 < 10 ? "0" + month2 : month2}-${year2}`;
                         return (
                           <tr key={data.id}>
-                            <td>{data.course_id}</td>
-                            <td>
-                              <strong>{data.coursename}</strong>
+                            <td className="text-center">{data.course_id}</td>
+                            <td className="text-center">{data.coursename}</td>
+                            <td className="text-center">
+                              <ProgressBar
+                                style={{ height: "1.5rem" }}
+                                animated
+                                now={18}
+                                label={"0%"}
+                              />
                             </td>
-                            <small>
-                              <td className="progress-bar p-0 bg-primary">
-                                <td
-                                  className="bg-light p-0"
-                                  // style={{ width: "50%" }}
-                                >
-                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0%
-                                </td>
-                              </td>
-                            </small>
-                            <td>
-                              <center>-</center>
-                            </td>
-                            <td>
-                              <center>2/1/2023</center>
-                            </td>
-                            <td>
-                              <center>30/1/2023</center>
-                            </td>
-                            <td>
-                              <center>30-DEC-2023</center>
-                            </td>
-                            <td>
-                              <center>1m 35s</center>
-                            </td>
+                            <td className="text-center">0</td>
+                            <td className="text-center">{formattedDate2}</td>
+                            <td className="text-center">{formattedDate}</td>
+                            <td className="text-center">-</td>
+                            <td className="text-center">0</td>
                             {/* <td className="col-lg-4">
                               <Rating
                                 onClick={handleRating}
@@ -251,14 +259,6 @@ const LearnerCourse = () => {
                       })}
                     </tbody>
                   </Table>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-center fs-20 fw-bold">
-                      No Course Found.
-                    </p>
-                  </div>
                 </>
               )}
             </Card.Body>
