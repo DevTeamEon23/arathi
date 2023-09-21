@@ -71,18 +71,6 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const originalString = selectedOptionLang.value;
-
-    // const modifiedString = originalString.replace(/['"]/g, '');
-    // console.log(modifiedString);
-
-    // if(isActive === false || isDeactive === false){
-    //   console.log("Plz select any one of this");
-    //   setActiveError("Please select an Active or Deactive before submitting.")
-    // }else{
-    //   setActiveError("")
-    // }
-
     const formData = new FormData();
     formData.append("eid", eid);
     formData.append("sid", eid);

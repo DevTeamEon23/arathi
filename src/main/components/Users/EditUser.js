@@ -16,9 +16,9 @@ const timezonetype = [
   { value: "arabic", label: "Egypt Standard Time	(Arabic)" },
 ];
 const langtype = [
-  { value: "hindi", label: "Hindi" },
-  { value: "english", label: "English" },
-  { value: "marathi", label: "Marathi" },
+  { value: "Hindi", label: "Hindi" },
+  { value: "English", label: "English" },
+  { value: "Marathi", label: "Marathi" },
 ];
 
 const EditUser = (props) => {
@@ -86,14 +86,19 @@ const EditUser = (props) => {
         setAdhr(res.adhr);
         setBio(res.bio);
         setUsername(res.username);
-        setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
+        // setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
-        // setFile(res.file)
+        setFile(null);
         // setImageUrl(res.file)
         setImgCdnUrl(res.cdn_file_link);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
         setExcludeFromEmail(res.exclude_from_email);
+        const selectedOption = timezonetype.find(
+          (option) =>
+            option.value.toLowerCase() === res.timezone.trim().toLowerCase()
+        );
+        setSelectedOptionTimeZone(selectedOption ? selectedOption : "");
       }
     } catch (error) {
       console.error(error);
@@ -133,7 +138,12 @@ const EditUser = (props) => {
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
     formData.append("cdn_file_link", imgCdnUrl);
-    console.log(file, "file");
+    console.log(
+      file,
+      "file",
+      selectedOptionTimeZone,
+      selectedOptionTimeZone.value
+    );
     const url = "http://127.0.0.1:8000/lms-service/update_users";
     axios
       .post(url, formData, {
@@ -361,7 +371,7 @@ const EditUser = (props) => {
                               />
                             </div>
                           </div>
-                          <div className="form-group mb-3 row">
+                          {/* <div className="form-group mb-3 row">
                             <label className="col-lg-4 col-form-label">
                               Password <span className="text-danger">*</span>
                             </label>
@@ -376,7 +386,7 @@ const EditUser = (props) => {
                                 style={{ cursor: "not-allowed" }}
                               />
                             </div>
-                          </div>
+                          </div> */}
 
                           <div className="form-group mb-3 row">
                             <label
@@ -408,10 +418,13 @@ const EditUser = (props) => {
                               <Select
                                 value={selectedOptionTimeZone}
                                 options={timezonetype}
-                                onChange={(selectedOptionTimeZone) =>
-                                  setSelectedOptionTimeZone(
-                                    selectedOptionTimeZone
-                                  )
+                                // onChange={(selectedOptionTimeZone) =>
+                                //   setSelectedOptionTimeZone(
+                                //     selectedOptionTimeZone
+                                //   )
+                                // }
+                                onChange={(selectedOption) =>
+                                  setSelectedOptionTimeZone(selectedOption)
                                 }
                                 name="timezonetype"></Select>
                             </div>
@@ -437,6 +450,11 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             {/* <div className="profile-info col-lg-6"> */}
                             <div>
+                              <label className="col-lg-4 col-form-label">
+                                Update Photo
+                                <span className="text-danger">*</span>
+                              </label>
+                              <br />
                               {imageUrl ||
                                 (imgCdnUrl && (
                                   <div className="mb-3">
@@ -475,10 +493,7 @@ const EditUser = (props) => {
                                 />
                               </label>
                             </div>
-                            <label className="col-lg-4 col-form-label">
-                              Update Photo<span className="text-danger">*</span>
-                            </label>
-                            <br />
+
                             {/* </div> */}
                           </div>
                         </div>

@@ -26,7 +26,6 @@ const AppProfile = () => {
   const [userName, setUserName] = useState(""); //name
   const [profileImg, setProfileImg] = useState(""); //img file
   const [userRole, setUserRole] = useState("");
-  const [userLanguages, setUserLanguages] = useState("");
   const [apiRes, setApiRes] = useState("");
   const user_id = localStorage.getItem("id");
 
@@ -57,7 +56,6 @@ const AppProfile = () => {
         setUserEmail(res.email);
         setUserRole(res.role);
         setProfileImg(res.cdn_file_link);
-        setUserLanguages();
       }
     } catch (error) {
       console.error(error);

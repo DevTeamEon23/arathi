@@ -873,7 +873,7 @@ const SideBar = () => {
                         <Link
                           className={`${path === "courses" ? "mm-active" : ""}`}
                           to="/courses">
-                          Course Catalog
+                          Course Store
                         </Link>
                       </li>
                     </ul>
