@@ -62,13 +62,17 @@ const CoursesMain = () => {
       const list = response.data.data
       console.log(
         response.data.data,
-        response.data.data.course_ids.length,
+        // response.data.data.course_ids.length,
         'fetchCourseData'
       )
       setCourses(
         list === null ? response.data.data : response.data.data.course_ids
       )
-      setTotalCourseData(response.data.data.course_ids.length)
+      setTotalCourseData(
+        list === null
+          ? response.data.data
+          : response.data.data.course_ids.length
+      )
     } catch (error) {
       console.error('API Error:', error)
     }
@@ -80,9 +84,9 @@ const CoursesMain = () => {
   let currentData
 
   if (roleType === 'Superadmin') {
-    currentData = data.slice(startIndex, endIndex)
+    currentData = data === null ? null : data.slice(startIndex, endIndex)
   } else {
-    currentData = courses.slice(startIndex, endIndex)
+    currentData = courses === null ? null : courses.slice(startIndex, endIndex)
   }
 
   return (
@@ -92,7 +96,7 @@ const CoursesMain = () => {
       </div>
       {roleType === 'Superadmin' ? (
         <div className='row'>
-          {data.length <= 0 ? (
+          {data?.length <= 0 ? (
             <div className='loader-container'>
               <RotatingLines
                 strokeColor='grey'
@@ -102,6 +106,12 @@ const CoursesMain = () => {
                 visible={true}
               />
             </div>
+          ) : data === null ? (
+            <>
+              <div>
+                <p className='text-center fs-20 fw-bold'>No Course Found.</p>
+              </div>
+            </>
           ) : (
             <>
               {currentData?.map((item, index) => {
@@ -208,7 +218,7 @@ const CoursesMain = () => {
         </div>
       ) : (
         <div className='row'>
-          {courses.length <= 0 ? (
+          {courses?.length <= 0 ? (
             <div className='loader-container'>
               <RotatingLines
                 strokeColor='grey'
@@ -218,6 +228,12 @@ const CoursesMain = () => {
                 visible={true}
               />
             </div>
+          ) : courses === null ? (
+            <>
+              <div>
+                <p className='text-center fs-20 fw-bold'>No Course Found.</p>
+              </div>
+            </>
           ) : (
             <>
               {currentData?.map((item, index) => {
