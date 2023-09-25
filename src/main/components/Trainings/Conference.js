@@ -12,50 +12,52 @@ import {
   Button,
   Modal,
 } from "react-bootstrap";
-
+import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 const Conferences = () => {
   const [sendMessage, setSendMessage] = useState(false);
   const [conferences, setConferences] = useState([]);
-  const getConferences = async () => {
-    const requestOptions = {
-      method:"GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
+  const [token, setToken] = useState(); //auth token
+  const [allCourseData, setAllCourseData] = useState([]); //set course data SuperAdmin
+  // let history = useHistory();
 
-    console.log(data);
-  };
-  const fetchData = () => {
-     fetch('https://localhost:8000/conferences')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setConferences(data); 
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
-  };
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllCourses();
+  }, []);
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/conferences/"+id,{
-        method:'DELETE'
+  const getAllCourses = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "https://v1.eonlearning.tech/lms-service/conferences";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          "Auth-Token": jwtToken,
+        },
       });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
+      const courseData = response.data.data;
+      console.log("getAllCourses", response.data);
+      // const names = courseData.map((course) => course.coursename);
+      // setCourseName(names);
+      setAllCourseData(courseData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Courses !"); // Handle the error
+    }
+  };
+
+  async function deleteOperation(id) {
+    if (window.confirm("Are you sure?")) {
+      let result = await fetch("https://localhost:8000/conferences/" + id, {
+        method: "DELETE",
+      });
+      result = await result.json();
+      console.warn(result);
+      // fetchData();
     }
   }
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
@@ -135,78 +137,115 @@ const Conferences = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {conferences?.map((data) => {
-               return (
-                  <tr key={data.id}>
-                    <td>
-                    <center><strong>{data.confname}</strong>
-                      </center>
-                    </td>
-                    <td><center>{data.instname}</center></td>
-                    <td><center>▶</center></td>
-                    <td><center>5</center></td>
-                    <td><center>-</center></td>
-                    <td><center>{data.date} {data.starttime}</center></td>
-                    <td><center>{data.duration}</center></td>
-                    <td>
-                      <center>
-                        <Link
-                          to="/add-conference"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i class="fa-solid fa-plus"></i>
-                        </Link>
-                        <Link
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        onClick={() => setSendMessage(true)}>
-                          <i class="bi bi-envelope-fill"></i>
-                        </Link>
-                        <Link
-                          to="/edit-conference"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(data.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                      </center>
-                    </td>
-                  </tr>
-               );
-                })}
+                  {conferences?.map((data) => {
+                    return (
+                      <tr key={data.id}>
+                        <td>
+                          <center>
+                            <strong>{data.confname}</strong>
+                          </center>
+                        </td>
+                        <td>
+                          <center>{data.instname}</center>
+                        </td>
+                        <td>
+                          <center>▶</center>
+                        </td>
+                        <td>
+                          <center>5</center>
+                        </td>
+                        <td>
+                          <center>-</center>
+                        </td>
+                        <td>
+                          <center>
+                            {data.date} {data.starttime}
+                          </center>
+                        </td>
+                        <td>
+                          <center>{data.duration}</center>
+                        </td>
+                        <td>
+                          <center>
+                            <Link
+                              to="/add-conference"
+                              className="btn btn-primary shadow btn-xs sharp me-1">
+                              <i class="fa-solid fa-plus"></i>
+                            </Link>
+                            <Link
+                              className="btn btn-primary shadow btn-xs sharp me-1"
+                              onClick={() => setSendMessage(true)}>
+                              <i class="bi bi-envelope-fill"></i>
+                            </Link>
+                            <Link
+                              to="/edit-conference"
+                              className="btn btn-primary shadow btn-xs sharp me-1">
+                              <i className="fas fa-pencil-alt"></i>
+                            </Link>
+                            <Link
+                              href="#"
+                              className="btn btn-danger shadow btn-xs sharp"
+                              onClick={() => deleteOperation(data.id)}>
+                              <i className="fa fa-trash"></i>
+                            </Link>
+                          </center>
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Send Message" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
+                  <Modal className="modal fade" show={sendMessage}>
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title">Send Message</h5>
+                        <Button
+                          variant=""
+                          type="button"
+                          className="close"
+                          data-dismiss="modal"
+                          onClick={() => setSendMessage(false)}>
+                          <span>×</span>
+                        </Button>
+                      </div>
+                      <div className="modal-body">
+                        <form
+                          className="comment-form"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            setSendMessage(false);
+                          }}>
+                          <div className="row">
+                            <div className="col-lg-12">
+                              <div className="form-group mb-3">
+                                <label
+                                  htmlFor="comment"
+                                  className="text-black font-w600">
+                                  Comment
+                                </label>
+                                <textarea
+                                  rows={8}
+                                  className="form-control"
+                                  name="comment"
+                                  placeholder="Comment"
+                                  defaultValue={""}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-12">
+                              <div className="form-group mb-3">
+                                <input
+                                  type="submit"
+                                  value="Send Message"
+                                  className="submit btn btn-primary"
+                                  name="submit"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </Modal>
                 </tbody>
               </Table>
             </Card.Body>
@@ -214,7 +253,7 @@ const Conferences = () => {
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );

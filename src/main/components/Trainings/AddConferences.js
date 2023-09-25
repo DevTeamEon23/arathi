@@ -175,7 +175,7 @@ const AddConferences = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
+                          htmlFor="duration">
                           Duration
                           <span className="text-danger">*</span>
                         </label>
@@ -184,6 +184,7 @@ const AddConferences = () => {
                             type="text"
                             className="form-control"
                             id="duration"
+                            value={duration}
                             placeholder="Enter the Duration in Hours eg:- 50 mins"
                             onChange={(e) => setDuration(e.target.value)}
                           />
