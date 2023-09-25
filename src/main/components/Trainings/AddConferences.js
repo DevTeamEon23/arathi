@@ -1,10 +1,10 @@
 import React, { Fragment, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { Dropdown, DropdownButton, ButtonGroup, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const AddGroups = () => {
+const AddConferences = () => {
   const [instname, setInstname] = useState(""); //Instructor Name
   const [confname, setConfname] = useState(""); //Conference Name
   const [date, setDate] = useState(""); //date
@@ -226,4 +226,4 @@ const AddGroups = () => {
   );
 };
 
-export default AddGroups;
+export default AddConferences;
