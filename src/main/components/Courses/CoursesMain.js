@@ -11,6 +11,7 @@ const CoursesMain = () => {
   const [token, setToken] = useState(); //auth token
   const [data, setData] = useState([]); //Course data superadmin
   const [courses, setCourses] = useState([]); //admin instructor
+  const [totalCourseDataMain, setTotalCourseDataMain] = useState(0); //course list data
   const [totalCourseData, setTotalCourseData] = useState(0); //course list data
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Number of items to display per page
@@ -36,7 +37,7 @@ const CoursesMain = () => {
       });
       console.log("getAllCourses", response.data.data.length);
       setData(response.data.data);
-      setTotalCourseData(response.data.data.length);
+      setTotalCourseDataMain(response.data.data.length);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
@@ -44,7 +45,6 @@ const CoursesMain = () => {
   };
 
   const fetchCourseData = async (accessToken, ID) => {
-    console.log(roleType);
     try {
       const queryParams = {
         user_id: ID,
@@ -60,11 +60,6 @@ const CoursesMain = () => {
         },
       });
       const list = response.data.data;
-      console.log(
-        response.data.data,
-        // response.data.data.course_ids.length,
-        "fetchCourseData"
-      );
       setCourses(
         list === null ? response.data.data : response.data.data.course_ids
       );
@@ -263,7 +258,13 @@ const CoursesMain = () => {
       <div className="pagination-down">
         <div className="d-flex align-items-center  ">
           <h4 className=" ">
-            Showing <span>1-6 </span>from <span>{totalCourseData} </span>data
+            Showing <span>1-6 </span>from{" "}
+            <span>
+              {roleType === "Superadmin"
+                ? totalCourseDataMain
+                : totalCourseData}{" "}
+            </span>
+            data
           </h4>
           <div className="d-flex align-items-center ms-auto mt-2">
             <Button
