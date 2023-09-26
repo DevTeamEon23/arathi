@@ -1,7 +1,7 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
-import { RotatingLines } from "react-loader-spinner";
+import React, { Fragment, useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 import {
   Row,
   Col,
@@ -12,168 +12,168 @@ import {
   Nav,
   Tab,
   Tabs,
-} from "react-bootstrap";
-import axios from "axios";
-import { useSelector } from "react-redux";
-import { selectUser } from "src/store/user/userSlice";
+} from 'react-bootstrap'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { selectUser } from 'src/store/user/userSlice'
 
 const Info = () => {
-  const [token, setToken] = useState(); //auth token
-  const [allCourseData, setAllCourseData] = useState([]); //set course data SuperAdmin
-  const [courseName, setCourseName] = useState(""); //course name
-  const [showModal, setShowModal] = useState(false); //delete button modal
-  const [showCloneModal, setShowCloneModal] = useState(false); //clone modal
-  const [courseCloneId, setCourseCloneId] = useState(); //course id save for clone
-  const [courseId, setCourseId] = useState(); //course id save for delete
-  const [activeTab, setActiveTab] = useState("/add-courses");
-  const [courses, setCourses] = useState([]); //admin instructor
-  const roleType = useSelector(selectUser).role[0];
-  let history = useHistory();
+  const [token, setToken] = useState() //auth token
+  const [allCourseData, setAllCourseData] = useState([]) //set course data SuperAdmin
+  const [courseName, setCourseName] = useState('') //course name
+  const [showModal, setShowModal] = useState(false) //delete button modal
+  const [showCloneModal, setShowCloneModal] = useState(false) //clone modal
+  const [courseCloneId, setCourseCloneId] = useState() //course id save for clone
+  const [courseId, setCourseId] = useState() //course id save for delete
+  const [activeTab, setActiveTab] = useState('/add-courses')
+  const [courses, setCourses] = useState([]) //admin instructor
+  const roleType = useSelector(selectUser).role[0]
+  let history = useHistory()
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem("jwt_access_token");
-    let ID = window.localStorage.getItem("id");
-    setToken(accessToken);
-    getAllCourses();
-    fetchCourseData(accessToken, ID);
-  }, []);
+    let accessToken = window.localStorage.getItem('jwt_access_token')
+    let ID = window.localStorage.getItem('id')
+    setToken(accessToken)
+    getAllCourses()
+    fetchCourseData(accessToken, ID)
+  }, [])
 
   const getAllCourses = async () => {
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/courses";
+    const jwtToken = window.localStorage.getItem('jwt_access_token')
+    const url = 'https://v1.eonlearning.tech/lms-service/courses'
     try {
       const response = await axios.get(url, {
         headers: {
-          "Auth-Token": jwtToken,
+          'Auth-Token': jwtToken,
         },
-      });
-      const courseData = response.data.data;
-      console.log("getAllCourses", response.data);
+      })
+      const courseData = response.data.data
+      console.log('getAllCourses', response.data)
       // const names = courseData.map((course) => course.coursename);
       // setCourseName(names);
-      setAllCourseData(courseData);
+      setAllCourseData(courseData)
     } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Courses !"); // Handle the error
+      console.error('Error fetching data:', error)
+      toast.error('Failed to fetch Courses !') // Handle the error
     }
-  };
+  }
 
   const fetchCourseData = async (accessToken, ID) => {
-    console.log(roleType);
+    console.log(roleType)
     try {
       const queryParams = {
         user_id: ID,
-      };
+      }
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
-      );
-      url.search = new URLSearchParams(queryParams).toString();
+        'https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users'
+      )
+      url.search = new URLSearchParams(queryParams).toString()
       const response = await axios.get(url.toString(), {
         headers: {
-          "Auth-Token": accessToken,
-          "Content-Type": "multipart/form-data",
+          'Auth-Token': accessToken,
+          'Content-Type': 'multipart/form-data',
         },
-      });
-      const list = response.data.data;
-      console.log(response.data.data, "fetchCourseData");
+      })
+      const list = response.data.data
+      console.log(response.data.data, 'fetchCourseData')
       setCourses(
         list === null ? response.data.data : response.data.data.course_ids
-      );
+      )
     } catch (error) {
-      console.error("API Error:", error);
+      console.error('API Error:', error)
     }
-  };
+  }
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    history.push(`/${tab}`);
-  };
+    setActiveTab(tab)
+    history.push(`/${tab}`)
+  }
 
   useEffect(() => {
-    const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1);
-    setActiveTab(tab);
-  }, [history.location.pathname]);
+    const currentPath = history.location.pathname
+    const tab = currentPath.substring(1)
+    setActiveTab(tab)
+  }, [history.location.pathname])
 
   const deleteOperation = (courseId) => {
-    setShowModal(true);
-    console.log("inside delete course", courseId);
-    setCourseId(courseId);
-  };
+    setShowModal(true)
+    console.log('inside delete course', courseId)
+    setCourseId(courseId)
+  }
 
   const handleCatDelete = () => {
-    console.log("modal delete", courseId);
+    console.log('modal delete', courseId)
     const config = {
       headers: {
-        "Auth-Token": token,
+        'Auth-Token': token,
       },
-    };
+    }
     const requestBody = {
       id: courseId,
-    };
+    }
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
         ...config,
         data: requestBody,
       })
       .then((response) => {
-        setShowModal(false);
-        console.log(response.data.status);
-        getAllCourses();
-        toast.success("Course deleted successfully!", {
+        setShowModal(false)
+        console.log(response.data.status)
+        getAllCourses()
+        toast.success('Course deleted successfully!', {
           position: toast.POSITION.TOP_RIGHT,
-        });
+        })
       })
       .catch((error) => {
         // Handle the error
-        console.error(error);
-        toast.error("Failed to delete Course!", {
+        console.error(error)
+        toast.error('Failed to delete Course!', {
           position: toast.POSITION.TOP_RIGHT,
-        });
-      });
-  };
+        })
+      })
+  }
 
   const handleClone = (id, coursename) => {
-    setShowCloneModal(true);
-    console.log("inside course handle clone", id, coursename);
-    setCourseName(coursename);
-    setCourseCloneId(id);
-  };
+    setShowCloneModal(true)
+    console.log('inside course handle clone', id, coursename)
+    setCourseName(coursename)
+    setCourseCloneId(id)
+  }
 
   const handleCatClone = () => {
-    const id = courseCloneId;
-    const authToken = token;
-    const url = `https://v1.eonlearning.tech/lms-service/clonecourse/${id}`;
+    const id = courseCloneId
+    const authToken = token
+    const url = `https://v1.eonlearning.tech/lms-service/clonecourse/${id}`
     axios
       .post(url, null, {
         headers: {
-          "Auth-Token": authToken,
+          'Auth-Token': authToken,
         },
       })
       .then((response) => {
-        setShowCloneModal(false);
-        console.log(response.data.status);
-        getAllCourses();
-        toast.success("Course Clone successfully!", {
+        setShowCloneModal(false)
+        console.log(response.data.status)
+        getAllCourses()
+        toast.success('Course Clone successfully!', {
           position: toast.POSITION.TOP_RIGHT,
-        });
+        })
       })
       .catch((error) => {
-        setShowCloneModal(false);
-        console.error(error);
+        setShowCloneModal(false)
+        console.error(error)
         toast.error(
-          "Failed to Clone Course...! One course can clone one time only",
+          'Failed to Clone Course...! One course can clone one time only',
           {
             position: toast.POSITION.TOP_RIGHT,
           }
-        );
-      });
-  };
+        )
+      })
+  }
 
   const handleEdit = (id) => {
-    console.log("inside course handle edit page", id);
-    history.push(`/edit-courses/${id}`);
-  };
+    console.log('inside course handle edit page', id)
+    history.push(`/edit-courses/${id}`)
+  }
 
   return (
     <Fragment>
@@ -200,8 +200,8 @@ const Info = () => {
         </Nav.Item>
       </Nav> */}
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey="dashboard" title="Dashboard"></Tab>
-        <Tab eventKey="add-courses" title="Add Course"></Tab>
+        <Tab eventKey='dashboard' title='Dashboard'></Tab>
+        <Tab eventKey='add-courses' title='Add Course'></Tab>
       </Tabs>
       <Row>
         <Col lg={12}>
@@ -209,27 +209,27 @@ const Info = () => {
             <Card.Header>
               <Card.Title>Courses</Card.Title>
               <div>
-                <Link to="/add-courses">
-                  <Button variant="primary">Add Courses</Button>
+                <Link to='/add-courses'>
+                  <Button variant='primary'>Add Courses</Button>
                 </Link>
               </div>
             </Card.Header>
-            {roleType === "Superadmin" && (
+            {roleType === 'Superadmin' && (
               <Card.Body>
                 {allCourseData.length <= 0 ? (
-                  <div className="loader-container">
+                  <div className='loader-container'>
                     <RotatingLines
-                      strokeColor="grey"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      width="140"
+                      strokeColor='grey'
+                      strokeWidth='5'
+                      animationDuration='0.75'
+                      width='140'
                       visible={true}
                     />
                   </div>
                 ) : allCourseData === null ? (
                   <>
                     <div>
-                      <p className="text-center fs-20 fw-bold">
+                      <p className='text-center fs-20 fw-bold'>
                         No Course Found.
                       </p>
                     </div>
@@ -264,29 +264,29 @@ const Info = () => {
                       <tbody>
                         {allCourseData.map((data) => {
                           // Input date and time string
-                          const inputDateTime = data.updated_at; //2
+                          const inputDateTime = data.updated_at //2
                           // Convert inputDateTime to a JavaScript Date object
-                          const dateObj = new Date(inputDateTime);
+                          const dateObj = new Date(inputDateTime)
                           // Get the date in dd-mm-yyyy format
                           const day1 = dateObj
                             .getDate()
                             .toString()
-                            .padStart(2, "0");
+                            .padStart(2, '0')
                           const month1 = (dateObj.getMonth() + 1)
                             .toString()
-                            .padStart(2, "0"); // Months are zero-based
-                          const year1 = dateObj.getFullYear().toString();
-                          const formattedDate = `${day1}-${month1}-${year1}`;
+                            .padStart(2, '0') // Months are zero-based
+                          const year1 = dateObj.getFullYear().toString()
+                          const formattedDate = `${day1}-${month1}-${year1}`
 
                           // Get the time in 12-hour format
-                          let hours = dateObj.getHours();
+                          let hours = dateObj.getHours()
                           const minutes = dateObj
                             .getMinutes()
                             .toString()
-                            .padStart(2, "0");
-                          const amPm = hours >= 12 ? "PM" : "AM";
-                          hours = hours % 12 || 12;
-                          const formattedTime = `${hours}:${minutes} ${amPm}`;
+                            .padStart(2, '0')
+                          const amPm = hours >= 12 ? 'PM' : 'AM'
+                          hours = hours % 12 || 12
+                          const formattedTime = `${hours}:${minutes} ${amPm}`
 
                           return (
                             <tr key={data.id}>
@@ -322,13 +322,15 @@ const Info = () => {
                       </center> */}
                                 <center>
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Clone">
+                                    className='btn btn-primary shadow btn-xs sharp me-1'
+                                    title='Clone'
+                                  >
                                     <i
-                                      class="fa-solid fa-plus"
+                                      class='fa-solid fa-plus'
                                       onClick={(e) =>
                                         handleClone(data.id, data.coursename)
-                                      }></i>
+                                      }
+                                    ></i>
                                   </div>
                                   {/* <Link
                                   to="/course-reports"
@@ -337,21 +339,23 @@ const Info = () => {
                                   <i class="fa-regular fa-clipboard"></i>
                                 </Link> */}
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Edit"
-                                    onClick={(e) => handleEdit(data.id)}>
-                                    <i className="fas fa-pencil-alt"></i>
+                                    className='btn btn-primary shadow btn-xs sharp me-1'
+                                    title='Edit'
+                                    onClick={(e) => handleEdit(data.id)}
+                                  >
+                                    <i className='fas fa-pencil-alt'></i>
                                   </div>
                                   <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Delete"
-                                    onClick={() => deleteOperation(data.id)}>
-                                    <i className="fa fa-trash"></i>
+                                    className='btn btn-danger shadow btn-xs sharp'
+                                    title='Delete'
+                                    onClick={() => deleteOperation(data.id)}
+                                  >
+                                    <i className='fa fa-trash'></i>
                                   </div>
                                 </center>
                               </td>
                             </tr>
-                          );
+                          )
                         })}
                       </tbody>
                     </Table>
@@ -359,22 +363,22 @@ const Info = () => {
                 )}
               </Card.Body>
             )}
-            {roleType === "Admin" || roleType === "Instructor" ? (
+            {roleType === 'Admin' || roleType === 'Instructor' ? (
               <Card.Body>
                 {courses === undefined ? (
-                  <div className="loader-container">
+                  <div className='loader-container'>
                     <RotatingLines
-                      strokeColor="grey"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      width="140"
+                      strokeColor='grey'
+                      strokeWidth='5'
+                      animationDuration='0.75'
+                      width='140'
                       visible={true}
                     />
                   </div>
                 ) : courses === null ? (
                   <>
                     <div>
-                      <p className="text-center fs-20 fw-bold">
+                      <p className='text-center fs-20 fw-bold'>
                         No Course Found.
                       </p>
                     </div>
@@ -408,61 +412,65 @@ const Info = () => {
                       </thead>
                       <tbody>
                         {courses?.map((data) => {
-                          const dateTimeString = data.updated_at; //1
-                          const date = new Date(dateTimeString);
-                          const day = date.getDate();
-                          const month = date.getMonth() + 1;
-                          const year = date.getFullYear();
+                          const dateTimeString = data.updated_at //1
+                          const date = new Date(dateTimeString)
+                          const day = date.getDate()
+                          const month = date.getMonth() + 1
+                          const year = date.getFullYear()
                           const formattedDate = `${
-                            day < 10 ? "0" + day : day
-                          }-${month < 10 ? "0" + month : month}-${year}`;
+                            day < 10 ? '0' + day : day
+                          }-${month < 10 ? '0' + month : month}-${year}`
 
                           //Time
-                          let hours = date.getHours();
+                          let hours = date.getHours()
                           const minutes = date
                             .getMinutes()
                             .toString()
-                            .padStart(2, "0");
-                          const amPm = hours >= 12 ? "PM" : "AM";
-                          hours = hours % 12 || 12;
-                          const formattedTime = `${hours}:${minutes} ${amPm}`;
+                            .padStart(2, '0')
+                          const amPm = hours >= 12 ? 'PM' : 'AM'
+                          hours = hours % 12 || 12
+                          const formattedTime = `${hours}:${minutes} ${amPm}`
 
                           return (
                             <tr key={data.id}>
-                              <td className="text-center">{data.coursename}</td>
-                              <td className="text-center">{data.category}</td>
-                              <td className="text-center">
+                              <td className='text-center'>{data.coursename}</td>
+                              <td className='text-center'>{data.category}</td>
+                              <td className='text-center'>
                                 {formattedDate}&nbsp;&nbsp;{formattedTime}
                               </td>
                               <td>
-                                {" "}
+                                {' '}
                                 <center>
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Clone">
+                                    className='btn btn-primary shadow btn-xs sharp me-1'
+                                    title='Clone'
+                                  >
                                     <i
-                                      class="fa-solid fa-plus"
+                                      class='fa-solid fa-plus'
                                       onClick={(e) =>
                                         handleClone(data.id, data.coursename)
-                                      }></i>
+                                      }
+                                    ></i>
                                   </div>
 
                                   <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Edit"
-                                    onClick={(e) => handleEdit(data.id)}>
-                                    <i className="fas fa-pencil-alt"></i>
+                                    className='btn btn-primary shadow btn-xs sharp me-1'
+                                    title='Edit'
+                                    onClick={(e) => handleEdit(data.id)}
+                                  >
+                                    <i className='fas fa-pencil-alt'></i>
                                   </div>
                                   <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Delete"
-                                    onClick={() => deleteOperation(data.id)}>
-                                    <i className="fa fa-trash"></i>
+                                    className='btn btn-danger shadow btn-xs sharp'
+                                    title='Delete'
+                                    onClick={() => deleteOperation(data.id)}
+                                  >
+                                    <i className='fa fa-trash'></i>
                                   </div>
                                 </center>
                               </td>
                             </tr>
-                          );
+                          )
                         })}
                       </tbody>
                     </Table>
@@ -470,7 +478,7 @@ const Info = () => {
                 )}
               </Card.Body>
             ) : (
-              ""
+              ''
             )}
           </Card>
         </Col>
@@ -487,10 +495,10 @@ const Info = () => {
           <strong>Are you sure you want to delete this Course?</strong>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger light" onClick={() => setShowModal(false)}>
+          <Button variant='danger light' onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant="btn btn-primary" onClick={handleCatDelete}>
+          <Button variant='btn btn-primary' onClick={handleCatDelete}>
             Delete
           </Button>
         </Modal.Footer>
@@ -501,29 +509,30 @@ const Info = () => {
           <Modal.Title>Clone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="fs-20 text-center">
-            {" "}
-            Are you sure you want to clone the course{" "}
+          <p className='fs-20 text-center'>
+            {' '}
+            Are you sure you want to clone the course{' '}
             <strong>{courseName}</strong> ?
           </p>
-          <p className="text-danger text-center mt-2 fw-bold fs-14">
-            {" "}
+          <p className='text-danger text-center mt-2 fw-bold fs-14'>
+            {' '}
             (one course can clone one time only)
           </p>
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="danger light"
-            onClick={() => setShowCloneModal(false)}>
+            variant='danger light'
+            onClick={() => setShowCloneModal(false)}
+          >
             Close
           </Button>
-          <Button variant="btn me-2 btn-primary" onClick={handleCatClone}>
+          <Button variant='btn me-2 btn-primary' onClick={handleCatClone}>
             Clone
           </Button>
         </Modal.Footer>
       </Modal>
     </Fragment>
-  );
-};
+  )
+}
 
-export default Info;
+export default Info
