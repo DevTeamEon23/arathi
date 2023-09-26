@@ -1,18 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Modal,
-} from 'react-bootstrap'
+import { Link, useHistory } from 'react-router-dom'
+import { Row, Col, Card, Table, Button, Modal } from 'react-bootstrap'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { RotatingLines } from 'react-loader-spinner'
 
@@ -147,36 +136,23 @@ const Conferences = () => {
                       {allConferenceData?.map((data) => {
                         return (
                           <tr key={data.id}>
-                            <td>
-                              <center>
-                                <strong>{data.confname}</strong>
-                              </center>
+                            <td className='text-center'>{data.confname}</td>
+                            <td className='text-center'>{data.instname}</td>
+                            <td className='text-center'>
+                              <a
+                                href={data.meetlink}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                              >
+                                {data.meetlink}
+                              </a>
                             </td>
-                            <td>
-                              <center>{data.instname}</center>
+                            <td className='text-center'>
+                              {data.date} {data.starttime}
                             </td>
-                            <td>
-                              <center>
-                                <a
-                                  href={data.meetlink}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                >
-                                  {data.meetlink}
-                                </a>
-                              </center>
-                            </td>
-                            <td>
-                              <center>
-                                {data.date} {data.starttime}
-                              </center>
-                            </td>
-                            <td>
-                              <center>{data.duration}</center>
-                            </td>
-                            <td>
-                              <center>
-                                {/* <Link
+                            <td className='text-center'>{data.duration}</td>
+                            <td className='text-center'>
+                              {/* <Link
                               to='/add-conference'
                               className='btn btn-primary shadow btn-xs sharp me-1'
                             >
@@ -188,20 +164,18 @@ const Conferences = () => {
                             >
                               <i class='bi bi-envelope-fill'></i>
                             </Link> */}
-                                <Link
-                                  to='/edit-conference'
-                                  className='btn btn-primary shadow btn-xs sharp me-1'
-                                >
-                                  <i className='fas fa-pencil-alt'></i>
-                                </Link>
-                                <Link
-                                  href='#'
-                                  className='btn btn-danger shadow btn-xs sharp'
-                                  onClick={() => deleteOperation(data.id)}
-                                >
-                                  <i className='fa fa-trash'></i>
-                                </Link>
-                              </center>
+                              <Link
+                                to='/edit-conference'
+                                className='btn btn-primary shadow btn-xs sharp me-1'
+                              >
+                                <i className='fas fa-pencil-alt'></i>
+                              </Link>
+                              <div
+                                className='btn btn-danger shadow btn-xs sharp'
+                                onClick={() => deleteOperation(data.id)}
+                              >
+                                <i className='fa fa-trash'></i>
+                              </div>
                             </td>
                           </tr>
                         )

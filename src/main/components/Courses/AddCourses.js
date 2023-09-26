@@ -665,10 +665,10 @@ const AddCourses = () => {
                     <div className='col-xl-5'>
                       <div className='form-group mb-3 row'>
                         <label
-                          className='col-lg-3 col-form-label'
+                          className='col-lg-4 col-form-label'
                           htmlFor='file'
                         >
-                          Add Photo<span className='text-danger'>*</span>
+                          Add Course photo<span className='text-danger'>*</span>
                         </label>
                         <div className='profile-info col-lg-7'>
                           <div className='profile-photo'>
