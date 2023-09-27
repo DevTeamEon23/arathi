@@ -292,10 +292,7 @@ const Info = () => {
                             <tr key={data.id}>
                               <td>
                                 <center>
-                                  <strong>
-                                    {data.coursename}
-                                    {data.coursename}
-                                  </strong>
+                                  <strong>{data.coursename}</strong>
                                 </center>
                               </td>
                               <td>

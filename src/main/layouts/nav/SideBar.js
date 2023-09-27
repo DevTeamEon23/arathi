@@ -795,7 +795,7 @@ const SideBar = () => {
                           }`}
                           to='/add-classroom'
                         >
-                          Add Classroom
+                          Add Classroom Training
                         </Link>
                       </li>
                       <li>
@@ -815,7 +815,7 @@ const SideBar = () => {
                           }`}
                           to='/add-virtual-trainings'
                         >
-                          Add Virtual Trainings
+                          Add Virtual Training
                         </Link>
                       </li>
                     </ul>
@@ -951,9 +951,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === 'lclassroom' ? 'mm-active' : ''
+                            path === 'lconference' ? 'mm-active' : ''
                           }`}
-                          to='/lclassroom'
+                          to='/lconference'
                         >
                           Trainings
                         </Link>

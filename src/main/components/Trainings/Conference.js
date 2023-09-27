@@ -1,96 +1,80 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-  Modal,
-} from "react-bootstrap";
-
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+import { Row, Col, Card, Table, Button, Modal } from 'react-bootstrap'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 
 const Conferences = () => {
-  const [sendMessage, setSendMessage] = useState(false);
-  const [conferences, setConferences] = useState([]);
-  const getConferences = async () => {
-    const requestOptions = {
-      method:"GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
+  // const [sendMessage, setSendMessage] = useState(false)
+  const [conferencesID, setConferencesID] = useState() //id save for delete
+  const [showModal, setShowModal] = useState(false) //delete button modal
+  const [token, setToken] = useState() //auth token
+  const [allConferenceData, setAllConferenceData] = useState([]) //set all conference data
+  let history = useHistory()
 
-    console.log(data);
-  };
-  const fetchData = () => {
-     fetch('https://localhost:8000/conferences')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setConferences(data); 
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
-  };
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem('jwt_access_token')
+    setToken(accessToken)
+    getAllConferences()
+  }, [])
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/conferences/"+id,{
-        method:'DELETE'
-      });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
+  const getAllConferences = async () => {
+    const jwtToken = window.localStorage.getItem('jwt_access_token')
+    const url = 'https://v1.eonlearning.tech/lms-service/conferences'
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Auth-Token': jwtToken,
+        },
+      })
+      const conferenceData = response.data.data
+      console.log('getAllConferences', response.data)
+      setAllConferenceData(conferenceData)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error('Failed to fetch conferences list !') // Handle the error
     }
   }
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
-  };
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
 
-  let history = useHistory();
+  const deleteOperation = (Id) => {
+    setShowModal(true)
+    console.log('inside delete conference', Id)
+    setConferencesID(Id)
+  }
+
+  const handleConferenceDelete = () => {
+    console.log('modal delete', conferencesID)
+    const config = {
+      headers: {
+        'Auth-Token': token,
+      },
+    }
+    const requestBody = {
+      id: conferencesID,
+    }
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_conference`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false)
+        console.log(response.data.status)
+        getAllConferences()
+        toast.success('Conference deleted successfully!', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+      .catch((error) => {
+        console.error(error)
+        setShowModal(false)
+        toast.error('Failed to delete Conference!', {
+          position: toast.POSITION.TOP_RIGHT,
+        })
+      })
+  }
+
   return (
     <Fragment>
       <Row mb={5}>
@@ -99,125 +83,192 @@ const Conferences = () => {
             <Card.Header>
               <Card.Title>CONFERENECES</Card.Title>
               <div>
-                <Link to="/add-conference">
-                  <Button variant="primary">Add Conference Training</Button>
+                <Link to='/add-conference'>
+                  <Button variant='primary'>Add Conference Training</Button>
                 </Link>
               </div>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>NAME</strong>
-                    </th>
-                    <th>
-                      <strong>INSTRUCTOR</strong>
-                    </th>
-                    <th>
-                      <strong>JOIN</strong>
-                    </th>
-                    <th>
-                      <strong>USERS</strong>
-                    </th>
-                    <th>
-                      <strong>JOINED</strong>
-                    </th>
-                    <th>
-                      <strong>DATE</strong>
-                    </th>
-                    <th>
-                      <strong>DURATION</strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {conferences?.map((data) => {
-               return (
-                  <tr key={data.id}>
-                    <td>
-                    <center><strong>{data.confname}</strong>
-                      </center>
-                    </td>
-                    <td><center>{data.instname}</center></td>
-                    <td><center>▶</center></td>
-                    <td><center>5</center></td>
-                    <td><center>-</center></td>
-                    <td><center>{data.date} {data.starttime}</center></td>
-                    <td><center>{data.duration}</center></td>
-                    <td>
-                      <center>
-                        <Link
-                          to="/add-conference"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i class="fa-solid fa-plus"></i>
-                        </Link>
-                        <Link
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        onClick={() => setSendMessage(true)}>
-                          <i class="bi bi-envelope-fill"></i>
-                        </Link>
-                        <Link
-                          to="/edit-conference"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(data.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                      </center>
-                    </td>
-                  </tr>
-               );
-                })}
-                  {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Send Message" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
-                </tbody>
-              </Table>
+              {allConferenceData.length <= 0 ? (
+                <div className='loader-container'>
+                  <RotatingLines
+                    strokeColor='grey'
+                    strokeWidth='5'
+                    animationDuration='0.75'
+                    width='140'
+                    visible={true}
+                  />
+                </div>
+              ) : allConferenceData === null ? (
+                <>
+                  <div>
+                    <p className='text-center fs-20 fw-bold'>
+                      No Conference Found.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th className='text-center'>
+                          <strong>NAME</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>INSTRUCTOR</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>JOIN</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>DATE</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>DURATION</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>OPTION</strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allConferenceData?.map((data) => {
+                        return (
+                          <tr key={data.id}>
+                            <td className='text-center'>{data.confname}</td>
+                            <td className='text-center'>{data.instname}</td>
+                            <td className='text-center'>
+                              <a
+                                href={data.meetlink}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                              >
+                                {data.meetlink}
+                              </a>
+                            </td>
+                            <td className='text-center'>
+                              {data.date} {data.starttime}
+                            </td>
+                            <td className='text-center'>{data.duration}</td>
+                            <td className='text-center'>
+                              {/* <Link
+                              to='/add-conference'
+                              className='btn btn-primary shadow btn-xs sharp me-1'
+                            >
+                              <i class='fa-solid fa-plus'></i>
+                            </Link>
+                            <Link
+                              className='btn btn-primary shadow btn-xs sharp me-1'
+                              onClick={() => setSendMessage(true)}
+                            >
+                              <i class='bi bi-envelope-fill'></i>
+                            </Link> */}
+                              <Link
+                                to='/edit-conference'
+                                className='btn btn-primary shadow btn-xs sharp me-1'
+                              >
+                                <i className='fas fa-pencil-alt'></i>
+                              </Link>
+                              <div
+                                className='btn btn-danger shadow btn-xs sharp'
+                                onClick={() => deleteOperation(data.id)}
+                              >
+                                <i className='fa fa-trash'></i>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
       </Row>
+      {/* Delete Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Conference</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete this Conference ?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='danger light' onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant='btn btn-primary' onClick={handleConferenceDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
-  );
-};
+  )
+}
 
-export default Conferences;
+export default Conferences
+
+{
+  /* send Modal */
+}
+//  <Modal className='modal fade' show={sendMessage}>
+//  <div className='modal-content'>
+//    <div className='modal-header'>
+//      <h5 className='modal-title'>Send Message</h5>
+//      <Button
+//        variant=''
+//        type='button'
+//        className='close'
+//        data-dismiss='modal'
+//        onClick={() => setSendMessage(false)}
+//      >
+//        <span>×</span>
+//      </Button>
+//    </div>
+//    <div className='modal-body'>
+//      <form
+//        className='comment-form'
+//        onSubmit={(e) => {
+//          e.preventDefault()
+//          setSendMessage(false)
+//        }}
+//      >
+//        <div className='row'>
+//          <div className='col-lg-12'>
+//            <div className='form-group mb-3'>
+//              <label
+//                htmlFor='comment'
+//                className='text-black font-w600'
+//              >
+//                Comment
+//              </label>
+//              <textarea
+//                rows={8}
+//                className='form-control'
+//                name='comment'
+//                placeholder='Comment'
+//                defaultValue={''}
+//              />
+//            </div>
+//          </div>
+//          <div className='col-lg-12'>
+//            <div className='form-group mb-3'>
+//              <input
+//                type='submit'
+//                value='Send Message'
+//                className='submit btn btn-primary'
+//                name='submit'
+//              />
+//            </div>
+//          </div>
+//        </div>
+//      </form>
+//    </div>
+//  </div>
+// </Modal>

@@ -1,60 +1,54 @@
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
-import * as Yup from "yup";
-
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
-  Button,
-} from "react-bootstrap";
-import DateRangePicker from "react-bootstrap-daterangepicker";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { Button } from "react-bootstrap";
 
 const AddVirtualTraining = () => {
-  const [id, setId] = useState('');
-  const [instname, setInstname] = useState('');
-  const [virtualname, setVirtualName] = useState('');
-  const [date, setDate] = useState('');
-  const [starttime, setStarttime] = useState('');
-  const [meetlink, setMeetLink] = useState('');
-  const [messg, setMessg] = useState('');
-  const [duration, setDuration] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [value, onChange] = useState(new Date());
-  const [data, setData] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [instname, setInstname] = useState("");
+  const [virtualname, setVirtualName] = useState("");
+  const [date, setDate] = useState("");
+  const [starttime, setStarttime] = useState("");
+  const [meetlink, setMeetLink] = useState("");
+  const [messg, setMessg] = useState("");
+  const [duration, setDuration] = useState("");
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    const data = {id,instname,virtualname,date, starttime, meetlink, messg, duration};
+    const formData = new FormData();
+    formData.append("instname", instname);
+    formData.append("virtualname", virtualname);
+    formData.append("date", date);
+    formData.append("starttime", starttime);
+    formData.append("meetlink", meetlink);
+    formData.append("messg", messg);
+    formData.append("duration", duration);
+    formData.append("generate_token", true);
 
-    fetch('https://localhost:8000/virtuals', {
-      method: 'POST',
-    })
-    .then((data) => {
-      console.log('new Virtual Training Shedule added')
-      alert("✔️ Virtual Training Added Successfully");
-      setUsers(data);
-    })
-      .catch((err) => {
-        console.log(err);
+    const url = "https://v1.eonlearning.tech/lms-service/addvirtualtrainings";
+    const authToken = window.localStorage.getItem("jwt_access_token");
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Virtual Training Added Successfully!!!");
+        history.push(`/virtual-training`);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to add Virtual Training...");
       });
-    }
+  };
+
+  const today = new Date().toISOString().split("T")[0];
   return (
     <Fragment>
-
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -63,32 +57,14 @@ const AddVirtualTraining = () => {
             </div>
             <div className="card-body">
               <div className="form-validation">
-              <form action="https://localhost:8000/virtuals" method="post" encType="multipart/form-data" >
+                <form onSubmit={handleSubmit}>
                   <div className="row">
+                    {" "}
                     <div className="col-xl-10">
-                    <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
-                          id
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            name="id"
-                            placeholder="e.g. 1"
-                            onChange={(e) => setId(e.target.value)}
-                          />
-                        </div>
-                      </div>  
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="instname">
                           Instructor Name
                           <span className="text-danger">*</span>
                         </label>
@@ -97,8 +73,8 @@ const AddVirtualTraining = () => {
                             type="text"
                             className="form-control"
                             id="instname"
-                            name="instname"
-                            placeholder="Enter Inst. Name"
+                            value={instname}
+                            placeholder="Enter Instructor Name"
                             onChange={(e) => setInstname(e.target.value)}
                           />
                         </div>
@@ -106,8 +82,7 @@ const AddVirtualTraining = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="confname">
                           Name
                           <span className="text-danger">*</span>
                         </label>
@@ -115,9 +90,9 @@ const AddVirtualTraining = () => {
                           <input
                             type="text"
                             className="form-control"
-                            id="virtualname"
-                            name="virtualname"
-                            placeholder="Enter Virtual training Name"
+                            id="confname"
+                            value={virtualname}
+                            placeholder="Enter Virtual Training name for your reference"
                             onChange={(e) => setVirtualName(e.target.value)}
                           />
                         </div>
@@ -125,144 +100,125 @@ const AddVirtualTraining = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="date">
                           Date
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        {/* <DateRangePicker
-                      initialSettings={{ startDate: '10/5/2022', endDate: '3/6/2022' }}
-                    > */}
-                        <input type="text" className="form-control input-daterange-timepicker" 
+                          <input
+                            type="date"
+                            className="form-control input-daterange-timepicker"
                             id="date"
-                            name="date"
-                            placeholder=" Enter the Date "
-                            onChange={(e) => setDate(e.target.value)} />
-                    {/* </DateRangePicker> */}
-                    {/* <DateRangePicker
-                      startText="Start"
-                      endText="End"
-                      startPlaceholder="Start Date"
-                      endPlaceholder="End Date"
-                    />  */}
+                            min={today}
+                            value={date}
+                            placeholder="Enter the Date "
+                            onChange={(e) => setDate(e.target.value)}
+                          />
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="starttime">
                           Start Time
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <input type="text" className="form-control input-daterange-timepicker" 
-                           
-                           id="starttime"
-                           name="starttime"
-                           placeholder="Enter the Conference Timing"
-                           onChange={(e) => setStarttime(e.target.value)} />
+                          <input
+                            type="time"
+                            className="form-control "
+                            id="starttime"
+                            value={starttime}
+                            placeholder="Enter the Virtual Training Timing"
+                            onChange={(e) => setStarttime(e.target.value)}
+                          />
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="meetlink">
                           Meeting Link
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <input
+                          <input
                             type="text"
                             className="form-control"
                             id="meetlink"
-                            name="meetlink"
-                            placeholder="Enter Meeting Link for Virtual Training"
+                            value={meetlink}
+                            placeholder="Enter Meeting Link for Live Virtual Training"
                             onChange={(e) => setMeetLink(e.target.value)}
                           />
                         </div>
                       </div>
-
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
-                          Wellcome Message <span className="text-danger">*</span>
+                          htmlFor="messg">
+                          Welcome Message <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <textarea
-                           className="form-control"
-                           rows="5"
-                           id="messg"
-                           name="messg"
-                           placeholder="Enter a Wellcome message for participants..."
-                           onChange={(e) => setMessg(e.target.value)}
-                          ></textarea>
+                            className="form-control"
+                            rows="5"
+                            id="messg"
+                            maxLength={500}
+                            placeholder="Enter a Welcome message for participants..."
+                            style={{ resize: "none" }}
+                            value={messg}
+                            onChange={(e) =>
+                              setMessg(e.target.value)
+                            }></textarea>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Duration
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <div id="basic-slider">
-                        <br/>
-                        <br/><input
+                          <input
                             type="text"
                             className="form-control"
                             id="duration"
-                            name="duration"
                             placeholder="Enter the Duration in Hours eg:- 50 mins"
                             onChange={(e) => setDuration(e.target.value)}
                           />
-                        {/* <Nouislider
-                            accessibility
-                            start={20}
-                            step={10}
-                            range={{
-                              min: 0,
-                              max: 100,
-                            }}
-                            // onUpdate={this.onUpdate(index)} */}
-                          <div className="form-group mb-3 row">
-                        {/* <div className="col-lg-4">
-                          <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15 mins</h4>
-                          </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <div className="col-lg-4">
-                          <h4>30 mins</h4>
-                          </div> */}
-                          </div>
-                          </div>
                         </div>
                       </div>
-                      <div className="col-lg-04">
-                      <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make sure that the duration is below your plan limits</h4>
-                          
-                        </div><br />
-
                       <div className="form-group mb-3 row">
+                        <label className="col-lg-4 col-form-label"></label>
+                        <div className="col-lg-6 fw-bold">
+                          Make sure that the duration is below your plan limits*
+                        </div>
+                      </div>
+                      <br />
+
+                      <div className="form-group mb-5 row">
+                        <div className="col-lg-8 ms-auto">
+                          <br />
+                          <Button
+                            type="submit"
+                            value="submit"
+                            className="btn me-2 btn-primary">
+                            Add
+                          </Button>{" "}
+                          or &nbsp;&nbsp;
+                          <Link to="/virtual-training">
+                            <Button className="btn me-2 btn-light">
+                              Cancel
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                  <button
-                    type="submit"
-                    className="btn me-2 btn-primary"
-                  >
-                    Update
-                  </button>
-                  <Link to="/virtual-training">
-                    <Button className="btn btn-light">Cancel</Button>
-                  </Link>
-                </div>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-          </div>
+            </div>
           </div>
         </div>
       </div>

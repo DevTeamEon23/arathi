@@ -1,105 +1,67 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import {
   Row,
   Col,
   Card,
   Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button, 
+  Tabs,
+  Tab,
+  Button,
   Modal,
-  Nav,
-} from "react-bootstrap";
-
-import { Link } from "react-router-dom";
+} from 'react-bootstrap'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { RotatingLines } from 'react-loader-spinner'
 
 const Lvirtualtraining = () => {
-  const [sendMessage, setSendMessage] = useState(false);
-  const [virtuals, setVirtuals] = useState([]);
-  const getVirtuals = async () => {
-    const requestOptions = {
-      method:"GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const response = await fetch("/api", requestOptions);
-    const data = await response.json();
+  const [activeTab, setActiveTab] = useState('/lvirtualtraining')
+  const [token, setToken] = useState() //auth token
+  const [allVirtualTData, setAllVirtualTData] = useState([]) //set all virtual training data
+  let history = useHistory()
 
-    console.log(data);
-  };
-  const fetchData = () => {
-     fetch('https://localhost:8000/virtuals')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setVirtuals(data); 
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
-  };
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem('jwt_access_token')
+    setToken(accessToken)
+    getAllVirtualTrainings()
+  }, [])
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/virtuals/"+id,{
-        method:'DELETE'
-      });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
+  const getAllVirtualTrainings = async () => {
+    const jwtToken = window.localStorage.getItem('jwt_access_token')
+    const url = 'https://v1.eonlearning.tech/lms-service/virtualtrainings'
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Auth-Token': jwtToken,
+        },
+      })
+      const data = response.data.data
+      console.log('getAllVirtualTrainings', response.data)
+      setAllVirtualTData(data)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error('Failed to fetch Virtual Training list !') // Handle the error
     }
   }
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
-    }
-  };
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
 
-  let history = useHistory();
+  const handleTabChange = (tab) => {
+    setActiveTab(tab)
+    history.push(`/${tab}`)
+  }
+
+  useEffect(() => {
+    const currentPath = history.location.pathname
+    const tab = currentPath.substring(1)
+    setActiveTab(tab)
+  }, [history.location.pathname])
+
   return (
     <Fragment>
-      <Nav >
-				<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/lconference">Conference</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/lvirtualtraining">Virtual Training</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/lclassroom">Classroom Training</Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey='lconference' title='Conference'></Tab>
+        <Tab eventKey='lvirtualtraining' title='Virtual Training'></Tab>
+        <Tab eventKey='lclassroom' title='Classroom Training'></Tab>
+      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
@@ -107,88 +69,84 @@ const Lvirtualtraining = () => {
               <Card.Title>Virtual Training</Card.Title>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong><center>NAME</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>INSTRUCTOR</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>JOIN</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>USERS</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>JOINED</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>DATE</center></strong>
-                    </th>
-                    <th>
-                      <strong><center>DURATION</center></strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                {virtuals?.map((data) => {
-               return (
-                  <tr key={data.id}>
-                    <td>
-                    <center><strong>{data.virtualname}</strong>
-                      </center>
-                    </td>
-                    <td><center>{data.instname}</center></td>
-                    <center><td><i class="bi bi-play-circle-fill"></i>{data.meetlink}</td></center>
-                    <td><center>5</center></td>
-                    <td><center>-</center></td>
-                    <td><center>{data.date} {data.starttime}</center></td>
-                    <td><center>{data.duration}</center></td>
-                  </tr>
-                );
-                  })}
-                  {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Send Message" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
-                </tbody>
-              </Table>
+              {allVirtualTData.length <= 0 ? (
+                <div className='loader-container'>
+                  <RotatingLines
+                    strokeColor='grey'
+                    strokeWidth='5'
+                    animationDuration='0.75'
+                    width='140'
+                    visible={true}
+                  />
+                </div>
+              ) : allVirtualTData === null ? (
+                <>
+                  <div>
+                    <p className='text-center fs-20 fw-bold'>
+                      No Virtual Training Found.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th className='text-center'>
+                          <strong>NAME</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>INSTRUCTOR</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>JOIN</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>DATE</strong>
+                        </th>
+                        <th className='text-center'>
+                          <strong>DURATION</strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allVirtualTData?.map((data) => {
+                        return (
+                          <tr key={data.id}>
+                            <td className='text-center'>
+                              <strong>{data.virtualname}</strong>
+                            </td>
+                            <td className='text-center'>{data.instname}</td>
+                            {/* <td><i class="bi bi-play-circle-fill"></i>{data.meetlink}</td> */}
+                            <td className='text-center'>
+                              <a
+                                href={data.meetlink}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                              >
+                                {data.meetlink}
+                              </a>
+                            </td>
+                            <td className='text-center'>
+                              {data.date} {data.starttime}
+                            </td>
+                            <td className='text-center'>{data.duration}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
-  );
-};
+  )
+}
 
-export default Lvirtualtraining;
+export default Lvirtualtraining
