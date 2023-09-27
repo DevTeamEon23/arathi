@@ -28,7 +28,7 @@ const Conferences = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const conferenceData = response.data.data;
+      const conferenceData = response.data.data.conferences_data;
       console.log("getAllConferences", response.data);
       setAllConferenceData(conferenceData);
     } catch (error) {

@@ -181,9 +181,9 @@ const EditConference = (props) => {
                         </label>
                         <div className="col-lg-6">
                           <TimePicker
-                            className="form-control"
+                            // className="form-control"
                             id="starttime"
-                            style={{ border: "none", boxShadow: "none" }}
+                            // style={{ border: "none", boxShadow: "none" }}
                             onChange={handleTimeChange}
                             value={selectedTime.split(" ")[0]}
                             clearIcon={null} // Remove the clear button

@@ -27,7 +27,7 @@ const VirtualTraining = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const data = response.data.data;
+      const data = response.data.data.virtualtrainings_data;
       console.log("getAllVirtualTrainings", response.data);
       setAllVirtualTData(data);
     } catch (error) {

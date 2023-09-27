@@ -27,7 +27,7 @@ const Classrooms = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const data = response.data.data;
+      const data = response.data.data.classrooms_data;
       console.log("getAllClassrooms", response.data);
       setClassroomsData(data);
     } catch (error) {
