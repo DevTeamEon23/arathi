@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import Nouislider from "nouislider-react";
-import TimePickerPicker from 'react-time-picker';
+import TimePickerPicker from "react-time-picker";
 import {
   Dropdown,
   DropdownButton,
@@ -23,18 +23,13 @@ const loginSchema = Yup.object().shape({
     .required("Please provide a password"),
 });
 
-const EditVirtual = () => {
-    const [sendMessage, setSendMessage] = useState(false);
+const EditVirtual = (props) => {
+  const virtualTId = props.match.params.id;
+  const [sendMessage, setSendMessage] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [value, onChange] = useState(new Date());
   return (
     <Fragment>
-      <Nav >
-		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/edit-classroom">Info</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventKey='Follow' type="button" to="/info-virtual-trainings">Users</Link>
-        </Nav.Item>
-      </Nav>
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
@@ -47,15 +42,13 @@ const EditVirtual = () => {
                   className="form-valide"
                   action="#"
                   method="post"
-                  onSubmit={(e) => e.preventDefault()}
-                >
+                  onSubmit={(e) => e.preventDefault()}>
                   <div className="row">
                     <div className="col-xl-10">
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Instructor Name
                           <span className="text-danger">*</span>
                         </label>
@@ -72,8 +65,7 @@ const EditVirtual = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Name
                           <span className="text-danger">*</span>
                         </label>
@@ -90,35 +82,39 @@ const EditVirtual = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Date
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        <DateRangePicker>
-                                <input type="text" className="form-control input-daterange-timepicker" />
-                            </DateRangePicker>
+                          <DateRangePicker>
+                            <input
+                              type="text"
+                              className="form-control input-daterange-timepicker"
+                            />
+                          </DateRangePicker>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Start Time
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                        Pick Your Time of Course
-                        <TimePickerPicker className="form-control input-daterange-timepicker" onChange={onChange} value={value} />
+                          Pick Your Time of Course
+                          <TimePickerPicker
+                            className="form-control input-daterange-timepicker"
+                            onChange={onChange}
+                            value={value}
+                          />
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Meeting Link
                           <span className="text-danger">*</span>
                         </label>
@@ -136,9 +132,9 @@ const EditVirtual = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions"
-                        >
-                          Wellcome Message <span className="text-danger">*</span>
+                          htmlFor="val-suggestions">
+                          Wellcome Message{" "}
+                          <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <textarea
@@ -146,64 +142,75 @@ const EditVirtual = () => {
                             id="val-suggestions"
                             name="val-suggestions"
                             rows="5"
-                            placeholder="Enter a Wellcome message for participants..."
-                          ></textarea>
+                            placeholder="Enter a Wellcome message for participants..."></textarea>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username"
-                        >
+                          htmlFor="val-username">
                           Duration
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-              <div id="basic-slider">
-                <br/>
-                <br/>
-                        <Nouislider
-                            accessibility
-                            start={20}
-                            step={10}
-                            range={{
-                              min: 0,
-                              max: 100,
-                            }}
-                            // onUpdate={this.onUpdate(index)}
-                          />
-                          <div className="form-group mb-3 row">
-                        <div className="col-lg-4">
-                          <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15 mins</h4>
-                          </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <div className="col-lg-4">
-                          <h4>30 mins</h4>
-                          </div>
-                          </div>
+                          <div id="basic-slider">
+                            <br />
+                            <br />
+                            <Nouislider
+                              accessibility
+                              start={20}
+                              step={10}
+                              range={{
+                                min: 0,
+                                max: 100,
+                              }}
+                              // onUpdate={this.onUpdate(index)}
+                            />
+                            <div className="form-group mb-3 row">
+                              <div className="col-lg-4">
+                                <h4>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15
+                                  mins
+                                </h4>
+                              </div>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <div className="col-lg-4">
+                                <h4>30 mins</h4>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                       <div className="col-lg-04">
-                      <h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make sure that the duration is below your plan limits</h4>
-                          
-                        </div><br />
+                        <h4>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make
+                          sure that the duration is below your plan limits
+                        </h4>
+                      </div>
+                      <br />
 
-                      <div className="form-group mb-3 row">
+                      <div className="form-group mb-5 row">
+                        <div className="col-lg-8 ms-auto">
+                          <br />
+                          <Button
+                            type="submit"
+                            value="submit"
+                            className="btn me-2 btn-primary">
+                            Update
+                          </Button>{" "}
+                          or &nbsp;&nbsp;
+                          <Link to="/conference">
+                            <Button className="btn me-2 btn-light">
+                              Cancel
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
                     </div>
-                  <button
-                    type="submit"
-                    className="btn me-2 btn-primary"
-                  >
-                    Update
-                  </button>
-                  <Link to="/virtual-training">
-            <Button variant="primary">Cancel</Button>
-        </Link>
-                </div>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-          </div>
+            </div>
           </div>
         </div>
       </div>

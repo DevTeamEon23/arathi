@@ -3,16 +3,30 @@ import { Link, useHistory } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Nouislider from "nouislider-react";
+import "nouislider/distribute/nouislider.css";
+import TimePicker from "react-time-picker";
 
 const AddConferences = () => {
   const [instname, setInstname] = useState(""); //Instructor Name
   const [confname, setConfname] = useState(""); //Conference Name
   const [date, setDate] = useState(""); //date
-  const [starttime, setStarttime] = useState(""); //Start time
   const [meetlink, setMeetLink] = useState(""); //Meeting Link
   const [messg, setMessg] = useState(""); //Welcome Message
-  const [duration, setDuration] = useState(0);
+  const [selectedTime, setSelectedTime] = useState("11:00 AM");
+  const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
+
+  const handleTimeChange = (time) => {
+    const [hours, minutes] = time.split(":");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const twelveHourTime = (hours % 12 || 12) + ":" + minutes + " " + ampm;
+    setSelectedTime(twelveHourTime);
+  };
+
+  const handleSliderChange = (values) => {
+    setSelectedDuration([Math.floor(values[0])]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,10 +34,10 @@ const AddConferences = () => {
     formData.append("instname", instname);
     formData.append("confname", confname);
     formData.append("date", date);
-    formData.append("starttime", starttime);
+    formData.append("starttime", selectedTime);
     formData.append("meetlink", meetlink);
     formData.append("messg", messg);
-    formData.append("duration", duration);
+    formData.append("duration", selectedDuration);
     formData.append("generate_token", true);
 
     const url = "https://v1.eonlearning.tech/lms-service/addconferences";
@@ -107,7 +121,7 @@ const AddConferences = () => {
                         <div className="col-lg-6">
                           <input
                             type="date"
-                            className="form-control input-daterange-timepicker"
+                            className="form-control"
                             id="date"
                             min={today}
                             value={date}
@@ -124,13 +138,13 @@ const AddConferences = () => {
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          <input
-                            type="time"
-                            className="form-control "
+                          <TimePicker
+                            className="form-control"
                             id="starttime"
-                            value={starttime}
-                            placeholder="Enter the Conference Timing"
-                            onChange={(e) => setStarttime(e.target.value)}
+                            style={{ border: "none" }}
+                            onChange={handleTimeChange}
+                            value={selectedTime.split(" ")[0]}
+                            clearIcon={null} // Remove the clear button
                           />
                         </div>
                       </div>
@@ -180,14 +194,18 @@ const AddConferences = () => {
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="duration"
-                            value={duration}
-                            placeholder="Enter the Duration in Hours eg:- 50 mins"
-                            onChange={(e) => setDuration(e.target.value)}
+                          <br />
+                          <Nouislider
+                            style={{ height: "4px" }}
+                            start={[selectedDuration]}
+                            step={10}
+                            range={{
+                              min: 30,
+                              max: 100,
+                            }}
+                            onSlide={handleSliderChange}
                           />
+                          <p> {selectedDuration[0]} minutes</p>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">

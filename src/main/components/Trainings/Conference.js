@@ -1,79 +1,83 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { Row, Col, Card, Table, Button, Modal } from 'react-bootstrap'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import { RotatingLines } from 'react-loader-spinner'
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { Row, Col, Card, Table, Button, Modal } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 const Conferences = () => {
   // const [sendMessage, setSendMessage] = useState(false)
-  const [conferencesID, setConferencesID] = useState() //id save for delete
-  const [showModal, setShowModal] = useState(false) //delete button modal
-  const [token, setToken] = useState() //auth token
-  const [allConferenceData, setAllConferenceData] = useState([]) //set all conference data
-  let history = useHistory()
+  const [conferencesID, setConferencesID] = useState(); //id save for delete
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [token, setToken] = useState(); //auth token
+  const [allConferenceData, setAllConferenceData] = useState([]); //set all conference data
+  let history = useHistory();
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem('jwt_access_token')
-    setToken(accessToken)
-    getAllConferences()
-  }, [])
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllConferences();
+  }, []);
 
   const getAllConferences = async () => {
-    const jwtToken = window.localStorage.getItem('jwt_access_token')
-    const url = 'https://v1.eonlearning.tech/lms-service/conferences'
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "https://v1.eonlearning.tech/lms-service/conferences";
     try {
       const response = await axios.get(url, {
         headers: {
-          'Auth-Token': jwtToken,
+          "Auth-Token": jwtToken,
         },
-      })
-      const conferenceData = response.data.data
-      console.log('getAllConferences', response.data)
-      setAllConferenceData(conferenceData)
+      });
+      const conferenceData = response.data.data;
+      console.log("getAllConferences", response.data);
+      setAllConferenceData(conferenceData);
     } catch (error) {
-      console.error('Error fetching data:', error)
-      toast.error('Failed to fetch conferences list !') // Handle the error
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch conferences list !"); // Handle the error
     }
-  }
+  };
 
   const deleteOperation = (Id) => {
-    setShowModal(true)
-    console.log('inside delete conference', Id)
-    setConferencesID(Id)
-  }
+    setShowModal(true);
+    console.log("inside delete conference", Id);
+    setConferencesID(Id);
+  };
 
   const handleConferenceDelete = () => {
-    console.log('modal delete', conferencesID)
+    console.log("modal delete", conferencesID);
     const config = {
       headers: {
-        'Auth-Token': token,
+        "Auth-Token": token,
       },
-    }
+    };
     const requestBody = {
       id: conferencesID,
-    }
+    };
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/delete_conference`, {
         ...config,
         data: requestBody,
       })
       .then((response) => {
-        setShowModal(false)
-        console.log(response.data.status)
-        getAllConferences()
-        toast.success('Conference deleted successfully!', {
+        setShowModal(false);
+        console.log(response.data.status);
+        getAllConferences();
+        toast.success("Conference deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
+        });
       })
       .catch((error) => {
-        console.error(error)
-        setShowModal(false)
-        toast.error('Failed to delete Conference!', {
+        console.error(error);
+        setShowModal(false);
+        toast.error("Failed to delete Conference!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
-      })
-  }
+        });
+      });
+  };
+
+  const handleEdit = (id) => {
+    history.push(`/edit-conference/${id}`);
+  };
 
   return (
     <Fragment>
@@ -83,26 +87,26 @@ const Conferences = () => {
             <Card.Header>
               <Card.Title>CONFERENECES</Card.Title>
               <div>
-                <Link to='/add-conference'>
-                  <Button variant='primary'>Add Conference Training</Button>
+                <Link to="/add-conference">
+                  <Button variant="primary">Add Conference Training</Button>
                 </Link>
               </div>
             </Card.Header>
             <Card.Body>
               {allConferenceData.length <= 0 ? (
-                <div className='loader-container'>
+                <div className="loader-container">
                   <RotatingLines
-                    strokeColor='grey'
-                    strokeWidth='5'
-                    animationDuration='0.75'
-                    width='140'
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
                     visible={true}
                   />
                 </div>
               ) : allConferenceData === null ? (
                 <>
                   <div>
-                    <p className='text-center fs-20 fw-bold'>
+                    <p className="text-center fs-20 fw-bold">
                       No Conference Found.
                     </p>
                   </div>
@@ -112,22 +116,22 @@ const Conferences = () => {
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>NAME</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>INSTRUCTOR</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>JOIN</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>DATE</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>DURATION</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>OPTION</strong>
                         </th>
                       </tr>
@@ -136,22 +140,23 @@ const Conferences = () => {
                       {allConferenceData?.map((data) => {
                         return (
                           <tr key={data.id}>
-                            <td className='text-center'>{data.confname}</td>
-                            <td className='text-center'>{data.instname}</td>
-                            <td className='text-center'>
+                            <td className="text-center">{data.confname}</td>
+                            <td className="text-center">{data.instname}</td>
+                            <td className="text-center">
                               <a
                                 href={data.meetlink}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                              >
+                                target="_blank"
+                                rel="noopener noreferrer">
                                 {data.meetlink}
                               </a>
                             </td>
-                            <td className='text-center'>
+                            <td className="text-center">
                               {data.date} {data.starttime}
                             </td>
-                            <td className='text-center'>{data.duration}</td>
-                            <td className='text-center'>
+                            <td className="text-center">
+                              {data.duration} minutes
+                            </td>
+                            <td className="text-center">
                               {/* <Link
                               to='/add-conference'
                               className='btn btn-primary shadow btn-xs sharp me-1'
@@ -164,21 +169,21 @@ const Conferences = () => {
                             >
                               <i class='bi bi-envelope-fill'></i>
                             </Link> */}
-                              <Link
-                                to='/edit-conference'
-                                className='btn btn-primary shadow btn-xs sharp me-1'
-                              >
-                                <i className='fas fa-pencil-alt'></i>
-                              </Link>
                               <div
-                                className='btn btn-danger shadow btn-xs sharp'
-                                onClick={() => deleteOperation(data.id)}
-                              >
-                                <i className='fa fa-trash'></i>
+                                className="btn btn-primary shadow btn-xs sharp me-1"
+                                title="Edit"
+                                onClick={(e) => handleEdit(data.id)}>
+                                <i className="fas fa-pencil-alt"></i>
+                              </div>
+                              <div
+                                className="btn btn-danger shadow btn-xs sharp"
+                                title="Delete"
+                                onClick={() => deleteOperation(data.id)}>
+                                <i className="fa fa-trash"></i>
                               </div>
                             </td>
                           </tr>
-                        )
+                        );
                       })}
                     </tbody>
                   </Table>
@@ -197,10 +202,10 @@ const Conferences = () => {
           <strong>Are you sure you want to delete this Conference ?</strong>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='danger light' onClick={() => setShowModal(false)}>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant='btn btn-primary' onClick={handleConferenceDelete}>
+          <Button variant="btn btn-primary" onClick={handleConferenceDelete}>
             Delete
           </Button>
         </Modal.Footer>
@@ -209,10 +214,10 @@ const Conferences = () => {
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Conferences
+export default Conferences;
 
 {
   /* send Modal */
