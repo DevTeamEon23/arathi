@@ -47,7 +47,7 @@ const Info = () => {
           'Auth-Token': jwtToken,
         },
       })
-      const courseData = response.data.data
+      const courseData = response.data.data.courses_data
       console.log('getAllCourses', response.data)
       // const names = courseData.map((course) => course.coursename);
       // setCourseName(names);
@@ -216,7 +216,7 @@ const Info = () => {
             </Card.Header>
             {roleType === 'Superadmin' && (
               <Card.Body>
-                {allCourseData.length <= 0 ? (
+                {allCourseData?.length <= 0 ? (
                   <div className='loader-container'>
                     <RotatingLines
                       strokeColor='grey'
