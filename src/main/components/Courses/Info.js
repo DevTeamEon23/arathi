@@ -47,11 +47,12 @@ const Info = () => {
           'Auth-Token': jwtToken,
         },
       })
-      const courseData = response.data.data.courses_data
-      console.log('getAllCourses', response.data)
+      const courseData = response.data.data
       // const names = courseData.map((course) => course.coursename);
       // setCourseName(names);
-      setAllCourseData(courseData)
+      setAllCourseData(
+        courseData === null ? courseData : courseData.courses_data
+      )
     } catch (error) {
       console.error('Error fetching data:', error)
       toast.error('Failed to fetch Courses !') // Handle the error
@@ -59,7 +60,6 @@ const Info = () => {
   }
 
   const fetchCourseData = async (accessToken, ID) => {
-    console.log(roleType)
     try {
       const queryParams = {
         user_id: ID,
@@ -75,7 +75,6 @@ const Info = () => {
         },
       })
       const list = response.data.data
-      console.log(response.data.data, 'fetchCourseData')
       setCourses(
         list === null ? response.data.data : response.data.data.course_ids
       )
@@ -97,12 +96,10 @@ const Info = () => {
 
   const deleteOperation = (courseId) => {
     setShowModal(true)
-    console.log('inside delete course', courseId)
     setCourseId(courseId)
   }
 
-  const handleCatDelete = () => {
-    console.log('modal delete', courseId)
+  const handleDeleteCourseMain = () => {
     const config = {
       headers: {
         'Auth-Token': token,
@@ -118,24 +115,51 @@ const Info = () => {
       })
       .then((response) => {
         setShowModal(false)
-        console.log(response.data.status)
         getAllCourses()
         toast.success('Course deleted successfully!', {
           position: toast.POSITION.TOP_RIGHT,
         })
       })
       .catch((error) => {
-        // Handle the error
         console.error(error)
+        setShowModal(false)
         toast.error('Failed to delete Course!', {
           position: toast.POSITION.TOP_RIGHT,
         })
       })
   }
+  const handleDeleteCourse = () => {
+    const config = {
+      headers: {
+        'Auth-Token': token,
+      },
+    }
+    const requestBody = {
+      id: courseId,
+    }
+    // axios
+    //   .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
+    //     ...config,
+    //     data: requestBody,
+    //   })
+    //   .then((response) => {
+    //     setShowModal(false)
+    //     getAllCourses()
+    //     toast.success('Course deleted successfully!', {
+    //       position: toast.POSITION.TOP_RIGHT,
+    //     })
+    //   })
+    //   .catch((error) => {
+    //     console.error(error)
+    //     setShowModal(false)
+    //     toast.error('Failed to delete Course!', {
+    //       position: toast.POSITION.TOP_RIGHT,
+    //     })
+    //   })
+  }
 
   const handleClone = (id, coursename) => {
     setShowCloneModal(true)
-    console.log('inside course handle clone', id, coursename)
     setCourseName(coursename)
     setCourseCloneId(id)
   }
@@ -152,7 +176,6 @@ const Info = () => {
       })
       .then((response) => {
         setShowCloneModal(false)
-        console.log(response.data.status)
         getAllCourses()
         toast.success('Course Clone successfully!', {
           position: toast.POSITION.TOP_RIGHT,
@@ -171,34 +194,11 @@ const Info = () => {
   }
 
   const handleEdit = (id) => {
-    console.log('inside course handle edit page', id)
     history.push(`/edit-courses/${id}`)
   }
 
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/add-courses">
-            Add Course
-          </Link>
-        </Nav.Item>
-      </Nav> */}
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
         <Tab eventKey='dashboard' title='Dashboard'></Tab>
         <Tab eventKey='add-courses' title='Add Course'></Tab>
@@ -304,29 +304,13 @@ const Info = () => {
                                 </center>
                               </td>
                               <td>
-                                {/* <center>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="light sharp i-false"
-                        >
-                          {svg1}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item href="/add-courses"><i class="bi bi-plus-circle">&nbsp;</i>Add</Dropdown.Item>
-                          <Dropdown.Item href="/course_overview"><i class="bi bi-graph-up">  &nbsp;</i>Reports</Dropdown.Item>
-                          <Dropdown.Item href="/edit-courses"><i class="bi bi-pencil-square">  &nbsp;</i>Edit</Dropdown.Item>
-                          <Dropdown.Item href="#" onClick={()=>deleteOperation(data.id)}><i class="bi bi-x-circle">  &nbsp;</i>Delete</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                      </center> */}
                                 <center>
                                   <div
                                     className='btn btn-primary shadow btn-xs sharp me-1'
                                     title='Clone'
                                   >
                                     <i
-                                      class='fa-solid fa-plus'
+                                      className='fa-solid fa-plus'
                                       onClick={(e) =>
                                         handleClone(data.id, data.coursename)
                                       }
@@ -365,7 +349,7 @@ const Info = () => {
             )}
             {roleType === 'Admin' || roleType === 'Instructor' ? (
               <Card.Body>
-                {courses === undefined ? (
+                {courses?.length <= 0 ? (
                   <div className='loader-container'>
                     <RotatingLines
                       strokeColor='grey'
@@ -446,7 +430,7 @@ const Info = () => {
                                     title='Clone'
                                   >
                                     <i
-                                      class='fa-solid fa-plus'
+                                      className='fa-solid fa-plus'
                                       onClick={(e) =>
                                         handleClone(data.id, data.coursename)
                                       }
@@ -498,7 +482,14 @@ const Info = () => {
           <Button variant='danger light' onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant='btn btn-primary' onClick={handleCatDelete}>
+          <Button
+            variant='btn btn-primary'
+            onClick={
+              roleType === 'Superadmin'
+                ? handleDeleteCourseMain
+                : handleDeleteCourse
+            }
+          >
             Delete
           </Button>
         </Modal.Footer>

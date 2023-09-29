@@ -82,12 +82,12 @@ const AddCourses = () => {
         },
       })
       console.log('getAllCategories', response.data.data)
-
-      const expectedOutput = response?.data?.data.map(({ name }) => ({
+      const data = response.data.data
+      const expectedOutput = data.categories_data.map(({ name }) => ({
         value: name,
         label: name,
       }))
-      setGetAllCategoriesData(expectedOutput)
+      setGetAllCategoriesData(data === null ? data : expectedOutput)
     } catch (error) {
       console.error('Error fetching data:', error)
       toast.error('Failed to fetch Categories !') // Handle the error
