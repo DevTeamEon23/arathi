@@ -1,57 +1,57 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { Row, Col, Card, Table, Tabs, Tab, Button } from 'react-bootstrap'
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import { RotatingLines } from 'react-loader-spinner'
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { Row, Col, Card, Table, Tabs, Tab, Button } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 const Lclassroom = () => {
-  const [activeTab, setActiveTab] = useState('/lclassroom')
-  const [token, setToken] = useState() //auth token
-  const [classroomsData, setClassroomsData] = useState([])
-  const history = useHistory()
+  const [activeTab, setActiveTab] = useState("/lclassroom");
+  const [token, setToken] = useState(); //auth token
+  const [classroomsData, setClassroomsData] = useState([]);
+  const history = useHistory();
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem('jwt_access_token')
-    setToken(accessToken)
-    getAllClassrooms()
-  }, [])
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllClassrooms();
+  }, []);
 
   const getAllClassrooms = async () => {
-    const jwtToken = window.localStorage.getItem('jwt_access_token')
-    const url = 'https://v1.eonlearning.tech/lms-service/classrooms'
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "https://v1.eonlearning.tech/lms-service/classrooms";
     try {
       const response = await axios.get(url, {
         headers: {
-          'Auth-Token': jwtToken,
+          "Auth-Token": jwtToken,
         },
-      })
-      const data = response.data.data
-      console.log('getAllClassrooms', response.data)
-      setClassroomsData(data)
+      });
+      const data = response.data.data.classrooms_data;
+      console.log("getAllClassrooms", response.data);
+      setClassroomsData(data);
     } catch (error) {
-      console.error('Error fetching data:', error)
-      toast.error('Failed to fetch Classroom Trainings list !') // Handle the error
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Classroom Trainings list !"); // Handle the error
     }
-  }
+  };
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab)
-    history.push(`/${tab}`)
-  }
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
 
   useEffect(() => {
-    const currentPath = history.location.pathname
-    const tab = currentPath.substring(1)
-    setActiveTab(tab)
-  }, [history.location.pathname])
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   return (
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey='lconference' title='Conference'></Tab>
-        <Tab eventKey='lvirtualtraining' title='Virtual Training'></Tab>
-        <Tab eventKey='lclassroom' title='Classroom Training'></Tab>
+        <Tab eventKey="lconference" title="Conference"></Tab>
+        <Tab eventKey="lvirtualtraining" title="Virtual Training"></Tab>
+        <Tab eventKey="lclassroom" title="Classroom Training"></Tab>
       </Tabs>
       <Row>
         <Col lg={12}>
@@ -61,19 +61,19 @@ const Lclassroom = () => {
             </Card.Header>
             <Card.Body>
               {classroomsData.length <= 0 ? (
-                <div className='loader-container'>
+                <div className="loader-container">
                   <RotatingLines
-                    strokeColor='grey'
-                    strokeWidth='5'
-                    animationDuration='0.75'
-                    width='140'
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
                     visible={true}
                   />
                 </div>
               ) : classroomsData === null ? (
                 <>
                   <div>
-                    <p className='text-center fs-20 fw-bold'>
+                    <p className="text-center fs-20 fw-bold">
                       No Classroom Training Found.
                     </p>
                   </div>
@@ -83,19 +83,19 @@ const Lclassroom = () => {
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>NAME</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>INSTRUCTOR</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>VENUE</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>DATE</strong>
                         </th>
-                        <th className='text-center'>
+                        <th className="text-center">
                           <strong>DURATION</strong>
                         </th>
                       </tr>
@@ -104,15 +104,15 @@ const Lclassroom = () => {
                       {classroomsData?.map((data) => {
                         return (
                           <tr key={data.id}>
-                            <td className='text-center'>{data.classname}</td>
-                            <td className='text-center'>{data.instname}</td>
-                            <td className='text-center'>{data.venue}</td>
-                            <td className='text-center'>
+                            <td className="text-center">{data.classname}</td>
+                            <td className="text-center">{data.instname}</td>
+                            <td className="text-center">{data.venue}</td>
+                            <td className="text-center">
                               {data.date} {data.starttime}
                             </td>
-                            <td className='text-center'>{data.duration}</td>
+                            <td className="text-center">{data.duration}</td>
                           </tr>
-                        )
+                        );
                       })}
                     </tbody>
                   </Table>
@@ -126,7 +126,7 @@ const Lclassroom = () => {
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Lclassroom
+export default Lclassroom;

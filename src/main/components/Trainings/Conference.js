@@ -30,7 +30,11 @@ const Conferences = () => {
       })
       const conferenceData = response.data.data
       console.log('getAllConferences', response.data)
-      setAllConferenceData(conferenceData)
+      setAllConferenceData(
+        conferenceData === null
+          ? conferenceData
+          : conferenceData.conferences_data
+      )
     } catch (error) {
       console.error('Error fetching data:', error)
       toast.error('Failed to fetch conferences list !') // Handle the error
@@ -75,6 +79,10 @@ const Conferences = () => {
       })
   }
 
+  const handleEdit = (id) => {
+    history.push(`/edit-conference/${id}`)
+  }
+
   return (
     <Fragment>
       <Row mb={5}>
@@ -89,7 +97,7 @@ const Conferences = () => {
               </div>
             </Card.Header>
             <Card.Body>
-              {allConferenceData.length <= 0 ? (
+              {allConferenceData?.length <= 0 ? (
                 <div className='loader-container'>
                   <RotatingLines
                     strokeColor='grey'
@@ -150,7 +158,9 @@ const Conferences = () => {
                             <td className='text-center'>
                               {data.date} {data.starttime}
                             </td>
-                            <td className='text-center'>{data.duration}</td>
+                            <td className='text-center'>
+                              {data.duration} minutes
+                            </td>
                             <td className='text-center'>
                               {/* <Link
                               to='/add-conference'
@@ -164,14 +174,16 @@ const Conferences = () => {
                             >
                               <i class='bi bi-envelope-fill'></i>
                             </Link> */}
-                              <Link
-                                to='/edit-conference'
+                              <div
                                 className='btn btn-primary shadow btn-xs sharp me-1'
+                                title='Edit'
+                                onClick={(e) => handleEdit(data.id)}
                               >
                                 <i className='fas fa-pencil-alt'></i>
-                              </Link>
+                              </div>
                               <div
                                 className='btn btn-danger shadow btn-xs sharp'
+                                title='Delete'
                                 onClick={() => deleteOperation(data.id)}
                               >
                                 <i className='fa fa-trash'></i>
