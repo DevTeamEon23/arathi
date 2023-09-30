@@ -2,17 +2,31 @@ import React, { Fragment, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Nouislider from "nouislider-react";
+import "nouislider/distribute/nouislider.css";
 import { Button } from "react-bootstrap";
+import TimePicker from "react-time-picker";
 
 const AddVirtualTraining = () => {
   const [instname, setInstname] = useState("");
   const [virtualname, setVirtualName] = useState("");
   const [date, setDate] = useState("");
-  const [starttime, setStarttime] = useState("");
   const [meetlink, setMeetLink] = useState("");
   const [messg, setMessg] = useState("");
-  const [duration, setDuration] = useState("");
+  const [selectedTime, setSelectedTime] = useState("11:00 AM");
+  const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
+
+  const handleTimeChange = (time) => {
+    const [hours, minutes] = time.split(":");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const twelveHourTime = (hours % 12 || 12) + ":" + minutes + " " + ampm;
+    setSelectedTime(twelveHourTime);
+  };
+
+  const handleSliderChange = (values) => {
+    setSelectedDuration([Math.floor(values[0])]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,10 +34,10 @@ const AddVirtualTraining = () => {
     formData.append("instname", instname);
     formData.append("virtualname", virtualname);
     formData.append("date", date);
-    formData.append("starttime", starttime);
+    formData.append("starttime", selectedTime);
     formData.append("meetlink", meetlink);
     formData.append("messg", messg);
-    formData.append("duration", duration);
+    formData.append("duration", selectedDuration);
     formData.append("generate_token", true);
 
     const url = "https://v1.eonlearning.tech/lms-service/addvirtualtrainings";
@@ -36,7 +50,6 @@ const AddVirtualTraining = () => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         toast.success("Virtual Training Added Successfully!!!");
         history.push(`/virtual-training`);
       })
@@ -124,13 +137,11 @@ const AddVirtualTraining = () => {
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          <input
-                            type="time"
-                            className="form-control "
+                          <TimePicker
                             id="starttime"
-                            value={starttime}
-                            placeholder="Enter the Virtual Training Timing"
-                            onChange={(e) => setStarttime(e.target.value)}
+                            onChange={handleTimeChange}
+                            value={selectedTime.split(" ")[0]}
+                            clearIcon={null} // Remove the clear button
                           />
                         </div>
                       </div>
@@ -173,20 +184,23 @@ const AddVirtualTraining = () => {
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
+                        <label className="col-lg-4 col-form-label">
                           Duration
                           <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="duration"
-                            placeholder="Enter the Duration in Hours eg:- 50 mins"
-                            onChange={(e) => setDuration(e.target.value)}
+                          <br />
+                          <Nouislider
+                            style={{ height: "4px" }}
+                            start={[selectedDuration]}
+                            step={10}
+                            range={{
+                              min: 30,
+                              max: 100,
+                            }}
+                            onSlide={handleSliderChange}
                           />
+                          <p> {selectedDuration[0]} minutes</p>
                         </div>
                       </div>
                       <div className="form-group mb-3 row">

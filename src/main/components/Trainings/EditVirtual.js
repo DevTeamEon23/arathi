@@ -1,33 +1,114 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import * as Yup from "yup";
 import Nouislider from "nouislider-react";
-import TimePickerPicker from "react-time-picker";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
-  Nav,
-  Button,
-} from "react-bootstrap";
-import DateRangePicker from "react-bootstrap-daterangepicker";
-
-const loginSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(3, "Your username must consist of at least 3 characters ")
-    .max(50, "Your username must consist of at least 3 characters ")
-    .required("Please enter a username"),
-  password: Yup.string()
-    .min(5, "Your password must be at least 5 characters long")
-    .max(50, "Your password must be at least 5 characters long")
-    .required("Please provide a password"),
-});
+import TimePicker from "react-time-picker";
+import { format, parse } from "date-fns";
+import { Button } from "react-bootstrap";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 const EditVirtual = (props) => {
   const virtualTId = props.match.params.id;
-  const [sendMessage, setSendMessage] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [value, onChange] = useState(new Date());
+  const [token, setToken] = useState(); //auth token
+  const [virtualTData, setVirtualTData] = useState(); //data
+  const [instname, setInstname] = useState("");
+  const [virtualname, setVirtualName] = useState("");
+  const [date, setDate] = useState("");
+  const [meetlink, setMeetLink] = useState("");
+  const [messg, setMessg] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
+  const history = useHistory();
+
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    getVirtualTByID(token);
+  }, []);
+
+  //virtual training details by ID
+  const getVirtualTByID = async (authToken) => {
+    try {
+      const response = await axios.get(
+        "https://v1.eonlearning.tech/lms-service/virtualtrainings_by_onlyid",
+        {
+          headers: {
+            "Auth-Token": authToken,
+          },
+          params: {
+            id: virtualTId,
+          },
+        }
+      );
+      setVirtualTData(response.data.data);
+      if (response.data.status === "success") {
+        const res = response.data.data;
+        const timeString = res.starttime; // Replace with your API response
+        const parsedTime = parse(timeString, "h:mm a", new Date()); // Parse the time string
+        const formattedTime = format(parsedTime, "h:mm a"); // Format the parsed time as HH:mm
+        console.log(formattedTime, parsedTime);
+
+        setInstname(res.instname);
+        setVirtualName(res.virtualname);
+        setMeetLink(res.meetlink);
+        setMessg(res.messg);
+        setSelectedDuration([res.duration]);
+        setSelectedTime(formattedTime);
+        setDate(res.date);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch virtual training details!");
+    }
+  };
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleTimeChange = (time) => {
+    const [hours, minutes] = time.split(":");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const twelveHourTime = (hours % 12 || 12) + ":" + minutes + " " + ampm;
+    setSelectedTime(twelveHourTime);
+  };
+
+  const handleSliderChange = (values) => {
+    setSelectedDuration([Math.floor(values[0])]);
+  };
+
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("id", virtualTId);
+    formData.append("instname", instname);
+    formData.append("virtualname", virtualname);
+    formData.append("date", date);
+    formData.append("starttime", selectedTime);
+    formData.append("meetlink", meetlink);
+    formData.append("messg", messg);
+    formData.append("duration", selectedDuration);
+
+    const url =
+      "https://v1.eonlearning.tech/lms-service/update_virtualtrainings";
+    const authToken = window.localStorage.getItem("jwt_access_token");
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Virtual Training updated successfully!!!");
+        history.push(`/virtual-training`);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to update virtual training...");
+      });
+  };
+
   return (
     <Fragment>
       <div className="row">
@@ -38,177 +119,183 @@ const EditVirtual = (props) => {
             </div>
             <div className="card-body">
               <div className="form-validation">
-                <form
-                  className="form-valide"
-                  action="#"
-                  method="post"
-                  onSubmit={(e) => e.preventDefault()}>
-                  <div className="row">
-                    <div className="col-xl-10">
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Instructor Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="val-username"
-                            name="val-username"
-                            placeholder="Enter Inst. Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="val-username"
-                            name="val-username"
-                            placeholder="Enter Conference Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Date
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <DateRangePicker>
-                            <input
-                              type="text"
-                              className="form-control input-daterange-timepicker"
-                            />
-                          </DateRangePicker>
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Start Time
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          Pick Your Time of Course
-                          <TimePickerPicker
-                            className="form-control input-daterange-timepicker"
-                            onChange={onChange}
-                            value={value}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Meeting Link
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="val-username"
-                            name="val-username"
-                            placeholder="Enter Offline Class Location"
-                          />
-                        </div>
-                      </div>
+                {virtualTData === undefined ? (
+                  <div className="loader-container">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="100"
+                      visible={true}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <form onSubmit={handleUpdate}>
+                      <div className="row">
+                        <div className="col-xl-10">
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="instname">
+                              Instructor Name
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="instname"
+                                value={instname}
+                                placeholder="Enter Instructor Name"
+                                onChange={(e) => setInstname(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="confname">
+                              Name
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="confname"
+                                value={virtualname}
+                                placeholder="Enter Virtual Training name for your reference"
+                                onChange={(e) => setVirtualName(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="date">
+                              Date
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              {" "}
+                              <input
+                                type="date"
+                                className="form-control "
+                                id="date"
+                                min={today}
+                                value={date}
+                                placeholder="Enter the Date "
+                                onChange={(e) => setDate(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="starttime">
+                              Start Time
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <TimePicker
+                                id="starttime"
+                                onChange={handleTimeChange}
+                                value={selectedTime.split(" ")[0]}
+                                clearIcon={null}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="meetlink">
+                              Meeting Link
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="meetlink"
+                                value={meetlink}
+                                placeholder="Enter Meeting Link for Live Virtual Training"
+                                onChange={(e) => setMeetLink(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="messg">
+                              Welcome Message{" "}
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <textarea
+                                className="form-control"
+                                rows="5"
+                                id="messg"
+                                maxLength={500}
+                                placeholder="Enter a Welcome message for participants..."
+                                style={{ resize: "none" }}
+                                value={messg}
+                                onChange={(e) =>
+                                  setMessg(e.target.value)
+                                }></textarea>
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label className="col-lg-4 col-form-label">
+                              Duration
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <br />
+                              <Nouislider
+                                style={{ height: "4px" }}
+                                start={[selectedDuration]}
+                                step={10}
+                                range={{
+                                  min: 30,
+                                  max: 100,
+                                }}
+                                onSlide={handleSliderChange}
+                              />
+                              <p> {selectedDuration[0]} minutes</p>
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label className="col-lg-4 col-form-label"></label>
+                            <div className="col-lg-6 fw-bold">
+                              Make sure that the duration is below your plan
+                              limits*
+                            </div>
+                          </div>
+                          <br />
 
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions">
-                          Wellcome Message{" "}
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <textarea
-                            className="form-control"
-                            id="val-suggestions"
-                            name="val-suggestions"
-                            rows="5"
-                            placeholder="Enter a Wellcome message for participants..."></textarea>
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
-                          Duration
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <div id="basic-slider">
-                            <br />
-                            <br />
-                            <Nouislider
-                              accessibility
-                              start={20}
-                              step={10}
-                              range={{
-                                min: 0,
-                                max: 100,
-                              }}
-                              // onUpdate={this.onUpdate(index)}
-                            />
-                            <div className="form-group mb-3 row">
-                              <div className="col-lg-4">
-                                <h4>
-                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15
-                                  mins
-                                </h4>
-                              </div>
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                              <div className="col-lg-4">
-                                <h4>30 mins</h4>
-                              </div>
+                          <div className="form-group mb-5 row">
+                            <div className="col-lg-8 ms-auto">
+                              <br />
+                              <Button
+                                type="submit"
+                                value="submit"
+                                className="btn me-2 btn-primary">
+                                Update
+                              </Button>{" "}
+                              or &nbsp;&nbsp;
+                              <Link to="/virtual-training">
+                                <Button className="btn me-2 btn-light">
+                                  Cancel
+                                </Button>
+                              </Link>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="col-lg-04">
-                        <h4>
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make
-                          sure that the duration is below your plan limits
-                        </h4>
-                      </div>
-                      <br />
-
-                      <div className="form-group mb-5 row">
-                        <div className="col-lg-8 ms-auto">
-                          <br />
-                          <Button
-                            type="submit"
-                            value="submit"
-                            className="btn me-2 btn-primary">
-                            Update
-                          </Button>{" "}
-                          or &nbsp;&nbsp;
-                          <Link to="/conference">
-                            <Button className="btn me-2 btn-light">
-                              Cancel
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+                    </form>
+                  </>
+                )}
               </div>
             </div>
           </div>
