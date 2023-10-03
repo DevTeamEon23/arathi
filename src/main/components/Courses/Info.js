@@ -80,6 +80,7 @@ const Info = () => {
       );
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("Failed to fetch Courses !");
     }
   };
 

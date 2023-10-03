@@ -509,10 +509,8 @@ const SideBar = () => {
                     <ul>
                       <li>
                         <Link
-                          className={`${
-                            path === "adm_groups" ? "mm-active" : ""
-                          }`}
-                          to="/adm_groups">
+                          className={`${path === "groups" ? "mm-active" : ""}`}
+                          to="/groups">
                           Groups
                         </Link>
                       </li>
