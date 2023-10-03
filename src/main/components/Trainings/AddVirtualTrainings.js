@@ -12,7 +12,7 @@ const AddVirtualTraining = () => {
   const [virtualname, setVirtualName] = useState("");
   const [date, setDate] = useState("");
   const [meetlink, setMeetLink] = useState("");
-  const [messg, setMessg] = useState("");
+  const [messg, setMessg] = useState(undefined);
   const [selectedTime, setSelectedTime] = useState("11:00 AM");
   const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
@@ -163,26 +163,7 @@ const AddVirtualTraining = () => {
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="messg">
-                          Welcome Message <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <textarea
-                            className="form-control"
-                            rows="5"
-                            id="messg"
-                            maxLength={500}
-                            placeholder="Enter a Welcome message for participants..."
-                            style={{ resize: "none" }}
-                            value={messg}
-                            onChange={(e) =>
-                              setMessg(e.target.value)
-                            }></textarea>
-                        </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label className="col-lg-4 col-form-label">
                           Duration

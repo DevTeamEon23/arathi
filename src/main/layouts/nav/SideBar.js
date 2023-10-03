@@ -403,7 +403,7 @@ const SideBar = () => {
                     <Link
                       className={`${path === "dashboard" ? "mm-active" : ""}`}
                       to="/dashboard">
-                      Admin Dashboard
+                      ADMIN DASHBOARD
                     </Link>
                   </li>
                   <li className={`${ausers.includes(path) ? "mm-active" : ""}`}>
@@ -578,7 +578,7 @@ const SideBar = () => {
                     <Link
                       className={`${path === "inst-dash" ? "mm-active" : ""}`}
                       to="/inst-dash">
-                      Instructor Dashboard
+                      INSTRUCTOR DASHBOARD
                     </Link>
                   </li>
                   <li className={`${users.includes(path) ? "mm-active" : ""}`}>
@@ -708,7 +708,7 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-people"></i>{" "}
-                      <span className="nav-text">Trainings</span>
+                      <span className="nav-text">TRAININGS</span>
                     </Link>
                     <ul>
                       <li>
@@ -723,19 +723,19 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "classroom" ? "mm-active" : ""
+                            path === "virtual-training" ? "mm-active" : ""
                           }`}
-                          to="/classroom">
-                          Classroom Trainings
+                          to="/virtual-training">
+                          Virtual Trainings
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${
-                            path === "virtual-training" ? "mm-active" : ""
+                            path === "classroom" ? "mm-active" : ""
                           }`}
-                          to="/virtual-training">
-                          Virtual Trainings
+                          to="/classroom">
+                          Classroom Trainings
                         </Link>
                       </li>
                     </ul>
@@ -746,7 +746,7 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-calendar3"></i>{" "}
-                      <span className="nav-text">Calender</span>
+                      <span className="nav-text">CALENDAR</span>
                     </Link>
                     <ul>
                       <li>
@@ -755,7 +755,7 @@ const SideBar = () => {
                             path === "calender" ? "mm-active" : ""
                           }`}
                           to="/calender">
-                          Calender
+                          Calendar
                         </Link>
                       </li>
                       <li>
@@ -817,7 +817,7 @@ const SideBar = () => {
                     <Link
                       className={`${path === "learn-dash" ? "mm-active" : ""}`}
                       to="/learn-dash">
-                      Overview
+                      OVERVIEW
                     </Link>
                   </li>
                   <li
@@ -854,8 +854,9 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-people"></i>{" "}
-                      <span className="nav-text">Trainings</span>
+                      <span className="nav-text">TRAININGS</span>
                     </Link>
+
                     <ul>
                       <li>
                         <Link
@@ -863,7 +864,25 @@ const SideBar = () => {
                             path === "lconference" ? "mm-active" : ""
                           }`}
                           to="/lconference">
-                          Trainings
+                          Conferences
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "lvirtualtraining" ? "mm-active" : ""
+                          }`}
+                          to="/lvirtualtraining">
+                          Virtual Trainings
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className={`${
+                            path === "lclassroom" ? "mm-active" : ""
+                          }`}
+                          to="/lclassroom">
+                          Classroom Trainings
                         </Link>
                       </li>
                     </ul>
@@ -876,7 +895,7 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-calendar3"></i>{" "}
-                      <span className="nav-text">Calender</span>
+                      <span className="nav-text">CALENDAR</span>
                     </Link>
                     <ul>
                       <li>
@@ -885,7 +904,7 @@ const SideBar = () => {
                             path === "learn_calender" ? "mm-active" : ""
                           }`}
                           to="/learn_calender">
-                          Calender
+                          Calendar
                         </Link>
                       </li>
                     </ul>
@@ -918,7 +937,7 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-file-earmark-zip"></i>{" "}
-                      <span className="nav-text">Files</span>
+                      <span className="nav-text">FILES</span>
                     </Link>
                     <ul>
                       <li>
@@ -939,7 +958,7 @@ const SideBar = () => {
                     <Link className="has-arrow" to="#">
                       {" "}
                       <i className="bi bi-award"></i>{" "}
-                      <span className="nav-text">Certificates</span>
+                      <span className="nav-text">CERTIFICATES</span>
                     </Link>
                     <ul>
                       <li>

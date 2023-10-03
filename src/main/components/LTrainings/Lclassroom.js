@@ -1,12 +1,11 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { Row, Col, Card, Table, Tabs, Tab, Button } from "react-bootstrap";
+import { Row, Col, Card, Table, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 
 const Lclassroom = () => {
-  const [activeTab, setActiveTab] = useState("/lclassroom");
   const [token, setToken] = useState(); //auth token
   const [classroomsData, setClassroomsData] = useState([]);
   const history = useHistory();
@@ -26,33 +25,16 @@ const Lclassroom = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const data = response.data.data.classrooms_data;
-      console.log("getAllClassrooms", response.data);
-      setClassroomsData(data);
+      const data = response.data.data;
+      setClassroomsData(data === null ? data : data.classrooms_data);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Classroom Trainings list !"); // Handle the error
     }
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    history.push(`/${tab}`);
-  };
-
-  useEffect(() => {
-    const currentPath = history.location.pathname;
-    const tab = currentPath.substring(1);
-    setActiveTab(tab);
-  }, [history.location.pathname]);
-
   return (
     <Fragment>
-      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey="lconference" title="Conference"></Tab>
-        <Tab eventKey="lvirtualtraining" title="Virtual Training"></Tab>
-        <Tab eventKey="lclassroom" title="Classroom Training"></Tab>
-      </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
@@ -60,7 +42,7 @@ const Lclassroom = () => {
               <Card.Title>Classroom Training</Card.Title>
             </Card.Header>
             <Card.Body>
-              {classroomsData.length <= 0 ? (
+              {classroomsData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -110,7 +92,9 @@ const Lclassroom = () => {
                             <td className="text-center">
                               {data.date} {data.starttime}
                             </td>
-                            <td className="text-center">{data.duration}</td>
+                            <td className="text-center">
+                              {data.duration} minutes
+                            </td>
                           </tr>
                         );
                       })}

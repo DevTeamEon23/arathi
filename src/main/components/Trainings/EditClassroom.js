@@ -16,7 +16,7 @@ const EditClassroom = (props) => {
   const [classname, setClassname] = useState(""); //Class name Name
   const [date, setDate] = useState(""); //date
   const [venue, setVenue] = useState("");
-  const [messg, setMessg] = useState(""); //Welcome Message
+  const [messg, setMessg] = useState(undefined); //Welcome Message
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
@@ -245,27 +245,7 @@ const EditClassroom = (props) => {
                               />
                             </div>
                           </div>
-                          <div className="form-group mb-3 row">
-                            <label
-                              className="col-lg-4 col-form-label"
-                              htmlFor="messg">
-                              Welcome Message{" "}
-                              <span className="text-danger">*</span>
-                            </label>
-                            <div className="col-lg-6">
-                              <textarea
-                                className="form-control"
-                                id="messg"
-                                maxLength={500}
-                                rows="5"
-                                placeholder="Enter a Welcome message for participants..."
-                                style={{ resize: "none" }}
-                                value={messg}
-                                onChange={(e) =>
-                                  setMessg(e.target.value)
-                                }></textarea>
-                            </div>
-                          </div>
+
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"

@@ -7,20 +7,24 @@ import jwtService from "src/auth/authService/jwtService";
 import showPwdImg from "@images/eye.svg";
 import hidePwdImg from "@images/eye-slash.svg";
 import Swal from "sweetalert2";
+import { CircularProgress } from "@material-ui/core";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRevealPwd, setIsRevealPwd] = useState(false);
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
 
   //sign up code
   const onLogin = (e) => {
     e.preventDefault();
+    setBtnLoader(true);
     jwtService
       .signInWithEmailAndPassword({ email, password })
       .then((res) => {
         console.log("role", res.role, res.user_id, res);
         localStorage.setItem("role", res.role);
+        setBtnLoader(false);
         if (res) {
           Swal.fire({
             title: "Success!",
@@ -31,6 +35,7 @@ const Login = () => {
         }
       })
       .catch(({ error }) => {
+        setBtnLoader(false);
         Swal.fire({
           title: "Failed!",
           text: "Email or Password invaild.",
@@ -74,15 +79,15 @@ const Login = () => {
                     </div>
                     <div className="col-xl-6 col-md-6">
                       <div className="sign-in-your">
-                        <h4 className="fs-20 font-w800 text-black">
+                        <h4 className="fs-20 font-w800 text-center">
                           Sign in your account
                         </h4>
                         <span>
                           Welcome back! <br />
-                          Login with your data that you entered
-                          <br /> during registration
+                          Login with your data that you entered during
+                          registration
                         </span>
-                        <div className="login-social">
+                        {/* <div className="login-social">
                           <Link to={"#"} className="btn font-w800 d-block my-4">
                             <i className="fab fa-google me-2 text-primary"></i>
                             Login with Google
@@ -91,8 +96,8 @@ const Login = () => {
                             <i className="fab fa-facebook-f me-2 facebook-log"></i>
                             Login with Facebook
                           </Link>
-                        </div>
-                        <form onSubmit={onLogin}>
+                        </div> */}
+                        <form onSubmit={onLogin} className="mt-2">
                           <div className="mb-3">
                             <label className="mb-1">
                               <strong>Email</strong>
@@ -131,7 +136,17 @@ const Login = () => {
                             <button
                               type="submit"
                               className="btn btn-primary btn-block">
-                              Sign Me In
+                              {btnLoader ? (
+                                <CircularProgress
+                                  style={{
+                                    width: "20px",
+                                    height: "20px",
+                                    color: "#fff",
+                                  }}
+                                />
+                              ) : (
+                                "Sign Me In"
+                              )}
                             </button>
                           </div>
                           <div className="text-primary mt-3">
