@@ -572,13 +572,13 @@ const SideBar = () => {
                   <span className="nav-text">INSTRUCTOR</span>
                 </Link>
                 <ul>
-                  {/* <li>
+                  <li>
                     <Link
-                      className={`${path === "inst-dash" ? "mm-active" : ""}`}
-                      to="/inst-dash">
+                      className={`${path === "dashboard" ? "mm-active" : ""}`}
+                      to="/dashboard">
                       INSTRUCTOR DASHBOARD
                     </Link>
-                  </li> */}
+                  </li>
                   <li className={`${users.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       <i className="bi bi-person-circle"></i>
@@ -739,7 +739,7 @@ const SideBar = () => {
                     </ul>
                   </li>
 
-                  <li
+                  {/* <li
                     className={`${calender.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
@@ -766,7 +766,7 @@ const SideBar = () => {
                         </Link>
                       </li>
                     </ul>
-                  </li>
+                  </li> */}
                   <li
                     className={`${
                       importexport.includes(path) ? "mm-active" : ""
@@ -886,7 +886,7 @@ const SideBar = () => {
                     </ul>
                   </li>
 
-                  <li
+                  {/* <li
                     className={`${
                       learncalender.includes(path) ? "mm-active" : ""
                     }`}>
@@ -906,7 +906,7 @@ const SideBar = () => {
                         </Link>
                       </li>
                     </ul>
-                  </li>
+                  </li> */}
 
                   <li
                     className={`${
