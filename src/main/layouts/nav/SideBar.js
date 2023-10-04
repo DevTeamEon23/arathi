@@ -517,9 +517,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "adm_add-groups" ? "mm-active" : ""
+                            path === "add-groups" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-groups">
+                          to="/add-groups">
                           Add Groups
                         </Link>
                       </li>
