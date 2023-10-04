@@ -27,12 +27,11 @@ const VirtualTraining = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const data = response.data.data.virtualtrainings_data;
-      console.log("getAllVirtualTrainings", response.data);
-      setAllVirtualTData(data);
+      const data = response.data.data;
+      setAllVirtualTData(data === null ? data : data.virtualtrainings_data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Virtual Training list !"); // Handle the error
+      toast.error("Failed to fetch Virtual Training list !");
     }
   };
 
@@ -42,7 +41,6 @@ const VirtualTraining = () => {
   };
 
   const handleVirtualTDelete = () => {
-    console.log("modal delete", virtualTID);
     const config = {
       headers: {
         "Auth-Token": token,
@@ -61,7 +59,6 @@ const VirtualTraining = () => {
       )
       .then((response) => {
         setShowModal(false);
-        console.log(response.data.status);
         getAllVirtualTrainings();
         toast.success("Virtual Training deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -94,7 +91,7 @@ const VirtualTraining = () => {
               </div>
             </Card.Header>
             <Card.Body>
-              {allVirtualTData.length <= 0 ? (
+              {allVirtualTData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -161,7 +158,9 @@ const VirtualTraining = () => {
                             <td className="text-center">
                               {data.date} {data.starttime}
                             </td>
-                            <td className="text-center">{data.duration}</td>
+                            <td className="text-center">
+                              {data.duration} minutes
+                            </td>
                             <td className="text-center">
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"

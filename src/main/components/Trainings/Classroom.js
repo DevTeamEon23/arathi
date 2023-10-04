@@ -27,23 +27,20 @@ const Classrooms = () => {
           "Auth-Token": jwtToken,
         },
       });
-      const data = response.data.data.classrooms_data;
-      console.log("getAllClassrooms", response.data);
-      setClassroomsData(data);
+      const data = response.data.data;
+      setClassroomsData(data === null ? data : data.classrooms_data);
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Classroom Trainings list !"); // Handle the error
+      toast.error("Failed to fetch Classroom Trainings list !");
     }
   };
 
   const deleteOperation = (Id) => {
     setShowModal(true);
-    console.log("inside delete", Id);
     setClassroomID(Id);
   };
 
   const handleClassroomDelete = () => {
-    console.log("modal delete", classroomID);
     const config = {
       headers: {
         "Auth-Token": token,
@@ -59,7 +56,6 @@ const Classrooms = () => {
       })
       .then((response) => {
         setShowModal(false);
-        console.log(response.data.status);
         getAllClassrooms();
         toast.success("Classroom Training deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -92,7 +88,7 @@ const Classrooms = () => {
               </div>
             </Card.Header>
             <Card.Body>
-              {classroomsData.length <= 0 ? (
+              {classroomsData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"

@@ -3,20 +3,21 @@ import { Link, useHistory } from "react-router-dom";
 import Nouislider from "nouislider-react";
 import "nouislider/distribute/nouislider.css";
 import TimePicker from "react-time-picker";
+import { format, parse } from "date-fns";
 import { Button } from "react-bootstrap";
+import { RotatingLines } from "react-loader-spinner";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const EditConference = (props) => {
   const conferencesID = props.match.params.id;
-  console.log(conferencesID);
   const [token, setToken] = useState(); //auth token
   const [conferenceData, setConferenceData] = useState(); //data
   const [instname, setInstname] = useState(""); //Instructor Name
   const [confname, setConfname] = useState(""); //Conference Name
   const [date, setDate] = useState(""); //date
   const [meetlink, setMeetLink] = useState(""); //Meeting Link
-  const [messg, setMessg] = useState(""); //Welcome Message
+  const [messg, setMessg] = useState(undefined); //Welcome Message
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
@@ -44,17 +45,20 @@ const EditConference = (props) => {
       setConferenceData(response.data.data);
       if (response.data.status === "success") {
         const res = response.data.data;
+        const timeString = res.starttime; // Replace with your API response
+        const parsedTime = parse(timeString, "h:mm a", new Date()); // Parse the time string
+        const formattedTime = format(parsedTime, "h:mm a"); // Format the parsed time as HH:mm
         setInstname(res.instname);
         setConfname(res.confname);
         setMeetLink(res.meetlink);
         setMessg(res.messg);
         setSelectedDuration([res.duration]);
-        setSelectedTime(res.starttime);
+        setSelectedTime(formattedTime);
         setDate(res.date);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to fetch conferences list!"); // Handle the error
+      toast.error("Failed to fetch conference details!");
     }
   };
 
@@ -113,170 +117,166 @@ const EditConference = (props) => {
             </div>
             <div className="card-body">
               <div className="form-validation">
-                <form onSubmit={handleUpdate}>
-                  <div className="row">
-                    <div className="col-xl-10">
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="instname">
-                          Instructor Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="instname"
-                            value={instname}
-                            placeholder="Enter Instructor Name"
-                            onChange={(e) => setInstname(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="confname">
-                          Name
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="confname"
-                            value={confname}
-                            placeholder="Enter Conference Name for your reference"
-                            onChange={(e) => setConfname(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="date">
-                          Date
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          {" "}
-                          <input
-                            type="date"
-                            className="form-control"
-                            id="date"
-                            min={today}
-                            value={date}
-                            placeholder="Enter the Date "
-                            onChange={(e) => setDate(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="starttime">
-                          Start Time
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <TimePicker
-                            // className="form-control"
-                            id="starttime"
-                            // style={{ border: "none", boxShadow: "none" }}
-                            onChange={handleTimeChange}
-                            value={selectedTime.split(" ")[0]}
-                            clearIcon={null} // Remove the clear button
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="meetlink">
-                          Meeting Link
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="meetlink"
-                            value={meetlink}
-                            placeholder="Enter Meeting Link for Live Conference"
-                            onChange={(e) => setMeetLink(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="messg">
-                          Welcome Message <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <textarea
-                            className="form-control"
-                            rows="5"
-                            id="messg"
-                            maxLength={500}
-                            placeholder="Enter a Welcome message for participants..."
-                            style={{ resize: "none" }}
-                            value={messg}
-                            onChange={(e) =>
-                              setMessg(e.target.value)
-                            }></textarea>
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="duration">
-                          Duration
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-4">
-                          <br />
-                          <Nouislider
-                            style={{ height: "4px" }}
-                            start={[selectedDuration]}
-                            step={10}
-                            range={{
-                              min: 30, // Minimum value of 30 minutes
-                              max: 100,
-                            }}
-                            onSlide={handleSliderChange}
-                          />
-                          <p> {selectedDuration[0]} minutes</p>
-                        </div>
-                      </div>
-                      <div className="form-group mb-3 row">
-                        <label className="col-lg-4 col-form-label"></label>
-                        <div className="col-lg-6 fw-bold">
-                          Make sure that the duration is below your plan limits*
-                        </div>
-                      </div>
-                      <br />
-                      <div className="form-group mb-5 row">
-                        <div className="col-lg-8 ms-auto">
-                          <br />
-                          <Button
-                            type="submit"
-                            value="submit"
-                            className="btn me-2 btn-primary">
-                            Update
-                          </Button>{" "}
-                          or &nbsp;&nbsp;
-                          <Link to="/conference">
-                            <Button className="btn me-2 btn-light">
-                              Cancel
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+                {conferenceData === undefined ? (
+                  <div className="loader-container">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="100"
+                      visible={true}
+                    />
                   </div>
-                </form>
+                ) : (
+                  <>
+                    <form onSubmit={handleUpdate}>
+                      <div className="row">
+                        <div className="col-xl-10">
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="instname">
+                              Instructor Name
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="instname"
+                                value={instname}
+                                placeholder="Enter Instructor Name"
+                                onChange={(e) => setInstname(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="confname">
+                              Name
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="confname"
+                                value={confname}
+                                placeholder="Enter Conference Name for your reference"
+                                onChange={(e) => setConfname(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="date">
+                              Date
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              {" "}
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="date"
+                                min={today}
+                                value={date}
+                                placeholder="Enter the Date "
+                                onChange={(e) => setDate(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="starttime">
+                              Start Time
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <TimePicker
+                                // className="form-control"
+                                id="starttime"
+                                // style={{ border: "none", boxShadow: "none" }}
+                                onChange={handleTimeChange}
+                                value={selectedTime.split(" ")[0]}
+                                clearIcon={null} // Remove the clear button
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="meetlink">
+                              Meeting Link
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-6">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="meetlink"
+                                value={meetlink}
+                                placeholder="Enter Meeting Link for Live Conference"
+                                onChange={(e) => setMeetLink(e.target.value)}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-group mb-3 row">
+                            <label
+                              className="col-lg-4 col-form-label"
+                              htmlFor="duration">
+                              Duration
+                              <span className="text-danger">*</span>
+                            </label>
+                            <div className="col-lg-4">
+                              <br />
+                              <Nouislider
+                                style={{ height: "4px" }}
+                                start={[selectedDuration]}
+                                step={10}
+                                range={{
+                                  min: 30, // Minimum value of 30 minutes
+                                  max: 100,
+                                }}
+                                onSlide={handleSliderChange}
+                              />
+                              <p> {selectedDuration[0]} minutes</p>
+                            </div>
+                          </div>
+                          <div className="form-group mb-3 row">
+                            <label className="col-lg-4 col-form-label"></label>
+                            <div className="col-lg-6 fw-bold">
+                              Make sure that the duration is below your plan
+                              limits*
+                            </div>
+                          </div>
+                          <br />
+                          <div className="form-group mb-5 row">
+                            <div className="col-lg-8 ms-auto">
+                              <br />
+                              <Button
+                                type="submit"
+                                value="submit"
+                                className="btn me-2 btn-primary">
+                                Update
+                              </Button>{" "}
+                              or &nbsp;&nbsp;
+                              <Link to="/conference">
+                                <Button className="btn me-2 btn-light">
+                                  Cancel
+                                </Button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </>
+                )}
               </div>
             </div>
           </div>

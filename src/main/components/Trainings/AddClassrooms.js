@@ -11,10 +11,8 @@ const AddClassrooms = () => {
   const [instname, setInstname] = useState("");
   const [classname, setClassname] = useState("");
   const [date, setDate] = useState("");
-  const [starttime, setStarttime] = useState("");
   const [venue, setVenue] = useState("");
-  const [messg, setMessg] = useState("");
-  const [duration, setDuration] = useState("");
+  const [messg, setMessg] = useState(undefined);
   const [selectedTime, setSelectedTime] = useState("11:00 AM");
   const [selectedDuration, setSelectedDuration] = useState([30]); //Durartion
   const history = useHistory();
@@ -52,7 +50,6 @@ const AddClassrooms = () => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         toast.success("Classroom Training Added Successfully!!!");
         history.push(`/classroom`);
       })
@@ -98,7 +95,7 @@ const AddClassrooms = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="confname">
+                          htmlFor="classname">
                           Name
                           <span className="text-danger">*</span>
                         </label>
@@ -106,7 +103,7 @@ const AddClassrooms = () => {
                           <input
                             type="text"
                             className="form-control"
-                            id="confname"
+                            id="classname"
                             value={classname}
                             placeholder="Enter Classroom training Name for your reference"
                             onChange={(e) => setClassname(e.target.value)}
@@ -141,9 +138,7 @@ const AddClassrooms = () => {
                         </label>
                         <div className="col-lg-6">
                           <TimePicker
-                            className="form-control"
                             id="starttime"
-                            style={{ border: "none" }}
                             onChange={handleTimeChange}
                             value={selectedTime.split(" ")[0]}
                             clearIcon={null} // Remove the clear button
@@ -168,26 +163,7 @@ const AddClassrooms = () => {
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="messg">
-                          Welcome Message <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <textarea
-                            className="form-control"
-                            rows="5"
-                            id="messg"
-                            maxLength={500}
-                            placeholder="Enter a Welcome message for participants..."
-                            style={{ resize: "none" }}
-                            value={messg}
-                            onChange={(e) =>
-                              setMessg(e.target.value)
-                            }></textarea>
-                        </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
