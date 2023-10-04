@@ -681,19 +681,17 @@ const SideBar = () => {
                     <ul>
                       <li>
                         <Link
-                          className={`${
-                            path === "inst_groups" ? "mm-active" : ""
-                          }`}
-                          to="/inst_groups">
+                          className={`${path === "groups" ? "mm-active" : ""}`}
+                          to="/groups">
                           Groups
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${
-                            path === "inst_add-groups" ? "mm-active" : ""
+                            path === "add-groups" ? "mm-active" : ""
                           }`}
-                          to="/inst_add-groups">
+                          to="/add-groups">
                           Add Groups
                         </Link>
                       </li>

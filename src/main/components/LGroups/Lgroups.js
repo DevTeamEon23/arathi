@@ -3,6 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { Row, Col, Card, Table, Button } from "react-bootstrap";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 const Lgroups = () => {
   const [token, setToken] = useState(); //auth token
@@ -33,9 +34,10 @@ const Lgroups = () => {
       });
       console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setGroups(data === null ? data : data.course_ids);
+      setGroups(data === null ? data : data.group_ids);
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("Failed to fetch Groups !");
     }
   };
 
@@ -69,40 +71,20 @@ const Lgroups = () => {
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th>
+                        <th className="text-center">
                           <strong>NAME</strong>
                         </th>
-                        <th>
+                        <th className="text-center">
                           <strong>DESCRIPTION</strong>
                         </th>
-                        {/* <th>
-                      <strong>OPTION</strong>
-                    </th> */}
                       </tr>
                     </thead>
                     <tbody>
                       {groups?.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.groupname}</td>
-                            <td>{item.groupdesc}</td>
-                            <td>
-                              {/* <div className="d-flex">
-                        <Link
-                          to="/edit-groups"
-                          className="btn btn-primary shadow btn-xs sharp me-1"
-                        >
-                          <i className="fas fa-pencil-alt"></i>
-                        </Link>
-                        <Link
-                          href="#"
-                          className="btn btn-danger shadow btn-xs sharp"
-                          onClick={()=>deleteOperation(item.id)}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Link>
-                      </div> */}
-                            </td>
+                            <td className="text-center">{item.groupname}</td>
+                            <td className="text-center">{item.groupdesc}</td>
                           </tr>
                         );
                       })}

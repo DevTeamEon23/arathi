@@ -35,6 +35,7 @@ const Groups = () => {
   const [getAllCourseData, setGetAllCourseData] = useState({}); //save all course data
   const [selectCourseError, setselectCourseError] = useState(null);
   const [groups, setGroups] = useState([]); //admin instructor
+  const [courses, setCourses] = useState([]); //admin instructor
   const roleType = useSelector(selectUser).role[0];
   let history = useHistory();
 
@@ -45,6 +46,7 @@ const Groups = () => {
     getAllGroups();
     getAllCourses();
     fetchGroupsData(accessToken, ID);
+    fetchCourseData(accessToken, ID);
   }, []);
 
   // All Groups List
@@ -84,6 +86,32 @@ const Groups = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
+    }
+  };
+
+  //All Courses List admin instructor
+  const fetchCourseData = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const list = response.data.data;
+      setCourses(
+        list === null ? response.data.data : response.data.data.course_ids
+      );
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to fetch Courses !");
     }
   };
 
@@ -462,7 +490,7 @@ const Groups = () => {
         <Modal.Body>
           <Select
             value={selectCourseData}
-            options={getAllCourseData}
+            options={roleType === "Superadmin" ? getAllCourseData : courses}
             onChange={handleSelectCourse}
             placeholder="Select a Course"
             required></Select>
