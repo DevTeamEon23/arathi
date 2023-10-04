@@ -1,16 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Button,
-  Nav,
-  Modal,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Row, Col, Card, Table, Button, Tab, Tabs } from "react-bootstrap";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
@@ -18,8 +8,10 @@ import { RotatingLines } from "react-loader-spinner";
 const GroupCourses = (props) => {
   const grpId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("group-courses/:id");
-  const [coursesAll, setCoursesAll] = useState([]);
+  const [coursesAll, setCoursesAll] = useState([]); //admin
+  const [coursesInstructor, setCoursesInstructor] = useState([]); //instructor
   const [totalCourseData, setTotalCourseData] = useState(0);
+  const [totalCourseDataIns, setTotalCourseDataIns] = useState(0);
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
@@ -34,7 +26,7 @@ const GroupCourses = (props) => {
     getAllCourses();
   }, []);
 
-  // Courses List Api
+  // Courses List admin
   const getAllCourses = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -51,12 +43,46 @@ const GroupCourses = (props) => {
         config
       )
       .then((response) => {
-        const allUsers = response.data.data.courses_ids;
-        setCoursesAll(allUsers);
-        setTotalCourseData(response.data.data.courses_ids.length);
+        const allUsers = response.data.data;
+        setCoursesAll(allUsers === null ? allUsers : allUsers.courses_ids);
+        setTotalCourseData(
+          allUsers === null ? allUsers : allUsers.courses_ids.length
+        );
       })
       .catch((error) => {
         toast.error("Failed to fetch courses!");
+      });
+  };
+
+  // User List instructor
+  const getAllCoursesAdmin = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+      params: {
+        group_id: grpId,
+      },
+    };
+    axios
+      .get(
+        "https://v1.eonlearning.tech/group_tab1/fetch_instructors_of_group",
+        config
+      )
+      .then((response) => {
+        console.log(response.data.data);
+        const allUsers = response.data.data;
+        setCoursesInstructor(
+          allUsers == null ? allUsers : allUsers.instructors_ids
+        );
+        setTotalCourseDataIns(
+          allUsers == null ? allUsers : allUsers.instructors_ids.length
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Failed to fetch users!");
       });
   };
 

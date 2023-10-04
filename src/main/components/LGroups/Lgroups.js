@@ -1,136 +1,93 @@
 import React, { Fragment, useState, useEffect } from "react";
-import Select from "react-select";
 import { Link, useHistory } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Card,
-  Table,
-  Badge,
-  Dropdown,
-  ProgressBar,
-  Button,
-} from "react-bootstrap";
-
-
-const options = [
-  { value: "mass", label: "Mass Action" },
-  { value: "all", label: "Add a course to all groups" },
-  { value: "removeall", label: "Remove a course from all groups" },
-];
+import { Row, Col, Card, Table, Button } from "react-bootstrap";
+import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
 const Lgroups = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [token, setToken] = useState(); //auth token
   const [groups, setGroups] = useState([]);
-  const [data, setData] = useState([]);
+  const history = useHistory();
 
-  const fetchData = () => {
-     fetch('https://localhost:8000/groups')
-        .then((res) => res.json())
-        .then((data) => {
-           console.log(data);
-           setData(data);
-        })
-        .catch((err) => {
-           console.log(err.message);
-        });
-  };
+  useEffect(() => {
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
+    setToken(accessToken);
+    fetchGroupData(accessToken, ID);
+  }, []);
 
-  // useEffect( async () => {
-  //   fetchData();
-  // }, []);
-
-  async function deleteOperation(id)
-  {
-    if (window.confirm('Are you sure?'))
-    {
-      let result=await fetch("https://localhost:8000/groups/"+id,{
-        method:'DELETE'
+  const fetchGroupData = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
       });
-      result=await result.json();
-      console.warn(result)
-      fetchData();
-    }
-  }
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setGroups(data === null ? data : data.course_ids);
+    } catch (error) {
+      console.error("API Error:", error);
     }
   };
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
-let history = useHistory();
+
   return (
     <Fragment>
       <Row>
         <Col lg={12}>
           <Card>
             <Card.Header>
-              <Card.Title>
-                Groups
-              </Card.Title>
-              <Select
-              defaultValue={selectedOption}
-              onChange={setSelectedOption}
-              options={options}
-              className="col-lg-5"
-            >
-            </Select>
-            
+              <Card.Title>Groups</Card.Title>
             </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>#</strong>
-                    </th>
-                    <th>
-                      <strong>NAME</strong>
-                    </th>
-                    <th>
-                      <strong>DESCRIPTION</strong>
-                    </th>
-                    {/* <th>
+              {groups?.length <= 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : groups === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>NAME</strong>
+                        </th>
+                        <th>
+                          <strong>DESCRIPTION</strong>
+                        </th>
+                        {/* <th>
                       <strong>OPTION</strong>
                     </th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                {data?.map((item, index) => {
-               return (
-                  <tr key={index}>
-                    <td>
-                      <strong>{item.id}</strong>
-                    </td>
-                    <td>{item.groupname}</td>
-                    <td>{item.groupdesc}</td>
-                    <td>
-                    {/* <div className="d-flex">
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {groups?.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{item.groupname}</td>
+                            <td>{item.groupdesc}</td>
+                            <td>
+                              {/* <div className="d-flex">
                         <Link
                           to="/edit-groups"
                           className="btn btn-primary shadow btn-xs sharp me-1"
@@ -145,18 +102,20 @@ let history = useHistory();
                           <i className="fa fa-trash"></i>
                         </Link>
                       </div> */}
-                    </td>
-                  </tr>
-               );
-                })}
-                </tbody>
-              </Table>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              )}
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );
