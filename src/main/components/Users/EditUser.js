@@ -88,7 +88,7 @@ const EditUser = (props) => {
         setUsername(res.username);
         // setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
-        setFile(null);
+        setFile(res.file);
         // setImageUrl(res.file)
         setImgCdnUrl(res.cdn_file_link);
         setIsActive(res.active);
@@ -120,7 +120,7 @@ const EditUser = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("id", id);
+    formData.append("id", userId);
     formData.append("eid", eid);
     formData.append("sid", sid);
     formData.append("full_name", userName);
@@ -138,12 +138,7 @@ const EditUser = (props) => {
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
     formData.append("cdn_file_link", imgCdnUrl);
-    console.log(
-      file,
-      "file",
-      selectedOptionTimeZone,
-      selectedOptionTimeZone.value
-    );
+    console.log(file, "file");
     const url = "http://127.0.0.1:8000/lms-service/update_users";
     axios
       .post(url, formData, {
@@ -161,6 +156,87 @@ const EditUser = (props) => {
         console.error(error);
         toast.error("Failed !!! Unable to update user...");
       });
+  };
+
+  const handleSubmit1 = (e) => {
+    e.preventDefault();
+    console.log(file);
+    if (file !== null && file instanceof File) {
+      const formData = new FormData();
+      formData.append("id", userId);
+      formData.append("eid", eid);
+      formData.append("sid", sid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append(
+        "role",
+        userRole === "Superadmin" ? "admin" : "Instructor"
+      );
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
+      formData.append("cdn_file_link", imgCdnUrl);
+      console.log(file, "file");
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("User updated successfully!!!");
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    } else {
+      const id = userId;
+      const newData = {
+        eid: eid,
+        full_name: userName,
+        dept: dept,
+        adhr: adhr,
+        username: username,
+        bio: bio,
+        timezone: selectedOptionTimeZone.value,
+        langtype: selectedOptionLang.value,
+        active: isActive,
+        deactive: isDeactive === false ? 0 : 1,
+        exclude_from_email: excludeFromEmail === false ? 0 : 1,
+      };
+
+      const url = `https://v1.eonlearning.tech/lms-service/update_user/${id}`;
+      axios
+        .put(url, newData, {
+          headers: {
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          // Handle the response here (e.g., update state)
+          console.log("PUT request successful:", response.data);
+          toast.success("User updated successfully!!!");
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          // Handle errors here
+          console.error("Error making PUT request:", error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
   };
 
   const validateName = () => {
@@ -244,7 +320,7 @@ const EditUser = (props) => {
                   </div>
                 ) : (
                   <>
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit1}>
                       <div className="row">
                         <div className="col-xl-7">
                           <div className="form-group mb-3 row">
