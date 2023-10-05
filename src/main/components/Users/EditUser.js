@@ -34,9 +34,8 @@ const EditUser = (props) => {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState();
-  const [file, setFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imgCdnUrl, setImgCdnUrl] = useState(null);
+  const [file, setFile] = useState(null); //for change image file
+  const [imgCdnUrl, setImgCdnUrl] = useState(null); //image cdn file
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
@@ -88,8 +87,6 @@ const EditUser = (props) => {
         setUsername(res.username);
         // setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
-        setFile(res.file);
-        // setImageUrl(res.file)
         setImgCdnUrl(res.cdn_file_link);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
@@ -117,7 +114,7 @@ const EditUser = (props) => {
   };
 
   //Update User info API
-  const handleSubmit = (e) => {
+  const handleSubmit1 = (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("id", userId);
@@ -138,7 +135,6 @@ const EditUser = (props) => {
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
     formData.append("cdn_file_link", imgCdnUrl);
-    console.log(file, "file");
     const url = "http://127.0.0.1:8000/lms-service/update_users";
     axios
       .post(url, formData, {
@@ -148,7 +144,6 @@ const EditUser = (props) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         toast.success("User updated successfully!!!");
         history.push(`/users-list`);
       })
@@ -158,9 +153,9 @@ const EditUser = (props) => {
       });
   };
 
-  const handleSubmit1 = (e) => {
+  //Update User info API
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(file);
     if (file !== null && file instanceof File) {
       const formData = new FormData();
       formData.append("id", userId);
@@ -184,7 +179,6 @@ const EditUser = (props) => {
       formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
       formData.append("file", file);
       formData.append("cdn_file_link", imgCdnUrl);
-      console.log(file, "file");
       const url = "https://v1.eonlearning.tech/lms-service/update_users";
       axios
         .post(url, formData, {
@@ -194,7 +188,6 @@ const EditUser = (props) => {
           },
         })
         .then((response) => {
-          console.log(response.data);
           toast.success("User updated successfully!!!");
           history.push(`/users-list`);
         })
@@ -226,13 +219,10 @@ const EditUser = (props) => {
           },
         })
         .then((response) => {
-          // Handle the response here (e.g., update state)
-          console.log("PUT request successful:", response.data);
           toast.success("User updated successfully!!!");
           history.push(`/users-list`);
         })
         .catch((error) => {
-          // Handle errors here
           console.error("Error making PUT request:", error);
           toast.error("Failed !!! Unable to update user...");
         });
@@ -276,13 +266,11 @@ const EditUser = (props) => {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setImageUrl(imageUrl);
-      setFile(file);
+      setFile(imageUrl);
     }
   };
 
   const handleImageDelete = () => {
-    setImageUrl("");
     setFile(null); // Reset the selected file
     setImgCdnUrl(null);
   };
@@ -320,7 +308,7 @@ const EditUser = (props) => {
                   </div>
                 ) : (
                   <>
-                    <form onSubmit={handleSubmit1}>
+                    <form onSubmit={handleSubmit}>
                       <div className="row">
                         <div className="col-xl-7">
                           <div className="form-group mb-3 row">
@@ -531,35 +519,64 @@ const EditUser = (props) => {
                                 <span className="text-danger">*</span>
                               </label>
                               <br />
-                              {imageUrl ||
-                                (imgCdnUrl && (
-                                  <div className="mb-3">
-                                    <img
-                                      // src={imageUrl}
-                                      src={imgCdnUrl}
-                                      alt="Preview"
-                                      className="img-thumbnail"
-                                      style={{
-                                        width: "250px",
-                                        height: "200px",
-                                        objectFit: "cover",
-                                      }}
-                                    />
-                                    <RxCross2
-                                      className="fs-18 fs-bold"
-                                      title="Delete"
-                                      style={{
-                                        marginBottom: "220px",
-                                        marginLeft: "18px",
-                                      }}
-                                      onClick={handleImageDelete}
-                                    />
-                                  </div>
-                                ))}
+                              {console.log(file, imgCdnUrl)}
+                              {imgCdnUrl && (
+                                <div className="mb-3">
+                                  <img
+                                    src={imgCdnUrl}
+                                    alt="Preview"
+                                    className="img-thumbnail"
+                                    style={{
+                                      width: "250px",
+                                      height: "200px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                  <RxCross2
+                                    className="fs-18 fs-bold"
+                                    title="Delete"
+                                    style={{
+                                      marginBottom: "220px",
+                                      marginLeft: "18px",
+                                      color: "#c91111",
+                                    }}
+                                    onClick={handleImageDelete}
+                                  />
+                                </div>
+                              )}
+                              {file && (
+                                <div className="mb-3">
+                                  <img
+                                    src={file}
+                                    alt="Preview"
+                                    className="img-thumbnail"
+                                    style={{
+                                      width: "250px",
+                                      height: "200px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                  <RxCross2
+                                    className="fs-18 fs-bold"
+                                    title="Delete"
+                                    style={{
+                                      marginBottom: "220px",
+                                      marginLeft: "18px",
+                                      color: "#c91111",
+                                    }}
+                                    onClick={handleImageDelete}
+                                  />
+                                </div>
+                              )}
                               <label>
-                                {file || imgCdnUrl
+                                {/* {imgCdnUrl
                                   ? `Selected File: ${imgCdnUrl}`
-                                  : "Choose a file..."}
+                                  : "Choose a file..."} */}
+                                {imgCdnUrl === null && (
+                                  <span style={{ fontWeight: "bold" }}>
+                                    Choose the another new image
+                                  </span>
+                                )}
                                 <input
                                   type="file"
                                   accept="image/*"
