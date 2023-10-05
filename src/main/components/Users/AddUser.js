@@ -64,8 +64,30 @@ const AddUser = () => {
     const currentPath = history.location.pathname;
     const tab = currentPath.substring(1);
     setActiveTab(tab);
-    console.log(roleType);
+    handleEID();
+    const dept = window.localStorage.getItem("dept");
+    console.log(roleType, dept);
+    if (roleType !== "Superadmin") {
+      setDept(dept);
+    }
   }, [history.location.pathname]);
+
+  const handleEID = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/eids", config)
+      .then((response) => {
+        setEid(response.data.data.eid_data[0].next_eid);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleActiveChange = (e) => {
     setIsActive(e.target.checked);
@@ -242,7 +264,8 @@ const AddUser = () => {
                             value={eid}
                             placeholder="e.g. jd001"
                             onChange={(e) => setEid(e.target.value)}
-                            required
+                            disabled
+                            style={{ cursor: "not-allowed" }}
                           />
                         </div>
                       </div>
@@ -308,6 +331,13 @@ const AddUser = () => {
                             value={dept}
                             placeholder="e.g. Information Technology"
                             onChange={(e) => setDept(e.target.value)}
+                            disabled={roleType !== "Superadmin"}
+                            style={{
+                              cursor:
+                                roleType !== "Superadmin"
+                                  ? "not-allowed"
+                                  : "auto",
+                            }}
                           />
                         </div>
                       </div>

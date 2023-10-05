@@ -23,7 +23,6 @@ const langtype = [
 
 const EditUser = (props) => {
   const userId = props.match.params.id;
-  const [id, setId] = useState();
   const [userName, setUserName] = useState(""); //Full name
   const [eid, setEid] = useState("");
   const [sid, setSid] = useState("");
@@ -54,7 +53,6 @@ const EditUser = (props) => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     if (userId !== undefined) {
-      setId(userId);
       getUsersById(userId, token);
     }
   }, []);
@@ -324,7 +322,9 @@ const EditUser = (props) => {
                                 id="eid"
                                 value={eid}
                                 placeholder="e.g. jd001"
+                                style={{ cursor: "not-allowed" }}
                                 onChange={(e) => setEid(e.target.value)}
+                                disabled
                               />
                             </div>
                           </div>
