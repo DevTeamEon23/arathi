@@ -517,9 +517,9 @@ const SideBar = () => {
                       <li>
                         <Link
                           className={`${
-                            path === "adm_add-groups" ? "mm-active" : ""
+                            path === "add-groups" ? "mm-active" : ""
                           }`}
-                          to="/adm_add-groups">
+                          to="/add-groups">
                           Add Groups
                         </Link>
                       </li>
@@ -574,8 +574,8 @@ const SideBar = () => {
                 <ul>
                   <li>
                     <Link
-                      className={`${path === "inst-dash" ? "mm-active" : ""}`}
-                      to="/inst-dash">
+                      className={`${path === "dashboard" ? "mm-active" : ""}`}
+                      to="/dashboard">
                       INSTRUCTOR DASHBOARD
                     </Link>
                   </li>
@@ -681,19 +681,17 @@ const SideBar = () => {
                     <ul>
                       <li>
                         <Link
-                          className={`${
-                            path === "inst_groups" ? "mm-active" : ""
-                          }`}
-                          to="/inst_groups">
+                          className={`${path === "groups" ? "mm-active" : ""}`}
+                          to="/groups">
                           Groups
                         </Link>
                       </li>
                       <li>
                         <Link
                           className={`${
-                            path === "inst_add-groups" ? "mm-active" : ""
+                            path === "add-groups" ? "mm-active" : ""
                           }`}
-                          to="/inst_add-groups">
+                          to="/add-groups">
                           Add Groups
                         </Link>
                       </li>
@@ -739,7 +737,7 @@ const SideBar = () => {
                     </ul>
                   </li>
 
-                  <li
+                  {/* <li
                     className={`${calender.includes(path) ? "mm-active" : ""}`}>
                     <Link className="has-arrow" to="#">
                       {" "}
@@ -766,7 +764,7 @@ const SideBar = () => {
                         </Link>
                       </li>
                     </ul>
-                  </li>
+                  </li> */}
                   <li
                     className={`${
                       importexport.includes(path) ? "mm-active" : ""
@@ -886,7 +884,7 @@ const SideBar = () => {
                     </ul>
                   </li>
 
-                  <li
+                  {/* <li
                     className={`${
                       learncalender.includes(path) ? "mm-active" : ""
                     }`}>
@@ -906,7 +904,7 @@ const SideBar = () => {
                         </Link>
                       </li>
                     </ul>
-                  </li>
+                  </li> */}
 
                   <li
                     className={`${
@@ -945,27 +943,6 @@ const SideBar = () => {
                           }`}
                           to="/learn-files">
                           Files
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                  <li
-                    className={`${
-                      learncertificate.includes(path) ? "mm-active" : ""
-                    }`}>
-                    <Link className="has-arrow" to="#">
-                      {" "}
-                      <i className="bi bi-award"></i>{" "}
-                      <span className="nav-text">CERTIFICATES</span>
-                    </Link>
-                    <ul>
-                      <li>
-                        <Link
-                          className={`${
-                            path === "learn-certificate" ? "mm-active" : ""
-                          }`}
-                          to="/learn-certificate">
-                          Certificates
                         </Link>
                       </li>
                     </ul>

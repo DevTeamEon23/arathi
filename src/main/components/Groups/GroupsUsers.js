@@ -9,19 +9,25 @@ const GroupsUsers = (props) => {
   const grpId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("groups-users/:id");
   const [adminUsers, setAdminUsers] = useState([]);
+  const [instructorUsers, setInstructorUsers] = useState([]);
+  const [userRole, setUserRole] = useState(); // For user base view Role
   const [token, setToken] = useState(); //auth token
-  const [totalUserData, setTotalUserData] = useState(0); //user list data
+  const [totalUserData, setTotalUserData] = useState(0); //user list data admin
+  const [totalUserDataIns, setTotalUserDataIns] = useState(0); //user list data ins
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
 
   useEffect(() => {
+    const role = window.localStorage.getItem("role");
+    setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     getAllUsers();
+    getAllUsersAdmin();
   }, []);
 
-  // User List Api
+  // User List admin
   const getAllUsers = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -38,13 +44,46 @@ const GroupsUsers = (props) => {
         config
       )
       .then((response) => {
-        console.log(response.data.data);
-        const allUsers = response.data.data.user_ids;
+        const allUsers = response.data.data;
         // const adminUsers = allUsers.filter((user) => user.role === "Admin");
-        setAdminUsers(allUsers);
-        setTotalUserData(response.data.data.user_ids.length);
+        setAdminUsers(allUsers == null ? allUsers : allUsers.user_ids);
+        setTotalUserData(
+          allUsers == null ? allUsers : allUsers.user_ids.length
+        );
       })
       .catch((error) => {
+        toast.error("Failed to fetch users!");
+      });
+  };
+
+  // User List instructor
+  const getAllUsersAdmin = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+      params: {
+        group_id: grpId,
+      },
+    };
+    axios
+      .get(
+        "https://v1.eonlearning.tech/group_tab1/fetch_instructors_of_group",
+        config
+      )
+      .then((response) => {
+        console.log(response.data.data);
+        const allUsers = response.data.data;
+        setInstructorUsers(
+          allUsers == null ? allUsers : allUsers.instructors_ids
+        );
+        setTotalUserDataIns(
+          allUsers == null ? allUsers : allUsers.instructors_ids.length
+        );
+      })
+      .catch((error) => {
+        console.log(error);
         toast.error("Failed to fetch users!");
       });
   };
@@ -66,7 +105,7 @@ const GroupsUsers = (props) => {
       .then((response) => {
         console.log(response.data);
         toast.success("User added successfully!!!");
-        getAllUsers();
+        userRole === "Superadmin" ? getAllUsers() : getAllUsersAdmin();
       })
       .catch((error) => {
         console.error(error);
@@ -107,7 +146,7 @@ const GroupsUsers = (props) => {
         toast.success("User removed successfully!!!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        getAllUsers();
+        userRole === "Superadmin" ? getAllUsers() : getAllUsersAdmin();
       })
       .catch((error) => {
         console.error(error);
@@ -119,7 +158,17 @@ const GroupsUsers = (props) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = adminUsers.slice(startIndex, endIndex);
+  let currentData;
+
+  if (userRole === "Superadmin") {
+    currentData =
+      adminUsers === null ? null : adminUsers.slice(startIndex, endIndex);
+  } else {
+    currentData =
+      instructorUsers === null
+        ? null
+        : instructorUsers.slice(startIndex, endIndex);
+  }
 
   return (
     <Fragment>
@@ -133,7 +182,7 @@ const GroupsUsers = (props) => {
               <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
             <Card.Body>
-              {currentData.length === 0 ? (
+              {adminUsers?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -143,7 +192,13 @@ const GroupsUsers = (props) => {
                     visible={true}
                   />
                 </div>
-              ) : currentData.length > 0 ? (
+              ) : adminUsers === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              ) : (
                 <>
                   <Table responsive>
                     <thead>
@@ -161,7 +216,7 @@ const GroupsUsers = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentData?.map((item, index) => {
+                      {currentData.map((item, index) => {
                         return (
                           <tr key={index}>
                             <td>
@@ -207,18 +262,17 @@ const GroupsUsers = (props) => {
                     </tbody>
                   </Table>
                 </>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-center fs-20 fw-bold">No User Found.</p>
-                  </div>
-                </>
               )}
               <br />
               <div className="pagination-down">
                 <div className="d-flex align-items-center  ">
                   <h4 className=" ">
-                    Showing <span>1-10 </span>from <span>{totalUserData} </span>
+                    Showing <span>1-10 </span>from{" "}
+                    <span>
+                      {userRole === "Superadmin"
+                        ? totalUserData
+                        : totalUserDataIns}{" "}
+                    </span>
                     data
                   </h4>
                   <div className="d-flex align-items-center ms-auto mt-2">

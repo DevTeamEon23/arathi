@@ -35,9 +35,9 @@ const CoursesMain = () => {
           "Auth-Token": jwtToken,
         },
       });
-      console.log("getAllCourses", response.data.data.length);
-      setData(response.data.data);
-      setTotalCourseDataMain(response.data.data.length);
+      const data = response.data.data;
+      setData(data === null ? data : data.courses_data);
+      setTotalCourseDataMain(data === null ? data : data.courses_data.length);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
@@ -60,14 +60,8 @@ const CoursesMain = () => {
         },
       });
       const list = response.data.data;
-      setCourses(
-        list === null ? response.data.data : response.data.data.course_ids
-      );
-      setTotalCourseData(
-        list === null
-          ? response.data.data
-          : response.data.data.course_ids.length
-      );
+      setCourses(list === null ? list : list.course_ids);
+      setTotalCourseData(list === null ? list : list.course_ids.length);
     } catch (error) {
       console.error("API Error:", error);
     }
