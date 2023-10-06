@@ -266,10 +266,11 @@ const EditUser = (props) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     console.log("@@@", file);
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFile(imageUrl);
-    }
+    setFile(file);
+    // if (file) {
+    //   const imageUrl = URL.createObjectURL(file);
+    //   setFile(imageUrl);
+    // }
   };
 
   const handleImageDelete = () => {
@@ -527,7 +528,11 @@ const EditUser = (props) => {
 
                               <div className="mb-3">
                                 <img
-                                  src={file === null ? imgCdnUrl : file}
+                                  src={
+                                    file === null
+                                      ? imgCdnUrl
+                                      : file && URL.createObjectURL(file)
+                                  }
                                   alt="Preview"
                                   className="img-thumbnail"
                                   style={{
