@@ -17,8 +17,10 @@ const UCoursesInfo = (props) => {
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
     setToken(token);
-    getAllCourses();
+    // getAllCourses();
+    fetchCourseData(token, ID);
   }, []);
 
   // Courses List Api
@@ -46,6 +48,31 @@ const UCoursesInfo = (props) => {
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
+  };
+
+  // Courses List Api new
+  const fetchCourseData = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setCoursesAll(data === null ? data : data.course_ids);
+      setTotalCourseData(data === null ? 0 : data.course_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
   };
 
   const handleEnroll = (e, course_id) => {
@@ -118,7 +145,8 @@ const UCoursesInfo = (props) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = coursesAll.slice(startIndex, endIndex);
+  const currentData =
+    coursesAll === null ? null : coursesAll.slice(startIndex, endIndex);
 
   return (
     <Fragment>
@@ -137,7 +165,7 @@ const UCoursesInfo = (props) => {
               <Card.Title>Courses</Card.Title>
             </Card.Header>
             <Card.Body>
-              {currentData.length === 0 ? (
+              {currentData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -147,7 +175,15 @@ const UCoursesInfo = (props) => {
                     visible={true}
                   />
                 </div>
-              ) : currentData.length > 0 ? (
+              ) : currentData === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
+                  </div>
+                </>
+              ) : (
                 <>
                   <Table responsive>
                     <thead>
@@ -237,14 +273,6 @@ const UCoursesInfo = (props) => {
                     </tbody>
                   </Table>
                 </>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-center fs-20 fw-bold">
-                      No Course Found.
-                    </p>
-                  </div>
-                </>
               )}
               <br />
               <div className="pagination-down">
@@ -268,7 +296,7 @@ const UCoursesInfo = (props) => {
                     <Button
                       className="ml-2"
                       onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= coursesAll.length}>
+                      disabled={endIndex >= coursesAll?.length}>
                       Next
                     </Button>
                   </div>
