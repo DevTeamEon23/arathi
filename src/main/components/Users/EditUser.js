@@ -61,7 +61,7 @@ const EditUser = (props) => {
   const getUsersById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/lms-service/users_by_onlyid",
+        "https://v1.eonlearning.tech/lms-service/users_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -133,7 +133,7 @@ const EditUser = (props) => {
     formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
     formData.append("file", file);
     formData.append("cdn_file_link", imgCdnUrl);
-    const url = "http://127.0.0.1:8000/lms-service/update_users";
+    const url = "https://v1.eonlearning.tech/lms-service/update_users";
     axios
       .post(url, formData, {
         headers: {
