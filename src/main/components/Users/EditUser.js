@@ -527,30 +527,35 @@ const EditUser = (props) => {
                               {console.log(file, imgCdnUrl)}
 
                               <div className="mb-3">
-                                <img
-                                  src={
-                                    file === null
-                                      ? imgCdnUrl
-                                      : file && URL.createObjectURL(file)
-                                  }
-                                  alt="Preview"
-                                  className="img-thumbnail"
-                                  style={{
-                                    width: "250px",
-                                    height: "200px",
-                                    objectFit: "cover",
-                                  }}
-                                />
-                                <RxCross2
-                                  className="fs-18 fs-bold"
-                                  title="Delete"
-                                  style={{
-                                    marginBottom: "220px",
-                                    marginLeft: "18px",
-                                    color: "#c91111",
-                                  }}
-                                  onClick={handleImageDelete}
-                                />
+                                {file ||
+                                  (imgCdnUrl && (
+                                    <>
+                                      <img
+                                        src={
+                                          file === null
+                                            ? imgCdnUrl
+                                            : file && URL.createObjectURL(file)
+                                        }
+                                        alt="Preview"
+                                        className="img-thumbnail"
+                                        style={{
+                                          width: "250px",
+                                          height: "200px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                      <RxCross2
+                                        className="fs-18 fs-bold"
+                                        title="Delete"
+                                        style={{
+                                          marginBottom: "220px",
+                                          marginLeft: "18px",
+                                          color: "#c91111",
+                                        }}
+                                        onClick={handleImageDelete}
+                                      />
+                                    </>
+                                  ))}
                               </div>
 
                               <label>

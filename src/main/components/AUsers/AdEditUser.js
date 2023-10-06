@@ -46,7 +46,7 @@ const EditUser = (props) => {
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
-  const [activeTab, setActiveTab] = useState("edit-user/:id");
+  const [activeTab, setActiveTab] = useState("insedit-user/:id");
   const history = useHistory();
 
   useEffect(() => {
@@ -139,7 +139,7 @@ const EditUser = (props) => {
     formData.append("file", file);
     formData.append("cdn_file_link", imgCdnUrl);
     console.log(file, "file");
-    const url = "http://127.0.0.1:8000/lms-service/update_users";
+    const url = "https://v1.eonlearning.tech/lms-service/update_users";
     axios
       .post(url, formData, {
         headers: {
@@ -212,12 +212,10 @@ const EditUser = (props) => {
         <div className="col-lg-12">
           <div className="card">
             <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
-              <Tab
-                eventKey={`user-courses-info/${userId}`}
-                title="Courses"></Tab>
-              <Tab eventKey={`user-groups/${userId}`} title="Groups"></Tab>
-              <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
+              <Tab eventKey={`insedit-user/${userId}`} title="Info"></Tab>
+              <Tab eventKey={`insuser-course/${userId}`} title="Courses"></Tab>
+              <Tab eventKey={`insuser-groups/${userId}`} title="Groups"></Tab>
+              <Tab eventKey={`insuser-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <div className="card-header">
               <h4 className="card-title">Edit User Form (Learner)</h4>
