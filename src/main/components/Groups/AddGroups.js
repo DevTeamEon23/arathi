@@ -42,7 +42,9 @@ const AddGroups = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    let ID = window.localStorage.getItem("id");
     const formData = new FormData();
+    formData.append("user_id", ID);
     formData.append("groupname", groupname);
     formData.append("groupdesc", groupdesc);
     formData.append("groupkey", groupkey);
