@@ -8,6 +8,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 
 const ImportUser = () => {
   const [fileError, setFileError] = useState("");
@@ -15,6 +17,7 @@ const ImportUser = () => {
   const [excelData, setExcelData] = useState([]);
   const dropzoneRef = useRef(null);
   const [activeTab, setActiveTab] = useState("import-user");
+  const roleType = useSelector(selectUser).role[0];
 
   const history = useHistory();
 
@@ -67,6 +70,20 @@ const ImportUser = () => {
     writeFile(wb, "Sample File.xlsx");
   };
 
+  const getApiEndpoint = (role) => {
+    switch (role) {
+      case "Superadmin":
+        return "https://v1.eonlearning.tech/lms-service/addusers_excel_superadmin";
+      case "Admin":
+        return "https://v1.eonlearning.tech/lms-service/addusers_excel_admin";
+      case "Instructor":
+        return "https://v1.eonlearning.tech/lms-service/addusers_excel_instructor";
+      default:
+        // Handle the default case or provide a default API endpoint
+        return "https://v1.eonlearning.tech/lms-service/addusers_excel_instructor";
+    }
+  };
+
   //Add user api
   const handleSubmit = async () => {
     if (selectedFile) {
@@ -74,11 +91,11 @@ const ImportUser = () => {
       console.log(selectedFile);
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const url = "https://v1.eonlearning.tech/lms-service/addusers_excel";
+      const apiEndpoint = getApiEndpoint(roleType);
       const authToken = window.localStorage.getItem("jwt_access_token");
 
       await axios
-        .post(url, formData, {
+        .post(apiEndpoint, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             "Auth-Token": authToken,
@@ -148,7 +165,16 @@ const ImportUser = () => {
               <Tab eventKey="export-user" title="Export"></Tab>
             </Tabs>
             <Card.Header>
-              <Card.Title>Import User</Card.Title>
+              <Card.Title>
+                Import User&nbsp;
+                {roleType === "Superadmin"
+                  ? "(Admin)"
+                  : roleType === "Admin"
+                  ? "(Instructor)"
+                  : roleType === "Instructor"
+                  ? "(Learner)"
+                  : ""}
+              </Card.Title>
             </Card.Header>
             <Card.Body>
               {" "}

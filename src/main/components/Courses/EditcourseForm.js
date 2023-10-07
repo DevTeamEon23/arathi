@@ -61,6 +61,7 @@ const EditcourseForm = (props) => {
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [userId, setUserId] = useState();
   const history = useHistory();
 
   useEffect(() => {
@@ -83,6 +84,7 @@ const EditcourseForm = (props) => {
     } else {
       const formData = new FormData();
       formData.append("id", id);
+      formData.append("user_id", userId);
       formData.append("coursename", coursename);
       formData.append("description", description);
       formData.append("coursecode", coursecode);
@@ -176,6 +178,7 @@ const EditcourseForm = (props) => {
         setFile(res.file);
         setImageUrl(res.file);
         setVideoUrl(res.coursevideo);
+        setUserId(res.user_id);
         setSelectedVideo(res.coursevideo);
         setSelectedOptionCertificate({
           value: res.certificate,

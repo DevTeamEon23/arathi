@@ -7,14 +7,6 @@ import { Nav, Button, Tab, Tabs } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectUser } from "src/store/user/userSlice";
 
-//select dropdown
-const categorytype = [
-  // { value: "superadmin", label: "SuperAdmin" },
-  { value: "admin", label: "Admin" },
-  // { value: 'instructor', label: 'Instructor' },
-  // { value: 'learner', label: 'Learner' },
-];
-
 const timezonetype = [
   { value: "ist", label: "India Standard Time (IST)" },
   { value: "nst", label: "New Zealand Standard Time (NST)" },

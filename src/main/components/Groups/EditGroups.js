@@ -21,6 +21,7 @@ const EditGroups = (props) => {
   const [groupId, setGrpId] = useState("");
   const [token, setToken] = useState(); //auth token
   const [grpData, setGrpData] = useState(); //Group data by id
+  const [userId, setUserId] = useState();
   const [groupname, setGroupname] = useState("");
   const [groupdesc, setGroupdesc] = useState("");
   const [groupkey, setGroupkey] = useState("");
@@ -70,6 +71,7 @@ const EditGroups = (props) => {
         setGroupname(res.groupname);
         setGroupdesc(res.groupdesc);
         setGroupkey(res.groupkey);
+        setUserId(res.user_id);
       }
     } catch (error) {
       console.error(error);
@@ -81,6 +83,7 @@ const EditGroups = (props) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("id", groupId);
+    formData.append("user_id", userId);
     formData.append("groupname", groupname);
     formData.append("groupdesc", groupdesc);
     formData.append("groupkey", groupkey);

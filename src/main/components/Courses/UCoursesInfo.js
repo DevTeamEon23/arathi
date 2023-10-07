@@ -10,9 +10,11 @@ const UCoursesInfo = (props) => {
   const [activeTab, setActiveTab] = useState("user-courses-info/:id");
   const [role, setRole] = useState("Admin");
   const [coursesAll, setCoursesAll] = useState([]);
+  const [coursesAll1, setCoursesAll1] = useState([]);
   const [totalCourseData, setTotalCourseData] = useState(0);
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
+
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
 
@@ -22,6 +24,7 @@ const UCoursesInfo = (props) => {
     const roleType = window.localStorage.getItem("role");
     setRole(roleType);
     if (roleType === "Admin") {
+      fetchCourseDataBasic();
       fetchCourseData();
     } else {
       getAllCourses();
@@ -53,6 +56,32 @@ const UCoursesInfo = (props) => {
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
+  };
+
+  const fetchCourseDataBasic = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_for_inst_learn"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setCoursesAll1(data === null ? data : data.course_ids);
+      setTotalCourseData(data === null ? 0 : data.course_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
   };
 
   // Courses List Api for admin
@@ -231,7 +260,7 @@ const UCoursesInfo = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {coursesAll.map((data, index) => {
+                      {coursesAll1.map((data, index) => {
                         const dateTimeString = data.enrolled_on;
                         const date = new Date(dateTimeString);
                         const day = date.getDate();
