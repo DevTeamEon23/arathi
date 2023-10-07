@@ -154,7 +154,9 @@ const EditUser = (props) => {
   //Update User info API
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (file !== null && file instanceof File) {
+    console.log("handleSubmit", file);
+    if (file !== null) {
+      console.log("inside file if condition", file);
       const formData = new FormData();
       formData.append("id", userId);
       formData.append("eid", eid);
@@ -194,6 +196,7 @@ const EditUser = (props) => {
           toast.error("Failed !!! Unable to update user...");
         });
     } else {
+      console.log("inside else");
       const id = userId;
       const newData = {
         eid: eid,
@@ -262,10 +265,12 @@ const EditUser = (props) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFile(imageUrl);
-    }
+    console.log("@@@", file);
+    setFile(file);
+    // if (file) {
+    //   const imageUrl = URL.createObjectURL(file);
+    //   setFile(imageUrl);
+    // }
   };
 
   const handleImageDelete = () => {
@@ -520,54 +525,39 @@ const EditUser = (props) => {
                               </label>
                               <br />
                               {console.log(file, imgCdnUrl)}
-                              {imgCdnUrl && (
-                                <div className="mb-3">
-                                  <img
-                                    src={imgCdnUrl}
-                                    alt="Preview"
-                                    className="img-thumbnail"
-                                    style={{
-                                      width: "250px",
-                                      height: "200px",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                  <RxCross2
-                                    className="fs-18 fs-bold"
-                                    title="Delete"
-                                    style={{
-                                      marginBottom: "220px",
-                                      marginLeft: "18px",
-                                      color: "#c91111",
-                                    }}
-                                    onClick={handleImageDelete}
-                                  />
-                                </div>
-                              )}
-                              {file && (
-                                <div className="mb-3">
-                                  <img
-                                    src={file}
-                                    alt="Preview"
-                                    className="img-thumbnail"
-                                    style={{
-                                      width: "250px",
-                                      height: "200px",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                  <RxCross2
-                                    className="fs-18 fs-bold"
-                                    title="Delete"
-                                    style={{
-                                      marginBottom: "220px",
-                                      marginLeft: "18px",
-                                      color: "#c91111",
-                                    }}
-                                    onClick={handleImageDelete}
-                                  />
-                                </div>
-                              )}
+
+                              <div className="mb-3">
+                                {file ||
+                                  (imgCdnUrl && (
+                                    <>
+                                      <img
+                                        src={
+                                          file === null
+                                            ? imgCdnUrl
+                                            : file && URL.createObjectURL(file)
+                                        }
+                                        alt="Preview"
+                                        className="img-thumbnail"
+                                        style={{
+                                          width: "250px",
+                                          height: "200px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                      <RxCross2
+                                        className="fs-18 fs-bold"
+                                        title="Delete"
+                                        style={{
+                                          marginBottom: "220px",
+                                          marginLeft: "18px",
+                                          color: "#c91111",
+                                        }}
+                                        onClick={handleImageDelete}
+                                      />
+                                    </>
+                                  ))}
+                              </div>
+
                               <label>
                                 {/* {imgCdnUrl
                                   ? `Selected File: ${imgCdnUrl}`

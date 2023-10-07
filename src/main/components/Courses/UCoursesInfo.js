@@ -8,6 +8,7 @@ import { RotatingLines } from "react-loader-spinner";
 const UCoursesInfo = (props) => {
   const userId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("user-courses-info/:id");
+  const [role, setRole] = useState("Admin");
   const [coursesAll, setCoursesAll] = useState([]);
   const [totalCourseData, setTotalCourseData] = useState(0);
   const [token, setToken] = useState(); //auth token
@@ -18,9 +19,14 @@ const UCoursesInfo = (props) => {
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
+    const roleType = window.localStorage.getItem("role");
+    setRole(roleType);
+    if (roleType === "Admin") {
+      fetchCourseData();
+    } else {
+      getAllCourses();
+    }
     setToken(token);
-    // getAllCourses();
-    fetchCourseData(token, ID);
   }, []);
 
   // Courses List Api
@@ -40,18 +46,19 @@ const UCoursesInfo = (props) => {
         config
       )
       .then((response) => {
-        console.log(response.data.data);
-        const allUsers = response.data.data.course_ids;
-        setCoursesAll(allUsers);
-        setTotalCourseData(response.data.data.course_ids.length);
+        const data = response.data.data;
+        setCoursesAll(data === null ? data : data.course_ids);
+        setTotalCourseData(data === null ? 0 : data.course_ids.length);
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
   };
 
-  // Courses List Api new
-  const fetchCourseData = async (accessToken, ID) => {
+  // Courses List Api for admin
+  const fetchCourseData = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
     try {
       const queryParams = {
         user_id: ID,
@@ -62,7 +69,7 @@ const UCoursesInfo = (props) => {
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
         headers: {
-          "Auth-Token": accessToken,
+          "Auth-Token": jwtToken,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -92,7 +99,11 @@ const UCoursesInfo = (props) => {
       .then((response) => {
         console.log(response.data);
         toast.success("Course Enroll successfully!!!");
-        getAllCourses();
+        if (role === "Admin") {
+          fetchCourseData();
+        } else {
+          getAllCourses();
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -122,7 +133,11 @@ const UCoursesInfo = (props) => {
         toast.success("Course unenroll successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        getAllCourses();
+        if (role === "Admin") {
+          fetchCourseData();
+        } else {
+          getAllCourses();
+        }
       })
       .catch((error) => {
         console.error(error);

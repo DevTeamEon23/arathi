@@ -48,7 +48,7 @@ const UserFiles = (props) => {
 
   const getAllFiles = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "http://127.0.0.1:8000/lms-service/fetch_files";
+    const url = "https://v1.eonlearning.tech/lms-service/fetch_files";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -132,7 +132,9 @@ const UserFiles = (props) => {
         active: active,
         deactive: deactive,
       };
-      const url = new URL("http://127.0.0.1:8000/lms-service/upload_file");
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/upload_file"
+      );
       url.search = new URLSearchParams(queryParams).toString();
 
       const formData = new FormData();

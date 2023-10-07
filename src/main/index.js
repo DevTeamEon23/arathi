@@ -388,9 +388,9 @@ const Markup = () => {
     { url: "ad-edit-user-type", component: AdEditUserType },
     { url: "ad-import-user", component: AdImportUser },
     { url: "ad-export-user", component: AdExportUser },
-    { url: "ad-user-files", component: AdUserFiles },
-    { url: "ad-user-groups", component: AdUserGroups },
-    { url: "ad-user-course", component: AdUserCourse },
+    { url: "insuser-files/:id", component: AdUserFiles }, //instructor user >> files
+    { url: "insuser-groups/:id", component: AdUserGroups }, //instructor user >> groups
+    { url: "insuser-course/:id", component: AdUserCourse }, //instructor user >> courses
     { url: "ad-user-progress", component: AdUserProg },
     { url: "ad-user-certificates", component: AdUserCertificate },
     { url: "ad-user-timeline", component: AdUserTimeline },
