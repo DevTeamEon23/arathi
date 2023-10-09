@@ -36,7 +36,6 @@ const EditcourseForm = (props) => {
   const [courseData, setCourseData] = useState();
   const [id, setId] = useState();
   const [token, setToken] = useState(); //auth token
-
   const [coursename, setCoursename] = useState("");
   const [file, setFile] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(

@@ -30,6 +30,7 @@ import Learn from "./components/Learner/Learn";
 
 //Learner----
 import LearnerCourse from "./components/Learn/LearnCourse/LearnerCourse";
+import LearnCourseView from "./components/Learn/LearnCourse/LearnCourseView";
 
 //Learn
 import LearnerFiles from "./components/Learn/LearnFiles/LearnerFiles";
@@ -350,8 +351,9 @@ const Markup = () => {
     // Learn Files
     { url: "learn-files", component: LearnerFiles },
 
-    // Learn Files
+    // Learn Courses list
     { url: "learn-course", component: LearnerCourse },
+    { url: "learn-course-view/:id", component: LearnCourseView },
 
     // Learn Files
     { url: "learn-group", component: Lgroups },

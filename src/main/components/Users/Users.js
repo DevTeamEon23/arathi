@@ -83,6 +83,7 @@ const Users = () => {
     const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
+
   const handleEdit = (id) => {
     history.push(`/edit-user/${id}`);
   };
