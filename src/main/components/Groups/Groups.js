@@ -106,9 +106,11 @@ const Groups = () => {
         },
       });
       const list = response.data.data;
-      setCourses(
-        list === null ? response.data.data : response.data.data.course_ids
-      );
+      const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
+        value: id,
+        label: coursename,
+      }));
+      setCourses(list === null ? list : expectedOutput);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to fetch Courses !");
