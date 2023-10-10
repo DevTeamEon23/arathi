@@ -27,7 +27,9 @@ const Info = () => {
   const [courseId, setCourseId] = useState(); //course id save for delete
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [courses, setCourses] = useState([]); //admin instructor
-  const roleType = useSelector(selectUser).role[0];
+  // const roleType = useSelector(selectUser).role[0];
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
   let history = useHistory();
 
   useEffect(() => {
@@ -130,6 +132,7 @@ const Info = () => {
         });
       });
   };
+
   const handleDeleteCourse = async () => {
     const ID = window.localStorage.getItem("id");
     try {

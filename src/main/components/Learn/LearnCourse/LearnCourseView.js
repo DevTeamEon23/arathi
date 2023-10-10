@@ -10,6 +10,10 @@ const LearnCourseView = (props) => {
   const [id, setId] = useState();
   const [token, setToken] = useState(); //auth token
   const [courseData, setCourseData] = useState();
+  const [coursename, setCoursename] = useState(""); //course name
+  const [description, setDescription] = useState(""); //Description
+  const [videoUrl, setVideoUrl] = useState(""); //video
+  const [courselink, setCourselink] = useState(""); //to save youtube link
   const history = useHistory();
 
   useEffect(() => {
@@ -23,7 +27,6 @@ const LearnCourseView = (props) => {
 
   // Course details by ID
   const getCourseById = async (id, authToken) => {
-    console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
         "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
@@ -38,11 +41,21 @@ const LearnCourseView = (props) => {
       );
       const res = response.data.data;
       setCourseData(response.data.data);
+
+      if (response.data.status === "success") {
+        setCoursename(res.coursename);
+        setDescription(res.description);
+        setVideoUrl(res.coursevideo);
+        setCourselink(res.courselink);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch course!"); // Handle the error
     }
   };
+
+  const videoId = courselink && courselink.split("youtu.be/")[1];
+  // const isYouTubeURL = courselink.includes("youtu.be/");
 
   return (
     <>
@@ -50,21 +63,38 @@ const LearnCourseView = (props) => {
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Course Name</h4>
+              <h4 className="card-title">{coursename}</h4>
             </div>
             <div className="card-body">
               <div className="row">
                 <div className="col-xl-4 video-container">
-                  <video controls className="video-preview">
-                    <source src="video.mp4" type="video/mp4" />
-                    <source src="video.webm" type="video/webm" />
-                    <source src="video.ogv" type="video/ogg" />
-                    Your browser does not support the video tag.
-                  </video>
+                  {videoUrl && (
+                    <video
+                      controls
+                      src={videoUrl}
+                      type={videoUrl.type}
+                      alt="video"
+                      className="video-preview"
+                      width="400"
+                      height="200"></video>
+                  )}
+                  {!courselink === null && (
+                    <iframe
+                      title="YouTube Video"
+                      width="400"
+                      height="300"
+                      className="video-preview"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      // src={`https://www.youtube.com/embed/${
+                      //   courselink.split("youtu.be/")[1]
+                      // }`}
+                      frameBorder="0"
+                      allowFullScreen></iframe>
+                  )}
                 </div>
                 <div className="col-xl-8">
-                  <p className="fs-20 fw-bold">Introduction</p>
-                  <p>lorem...............</p>
+                  <p className="fs-20 fw-bold fc-black">Introduction</p>
+                  <p>{description}</p>
                 </div>
               </div>
               <div className="row">
@@ -75,10 +105,7 @@ const LearnCourseView = (props) => {
               <div className="row">
                 <div className="col-xl-12">
                   <div className="col-xl-4 my-3">
-                    <p>User content</p>
-                    <p>User content</p>
-                    <p>User content</p>
-                    <p>User content</p>
+                    <p>User content video</p>
                     <p>User content</p>
                   </div>
                 </div>

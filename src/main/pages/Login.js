@@ -42,6 +42,7 @@ const Login = () => {
           icon: "error",
           confirmButtonText: "OK",
         });
+        setBtnLoader(false);
       });
   };
 
@@ -139,8 +140,8 @@ const Login = () => {
                               {btnLoader ? (
                                 <CircularProgress
                                   style={{
-                                    width: "18px",
-                                    height: "18px",
+                                    width: "15px",
+                                    height: "15px",
                                     color: "#fff",
                                   }}
                                 />

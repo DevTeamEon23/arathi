@@ -8,13 +8,12 @@ import {
   DropdownButton,
   ButtonGroup,
   Button,
-  Nav,
   Modal,
   Table,
-  Image,
   Tab,
   Tabs,
 } from "react-bootstrap";
+import { RxCross2 } from "react-icons/rx";
 import { CircularProgress } from "@material-ui/core";
 
 const certificate = [
@@ -29,12 +28,7 @@ const level = [
   { value: "level3", label: "Level 3" },
   { value: "level4", label: "Level 4" },
 ];
-const category = [
-  { value: "ParentCategory1", label: "Parent Category 1" },
-  { value: "ParentCategory2", label: "Parent Category 2" },
-  { value: "ParentCategory3", label: "Parent Category 3" },
-  { value: "ParentCategory4", label: "Parent Category 4" },
-];
+
 const AddCourses = () => {
   const [largeModal, setLargeModal] = useState(false);
   const [file, setFile] = useState(null); //image
@@ -42,8 +36,8 @@ const AddCourses = () => {
   const [errorImg, setErrorImg] = useState(null);
   const [errorVideo, setErrorVideo] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
-    useState(null); //Certificate
-  const [selectedOptionLevel, setSelectedOptionLevel] = useState(null); // Level
+    useState("certificate1"); //Certificate
+  const [selectedOptionLevel, setSelectedOptionLevel] = useState("level1"); // Level
   const [coursename, setCoursename] = useState("");
   const [coursecode, setCoursecode] = useState("");
   const [description, setDescription] = useState(""); //Description
@@ -64,6 +58,7 @@ const AddCourses = () => {
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -81,7 +76,6 @@ const AddCourses = () => {
           "Auth-Token": jwtToken,
         },
       });
-      console.log("getAllCategories", response.data.data);
       const data = response.data.data;
       const expectedOutput = data.categories_data.map(({ name }) => ({
         value: name,
@@ -126,9 +120,23 @@ const AddCourses = () => {
   // Add course API
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const ID = window.localStorage.getItem("id");
     setBtnSubmitLoader(true);
-    if (file === null || selectedVideo === null) {
+    const ID = window.localStorage.getItem("id");
+    if (selectedVideo && courselink) {
+      setSubmitError(
+        "Please choose either a video or provide a youtube link, not both."
+      );
+      setBtnSubmitLoader(false);
+    } else if (!selectedVideo && !courselink) {
+      setSubmitError("Please Upload video or provide a youtube link.");
+      setBtnSubmitLoader(false);
+    } else {
+      setSubmitError("");
+      setBtnSubmitLoader(false);
+    }
+
+    if (file === null) {
+      console.log("file log");
       alert("Please add valid Photo or Video");
       setBtnSubmitLoader(false);
     } else {
@@ -139,11 +147,11 @@ const AddCourses = () => {
       formData.append("description", description);
       formData.append("coursecode", coursecode);
       formData.append("price", price);
+      formData.append("courselink", courselink);
       formData.append(
-        "courselink",
-        !courselink === undefined ? courselink : null
+        "coursevideo",
+        selectedVideo === null ? "" : selectedVideo
       );
-      formData.append("coursevideo", selectedVideo);
       formData.append("capacity", capacity);
       formData.append("startdate", startdate);
       formData.append("enddate", enddate);
@@ -155,6 +163,13 @@ const AddCourses = () => {
       formData.append("isHide", isHide);
       formData.append("generate_token", true);
 
+      console.log(
+        selectedVideo,
+        courselink,
+        selectedOptionLevel,
+        selectedOptionCertificate,
+        selectCategoriesData
+      );
       const url = "https://v1.eonlearning.tech/lms-service/addcourses";
       await axios
         .post(url, formData, {
@@ -269,6 +284,10 @@ const AddCourses = () => {
         }
       }
     }
+  };
+
+  const handleImageDelete = () => {
+    setSelectedVideo(null);
   };
 
   return (
@@ -451,13 +470,13 @@ const AddCourses = () => {
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
+                      <div className="form-group mb-2 row">
                         <label
                           className="col-lg-4 col-form-label"
                           htmlFor="courselink">
                           Course Intro Video{" "}
                         </label>
-                        <div className="input-group mb-3 col-lg-6 ">
+                        <div className="input-group mb-2 col-lg-6 ">
                           <span className="input-group-text">
                             Youtube Video Link
                           </span>
@@ -477,14 +496,18 @@ const AddCourses = () => {
                           )}
                         </div>
                       </div>
-                      <div className="form-group mb-3 row ">
+                      <div className="form-group mb-1 row">
+                        <label className="col-lg-4 col-form-label"></label>
+                        <div className="input-group mb-1 col-lg-6 ">
+                          <span className="fs-16 fw-bold">OR</span>
+                        </div>
+                      </div>
+
+                      <div className="form-group row ">
                         <label
                           htmlFor="selectedVideo"
-                          className="col-lg-4 col-form-label">
-                          Upload Your Video
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="input-group mb-3 col-lg-6 ">
+                          className="col-lg-4 col-form-label"></label>
+                        <div className="input-group  col-lg-6 ">
                           <div>
                             <input
                               type="file"
@@ -492,15 +515,26 @@ const AddCourses = () => {
                               id="selectedVideo"
                               onChange={handleFileChange}
                               ref={fileInputRef}
-                              required
                             />
+                            {selectedVideo && (
+                              <RxCross2
+                                className="fs-18 fs-bold"
+                                title="Delete"
+                                style={{
+                                  marginLeft: "18px",
+                                  color: "#c91111",
+                                }}
+                                onClick={handleImageDelete}
+                              />
+                            )}
+                            <p className="mt-2">(Upload Your Video)</p>
                             <br />
                             {errorVideo && (
                               <div className="error-message text-danger fs-14">
                                 {errorVideo}
                               </div>
                             )}
-                            <br />
+
                             {selectedVideo && (
                               <video controls className="video-player">
                                 <source
@@ -517,6 +551,11 @@ const AddCourses = () => {
                           </div>
                         </div>
                       </div>
+                      {submitError && (
+                        <p className="error-message text-danger text-center fs-16">
+                          {submitError}
+                        </p>
+                      )}
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"

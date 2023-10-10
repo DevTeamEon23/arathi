@@ -27,7 +27,9 @@ class MM extends Component {
 const SideBar = () => {
   const { iconHover, sidebarposition, headerposition, sidebarLayout } =
     useContext(ThemeContext);
-  const roleType = useSelector(selectUser).role[0];
+  // const roleType = useSelector(selectUser).role[0];
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
 
   useEffect(() => {
     var btn = document.querySelector(".nav-control");

@@ -98,7 +98,6 @@ class JwtService extends Utils.EventEmitter {
           }
         })
         .catch(({ error }) => {
-          console.log(error, "@@@");
           Swal.fire({
             title: "Failed!",
             text: "Email or Password invaild.",
@@ -123,6 +122,7 @@ class JwtService extends Utils.EventEmitter {
         localStorage.removeItem("role");
         localStorage.removeItem("email");
         localStorage.removeItem("id");
+        localStorage.removeItem("dept");
       });
   };
 
