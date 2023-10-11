@@ -112,7 +112,11 @@ const ImportUser = () => {
             icon: "success",
             confirmButtonText: "OK",
           }).then(() => {
-            history.push(`/users-list`);
+            if (roleType === "Instructor") {
+              history.push(`/insusers-list`);
+            } else {
+              history.push(`/users-list`);
+            }
           });
         })
         .catch((error) => {

@@ -2746,7 +2746,7 @@ textarea.form-control-lg {
   display: flex;
   align-items: center;
   padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   font-weight: 400;
   line-height: 1.5;
   color: #777777;
@@ -37386,6 +37386,25 @@ button:focus {
   text-align: center;
 }
 
+.content-label {
+  border: 1px solid gray;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: left;
+  box-shadow: 3px 3px 3px #888888;
+  border-radius: 10px;
+}
+
+.video-container {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.video-preview {
+  width: 100%;
+  height: auto;
+}
 /* ******************** */
 .light.tp-btn {
   background-color: transparent;

@@ -36,7 +36,6 @@ const EditcourseForm = (props) => {
   const [courseData, setCourseData] = useState();
   const [id, setId] = useState();
   const [token, setToken] = useState(); //auth token
-
   const [coursename, setCoursename] = useState("");
   const [file, setFile] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(
@@ -76,6 +75,7 @@ const EditcourseForm = (props) => {
 
   // edit form data submit
   const handleEditFormSubmit = (event) => {
+    console.log(courselink);
     event.preventDefault();
     setBtnSubmitLoader(true);
     if (file === null || selectedVideo === null) {
@@ -89,10 +89,7 @@ const EditcourseForm = (props) => {
       formData.append("description", description);
       formData.append("coursecode", coursecode);
       formData.append("price", price);
-      formData.append(
-        "courselink",
-        !courselink === undefined ? courselink : null
-      );
+      formData.append("courselink", courselink);
       formData.append("coursevideo", selectedVideo);
       formData.append("capacity", capacity);
       formData.append("startdate", startdate);
@@ -144,7 +141,11 @@ const EditcourseForm = (props) => {
         }
       );
       const res = response.data.data;
-      console.log("editcourse", response.data.data);
+      console.log(
+        "editcourse",
+        response.data.data,
+        response.data.data.courselink
+      );
       setCourseData(response.data.data);
 
       const dateObject = new Date(res.startdate);
@@ -169,7 +170,7 @@ const EditcourseForm = (props) => {
         setIsActive(res.isActive);
         setIsHide(res.isHide);
         setPrice(res.price);
-        setCourselink(link);
+        setCourselink(res.courselink);
         setCapacity(res.capacity);
         setCoursecode(res.coursecode);
         setStartdate(formattedStart);
@@ -722,8 +723,8 @@ const EditcourseForm = (props) => {
                               <div className="w-25">
                                 <CircularProgress
                                   style={{
-                                    width: "20px",
-                                    height: "20px",
+                                    width: "16px",
+                                    height: "16px",
                                     color: "#fff",
                                   }}
                                 />

@@ -141,7 +141,6 @@ signInWithEmailAndPassword = (data) => {
           }
         })
         .catch(({ error }) => {
-          console.log(error, "@@@");
           Swal.fire({
             title: "Failed!",
             text: "Email or Password invaild.",
@@ -166,6 +165,7 @@ signInWithEmailAndPassword = (data) => {
         localStorage.removeItem("role");
         localStorage.removeItem("email");
         localStorage.removeItem("id");
+        localStorage.removeItem("dept");
       });
   };
 
