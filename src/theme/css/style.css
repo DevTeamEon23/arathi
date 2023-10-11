@@ -43192,7 +43192,7 @@ table.dataTable.display tbody td {
   width: 100%;
   border-radius: 0.625rem;
   object-fit: cover;
-  height: 25rem;
+  height: 34rem;
 }
 @media only screen and (max-width: 35.9375rem) {
   .video-img .view-demo img {

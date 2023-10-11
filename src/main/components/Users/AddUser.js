@@ -135,7 +135,7 @@ const AddUser = () => {
       })
       .then((response) => {
         console.log(response.data);
-        toast.success("✔️ User added successfully!!!");
+        toast.success("User added successfully!!!");
         clearAllState();
       })
       .catch((error) => {

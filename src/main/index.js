@@ -406,7 +406,7 @@ const Markup = () => {
 
     // Courses ----
     { url: "courses", component: CoursesMain },
-    { url: "course-details-1", component: CourseDetail1 },
+    { url: "course-details-1/:id", component: CourseDetail1 },
     { url: "course-details-2", component: CourseDetail2 },
     { url: "add-courses", component: AddCourses },
     { url: "edit-courses/:id", component: EditcourseForm },

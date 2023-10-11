@@ -128,7 +128,7 @@ const CoursesMain = () => {
                             <div className="dlab-title d-flex justify-content-between">
                               <div>
                                 <h4>
-                                  <Link to={"./course-details-1"}>
+                                  <Link to={`/course-details-1/${item.id}`}>
                                     {item.coursename}
                                   </Link>
                                 </h4>
@@ -158,7 +158,7 @@ const CoursesMain = () => {
                                 110+ Content
                               </span> */}
                               <Link
-                                to={"./course-details-1"}
+                                to={`/course-details-1/${item.id}`}
                                 className="btn btn-primary btn-sm">
                                 View all
                               </Link>
@@ -218,7 +218,8 @@ const CoursesMain = () => {
                             <div className="dlab-title d-flex justify-content-between">
                               <div>
                                 <h4>
-                                  <Link to={"./course-details-1"}>
+                                  <Link
+                                    to={`/course-details-1/${item.course_id}`}>
                                     {item.coursename}
                                   </Link>
                                 </h4>
@@ -233,7 +234,7 @@ const CoursesMain = () => {
                             </div>
                             <div className="d-flex justify-content-between content align-items-center">
                               <Link
-                                to={"./course-details-1"}
+                                to={`/course-details-1/${item.course_id}`}
                                 className="btn btn-primary btn-sm">
                                 View all
                               </Link>
@@ -274,7 +275,10 @@ const CoursesMain = () => {
             <Button
               className="ml-2"
               onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={endIndex >= data.length}>
+              disabled={
+                endIndex >=
+                (roleType === "Superadmin" ? data.length : courses.length)
+              }>
               Next
             </Button>
           </div>
