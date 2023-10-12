@@ -13,7 +13,7 @@ const timezonetype = [
   { value: "ast", label: "Alaska Standard Time (AST)" },
   { value: "gmt", label: "Greenwich Mean Time (GMT)" },
   { value: "ect", label: "European Central Time (ECT)" },
-  { value: "arabic", label: "Egypt Standard Time	(Arabic)" },
+  { value: "arabic", label: "Egypt Standard Time    (Arabic)" },
 ];
 const langtype = [
   { value: "Hindi", label: "Hindi" },
