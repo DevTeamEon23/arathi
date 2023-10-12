@@ -44,6 +44,7 @@ const EditUser = (props) => {
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
+  const [errorImg, setErrorImg] = useState(null);
   const [activeTab, setActiveTab] = useState("edit-user/:id");
   const history = useHistory();
 
@@ -264,13 +265,29 @@ const EditUser = (props) => {
   }, [history.location.pathname]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    // const file = e.target.files[0];
     console.log("@@@", file);
-    setFile(file);
+    // setFile(file);
     // if (file) {
     //   const imageUrl = URL.createObjectURL(file);
     //   setFile(imageUrl);
     // }
+    const selectedFile = e.target.files[0];
+    if (selectedFile && isValidFileType(selectedFile)) {
+      setFile(selectedFile);
+      setErrorImg("");
+    } else {
+      setFile(null);
+      setErrorImg(
+        "Please select a valid image file (jpeg, jpg, png) that is no larger than 3 MB."
+      );
+    }
+  };
+
+  const isValidFileType = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
   const handleImageDelete = () => {
@@ -569,7 +586,7 @@ const EditUser = (props) => {
                                 )}
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept=".jpeg, .png, .jpg"
                                   onChange={handleImageChange}
                                   style={{ display: "none" }}
                                   className="form-control-file"

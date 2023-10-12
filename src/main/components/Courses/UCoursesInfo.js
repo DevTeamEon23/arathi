@@ -9,8 +9,8 @@ const UCoursesInfo = (props) => {
   const userId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("user-courses-info/:id");
   const [role, setRole] = useState("Admin");
-  const [coursesAll, setCoursesAll] = useState([]);
-  const [coursesAll1, setCoursesAll1] = useState([]);
+  const [coursesAll, setCoursesAll] = useState([]); //superadmin
+  const [coursesAdmin, setcoursesAdmin] = useState([]); //admin instructor
   const [totalCourseData, setTotalCourseData] = useState(0);
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
@@ -77,7 +77,7 @@ const UCoursesInfo = (props) => {
       });
       console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setCoursesAll1(data === null ? data : data.course_ids);
+      setcoursesAdmin(data === null ? data : data.course_ids);
       setTotalCourseData(data === null ? 0 : data.course_ids.length);
     } catch (error) {
       console.error("API Error:", error);
@@ -189,8 +189,15 @@ const UCoursesInfo = (props) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData =
-    coursesAll === null ? null : coursesAll.slice(startIndex, endIndex);
+  let currentData;
+
+  if (role === "Superadmin") {
+    currentData =
+      coursesAll === null ? null : coursesAll.slice(startIndex, endIndex);
+  } else {
+    currentData =
+      coursesAdmin === null ? null : coursesAdmin.slice(startIndex, endIndex);
+  }
 
   return (
     <Fragment>
@@ -260,7 +267,7 @@ const UCoursesInfo = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {coursesAll1.map((data, index) => {
+                      {currentData.map((data, index) => {
                         const dateTimeString = data.enrolled_on;
                         const date = new Date(dateTimeString);
                         const day = date.getDate();

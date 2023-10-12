@@ -190,10 +190,19 @@ const CourseDetail1 = (props) => {
                             <h5 className="f-w-500">Course Price:</h5>
                           </div>
                           <div className="col-8">
-                            <span> ₹ {courseData ? courseData.price : ""}</span>
+                            <span className="fw-bold">
+                              {" "}
+                              ₹ {courseData ? courseData.price : ""}
+                            </span>
                           </div>
                         </div>
                       </div>
+                      <Link
+                        to={"./ecom-checkout"}
+                        className="btn btn-primary w-25"
+                        style={{ cursor: "not-allowed" }}>
+                        Buy Now
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -201,15 +210,14 @@ const CourseDetail1 = (props) => {
                   <div className="card">
                     <div className="video-img">
                       {videoUrl && (
-                        <div className="video-container view-demo">
+                        <div className="video-container mt-3">
                           <video
                             controls
                             src={videoUrl}
                             type={videoUrl.type}
                             alt="video"
                             className="video-preview"
-                            width="400"
-                            height="200"></video>
+                            style={{ height: "500px" }}></video>
                         </div>
                       )}
                       {!courselink === null && (
