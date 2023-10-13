@@ -13,7 +13,7 @@ const timezonetype = [
   { value: "ast", label: "Alaska Standard Time (AST)" },
   { value: "gmt", label: "Greenwich Mean Time (GMT)" },
   { value: "ect", label: "European Central Time (ECT)" },
-  { value: "arabic", label: "Egypt Standard Time	(Arabic)" },
+  { value: "arabic", label: "Egypt Standard Time    (Arabic)" },
 ];
 const langtype = [
   { value: "Hindi", label: "Hindi" },
@@ -544,14 +544,11 @@ const EditUser = (props) => {
                               {console.log(file, imgCdnUrl)}
 
                               <div className="mb-3">
-                                {file ||
-                                  (imgCdnUrl && (
+                                  {imgCdnUrl && (
                                     <>
                                       <img
                                         src={
-                                          file === null
-                                            ? imgCdnUrl
-                                            : file && URL.createObjectURL(file)
+                                          imgCdnUrl
                                         }
                                         alt="Preview"
                                         className="img-thumbnail"
@@ -572,7 +569,31 @@ const EditUser = (props) => {
                                         onClick={handleImageDelete}
                                       />
                                     </>
-                                  ))}
+                                  )}
+                                  {file && (<>
+                                    <img
+                                      src={
+                                        URL.createObjectURL(file)
+                                      }
+                                      alt="Preview"
+                                      className="img-thumbnail"
+                                      style={{
+                                        width: "250px",
+                                        height: "200px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                    <RxCross2
+                                      className="fs-18 fs-bold"
+                                      title="Delete"
+                                      style={{
+                                        marginBottom: "220px",
+                                        marginLeft: "18px",
+                                        color: "#c91111",
+                                      }}
+                                      onClick={handleImageDelete}
+                                    />
+                                  </>)}
                               </div>
 
                               <label>
