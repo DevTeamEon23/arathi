@@ -4,14 +4,23 @@ import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const Video = (props) => {
+const VideoEdit = (props) => {
   const courseId = props.match.params.id;
   const [vdName, setVdName] = useState();
+  const [token, setToken] = useState(); //auth token
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [content, setContentData] = useState();
   const history = useHistory();
 
+  useEffect(() => {
+    let token = window.localStorage.getItem("jwt_access_token");
+    setToken(token);
+    if (courseId !== undefined) {
+      getCourseContentById(courseId, token);
+    }
+  }, []);
   const handleActiveChange = (e) => {
     setIsActive(e.target.checked);
     setIsDeactive(false); // Uncheck "Deactive" when "Active" is checked
@@ -31,6 +40,41 @@ const Video = (props) => {
 
   const handleVideoDelete = () => {
     setSelectedVideo(null);
+  };
+
+  // Course details by ID
+  const getCourseContentById = async (id, authToken) => {
+    console.log("inside get course by id", id, authToken);
+    try {
+      const response = await axios.get(
+        "https://v1.eonlearning.tech/lms-service/course_contents_by_onlyid",
+        {
+          headers: {
+            "Auth-Token": authToken,
+          },
+          params: {
+            id: courseId,
+          },
+        }
+      );
+      const res = response.data.data;
+      console.log(
+        "editcourse",
+        response.data.data,
+        response.data.data.courselink
+      );
+      setContentData(response.data.data);
+
+      if (response.data.status === "success") {
+        setVdName(res.video_unitname);
+        setIsActive(res.active);
+        setIsDeactive(res.deactive);
+        // setSelectedVideo(res.video_file);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch course!"); // Handle the error
+    }
   };
 
   const handleSubmit = (e) => {
@@ -70,7 +114,7 @@ const Video = (props) => {
         <div className="col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Add Video Content</h4>
+              <h4 className="card-title">Edit Video Content</h4>
             </div>
             <div className="card-body">
               <div className="form-validation">
@@ -99,7 +143,7 @@ const Video = (props) => {
 
                       <div className="form-group mb-3 row">
                         <label className="col-lg-4 col-form-label" htmlFor="vd">
-                          Select Video
+                          Upload Video
                           <span className="text-danger">*</span>
                         </label>
 
@@ -180,7 +224,7 @@ const Video = (props) => {
                           <Button
                             type="submit"
                             className="btn me-2 btn-primary">
-                            Add Video
+                            Update Video
                           </Button>
                           <div>
                             <Link to="/courses-info">
@@ -204,4 +248,4 @@ const Video = (props) => {
   );
 };
 
-export default Video;
+export default VideoEdit;

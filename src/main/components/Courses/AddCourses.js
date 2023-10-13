@@ -59,12 +59,31 @@ const AddCourses = () => {
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [submitError, setSubmitError] = useState("");
+  const [courseID, setCourseID] = useState("");
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllCategories();
+    handleCourseID();
   }, []);
+
+  const handleCourseID = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/course_ids", config)
+      .then((response) => {
+        setCourseID(response.data.data.id_data[0].next_id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   // All Categories List
   const getAllCategories = async () => {
@@ -141,6 +160,7 @@ const AddCourses = () => {
       setBtnSubmitLoader(false);
     } else {
       const formData = new FormData();
+      formData.append("id", courseID);
       formData.append("coursename", coursename);
       formData.append("file", file);
       formData.append("user_id", ID);
@@ -179,10 +199,12 @@ const AddCourses = () => {
           },
         })
         .then((response) => {
-          console.log(response.data);
-          setBtnSubmitLoader(false);
+          console.log(response.data.course_id);
+          const course_id = response.data.course_id;
           toast.success("Course added successfully!!!");
           clearAllState();
+          setBtnSubmitLoader(false);
+          history.push(`/video/${course_id}`);
         })
         .catch((error) => {
           console.error(error);
@@ -737,7 +759,7 @@ const AddCourses = () => {
                   <br />
 
                   <div className="form-group mb-3 row">
-                    <div className="col-lg-5 ms-auto">
+                    <div className="col-lg-10 ms-auto">
                       <Button
                         type="submit"
                         className="btn me-2 btn-primary"
@@ -753,7 +775,7 @@ const AddCourses = () => {
                             />
                           </div>
                         ) : (
-                          "Add Course"
+                          "Save Course and Add Content"
                         )}
                       </Button>{" "}
                       or &nbsp;&nbsp;
@@ -761,7 +783,7 @@ const AddCourses = () => {
                         <Button className="btn me-2 btn-light">Cancel</Button>
                       </Link>
                     </div>
-                    <div className="col-lg-5 ms-auto">
+                    {/* <div className="col-lg-4 ">
                       <DropdownButton
                         as={ButtonGroup}
                         id="dropdown-button-drop-up"
@@ -777,44 +799,45 @@ const AddCourses = () => {
                           </Link>
                         </Dropdown.Item>
 
-                        {/* <Dropdown.Item>
-                          <Link to='/presentation'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-file-slides'> &nbsp;</i>
-                              Presentation | Documents{' '}
+                        <Dropdown.Item>
+                          <Link to="/presentation">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-file-slides"> &nbsp;</i>
+                              Presentation | Documents{" "}
                             </div>
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to='/scorm'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-command'> &nbsp;</i>SCORM | xAPI |
-                              cmi5
-                            </div>{' '}
+                          <Link to="/scorm">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-command"> &nbsp;</i>SCORM |
+                              xAPI | cmi5
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to='/test-question'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-journal-check'> &nbsp;</i>Test
-                            </div>{' '}
+                          <Link to="/test-question">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-journal-check"> &nbsp;</i>Test
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to='/assignment'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-clipboard'> &nbsp;</i>Assignment
-                            </div>{' '}
+                          <Link to="/assignment">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-clipboard"> &nbsp;</i>
+                              Assignment
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to='/instructor-led'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-calendar4-week'> &nbsp;</i>
+                          <Link to="/instructor-led">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-calendar4-week"> &nbsp;</i>
                               Instructor-led training
-                            </div>{' '}
+                            </div>{" "}
                           </Link>
-                        </Dropdown.Item> */}
+                        </Dropdown.Item>
                       </DropdownButton>
                       <button
                         type="submit"
@@ -830,31 +853,31 @@ const AddCourses = () => {
                         title="..."
                         className="me-1 mt-1"
                         style={{ cursor: "not-allowed" }}>
-                        {/* <Dropdown.Item>
-                          <Link to='/message_users'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-chat-right-text'> &nbsp;</i>
+                        <Dropdown.Item>
+                          <Link to="/message_users">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-chat-right-text"> &nbsp;</i>
                               Message Users
-                            </div>{' '}
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
                         <Dropdown.Item>
-                          <Link to='/ad_event'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-calendar4-week'> &nbsp;</i>Add
+                          <Link to="/ad_event">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-calendar4-week"> &nbsp;</i>Add
                               Event
-                            </div>{' '}
+                            </div>{" "}
                           </Link>
                         </Dropdown.Item>
 
                         <Dropdown.Item>
-                          <Link to='#'>
-                            <div className='dropdown-item-content'>
-                              <i className='bi bi-lock'> &nbsp;</i>Lock Course
+                          <Link to="#">
+                            <div className="dropdown-item-content">
+                              <i className="bi bi-lock"> &nbsp;</i>Lock Course
                               Content
-                            </div>{' '}
+                            </div>{" "}
                           </Link>
-                        </Dropdown.Item> */}
+                        </Dropdown.Item>
 
                         <Modal
                           className="fade bd-example-modal-lg"
@@ -1126,7 +1149,7 @@ const AddCourses = () => {
                           </Modal.Footer>
                         </Modal>
                       </DropdownButton>
-                    </div>
+                    </div> */}
                   </div>
                 </form>
               </div>
