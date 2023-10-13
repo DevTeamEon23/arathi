@@ -200,7 +200,7 @@ const SideBar = () => {
       }`}>
       <PerfectScrollbar className="dlabnav-scroll">
         <MM className="metismenu" id="menu">
-          <li className={`${deshBoard.includes(path) ? "mm-active" : ""}`}>
+          {/* <li className={`${deshBoard.includes(path) ? "mm-active" : ""}`}>
             <Link className="has-arrow" to="#">
               <i className="bi bi-grid"></i>
               <span className="nav-text">Dashboard</span>
@@ -222,7 +222,7 @@ const SideBar = () => {
                 </Link>
               </li>
             </ul>
-          </li>
+          </li> */}
           {/* *********************************** Superadmin Dashboard Options************************************ */}
           {roleType === "Superadmin" && (
             <>
