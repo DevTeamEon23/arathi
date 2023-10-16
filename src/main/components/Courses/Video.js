@@ -10,6 +10,7 @@ const Video = (props) => {
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [cancelError, setCancelError] = useState("");
   const history = useHistory();
 
   const handleActiveChange = (e) => {
@@ -61,6 +62,14 @@ const Video = (props) => {
         console.error(error);
         toast.error("Failed !!! Unable to add content...");
       });
+  };
+
+  const handleCancel = () => {
+    if (selectedVideo === null && vdName === undefined) {
+      setCancelError("Please add Content...");
+    } else {
+      setCancelError("");
+    }
   };
 
   return (
@@ -135,6 +144,7 @@ const Video = (props) => {
                               accept="video/*"
                               className="form-control"
                               onChange={handleVideoChange}
+                              required
                             />
                           )}
                         </div>
@@ -182,7 +192,7 @@ const Video = (props) => {
                             className="btn me-2 btn-primary">
                             Add Video
                           </Button>
-                          <div>
+                          <div onClick={handleCancel}>
                             <Link to="/courses-info">
                               <Button className="btn me-2 btn-light">
                                 Cancel
@@ -191,6 +201,11 @@ const Video = (props) => {
                           </div>
                         </div>
                       </div>
+                      {cancelError && (
+                        <p className="error-message text-danger text-center fs-16">
+                          {cancelError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </form>

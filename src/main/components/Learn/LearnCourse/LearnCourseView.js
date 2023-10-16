@@ -14,6 +14,10 @@ const LearnCourseView = (props) => {
   const [description, setDescription] = useState(""); //Description
   const [videoUrl, setVideoUrl] = useState(""); //video
   const [courselink, setCourselink] = useState(""); //to save youtube link
+  const [vdName, setVdName] = useState();
+  const [content, setContentData] = useState();
+  const [isActive, setIsActive] = useState(false);
+  const [isDeactive, setIsDeactive] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -22,6 +26,7 @@ const LearnCourseView = (props) => {
     if (courseID !== undefined) {
       setId(courseID);
       getCourseById(courseID, token);
+      getCourseContentById(courseID, token);
     }
   }, []);
 
@@ -47,6 +52,41 @@ const LearnCourseView = (props) => {
         setDescription(res.description);
         setVideoUrl(res.coursevideo);
         setCourselink(res.courselink);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch course!"); // Handle the error
+    }
+  };
+
+  // Course details by ID
+  const getCourseContentById = async (id, authToken) => {
+    console.log("inside get course by id", id, authToken);
+    try {
+      const response = await axios.get(
+        "https://v1.eonlearning.tech/lms-service/course_contents_by_onlyid",
+        {
+          headers: {
+            "Auth-Token": authToken,
+          },
+          params: {
+            id: courseID,
+          },
+        }
+      );
+      const res = response.data.data;
+      console.log(
+        "editcourse",
+        response.data.data,
+        response.data.data.courselink
+      );
+      setContentData(response.data.data);
+
+      if (response.data.status === "success") {
+        setVdName(res.video_unitname);
+        setIsActive(res.active);
+        setIsDeactive(res.deactive);
+        // setSelectedVideo(res.video_file);
       }
     } catch (error) {
       console.error(error);
