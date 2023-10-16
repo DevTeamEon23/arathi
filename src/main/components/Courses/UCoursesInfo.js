@@ -10,7 +10,7 @@ const UCoursesInfo = (props) => {
   const [activeTab, setActiveTab] = useState("user-courses-info/:id");
   const [role, setRole] = useState("Admin");
   const [coursesAll, setCoursesAll] = useState([]); //superadmin
-  const [coursesAdmin, setcoursesAdmin] = useState([]); //admin instructor
+  const [coursesAdmin, setcoursesAdmin] = useState([]); //admin
   const [totalCourseData, setTotalCourseData] = useState(0);
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
@@ -31,7 +31,7 @@ const UCoursesInfo = (props) => {
     setToken(token);
   }, []);
 
-  // Courses List Api super admin
+  // Courses List Api superadmin
   const getAllCourses = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {

@@ -56,17 +56,20 @@ const Users = () => {
     axios
       .get("https://v1.eonlearning.tech/lms-service/users", config)
       .then((response) => {
-        const allUsers = response.data.data.users_data;
-        setUserAllData(allUsers);
-        setTotalUserData(allUsers.length);
-        const adminUsers = allUsers.filter(
+        const allUsers = response.data.data;
+        setUserAllData(allUsers === null ? allUsers : allUsers.users_data);
+        setTotalUserData(allUsers === null ? 0 : allUsers.users_data.length);
+        const data = response.data.data.users_data;
+        const adminUsers = data?.filter(
           (user) => user.role !== "Superadmin" && user.role !== "Admin"
         );
-        const departmentList = adminUsers.filter(
+        const departmentList = adminUsers?.filter(
           (user) => user.dept === Department
         );
-        setUserAdminData(departmentList);
-        setTotalUserAdminData(departmentList.length);
+        setUserAdminData(departmentList.length > 0 ? departmentList : null);
+        setTotalUserAdminData(
+          departmentList.length > 0 ? departmentList.length : 0
+        );
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
@@ -128,11 +131,12 @@ const Users = () => {
   let currentData;
 
   if (userRole === "Superadmin") {
-    currentData = userAllData.slice(startIndex, endIndex);
+    currentData =
+      userAllData === null ? null : userAllData.slice(startIndex, endIndex);
   } else {
-    currentData = userAdminData.slice(startIndex, endIndex);
+    currentData =
+      userAdminData === null ? null : userAdminData.slice(startIndex, endIndex);
   }
-
   return (
     <>
       <Fragment>
@@ -160,7 +164,7 @@ const Users = () => {
                 </div>
               </Card.Header>
               <Card.Body>
-                {userAllData.length <= 0 ? (
+                {currentData?.length <= 0 ? (
                   <div className="loader-container">
                     <RotatingLines
                       strokeColor="grey"
@@ -170,7 +174,7 @@ const Users = () => {
                       visible={true}
                     />
                   </div>
-                ) : userAllData === null ? (
+                ) : currentData === null ? (
                   <div>
                     <p className="text-center fs-20 fw-bold">No User Found.</p>
                   </div>
@@ -262,7 +266,7 @@ const Users = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {currentData.map((item, index) => {
+                        {currentData?.map((item, index) => {
                           const dateTimeString = item.created_at; //1
                           const date = new Date(dateTimeString);
                           const day = date.getDate();
@@ -393,7 +397,7 @@ const Users = () => {
                       <Button
                         className="ml-2"
                         onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={endIndex >= userAllData.length}>
+                        disabled={endIndex >= (currentData?.length || 0)}>
                         Next
                       </Button>
                     </div>

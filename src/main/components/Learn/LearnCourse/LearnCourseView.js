@@ -14,10 +14,12 @@ const LearnCourseView = (props) => {
   const [description, setDescription] = useState(""); //Description
   const [videoUrl, setVideoUrl] = useState(""); //video
   const [courselink, setCourselink] = useState(""); //to save youtube link
+  const [selectedVideo, setSelectedVideo] = useState(null);
   const [vdName, setVdName] = useState();
   const [content, setContentData] = useState();
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
+  const [videoContentUrl, setVideoContentUrl] = useState();
   const history = useHistory();
 
   useEffect(() => {
@@ -61,7 +63,6 @@ const LearnCourseView = (props) => {
 
   // Course details by ID
   const getCourseContentById = async (id, authToken) => {
-    console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
         "https://v1.eonlearning.tech/lms-service/course_contents_by_onlyid",
@@ -70,7 +71,7 @@ const LearnCourseView = (props) => {
             "Auth-Token": authToken,
           },
           params: {
-            id: courseID,
+            course_id: courseID,
           },
         }
       );
@@ -86,7 +87,7 @@ const LearnCourseView = (props) => {
         setVdName(res.video_unitname);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
-        // setSelectedVideo(res.video_file);
+        setVideoContentUrl(res.video_file);
       }
     } catch (error) {
       console.error(error);
@@ -115,7 +116,7 @@ const LearnCourseView = (props) => {
                       type={videoUrl.type}
                       alt="video"
                       className="video-preview"
-                      width="400"
+                      width="475"
                       height="200"></video>
                   )}
                   {!courselink === null && (
@@ -145,8 +146,24 @@ const LearnCourseView = (props) => {
               <div className="row">
                 <div className="col-xl-12">
                   <div className="col-xl-4 my-3">
-                    <p>User content video</p>
-                    <p>User content</p>
+                    {videoContentUrl && (
+                      <p>
+                        Name : <b>{vdName}</b>
+                      </p>
+                    )}
+                    <div className="col-xl-12 ">
+                      {videoContentUrl ? (
+                        <video
+                          controls
+                          src={videoContentUrl}
+                          alt="video"
+                          width="800"></video>
+                      ) : (
+                        <p className="fs-16 fc-black">
+                          No Video content Found !!
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

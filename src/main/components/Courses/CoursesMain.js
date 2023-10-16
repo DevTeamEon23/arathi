@@ -40,7 +40,7 @@ const CoursesMain = () => {
       });
       const data = response.data.data;
       setData(data === null ? data : data.courses_data);
-      setTotalCourseDataMain(data === null ? data : data.courses_data.length);
+      setTotalCourseDataMain(data === null ? 0 : data.courses_data.length);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error

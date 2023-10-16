@@ -6,11 +6,13 @@ import { toast } from "react-toastify";
 
 const VideoEdit = (props) => {
   const courseId = props.match.params.id;
+  const [id, setId] = useState();
   const [vdName, setVdName] = useState();
   const [token, setToken] = useState(); //auth token
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [VideoUrl, setVideoUrl] = useState();
   const [content, setContentData] = useState();
   const history = useHistory();
 
@@ -40,6 +42,7 @@ const VideoEdit = (props) => {
 
   const handleVideoDelete = () => {
     setSelectedVideo(null);
+    setVideoUrl(null);
   };
 
   // Course details by ID
@@ -53,7 +56,7 @@ const VideoEdit = (props) => {
             "Auth-Token": authToken,
           },
           params: {
-            id: courseId,
+            course_id: courseId,
           },
         }
       );
@@ -66,10 +69,11 @@ const VideoEdit = (props) => {
       setContentData(response.data.data);
 
       if (response.data.status === "success") {
+        setId(res.id);
         setVdName(res.video_unitname);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
-        // setSelectedVideo(res.video_file);
+        setVideoUrl(res.video_file);
       }
     } catch (error) {
       console.error(error);
@@ -80,31 +84,59 @@ const VideoEdit = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     let token = window.localStorage.getItem("jwt_access_token");
-    const formData = new FormData();
-    formData.append("course_id", courseId);
-    formData.append("video_unitname", vdName);
-    formData.append("video_file", selectedVideo);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive);
-    formData.append("generate_token", true);
+    if (selectedVideo !== null) {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("course_id", courseId);
+      formData.append("video_unitname", vdName);
+      formData.append("video_file", selectedVideo);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive);
+      formData.append("generate_token", true);
 
-    console.log(courseId, vdName, selectedVideo, isActive, isDeactive);
-    const url = "https://v1.eonlearning.tech/lms-service/addcourse_content";
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": token,
-        },
-      })
-      .then((response) => {
-        toast.success("Content added successfully!!!");
-        history.push(`/courses-info`);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to add content...");
-      });
+      console.log(courseId, vdName, selectedVideo, isActive, isDeactive);
+      const url =
+        "https://v1.eonlearning.tech/lms-service/update_course_contents";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          toast.success("Content updated successfully!!!");
+          history.push(`/courses-info`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to add content...");
+        });
+    } else {
+      console.log("inside else");
+      const course_id = courseId;
+      const newData = {
+        video_unitname: vdName,
+        active: isActive,
+        deactive: isDeactive,
+      };
+      console.log(vdName, isActive, isDeactive);
+      const url = `https://v1.eonlearning.tech/lms-service/update_course_content/${course_id}`;
+      axios
+        .put(url, newData, {
+          headers: {
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("Content updated successfully!!!");
+          history.push(`/courses-info`);
+        })
+        .catch((error) => {
+          toast.error("Failed !!! Unable to update course...");
+        });
+    }
   };
 
   return (
@@ -154,14 +186,25 @@ const VideoEdit = (props) => {
                             required
                           /> */}
                         <div className="col-lg-6">
-                          {selectedVideo ? (
+                          {VideoUrl && (
+                            <div>
+                              <video width="400" height="250" controls>
+                                <source src={VideoUrl} type="video/mp4" />
+                                Your browser does not support the video tag.
+                              </video>
+                              <button
+                                className="btn btn-danger p-1 mb-3"
+                                style={{ marginLeft: "10px" }}
+                                onClick={handleVideoDelete}>
+                                Remove
+                              </button>
+                            </div>
+                          )}
+                          {selectedVideo && (
                             <div>
                               <video width="400" height="250" controls>
                                 <source
-                                  src={
-                                    selectedVideo &&
-                                    URL.createObjectURL(selectedVideo)
-                                  }
+                                  src={URL.createObjectURL(selectedVideo)}
                                   type="video/mp4"
                                 />
                                 Your browser does not support the video tag.
@@ -173,14 +216,22 @@ const VideoEdit = (props) => {
                                 Remove
                               </button>
                             </div>
-                          ) : (
+                          )}
+                          <br />
+                          <label>
+                            {VideoUrl === null && (
+                              <span style={{ fontWeight: "bold" }}>
+                                Choose the another new content
+                              </span>
+                            )}
                             <input
                               type="file"
                               accept="video/*"
-                              className="form-control"
                               onChange={handleVideoChange}
+                              style={{ display: "none" }}
+                              className="form-control-file"
                             />
-                          )}
+                          </label>
                         </div>
                       </div>
 

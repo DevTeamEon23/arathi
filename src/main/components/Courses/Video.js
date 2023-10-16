@@ -24,6 +24,7 @@ const Video = (props) => {
   };
 
   const handleVideoChange = (e) => {
+    setCancelError("");
     const file = e.target.files[0];
     if (file) {
       setSelectedVideo(file);
@@ -36,6 +37,7 @@ const Video = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCancelError("");
     let token = window.localStorage.getItem("jwt_access_token");
     const formData = new FormData();
     formData.append("course_id", courseId);
@@ -66,9 +68,10 @@ const Video = (props) => {
 
   const handleCancel = () => {
     if (selectedVideo === null && vdName === undefined) {
-      setCancelError("Please add Content...");
+      setCancelError("Please add Video Content...");
     } else {
       setCancelError("");
+      history.push("/courses-info");
     }
   };
 
@@ -193,19 +196,19 @@ const Video = (props) => {
                             Add Video
                           </Button>
                           <div onClick={handleCancel}>
-                            <Link to="/courses-info">
-                              <Button className="btn me-2 btn-light">
-                                Cancel
-                              </Button>
-                            </Link>
+                            <Button className="btn me-2 btn-light">
+                              Cancel
+                            </Button>
                           </div>
                         </div>
                       </div>
-                      {cancelError && (
-                        <p className="error-message text-danger text-center fs-16">
-                          {cancelError}
-                        </p>
-                      )}
+                      <div className="form-group mb-3 row  col-lg-10">
+                        {cancelError && (
+                          <p className="error-message text-danger text-center fs-16">
+                            {cancelError}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </form>

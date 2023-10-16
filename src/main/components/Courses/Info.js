@@ -36,8 +36,11 @@ const Info = () => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
     setToken(accessToken);
-    getAllCourses();
-    fetchCourseData(accessToken, ID);
+    if (roleType === "Superadmin") {
+      getAllCourses();
+    } else {
+      fetchCourseData(accessToken, ID);
+    }
   }, []);
 
   const getAllCourses = async () => {
