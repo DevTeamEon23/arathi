@@ -64,7 +64,7 @@ const CoursesMain = () => {
       });
       const list = response.data.data;
       setCourses(list === null ? list : list.course_ids);
-      setTotalCourseData(list === null ? list : list.course_ids.length);
+      setTotalCourseData(list === null ? 0 : list.course_ids.length);
     } catch (error) {
       console.error("API Error:", error);
     }
