@@ -115,7 +115,7 @@ const EditcourseForm = (props) => {
           console.log(response.data);
           setBtnSubmitLoader(false);
           toast.success("Course updated successfully!!!");
-          history.push(`/courses-info`);
+          history.push(`/video/edit/${courseID}`);
         })
         .catch((error) => {
           console.error(error);
@@ -714,7 +714,7 @@ const EditcourseForm = (props) => {
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <div className="col-lg-5 ms-auto">
+                        <div className="col-lg-10 ms-auto">
                           <Button
                             type="submit"
                             className="btn me-2 btn-primary "
@@ -730,7 +730,7 @@ const EditcourseForm = (props) => {
                                 />
                               </div>
                             ) : (
-                              " update Course"
+                              "Update Course and Update Content"
                             )}
                           </Button>{" "}
                           or &nbsp;&nbsp;
@@ -740,7 +740,7 @@ const EditcourseForm = (props) => {
                             </Button>
                           </Link>
                         </div>
-                        <div className="col-lg-5 ms-auto">
+                        {/* <div className="col-lg-5 ms-auto">
                           <DropdownButton
                             as={ButtonGroup}
                             id="dropdown-button-drop-up"
@@ -1139,7 +1139,7 @@ const EditcourseForm = (props) => {
                               </Modal.Footer>
                             </Modal>
                           </DropdownButton>
-                        </div>
+                        </div> */}
                       </div>
                     </form>
                   </>

@@ -22,8 +22,11 @@ const CoursesMain = () => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
     setToken(accessToken);
-    getAllCourses();
-    fetchCourseData(accessToken, ID);
+    if (roleType === "Superadmin") {
+      getAllCourses();
+    } else {
+      fetchCourseData(accessToken, ID);
+    }
   }, []);
 
   const getAllCourses = async () => {
@@ -250,7 +253,7 @@ const CoursesMain = () => {
           )}
         </div>
       )}
-      <div className="pagination-down">
+      <div className="pagination-down mb-3">
         <div className="d-flex align-items-center  ">
           <h4 className=" ">
             Showing <span>1-6 </span>from{" "}
@@ -269,18 +272,25 @@ const CoursesMain = () => {
               Previous
             </Button>
             &nbsp;&nbsp;
-            <span className=" fs-18 fw-bold mt-2">
+            <span className=" fs-18 fw-bold ">
               Page {currentPage} &nbsp;&nbsp;
             </span>
-            <Button
-              className="ml-2"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={
-                endIndex >=
-                (roleType === "Superadmin" ? data.length : courses.length)
-              }>
-              Next
-            </Button>
+            {roleType === "Superadmin" ? (
+              <Button
+                className="ml-2"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={endIndex >= (data?.length || 0)}>
+                Next
+              </Button>
+            ) : (
+              <Button
+                className="ml-2"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={endIndex >= (courses?.length || 0)}>
+                Next
+              </Button>
+            )}
+            {console.log(endIndex)}
           </div>
         </div>
       </div>

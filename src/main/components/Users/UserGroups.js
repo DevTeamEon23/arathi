@@ -8,8 +8,11 @@ import { Button, Table, Tab, Tabs } from "react-bootstrap";
 const UserGroups = (props) => {
   const userId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("user-groups/:id");
-  const [allGrps, setAllGrps] = useState([]);
-  const [totalGrpData, setTotalGrpData] = useState(0);
+  const [role, setRole] = useState("Admin");
+  const [allGrps, setAllGrps] = useState([]); //superadmin data
+  const [totalGrpData, setTotalGrpData] = useState(0); //superadmin count
+  const [totalGrpAdminIns, setTotalGrpAdminIns] = useState(0); //admin count
+  const [groupsAdmin, setGroupsAdmin] = useState([]); //admin instructor data
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
@@ -28,11 +31,17 @@ const UserGroups = (props) => {
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
+    const roleType = window.localStorage.getItem("role");
+    setRole(roleType);
+    if (roleType === "Admin") {
+      fetchGroupsAdminIns();
+    } else {
+      getAllGroups();
+    }
     setToken(token);
-    getAllGroups();
   }, []);
 
-  // Group List Api
+  // Group List Api superadmin
   const getAllGroups = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -46,18 +55,53 @@ const UserGroups = (props) => {
     axios
       .get("https://v1.eonlearning.tech/user-tab2/fetch_groups_of_user", config)
       .then((response) => {
-        const grps = response.data.data.user_ids;
-        setAllGrps(grps);
-        setTotalGrpData(response.data.data.user_ids.length);
+        const grps = response.data.data;
+        setAllGrps(grps === null ? grps : grps.user_ids);
+        setTotalGrpData(grps === null ? 0 : grps.user_ids.length);
       })
       .catch((error) => {
         toast.error("Failed to fetch groups!!!");
       });
   };
 
+  // Courses List Api for admin
+  const fetchGroupsAdminIns = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    let ID = window.localStorage.getItem("id");
+    try {
+      const queryParams = {
+        user_id: userId,
+        admin_user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_for_inst_learn"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setGroupsAdmin(data === null ? data : data.group_ids);
+      setTotalGrpAdminIns(data === null ? 0 : data.group_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  };
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = allGrps.slice(startIndex, endIndex);
+
+  let currentData;
+  if (role === "Superadmin") {
+    currentData = allGrps === null ? null : allGrps.slice(startIndex, endIndex);
+  } else {
+    currentData =
+      groupsAdmin === null ? null : groupsAdmin.slice(startIndex, endIndex);
+  }
 
   const handleAddGrp = (e, group_id) => {
     e.preventDefault();
@@ -129,7 +173,7 @@ const UserGroups = (props) => {
               <h4 className="card-title">Groups</h4>
             </div>
             <div className="card-body">
-              {currentData.length === 0 ? (
+              {currentData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -139,7 +183,13 @@ const UserGroups = (props) => {
                     visible={true}
                   />
                 </div>
-              ) : currentData.length > 0 ? (
+              ) : currentData === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
+                  </div>
+                </>
+              ) : (
                 <>
                   <Table responsive>
                     <thead>
@@ -152,22 +202,65 @@ const UserGroups = (props) => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {allGrps.map((data, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {data.groupname}
-                              {data.user_group_enrollment_id === null ? (
-                                ""
-                              ) : (
-                                <span className="enrolled-label">
-                                  Group Member
-                                </span>
-                              )}
-                            </td>
-                            <td className="text-center">
-                              {data.user_group_enrollment_id === null ? (
+                    {role === "Superadmin" ? (
+                      <tbody>
+                        {currentData?.map((data, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {data.groupname}
+                                {data.user_group_enrollment_id === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )}
+                              </td>
+                              <td className="text-center">
+                                {data.user_group_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, data.group_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleRemoveGrp(
+                                        e,
+                                        data.user_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {currentData?.map((data, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {data.groupname}
+                                {data.user_group_enrollment_id === null ? (
+                                  "Created"
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )}
+                              </td>
+                              <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   title="Add to group"
@@ -176,7 +269,7 @@ const UserGroups = (props) => {
                                   }>
                                   <i className="fa-solid fa-plus"></i>
                                 </div>
-                              ) : (
+
                                 <div
                                   className="btn btn-danger shadow btn-xs sharp"
                                   title="Remove from group"
@@ -188,26 +281,23 @@ const UserGroups = (props) => {
                                   }>
                                   <i className="fa-solid fa-minus"></i>
                                 </div>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    )}
                   </Table>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
-                  </div>
                 </>
               )}
               <br />
               <div className="pagination-down">
                 <div className="d-flex align-items-center  ">
                   <h4 className=" ">
-                    Showing <span>1-10 </span>from <span>{totalGrpData} </span>
+                    Showing <span>1-10 </span>from{" "}
+                    <span>
+                      {role === "Admin" ? totalGrpAdminIns : totalGrpData}{" "}
+                    </span>
                     data
                   </h4>
                   <div className="d-flex align-items-center ms-auto mt-2">
@@ -221,12 +311,21 @@ const UserGroups = (props) => {
                     <span className=" fs-18 fw-bold ">
                       Page {currentPage} &nbsp;&nbsp;
                     </span>
-                    <Button
-                      className="ml-2"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= allGrps.length}>
-                      Next
-                    </Button>
+                    {role === "Superadmin" ? (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (allGrps?.length || 0)}>
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (groupsAdmin?.length || 0)}>
+                        Next
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

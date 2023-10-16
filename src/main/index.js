@@ -97,6 +97,7 @@ import UCoursesInfo from "./components/Courses/UCoursesInfo";
 // import Content from "./components/Courses/Content";
 // import WebContent from "./components/Courses/WebContent";
 import Video from "./components/Courses/Video";
+import VideoEdit from "./components/Courses/VideoEdit";
 // import Audio from "./components/Courses/Audio";
 import Presentation from "./components/Courses/Presentation";
 import Scorm from "./components/Courses/Scorm";
@@ -414,7 +415,8 @@ const Markup = () => {
     { url: "user-courses-info/:id", component: UCoursesInfo },
     // { url: "content", component: Content },
     // { url: "webcontent", component: WebContent },
-    { url: "video", component: Video },
+    { url: "video/:id", component: Video }, //add video to course
+    { url: "video/edit/:id", component: VideoEdit }, //edit video to course
     // { url: "audio", component: Audio },
     { url: "presentation", component: Presentation },
     { url: "scorm", component: Scorm },

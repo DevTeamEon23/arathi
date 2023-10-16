@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 import { RxCross2 } from "react-icons/rx";
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 
 const timezonetype = [
   { value: "ist", label: "India Standard Time (IST)" },
@@ -46,6 +48,8 @@ const EditUser = (props) => {
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
   const [errorImg, setErrorImg] = useState(null);
   const [activeTab, setActiveTab] = useState("edit-user/:id");
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
   const history = useHistory();
 
   useEffect(() => {
@@ -408,7 +412,14 @@ const EditUser = (props) => {
                                 name="dept"
                                 value={dept}
                                 placeholder="e.g. Information Technology"
+                                disabled={roleType !== "Superadmin"}
                                 onChange={(e) => setDept(e.target.value)}
+                                style={{
+                                  cursor:
+                                    roleType !== "Superadmin"
+                                      ? "not-allowed"
+                                      : "auto",
+                                }}
                               />
                             </div>
                           </div>
@@ -544,37 +555,10 @@ const EditUser = (props) => {
                               {console.log(file, imgCdnUrl)}
 
                               <div className="mb-3">
-                                  {imgCdnUrl && (
-                                    <>
-                                      <img
-                                        src={
-                                          imgCdnUrl
-                                        }
-                                        alt="Preview"
-                                        className="img-thumbnail"
-                                        style={{
-                                          width: "250px",
-                                          height: "200px",
-                                          objectFit: "cover",
-                                        }}
-                                      />
-                                      <RxCross2
-                                        className="fs-18 fs-bold"
-                                        title="Delete"
-                                        style={{
-                                          marginBottom: "220px",
-                                          marginLeft: "18px",
-                                          color: "#c91111",
-                                        }}
-                                        onClick={handleImageDelete}
-                                      />
-                                    </>
-                                  )}
-                                  {file && (<>
+                                {imgCdnUrl && (
+                                  <>
                                     <img
-                                      src={
-                                        URL.createObjectURL(file)
-                                      }
+                                      src={imgCdnUrl}
                                       alt="Preview"
                                       className="img-thumbnail"
                                       style={{
@@ -593,7 +577,32 @@ const EditUser = (props) => {
                                       }}
                                       onClick={handleImageDelete}
                                     />
-                                  </>)}
+                                  </>
+                                )}
+                                {file && (
+                                  <>
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt="Preview"
+                                      className="img-thumbnail"
+                                      style={{
+                                        width: "250px",
+                                        height: "200px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                    <RxCross2
+                                      className="fs-18 fs-bold"
+                                      title="Delete"
+                                      style={{
+                                        marginBottom: "220px",
+                                        marginLeft: "18px",
+                                        color: "#c91111",
+                                      }}
+                                      onClick={handleImageDelete}
+                                    />
+                                  </>
+                                )}
                               </div>
 
                               <label>
