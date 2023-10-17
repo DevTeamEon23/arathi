@@ -128,7 +128,7 @@ const EditcourseForm = (props) => {
     );
     event.preventDefault();
     setBtnSubmitLoader(true);
-    if (file !== null || selectedVideo !== null) {
+    if (file !== null && selectedVideo !== null) {
       const formData = new FormData();
       formData.append("id", id);
       formData.append("user_id", userId);
