@@ -32,12 +32,10 @@ const level = [
 
 const EditcourseForm = (props) => {
   const courseID = props.match.params.id;
-  const [largeModal, setLargeModal] = useState(false);
   const [courseData, setCourseData] = useState();
-  const [id, setId] = useState();
+  const [id, setId] = useState("");
   const [token, setToken] = useState(); //auth token
   const [coursename, setCoursename] = useState("");
-  const [file, setFile] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(
     {}
   ); //Certificate
@@ -58,9 +56,11 @@ const EditcourseForm = (props) => {
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const [activeTab, setActiveTab] = useState("edit-courses/:id");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
-  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState(null); //for change image file
+  const [imageUrl, setImageUrl] = useState(""); //image cdn file
   const [videoUrl, setVideoUrl] = useState("");
   const [userId, setUserId] = useState();
+  const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
   const history = useHistory();
 
   useEffect(() => {
@@ -127,7 +127,6 @@ const EditcourseForm = (props) => {
 
   // Course details by ID
   const getCourseById = async (id, authToken) => {
-    console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
         "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
@@ -176,19 +175,28 @@ const EditcourseForm = (props) => {
         setStartdate(formattedStart);
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
-        setFile(res.file);
         setImageUrl(res.file);
         setVideoUrl(res.coursevideo);
         setUserId(res.user_id);
         setSelectedVideo(res.coursevideo);
-        setSelectedOptionCertificate({
-          value: res.certificate,
-          label: res.certificate,
-        });
-        setSelectedOptionLevel({
-          value: res.level,
-          label: res.level,
-        });
+        const selectedOption1 = certificate.find(
+          (option) =>
+            option.value.toLowerCase() === res.certificate.trim().toLowerCase()
+        );
+        // setSelectedOptionCertificate({
+        //   value: res.certificate,
+        //   label: res.certificate,
+        // });
+        setSelectedOptionCertificate(selectedOption1 ? selectedOption1 : "");
+        const selectedOption2 = level.find(
+          (option) =>
+            option.value.toLowerCase() === res.level.trim().toLowerCase()
+        );
+        // setSelectedOptionLevel({
+        //   value: res.level,
+        //   label: res.level,
+        // });
+        setSelectedOptionLevel(selectedOption2 ? selectedOption2 : "");
         setSelectCategoriesData({
           value: res.category,
           label: res.category,
@@ -252,14 +260,12 @@ const EditcourseForm = (props) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImageUrl(imageUrl);
       setFile(file);
     }
   };
 
   const handleImageDelete = () => {
-    setImageUrl("");
+    setImageUrl(null);
     setFile(null); // Reset the selected file
   };
 
@@ -300,6 +306,16 @@ const EditcourseForm = (props) => {
     const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
+
+  const handleCapacityChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || (/^\d+$/.test(value) && value >= 1 && value <= 100)) {
+      setCapacity(value);
+      setErrorMessageCapacity("");
+    } else {
+      setErrorMessageCapacity("Capacity must be a number between 1 and 100.");
+    }
+  };
 
   return (
     <Fragment>
@@ -359,14 +375,7 @@ const EditcourseForm = (props) => {
                               <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
-                              {/* <Select
-                          defaultValue={category}
-                          onChange={category}
-                          options={category}
-                          name='category'
-                        ></Select> */}
                               <Select
-                                // onChange={handleSelectChange}
                                 value={selectCategoriesData}
                                 id="categories"
                                 name="categories"
@@ -431,7 +440,7 @@ const EditcourseForm = (props) => {
                                   checked={isHide}
                                   onChange={handleHideChange}
                                 />
-                                Hide from Course Catalog
+                                Hide from Course store
                               </label>
                               <br />
                             </div>
@@ -571,12 +580,20 @@ const EditcourseForm = (props) => {
                               <input
                                 type="text"
                                 className="form-control"
-                                id="val-confirm-password"
-                                name="val-confirm-password"
+                                id="capacity"
+                                min={1}
+                                max={100}
+                                placeholder="e.g. Number of Student"
                                 value={capacity}
-                                onChange={(e) => setCapacity(e.target.value)}
+                                onChange={handleCapacityChange}
+                                onBlur={() => setErrorMessageCapacity("")}
                                 required
                               />
+                              {errorMessageCapacity && (
+                                <p className="text-danger">
+                                  {errorMessageCapacity}
+                                </p>
+                              )}
                             </div>
                           </div>
 
@@ -673,11 +690,12 @@ const EditcourseForm = (props) => {
                               Update Course photo
                               <span className="text-danger">*</span>
                             </label>
-
-                            <div className="profile-info col-lg-8">
+                            <br />
+                            {console.log(file, imageUrl)}
+                            <div className="">
                               <div>
                                 {imageUrl && (
-                                  <div className="">
+                                  <>
                                     <img
                                       src={imageUrl}
                                       alt="Preview"
@@ -691,15 +709,38 @@ const EditcourseForm = (props) => {
                                       style={{
                                         marginBottom: "180px",
                                         marginLeft: "18px",
+                                        color: "#c91111",
                                       }}
                                       onClick={handleImageDelete}
                                     />
-                                  </div>
+                                  </>
                                 )}
+                                {file && (
+                                  <>
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt="Preview"
+                                      className="img-thumbnail"
+                                    />
+                                    <RxCross2
+                                      className="fs-18 fs-bold"
+                                      title="Delete"
+                                      style={{
+                                        marginBottom: "180px",
+                                        marginLeft: "18px",
+                                        color: "#c91111",
+                                      }}
+                                      onClick={handleImageDelete}
+                                    />
+                                  </>
+                                )}
+                                <br />
                                 <label>
-                                  {file
-                                    ? `Selected File: ${file}`
-                                    : "Choose a file..."}
+                                  {imageUrl === null && (
+                                    <span style={{ fontWeight: "bold" }}>
+                                      Choose the another new image
+                                    </span>
+                                  )}
                                   <input
                                     type="file"
                                     accept="image/*"

@@ -40,7 +40,7 @@ const CoursesMain = () => {
       });
       const data = response.data.data;
       setData(data === null ? data : data.courses_data);
-      setTotalCourseDataMain(data === null ? data : data.courses_data.length);
+      setTotalCourseDataMain(data === null ? 0 : data.courses_data.length);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
@@ -64,7 +64,7 @@ const CoursesMain = () => {
       });
       const list = response.data.data;
       setCourses(list === null ? list : list.course_ids);
-      setTotalCourseData(list === null ? list : list.course_ids.length);
+      setTotalCourseData(list === null ? 0 : list.course_ids.length);
     } catch (error) {
       console.error("API Error:", error);
     }

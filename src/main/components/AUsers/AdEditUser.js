@@ -34,9 +34,8 @@ const EditUser = (props) => {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState();
-  const [file, setFile] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imgCdnUrl, setImgCdnUrl] = useState(null);
+  const [file, setFile] = useState(null); //for change image file
+  const [imgCdnUrl, setImgCdnUrl] = useState(null); //image cdn file
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
@@ -86,10 +85,7 @@ const EditUser = (props) => {
         setAdhr(res.adhr);
         setBio(res.bio);
         setUsername(res.username);
-        // setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
-        setFile(null);
-        // setImageUrl(res.file)
         setImgCdnUrl(res.cdn_file_link);
         setIsActive(res.active);
         setIsDeactive(res.deactive);
@@ -116,46 +112,80 @@ const EditUser = (props) => {
     setIsActive(false); // Uncheck "Active" when "Deactive" is checked
   };
 
-  //Update User info API
+  //Update User info API instructor
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("id", id);
-    formData.append("eid", eid);
-    formData.append("sid", sid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", "Learner");
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive === false ? 0 : 1);
-    formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
-    formData.append("file", file);
-    formData.append("cdn_file_link", imgCdnUrl);
-    console.log(file, "file");
-    const url = "https://v1.eonlearning.tech/lms-service/update_users";
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": token,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("User updated successfully!!!");
-        history.push(`/users-list`);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to update user...");
-      });
+    if (file !== null) {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("eid", eid);
+      formData.append("sid", sid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", "Learner");
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
+      formData.append("cdn_file_link", imgCdnUrl);
+      console.log(file, "file");
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          toast.success("User updated successfully!!!");
+          history.push(`/insusers-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    } else {
+      console.log("inside else");
+      const id = userId;
+      const newData = {
+        eid: eid,
+        full_name: userName,
+        dept: dept,
+        adhr: adhr,
+        username: username,
+        bio: bio,
+        timezone: selectedOptionTimeZone.value,
+        langtype: selectedOptionLang.value,
+        active: isActive,
+        deactive: isDeactive === false ? 0 : 1,
+        exclude_from_email: excludeFromEmail === false ? 0 : 1,
+      };
+
+      const url = `https://v1.eonlearning.tech/lms-service/update_user/${id}`;
+      axios
+        .put(url, newData, {
+          headers: {
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("User updated successfully!!!");
+          history.push(`/insusers-list`);
+        })
+        .catch((error) => {
+          console.error("Error making PUT request:", error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
   };
 
   const validateName = () => {
@@ -193,15 +223,10 @@ const EditUser = (props) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImageUrl(imageUrl);
-      setFile(file);
-    }
+    setFile(file);
   };
 
   const handleImageDelete = () => {
-    setImageUrl("");
     setFile(null); // Reset the selected file
     setImgCdnUrl(null);
   };
@@ -240,7 +265,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email">
+                              htmlFor="eid">
                               Employee ID <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
@@ -249,8 +274,9 @@ const EditUser = (props) => {
                                 className="form-control"
                                 id="eid"
                                 value={eid}
-                                placeholder="e.g. jd001"
                                 onChange={(e) => setEid(e.target.value)}
+                                style={{ cursor: "not-allowed" }}
+                                disabled
                               />
                             </div>
                           </div>
@@ -258,13 +284,14 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-username">
+                              htmlFor="username">
                               Full Name <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
                               <input
                                 type="text"
                                 className="form-control"
+                                id="username"
                                 placeholder="Enter Full name"
                                 value={userName}
                                 onChange={(e) => setUserName(e.target.value)}
@@ -301,7 +328,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email">
+                              htmlFor="dept">
                               Department <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-6">
@@ -309,10 +336,10 @@ const EditUser = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="dept"
-                                name="dept"
                                 value={dept}
-                                placeholder="e.g. Information Technology"
                                 onChange={(e) => setDept(e.target.value)}
+                                style={{ cursor: "not-allowed" }}
+                                disabled
                               />
                             </div>
                           </div>
@@ -320,7 +347,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-email">
+                              htmlFor="adhr">
                               Aadhar Card No.{" "}
                               <span className="text-danger">*</span>
                             </label>
@@ -354,34 +381,18 @@ const EditUser = (props) => {
                               <input
                                 type="text"
                                 className="form-control"
-                                id="username"
+                                id="val-username"
                                 value={username}
                                 placeholder="Enter Username"
                                 onChange={(e) => setUsername(e.target.value)}
                               />
                             </div>
                           </div>
-                          {/* <div className="form-group mb-3 row">
-                            <label className="col-lg-4 col-form-label">
-                              Password <span className="text-danger">*</span>
-                            </label>
-                            <div className="input-group col-lg-6">
-                              <input
-                                type="password"
-                                className="form-control"
-                                id="password"
-                                value={password}
-                                disabled
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{ cursor: "not-allowed" }}
-                              />
-                            </div>
-                          </div> */}
 
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-suggestions">
+                              htmlFor="bio">
                               Bio <span className="text-danger">*</span>
                             </label>
                             <div className="col-lg-8">
@@ -401,11 +412,12 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-website">
+                              htmlFor="val-time">
                               Time Zone
                             </label>
                             <div className="col-lg-6">
                               <Select
+                                id="val-time"
                                 value={selectedOptionTimeZone}
                                 options={timezonetype}
                                 // onChange={(selectedOptionTimeZone) =>
@@ -422,7 +434,7 @@ const EditUser = (props) => {
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
-                              htmlFor="val-currency">
+                              htmlFor="val-lang">
                               Language
                             </label>
                             <div className="col-lg-6">
@@ -432,24 +444,22 @@ const EditUser = (props) => {
                                   setSelectedOptionLang(selectedOptionLang)
                                 }
                                 options={langtype}
-                                name="langtype"></Select>
+                                id="val-lang"></Select>
                             </div>
                           </div>
                         </div>
                         <div className="col-xl-5">
                           <div className="form-group mb-3 row">
-                            {/* <div className="profile-info col-lg-6"> */}
                             <div>
                               <label className="col-lg-4 col-form-label">
                                 Update Photo
                                 <span className="text-danger">*</span>
                               </label>
                               <br />
-                              {imageUrl ||
-                                (imgCdnUrl && (
-                                  <div className="mb-3">
+                              <div className="mb-3">
+                                {imgCdnUrl && (
+                                  <>
                                     <img
-                                      // src={imageUrl}
                                       src={imgCdnUrl}
                                       alt="Preview"
                                       className="img-thumbnail"
@@ -465,26 +475,53 @@ const EditUser = (props) => {
                                       style={{
                                         marginBottom: "220px",
                                         marginLeft: "18px",
+                                        color: "#c91111",
                                       }}
                                       onClick={handleImageDelete}
                                     />
-                                  </div>
-                                ))}
+                                  </>
+                                )}
+                                {file && (
+                                  <>
+                                    <img
+                                      src={URL.createObjectURL(file)}
+                                      alt="Preview"
+                                      className="img-thumbnail"
+                                      style={{
+                                        width: "250px",
+                                        height: "200px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                    <RxCross2
+                                      className="fs-18 fs-bold"
+                                      title="Delete"
+                                      style={{
+                                        marginBottom: "220px",
+                                        marginLeft: "18px",
+                                        color: "#c91111",
+                                      }}
+                                      onClick={handleImageDelete}
+                                    />
+                                  </>
+                                )}
+                              </div>
+
                               <label>
-                                {file || imgCdnUrl
-                                  ? `Selected File: ${imgCdnUrl}`
-                                  : "Choose a file..."}
+                                {imgCdnUrl === null && (
+                                  <span style={{ fontWeight: "bold" }}>
+                                    Choose the another new image
+                                  </span>
+                                )}
                                 <input
                                   type="file"
-                                  accept="image/*"
+                                  accept=".jpeg, .png, .jpg"
                                   onChange={handleImageChange}
                                   style={{ display: "none" }}
                                   className="form-control-file"
                                 />
                               </label>
                             </div>
-
-                            {/* </div> */}
                           </div>
                         </div>
 
@@ -553,7 +590,7 @@ const EditUser = (props) => {
                               Update User
                             </Button>{" "}
                             or &nbsp;&nbsp;
-                            <Link to="/users-list">
+                            <Link to="/insusers-list">
                               <Button className="btn btn-light">Cancel</Button>
                             </Link>
                           </div>

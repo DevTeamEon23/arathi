@@ -550,7 +550,7 @@ const AddUser = () => {
                           Add User
                         </Button>{" "}
                         or &nbsp;&nbsp;
-                        <Link to="/users-list">
+                        <Link to="/insusers-list">
                           <Button className="btn me-2 btn-light">Cancel</Button>
                         </Link>
                       </div>

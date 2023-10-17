@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 import { toast } from "react-toastify";
 
 const Video = (props) => {
   const courseId = props.match.params.id;
-  const [vdName, setVdName] = useState();
+  const [vdName, setVdName] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [cancelError, setCancelError] = useState("");
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
   const history = useHistory();
 
   const handleActiveChange = (e) => {
@@ -23,6 +26,7 @@ const Video = (props) => {
   };
 
   const handleVideoChange = (e) => {
+    setCancelError("");
     const file = e.target.files[0];
     if (file) {
       setSelectedVideo(file);
@@ -35,6 +39,8 @@ const Video = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCancelError("");
+    setBtnLoader(true);
     let token = window.localStorage.getItem("jwt_access_token");
     const formData = new FormData();
     formData.append("course_id", courseId);
@@ -43,8 +49,6 @@ const Video = (props) => {
     formData.append("active", isActive);
     formData.append("deactive", isDeactive);
     formData.append("generate_token", true);
-
-    console.log(courseId, vdName, selectedVideo, isActive, isDeactive);
     const url = "https://v1.eonlearning.tech/lms-service/addcourse_content";
     axios
       .post(url, formData, {
@@ -54,13 +58,25 @@ const Video = (props) => {
         },
       })
       .then((response) => {
+        setBtnLoader(false);
         toast.success("Content added successfully!!!");
         history.push(`/courses-info`);
       })
       .catch((error) => {
         console.error(error);
+        setBtnLoader(false);
         toast.error("Failed !!! Unable to add content...");
       });
+  };
+
+  const handleCancel = () => {
+    setBtnLoader(false);
+    if (selectedVideo === null && vdName === undefined) {
+      setCancelError("Please add Video Content...");
+    } else {
+      setCancelError("");
+      history.push("/courses-info");
+    }
   };
 
   return (
@@ -135,6 +151,7 @@ const Video = (props) => {
                               accept="video/*"
                               className="form-control"
                               onChange={handleVideoChange}
+                              required
                             />
                           )}
                         </div>
@@ -180,16 +197,31 @@ const Video = (props) => {
                           <Button
                             type="submit"
                             className="btn me-2 btn-primary">
-                            Add Video
+                            {btnLoader ? (
+                              <CircularProgress
+                                style={{
+                                  width: "18px",
+                                  height: "18px",
+                                  color: "#fff",
+                                }}
+                              />
+                            ) : (
+                              "Add Video"
+                            )}
                           </Button>
-                          <div>
-                            <Link to="/courses-info">
-                              <Button className="btn me-2 btn-light">
-                                Cancel
-                              </Button>
-                            </Link>
+                          <div onClick={handleCancel}>
+                            <Button className="btn me-2 btn-light">
+                              Cancel
+                            </Button>
                           </div>
                         </div>
+                      </div>
+                      <div className="form-group mb-3 row  col-lg-10">
+                        {cancelError && (
+                          <p className="error-message text-danger text-center fs-16">
+                            {cancelError}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

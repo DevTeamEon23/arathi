@@ -3,16 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
-  Button,
-  Modal,
-  Table,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import { RxCross2 } from "react-icons/rx";
 import { CircularProgress } from "@material-ui/core";
 
@@ -30,14 +21,13 @@ const level = [
 ];
 
 const AddCourses = () => {
-  const [largeModal, setLargeModal] = useState(false);
   const [file, setFile] = useState(null); //image
   const fileRef = useRef(null); //for image
   const [errorImg, setErrorImg] = useState(null);
   const [errorVideo, setErrorVideo] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
-    useState("certificate1"); //Certificate
-  const [selectedOptionLevel, setSelectedOptionLevel] = useState("level1"); // Level
+    useState(""); //Certificate
+  const [selectedOptionLevel, setSelectedOptionLevel] = useState(""); // Level
   const [coursename, setCoursename] = useState("");
   const [coursecode, setCoursecode] = useState("");
   const [description, setDescription] = useState(""); //Description
@@ -59,6 +49,7 @@ const AddCourses = () => {
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [submitError, setSubmitError] = useState("");
+  const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
   const [courseID, setCourseID] = useState("");
 
   useEffect(() => {
@@ -186,8 +177,8 @@ const AddCourses = () => {
       console.log(
         selectedVideo,
         courselink,
-        selectedOptionLevel,
-        selectedOptionCertificate,
+        selectedOptionLevel.value,
+        selectedOptionCertificate.value,
         selectCategoriesData
       );
       const url = "https://v1.eonlearning.tech/lms-service/addcourses";
@@ -248,6 +239,7 @@ const AddCourses = () => {
 
   //image file handle
   const handleChange = (e) => {
+    setErrorMessageCapacity("");
     const selectedFile = e.target.files[0];
     if (selectedFile && isValidFile(selectedFile)) {
       setFile(selectedFile);
@@ -310,6 +302,16 @@ const AddCourses = () => {
 
   const handleImageDelete = () => {
     setSelectedVideo(null);
+  };
+
+  const handleCapacityChange = (e) => {
+    const value = e.target.value;
+    if (value === "" || (/^\d+$/.test(value) && value >= 1 && value <= 100)) {
+      setCapacity(value);
+      setErrorMessageCapacity("");
+    } else {
+      setErrorMessageCapacity("Capacity must be a number between 1 and 100.");
+    }
   };
 
   return (
@@ -446,7 +448,7 @@ const AddCourses = () => {
                               checked={isHide}
                               onChange={handleHideChange}
                             />
-                            Hide from Course Catalog
+                            Hide from Course store
                           </label>
                           <br />
                         </div>
@@ -589,12 +591,19 @@ const AddCourses = () => {
                             type="text"
                             className="form-control"
                             id="capacity"
-                            name="capacity"
-                            placeholder="e.g. Unlimited Student"
+                            min={1}
+                            max={100}
+                            placeholder="e.g. Number of Student"
                             value={capacity}
-                            onChange={(e) => setCapacity(e.target.value)}
+                            onChange={handleCapacityChange}
+                            onBlur={() => setErrorMessageCapacity("")}
                             required
                           />
+                          {errorMessageCapacity && (
+                            <p className="text-danger">
+                              {errorMessageCapacity}
+                            </p>
+                          )}
                         </div>
                       </div>
 

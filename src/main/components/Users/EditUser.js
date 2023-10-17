@@ -545,14 +545,12 @@ const EditUser = (props) => {
                         </div>
                         <div className="col-xl-5">
                           <div className="form-group mb-3 row">
-                            {/* <div className="profile-info col-lg-6"> */}
                             <div>
                               <label className="col-lg-4 col-form-label">
                                 Update Photo
                                 <span className="text-danger">*</span>
                               </label>
                               <br />
-                              {console.log(file, imgCdnUrl)}
 
                               <div className="mb-3">
                                 {imgCdnUrl && (
@@ -606,9 +604,6 @@ const EditUser = (props) => {
                               </div>
 
                               <label>
-                                {/* {imgCdnUrl
-                                  ? `Selected File: ${imgCdnUrl}`
-                                  : "Choose a file..."} */}
                                 {imgCdnUrl === null && (
                                   <span style={{ fontWeight: "bold" }}>
                                     Choose the another new image
@@ -623,8 +618,6 @@ const EditUser = (props) => {
                                 />
                               </label>
                             </div>
-
-                            {/* </div> */}
                           </div>
                         </div>
 
