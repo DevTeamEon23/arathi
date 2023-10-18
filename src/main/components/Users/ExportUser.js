@@ -1,71 +1,97 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import { read, utils, writeFile } from "xlsx";
-import {
-  Button,
-  Nav,
-  Tab,
-  TabsRow,
-  Col,
-  Card,
-  Tabs,
-  Row,
-} from "react-bootstrap";
-import { CSVLink } from "react-csv";
+import { Button, Tab, Tabs } from "react-bootstrap";
+import { toast } from "react-toastify";
 import { Link, useHistory } from "react-router-dom";
+import Select from "react-select";
+import axios from "axios";
 
-const options = [
-  { value: "excel", label: "Excel" },
-  { value: "csv", label: "CSV" },
-];
 const ExportUser = () => {
-  let history = useHistory();
-
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [data, setData] = useState([]);
+  const history = useHistory();
   const [activeTab, setActiveTab] = useState("/export-user");
+  const [exportType, setExportType] = useState();
+  const [error, setError] = useState("");
 
-  const fetchData = () => {
-    fetch(`https://localhost:8000/users/`)
-      .then((response) => response.json())
-      .then((actualData) => {
-        console.log(actualData);
-        setData(actualData.data);
-        console.log(data);
-      })
-      .catch((err) => {
-        console.log(err.message);
+  const handleExport = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url =
+      "https://v1.eonlearning.tech/lms-service/download/exported_data.xlsx"; // Update the URL as needed
+
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Auth-Token": jwtToken,
+        },
       });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob); // Create an object URL for the blob
+
+        // Create a hidden anchor element for downloading
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = "exported_data.xlsx";
+        downloadLink.style.display = "none";
+
+        // Append the anchor to the document
+        document.body.appendChild(downloadLink);
+
+        // Simulate a click event to trigger the download
+        downloadLink.click();
+
+        // Clean up
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(downloadLink);
+      } else {
+        console.error("Failed to download the file:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      toast.error("Failed !!! Unable to Export data...");
+    }
   };
 
-  //   useEffect(() => {
-  //     fetchData();
-  //   }, []);
+  const handleExportCSV = async () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url =
+      "https://v1.eonlearning.tech/lms-service/download/exported_data.csv"; // Update the URL for the CSV file
 
-  const handleExport = () => {
-    const headings = [
-      [
-        "id",
-        "FullName",
-        "Email_Address",
-        "Employee_id",
-        "Department",
-        "Aadhar_Card_No",
-        "Username",
-        "Password",
-        "Bio",
-        "Photo",
-        "User_Type",
-        "TimeZone",
-        "Language",
-      ],
-    ];
-    const wb = utils.book_new();
-    const ws = utils.json_to_sheet([]);
-    utils.sheet_add_aoa(ws, headings);
-    utils.sheet_add_json(ws, data, { origin: "A2", skipHeader: true });
-    utils.book_append_sheet(wb, ws, "Report");
-    writeFile(wb, "Export Report.xlsx");
+    try {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Auth-Token": jwtToken,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+
+        const url = window.URL.createObjectURL(blob); // Create an object URL for the blob
+
+        // Create a hidden anchor element for downloading
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = "exported_data.csv"; // Set the filename to match the CSV file
+        downloadLink.style.display = "none";
+
+        // Append the anchor to the document
+        document.body.appendChild(downloadLink);
+
+        // Simulate a click event to trigger the download
+        downloadLink.click();
+
+        // Clean up
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(downloadLink);
+      } else {
+        console.error("Failed to download the file:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      toast.error("Failed !!! Unable to Export data...");
+    }
   };
 
   const handleTabChange = (tab) => {
@@ -73,107 +99,130 @@ const ExportUser = () => {
     history.push(`/${tab}`);
   };
 
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
+  const exportTypeOption = [
+    { value: "excel", label: "Excel" },
+    { value: "csv", label: "CSV" },
+  ];
+
+  const handleExportTypeChange = (selectedExportType) => {
+    setError("");
+    setExportType(selectedExportType);
+
+    if (selectedExportType === "excel") {
+      handleExportToExcel();
+    } else if (selectedExportType === "csv") {
+      handleExportToCSV();
+    }
+  };
+
+  const handleExportToExcel = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/export_to_excel", config)
+      .then((response) => {
+        const data = response.data.data;
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch data!");
+      });
+  };
+
+  const handleExportToCSV = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/export_to_csv", config)
+      .then((response) => {
+        const data = response.data.data;
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch data!");
+      });
+  };
+
+  const handleExportButtonClick = () => {
+    if (exportType === undefined) {
+      setError("Please select Export type...");
+    } else {
+      setError("");
+      if (exportType === "excel") {
+        handleExport();
+      } else if (exportType === "csv") {
+        handleExportCSV();
+      }
+    }
+  };
+
   return (
     <>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/users-list">
-            Users List
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventKey="Follow"
-            type="button"
-            to="/import-user">
-            Import File
-          </Link>
-        </Nav.Item>
-      </Nav> */}
-
-      <Row>
-        <Col xxl={12}>
-          <Card>
+      <div className="row">
+        <div className="col-lg-12">
+          <div className="card">
             <Tabs activeKey={activeTab} onSelect={handleTabChange}>
               <Tab eventKey="export-user" title="Export"></Tab>
               <Tab eventKey="import-user" title="Import"></Tab>
             </Tabs>
+            <div className="card-header">
+              <h4 className="card-title">Export Data</h4>
+            </div>
+            <div className="card-body">
+              <div className="form-validation">
+                <form className="form-valide">
+                  <div className="row">
+                    <div className="col-xl-12">
+                      <div className="form-group mb-3 row">
+                        <label className="col-xl-1 col-form-label">
+                          Export Type
+                          <span className="text-danger">*</span>
+                        </label>
 
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="card">
-                  <div className="card-header">
-                    <h4 className="card-title">Export All Users Data</h4>
-                  </div>
-                  <div className="card-body">
-                    <div className="form-validation">
-                      <form
-                        className="form-valide"
-                        action="#"
-                        method="post"
-                        onSubmit={(e) => e.preventDefault()}>
-                        <div className="row">
-                          <div className="col-xl-12">
-                            <div className="form-group mb-3 row">
-                              <label
-                                className="col-xl-2 col-form-label"
-                                htmlFor="val-website">
-                                Export Type
-                                <span className="text-danger">*</span>
-                              </label>
-                              {/* <div className="col-xl-8">
-                        <Select
-              defaultValue={selectedOption}
-              onChange={setSelectedOption}
-              options={options}
-            >
-            </Select><br/><br/><br/><br/>
-                                </div> */}
-                              <div className="col-xl-8 me-2">
-                                <button
-                                  onClick={handleExport}
-                                  className="btn btn-primary float-right">
-                                  Export in Excel{" "}
-                                  <i className="fa fa-download"></i>
-                                </button>
-                                &nbsp;&nbsp; OR &nbsp;
-                                <CSVLink
-                                  data={data}
-                                  className="btn btn-primary">
-                                  Export in Csv{" "}
-                                  <i className="fa fa-download"></i>
-                                </CSVLink>
-                                <br />
-                                &nbsp;&nbsp; &nbsp;
-                              </div>
-                              <div>
-                                <br />
-                                <br />
-                                <Link to="/users-list">
-                                  <Button className="btn btn-light">
-                                    Cancel
-                                  </Button>
-                                </Link>
-                              </div>
+                        <div className="col-xl-5 me-2">
+                          <Select
+                            value={exportType}
+                            options={exportTypeOption}
+                            onChange={(selectedOption) =>
+                              handleExportTypeChange(selectedOption.value)
+                            }
+                          />
+                          <br />
+                          <br />
+                          <Button onClick={handleExportButtonClick}>
+                            Export
+                          </Button>
+                          &nbsp;&nbsp; &nbsp;
+                          <Link to="/users-list">
+                            <Button className="btn btn-light">Cancel</Button>
+                          </Link>
+                          {error && (
+                            <div className="text-danger fs-16 mt-2">
+                              {error}
                             </div>
-                          </div>
+                          )}
                         </div>
-                      </form>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
-          </Card>
-        </Col>
-      </Row>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
