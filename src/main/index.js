@@ -415,8 +415,8 @@ const Markup = () => {
     { url: "user-courses-info/:id", component: UCoursesInfo },
     // { url: "content", component: Content },
     // { url: "webcontent", component: WebContent },
-    { url: "video/:id", component: Video }, //add video to course
-    { url: "video/edit/:id", component: VideoEdit }, //edit video to course
+    { url: "video/:id", component: Video }, //add video content to course
+    { url: "video/edit/:id", component: VideoEdit }, //edit video content to course
     // { url: "audio", component: Audio },
     { url: "presentation", component: Presentation },
     { url: "scorm", component: Scorm },

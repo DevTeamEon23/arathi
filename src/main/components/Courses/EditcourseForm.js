@@ -1,16 +1,7 @@
 import React, { Fragment, useState, useRef, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
-  Button,
-  Modal,
-  Table,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
@@ -39,14 +30,12 @@ const EditcourseForm = (props) => {
   const [selectedOptionCertificate, setSelectedOptionCertificate] = useState(
     {}
   ); //Certificate
-  const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
   const [selectedOptionLevel, setSelectedOptionLevel] = useState({}); // Level
   const [coursecode, setCoursecode] = useState("");
   const [description, setDescription] = useState(""); //Description
   const [isActive, setIsActive] = useState(false); //Active
   const [isHide, setIsHide] = useState(false); //Hide
   const [price, setPrice] = useState("");
-  const [courselink, setCourselink] = useState(""); //to save youtube link
   const fileInputRef = useRef(null);
   const [capacity, setCapacity] = useState(""); //Capacity
   const [startdate, setStartdate] = useState(""); //Course StartDate
@@ -58,9 +47,15 @@ const EditcourseForm = (props) => {
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [file, setFile] = useState(null); //for change image file
   const [imageUrl, setImageUrl] = useState(""); //image cdn file
-  const [videoUrl, setVideoUrl] = useState("");
+  const [courselink, setCourselink] = useState(null); //to save youtube link
+  const [youTubeLink, setyouTubeLink] = useState(null); //for change youtube link
+  const [videoUrl, setVideoUrl] = useState(null); //to save video link
+  const [selectedVideo, setSelectedVideo] = useState(null); //for change video
   const [userId, setUserId] = useState();
   const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
+  const [submitError, setSubmitError] = useState(""); //show YT or video upload
+  const [isValidLink, setIsValidLink] = useState(true);
+  const [errorVideo, setErrorVideo] = useState(null);
   const history = useHistory();
 
   useEffect(() => {
@@ -73,15 +68,67 @@ const EditcourseForm = (props) => {
     getAllCategories();
   }, []);
 
+  const updateAllData = () => {};
+
+  const handleSubmit1 = (e) => {
+    console.log(courselink);
+    e.preventDefault();
+    setBtnSubmitLoader(true);
+
+    const formData = new FormData();
+    formData.append("id", id);
+    formData.append("user_id", userId);
+    formData.append("coursename", coursename);
+    formData.append("description", description);
+    formData.append("coursecode", coursecode);
+    formData.append("price", price);
+    formData.append("courselink", courselink);
+    formData.append("coursevideo", selectedVideo);
+    formData.append("capacity", capacity);
+    formData.append("startdate", startdate);
+    formData.append("enddate", enddate);
+    formData.append("timelimit", timelimit);
+    formData.append("certificate", selectedOptionCertificate);
+    formData.append("level", selectedOptionLevel);
+    formData.append("category", selectCategoriesData.value);
+    formData.append("isActive", isActive);
+    formData.append("isHide", isHide);
+    formData.append("file", file);
+
+    const url = "https://v1.eonlearning.tech/lms-service/update_courses";
+    console.log(file, selectedVideo);
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        setBtnSubmitLoader(false);
+        toast.success("Course updated successfully!!!");
+        history.push(`/video/edit/${courseID}`);
+      })
+      .catch((error) => {
+        console.error(error);
+        setBtnSubmitLoader(false);
+        toast.error("Failed !!! Unable to update course...");
+      });
+  };
   // edit form data submit
   const handleEditFormSubmit = (event) => {
-    console.log(courselink);
+    console.log(
+      courselink,
+      youTubeLink,
+      videoUrl,
+      selectedVideo,
+      file,
+      imageUrl
+    );
     event.preventDefault();
     setBtnSubmitLoader(true);
-    if (file === null || selectedVideo === null) {
-      alert("Please add Photo or Video");
-      setBtnSubmitLoader(false);
-    } else {
+    if (file !== null && selectedVideo !== null) {
       const formData = new FormData();
       formData.append("id", id);
       formData.append("user_id", userId);
@@ -89,8 +136,11 @@ const EditcourseForm = (props) => {
       formData.append("description", description);
       formData.append("coursecode", coursecode);
       formData.append("price", price);
-      formData.append("courselink", courselink);
-      formData.append("coursevideo", selectedVideo);
+      formData.append(
+        "courselink",
+        courselink === null ? youTubeLink : courselink
+      );
+      formData.append("coursevideo", videoUrl);
       formData.append("capacity", capacity);
       formData.append("startdate", startdate);
       formData.append("enddate", enddate);
@@ -120,6 +170,41 @@ const EditcourseForm = (props) => {
         .catch((error) => {
           console.error(error);
           setBtnSubmitLoader(false);
+          toast.error("Failed !!! Unable to update course...");
+        });
+    } else {
+      console.log("inside else");
+      const id = courseID;
+      const newData = {
+        coursename: coursename,
+        description: description,
+        coursecode: coursecode,
+        price: price,
+        capacity: capacity,
+        startdate: startdate,
+        enddate: enddate,
+        certificate: selectedOptionCertificate.value,
+        level: selectedOptionLevel.value,
+        category: selectCategoriesData.value,
+        isActive: isActive,
+        isHide: isHide,
+        courselink: courselink === null ? youTubeLink : courselink,
+      };
+
+      const url = `https://v1.eonlearning.tech/lms-service/update_course/${id}`;
+      axios
+        .put(url, newData, {
+          headers: {
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("Course updated successfully!!!");
+          setBtnSubmitLoader(false);
+          history.push(`/video/edit/${courseID}`);
+        })
+        .catch((error) => {
+          console.error("Error making PUT request:", error);
           toast.error("Failed !!! Unable to update course...");
         });
     }
@@ -161,24 +246,27 @@ const EditcourseForm = (props) => {
       // Create the formatted date string in "yyyy-MM-dd" format
       const formattedEnd = `${year2}-${month2}-${day2}`;
 
-      const link = res.courselink === null ? "" : courselink;
-
+      const link = res.courselink === null ? "No youTube link" : res.courselink;
       if (response.data.status === "success") {
         setCoursename(res.coursename);
         setDescription(res.description);
         setIsActive(res.isActive);
         setIsHide(res.isHide);
         setPrice(res.price);
-        setCourselink(res.courselink);
         setCapacity(res.capacity);
         setCoursecode(res.coursecode);
         setStartdate(formattedStart);
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
         setImageUrl(res.file);
-        setVideoUrl(res.coursevideo);
+        setCourselink(res.courselink);
+        setVideoUrl(
+          res.coursevideo === "https://v1.eonlearning.tech/"
+            ? null
+            : res.coursevideo
+        );
         setUserId(res.user_id);
-        setSelectedVideo(res.coursevideo);
+        // setSelectedVideo(res.coursevideo);
         const selectedOption1 = certificate.find(
           (option) =>
             option.value.toLowerCase() === res.certificate.trim().toLowerCase()
@@ -245,15 +333,40 @@ const EditcourseForm = (props) => {
   // youtube link handle
   const handleInputChange = (event) => {
     const value = event.target.value;
-    setCourselink(value);
+    setyouTubeLink(value);
+    validateYouTubeLink(value);
   };
+
+  const validateYouTubeLink = (link) => {
+    // Regular expression to check for valid YouTube links
+    const youtubeRegex =
+      /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
+    setIsValidLink(youtubeRegex.test(link));
+  };
+
   //video file handle
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const videoUrl = URL.createObjectURL(file);
+  //     setVideoUrl(videoUrl);
+  //     setSelectedVideo(file);
+  //   }
+  // };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      const videoUrl = URL.createObjectURL(file);
-      setVideoUrl(videoUrl);
-      setSelectedVideo(file);
+    const maxFileSize = 100 * 1024 * 1024; // 100MB in bytes
+    if (file.size > maxFileSize) {
+      setErrorVideo("File size exceeds the 100MB limit");
+      setSelectedVideo(null);
+    } else {
+      const fileNameWithoutSpaces = file.name.replace(/\s+/g, ""); // Remove spaces from the file name
+      const modifiedFile = new File([file], fileNameWithoutSpaces, {
+        type: file.type,
+      });
+
+      setErrorVideo("");
+      setSelectedVideo(modifiedFile);
     }
   };
 
@@ -315,6 +428,15 @@ const EditcourseForm = (props) => {
     } else {
       setErrorMessageCapacity("Capacity must be a number between 1 and 100.");
     }
+  };
+
+  const handleYTLinkDelete = (event) => {
+    event.preventDefault();
+    console.log("inside handleYTLinkDelete");
+    setSelectedVideo(null);
+    setVideoUrl(null);
+    setCourselink(null);
+    setyouTubeLink(null);
   };
 
   return (
@@ -485,91 +607,112 @@ const EditcourseForm = (props) => {
                             </div>
                           </div>
 
-                          <div className="form-group mb-3 row"></div>
-
-                          <div className="form-group mb-3 row">
+                          <div className="form-group mb-2 row">
                             <label
                               className="col-lg-4 col-form-label"
                               htmlFor="courselink">
                               Course Intro Video{" "}
                             </label>
-                            <div className="input-group mb-3 col-lg-6 ">
-                              <span className="input-group-text">
-                                Youtube Video Link
-                              </span>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Paste YouTube link here..."
-                                id="courselink"
-                                name="courselink"
-                                value={courselink}
-                                onChange={handleInputChange}
-                              />
+
+                            {console.log("link", youTubeLink, courselink)}
+                            <div className="input-group mb-2 col-lg-6 ">
+                              {courselink && (
+                                <p className="mt-2 fw-bold">
+                                  {" "}
+                                  <a
+                                    href={courselink}
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    {courselink}
+                                  </a>
+                                </p>
+                              )}
+                              {courselink == null && (
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Paste YouTube link here..."
+                                  id="courselink"
+                                  value={youTubeLink}
+                                  onChange={handleInputChange}
+                                />
+                              )}
+                              {!isValidLink && (
+                                <p style={{ color: "red" }}>
+                                  Please enter a valid YouTube link.
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="input-group mb-2 col-lg-1 "></div>
+                          </div>
+                          <div className="form-group mb-1 row">
+                            <label className="col-lg-4 col-form-label"></label>
+                            <div className="input-group mb-1 col-lg-6 ">
+                              <span className="fs-18 fw-bold">OR</span>
                             </div>
                           </div>
-
-                          <div className="form-group mb-3 row ">
+                          <div className="form-group row ">
                             <label
                               htmlFor="selectedVideo"
-                              className="col-lg-4 col-form-label">
-                              Update Your Video
-                              <span className="text-danger">*</span>
-                            </label>
-                            <div className="input-group mb-3 col-lg-6 ">
+                              className="col-lg-4 col-form-label"></label>
+                            <div className="input-group  col-lg-6 ">
                               <div>
-                                <label>
-                                  {selectedVideo
-                                    ? `Selected File: ${selectedVideo}`
-                                    : "Choose a file..."}
+                                {videoUrl === null && (
                                   <input
                                     type="file"
                                     accept=".mp4, .mkv"
                                     id="selectedVideo"
                                     onChange={handleFileChange}
                                     ref={fileInputRef}
-                                    style={{ display: "none" }}
-                                    className="form-control-file"
                                   />
-                                </label>
+                                )}
                                 <br />
+                                {errorVideo && (
+                                  <div className="error-message text-danger fs-14">
+                                    {errorVideo}
+                                  </div>
+                                )}
 
-                                <div className="embed-responsive embed-responsive-16by9 d-flex">
-                                  {videoUrl && (
-                                    <>
-                                      <video
-                                        controls
-                                        src={selectedVideo}
-                                        type={selectedVideo.type}
-                                        alt="video"
-                                        className="embed-responsive-item"
-                                        width="400"
-                                        height="200">
-                                        {/* <source
-                                        src={selectedVideo}
-                                        type={selectedVideo.type}
-                                        alt="video"
-                                        className="embed-responsive-item"
-                                        // width="250"
-                                        // height="200"
-                                      /> */}
-                                      </video>
-                                      <RxCross2
-                                        className="fs-18 fs-bold"
-                                        title="Delete"
-                                        style={{
-                                          marginBottom: "220px",
-                                          marginLeft: "18px",
-                                        }}
-                                        onClick={handleVideoDelete}
+                                {videoUrl && (
+                                  <video controls className="video-player">
+                                    <source
+                                      src={videoUrl}
+                                      type={videoUrl.type}
+                                      alt="video"
+                                    />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                )}
+                                {selectedVideo && (
+                                  <div>
+                                    <video width="400" height="250" controls>
+                                      <source
+                                        src={URL.createObjectURL(selectedVideo)}
+                                        type="video/mp4"
                                       />
-                                    </>
-                                  )}
-                                </div>
+                                      Your browser does not support the video
+                                      tag.
+                                    </video>
+                                  </div>
+                                )}
+                                {console.log("video", videoUrl, selectedVideo)}
+                                <br />
+                                <button
+                                  className="btn btn-danger p-1 mb-3"
+                                  // style={{ marginLeft: "10px" }}
+                                  onClick={handleYTLinkDelete}>
+                                  Remove Video OR Youtube Link
+                                </button>
                               </div>
                             </div>
                           </div>
 
+                          {submitError && (
+                            <p className="error-message text-danger text-center fs-16">
+                              {submitError}
+                            </p>
+                          )}
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
@@ -691,7 +834,6 @@ const EditcourseForm = (props) => {
                               <span className="text-danger">*</span>
                             </label>
                             <br />
-                            {console.log(file, imageUrl)}
                             <div className="">
                               <div>
                                 {imageUrl && (

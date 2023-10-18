@@ -48,7 +48,7 @@ const AddCourses = () => {
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
-  const [submitError, setSubmitError] = useState("");
+  const [submitError, setSubmitError] = useState(""); //show YT or video upload
   const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
   const [courseID, setCourseID] = useState("");
 
@@ -501,9 +501,7 @@ const AddCourses = () => {
                           Course Intro Video{" "}
                         </label>
                         <div className="input-group mb-2 col-lg-6 ">
-                          <span className="input-group-text">
-                            Youtube Video Link
-                          </span>
+                          <span className="input-group-text">Youtube Link</span>
                           <input
                             type="text"
                             className="form-control"
@@ -512,7 +510,7 @@ const AddCourses = () => {
                             name="courselink"
                             value={courselink}
                             onChange={handleInputChange}
-                          />
+                          />{" "}
                           {!isValidLink && (
                             <p style={{ color: "red" }}>
                               Please enter a valid YouTube link.
