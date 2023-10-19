@@ -114,9 +114,9 @@ const ExportUser = () => {
     setError("");
     setExportType(selectedExportType);
 
-    if (selectedExportType === "excel") {
+    if (selectedExportType.value === "excel") {
       handleExportToExcel();
-    } else if (selectedExportType === "csv") {
+    } else if (selectedExportType.value === "csv") {
       handleExportToCSV();
     }
   };
@@ -160,9 +160,9 @@ const ExportUser = () => {
       setError("Please select Export type...");
     } else {
       setError("");
-      if (exportType === "excel") {
+      if (exportType.value === "excel") {
         handleExport();
-      } else if (exportType === "csv") {
+      } else if (exportType.value === "csv") {
         handleExportCSV();
       }
     }
@@ -195,8 +195,8 @@ const ExportUser = () => {
                           <Select
                             value={exportType}
                             options={exportTypeOption}
-                            onChange={(selectedOption) =>
-                              handleExportTypeChange(selectedOption.value)
+                            onChange={(exportType) =>
+                              handleExportTypeChange(exportType)
                             }
                           />
                           <br />

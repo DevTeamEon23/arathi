@@ -69,7 +69,7 @@ const Home = () => {
               <div className="card score-active">
                 <div className="card-header border-0 flex-wrap">
                   <h4>Learning Activity</h4>
-                  <ul className="d-flex">
+                  {/* <ul className="d-flex">
                     <li>
                       <svg
                         className="me-2"
@@ -112,7 +112,7 @@ const Home = () => {
                       </svg>
                       Last Month
                     </li>
-                  </ul>
+                  </ul> */}
                 </div>
                 <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
                   <LearningActivityChart />
