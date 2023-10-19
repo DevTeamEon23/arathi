@@ -45,12 +45,12 @@ const EditcourseForm = (props) => {
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
   const [activeTab, setActiveTab] = useState("edit-courses/:id");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
-  const [file, setFile] = useState(null); //for change image file
+  const [file, setFile] = useState(""); //for change image file
   const [imageUrl, setImageUrl] = useState(""); //image cdn file
   const [courselink, setCourselink] = useState(null); //to save youtube link
   const [youTubeLink, setyouTubeLink] = useState(null); //for change youtube link
   const [videoUrl, setVideoUrl] = useState(null); //to save video link
-  const [selectedVideo, setSelectedVideo] = useState(null); //for change video
+  const [selectedVideo, setSelectedVideo] = useState(""); //for change video
   const [userId, setUserId] = useState();
   const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
   const [submitError, setSubmitError] = useState(""); //show YT or video upload
@@ -67,8 +67,6 @@ const EditcourseForm = (props) => {
     }
     getAllCategories();
   }, []);
-
-  const updateAllData = () => {};
 
   const handleSubmit1 = (e) => {
     console.log(courselink);
@@ -118,95 +116,197 @@ const EditcourseForm = (props) => {
   };
   // edit form data submit
   const handleEditFormSubmit = (event) => {
-    console.log(
-      courselink,
-      youTubeLink,
-      videoUrl,
-      selectedVideo,
-      file,
-      imageUrl
-    );
     event.preventDefault();
     setBtnSubmitLoader(true);
-    if (file !== null && selectedVideo !== null) {
-      const formData = new FormData();
-      formData.append("id", id);
-      formData.append("user_id", userId);
-      formData.append("coursename", coursename);
-      formData.append("description", description);
-      formData.append("coursecode", coursecode);
-      formData.append("price", price);
-      formData.append(
-        "courselink",
-        courselink === null ? youTubeLink : courselink
+    if (courselink === null && selectedVideo === "" && videoUrl === null) {
+      console.log("no video or link");
+      setSubmitError("Please Upload video or provide a youtube link.");
+      setBtnSubmitLoader(false);
+    } else if (selectedVideo && youTubeLink) {
+      console.log("both video and link");
+      setSubmitError(
+        "Please choose either a video or provide a youtube link, not both."
       );
-      formData.append("coursevideo", videoUrl);
-      formData.append("capacity", capacity);
-      formData.append("startdate", startdate);
-      formData.append("enddate", enddate);
-      formData.append("timelimit", timelimit);
-      formData.append("certificate", selectedOptionCertificate);
-      formData.append("level", selectedOptionLevel);
-      formData.append("category", selectCategoriesData.value);
-      formData.append("isActive", isActive);
-      formData.append("isHide", isHide);
-      formData.append("file", file);
-
-      const url = "https://v1.eonlearning.tech/lms-service/update_courses";
-      console.log(file, selectedVideo);
-      axios
-        .post(url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "Auth-Token": token,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          setBtnSubmitLoader(false);
-          toast.success("Course updated successfully!!!");
-          history.push(`/video/edit/${courseID}`);
-        })
-        .catch((error) => {
-          console.error(error);
-          setBtnSubmitLoader(false);
-          toast.error("Failed !!! Unable to update course...");
-        });
+      setBtnSubmitLoader(false);
     } else {
-      console.log("inside else");
-      const id = courseID;
-      const newData = {
-        coursename: coursename,
-        description: description,
-        coursecode: coursecode,
-        price: price,
-        capacity: capacity,
-        startdate: startdate,
-        enddate: enddate,
-        certificate: selectedOptionCertificate.value,
-        level: selectedOptionLevel.value,
-        category: selectCategoriesData.value,
-        isActive: isActive,
-        isHide: isHide,
-        courselink: courselink === null ? youTubeLink : courselink,
-      };
+      setSubmitError("");
+      setBtnSubmitLoader(true);
 
-      const url = `https://v1.eonlearning.tech/lms-service/update_course/${id}`;
-      axios
-        .put(url, newData, {
-          headers: {
-            "Auth-Token": token,
-          },
-        })
-        .then((response) => {
-          toast.success("Course updated successfully!!!");
-          setBtnSubmitLoader(false);
-          history.push(`/video/edit/${courseID}`);
-        })
-        .catch((error) => {
-          console.error("Error making PUT request:", error);
-          toast.error("Failed !!! Unable to update course...");
-        });
+      if (file !== null && videoUrl) {
+        console.log("if img change", file, selectedVideo, videoUrl);
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("user_id", userId);
+        formData.append("coursename", coursename);
+        formData.append("description", description);
+        formData.append("coursecode", coursecode);
+        formData.append("price", price);
+        formData.append(
+          "courselink",
+          courselink === null ? youTubeLink : courselink
+        );
+        formData.append("coursevideo", videoUrl ? "" : videoUrl);
+        formData.append("capacity", capacity);
+        formData.append("startdate", startdate);
+        formData.append("enddate", enddate);
+        formData.append("timelimit", timelimit);
+        formData.append("certificate", selectedOptionCertificate.value);
+        formData.append("level", selectedOptionLevel.value);
+        formData.append("category", selectCategoriesData.value);
+        formData.append("isActive", isActive);
+        formData.append("isHide", isHide);
+        formData.append("file", file);
+
+        const url =
+          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+        axios
+          .post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "Auth-Token": token,
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            setBtnSubmitLoader(false);
+            toast.success("Course updated successfully!!!");
+            history.push(`/video/edit/${courseID}`);
+          })
+          .catch((error) => {
+            console.error(error);
+            setBtnSubmitLoader(false);
+            toast.error("Failed !!! Unable to update course...");
+          });
+      } else if (selectedVideo !== null) {
+        console.log("if only change video", file, selectedVideo);
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("user_id", userId);
+        formData.append("coursename", coursename);
+        formData.append("description", description);
+        formData.append("coursecode", coursecode);
+        formData.append("price", price);
+        formData.append(
+          "courselink",
+          courselink === null ? youTubeLink : courselink
+        );
+        formData.append("coursevideo", selectedVideo);
+        formData.append("capacity", capacity);
+        formData.append("startdate", startdate);
+        formData.append("enddate", enddate);
+        formData.append("timelimit", timelimit);
+        formData.append("certificate", selectedOptionCertificate.value);
+        formData.append("level", selectedOptionLevel.value);
+        formData.append("category", selectCategoriesData.value);
+        formData.append("isActive", isActive);
+        formData.append("isHide", isHide);
+        formData.append("file", file);
+
+        const url =
+          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+        axios
+          .post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "Auth-Token": token,
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            setBtnSubmitLoader(false);
+            toast.success("Course updated successfully!!!");
+            history.push(`/video/edit/${courseID}`);
+          })
+          .catch((error) => {
+            console.error(error);
+            setBtnSubmitLoader(false);
+            toast.error("Failed !!! Unable to update course...");
+          });
+      } else if (file !== null || selectedVideo !== null) {
+        console.log("if only one change video and img change");
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("user_id", userId);
+        formData.append("coursename", coursename);
+        formData.append("description", description);
+        formData.append("coursecode", coursecode);
+        formData.append("price", price);
+        formData.append(
+          "courselink",
+          courselink === null ? youTubeLink : courselink
+        );
+        formData.append(
+          "coursevideo",
+          videoUrl === null ? selectedVideo : videoUrl
+        );
+        formData.append("capacity", capacity);
+        formData.append("startdate", startdate);
+        formData.append("enddate", enddate);
+        formData.append("timelimit", timelimit);
+        formData.append("certificate", selectedOptionCertificate.value);
+        formData.append("level", selectedOptionLevel.value);
+        formData.append("category", selectCategoriesData.value);
+        formData.append("isActive", isActive);
+        formData.append("isHide", isHide);
+        formData.append("file", file);
+
+        const url =
+          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+        console.log(file, selectedVideo);
+        axios
+          .post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              "Auth-Token": token,
+            },
+          })
+          .then((response) => {
+            console.log(response.data);
+            setBtnSubmitLoader(false);
+            toast.success("Course updated successfully!!!");
+            history.push(`/video/edit/${courseID}`);
+          })
+          .catch((error) => {
+            console.error(error);
+            setBtnSubmitLoader(false);
+            toast.error("Failed !!! Unable to update course...");
+          });
+      } else {
+        console.log("inside else");
+        const id = courseID;
+        const newData = {
+          coursename: coursename,
+          description: description,
+          coursecode: coursecode,
+          price: price,
+          capacity: capacity,
+          startdate: startdate,
+          enddate: enddate,
+          certificate: selectedOptionCertificate.value,
+          level: selectedOptionLevel.value,
+          category: selectCategoriesData.value,
+          isActive: isActive,
+          isHide: isHide,
+          courselink: courselink === null ? youTubeLink : courselink,
+        };
+
+        const url = `https://v1.eonlearning.tech/lms-service/update_course/${id}`;
+        axios
+          .put(url, newData, {
+            headers: {
+              "Auth-Token": token,
+            },
+          })
+          .then((response) => {
+            toast.success("Course updated successfully!!!");
+            setBtnSubmitLoader(false);
+            history.push(`/video/edit/${courseID}`);
+          })
+          .catch((error) => {
+            console.error("Error making PUT request:", error);
+            toast.error("Failed !!! Unable to update course...");
+          });
+      }
     }
   };
 
@@ -379,7 +479,7 @@ const EditcourseForm = (props) => {
 
   const handleImageDelete = () => {
     setImageUrl(null);
-    setFile(null); // Reset the selected file
+    setFile(""); // Reset the selected file
   };
 
   const handleVideoDelete = () => {
@@ -433,7 +533,7 @@ const EditcourseForm = (props) => {
   const handleYTLinkDelete = (event) => {
     event.preventDefault();
     console.log("inside handleYTLinkDelete");
-    setSelectedVideo(null);
+    setSelectedVideo("");
     setVideoUrl(null);
     setCourselink(null);
     setyouTubeLink(null);
@@ -635,6 +735,7 @@ const EditcourseForm = (props) => {
                                   id="courselink"
                                   value={youTubeLink}
                                   onChange={handleInputChange}
+                                  onBlur={() => setBtnSubmitLoader("")}
                                 />
                               )}
                               {!isValidLink && (

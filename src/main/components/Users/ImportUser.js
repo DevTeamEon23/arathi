@@ -88,7 +88,6 @@ const ImportUser = () => {
   const handleSubmit = async () => {
     if (selectedFile) {
       setFileError("");
-      console.log(selectedFile);
       const formData = new FormData();
       formData.append("file", selectedFile);
       const apiEndpoint = getApiEndpoint(roleType);
@@ -102,10 +101,6 @@ const ImportUser = () => {
           },
         })
         .then((response) => {
-          console.log(response.data, response.data.message);
-
-          // toast.success(" Users Added Successfully!!!");
-
           Swal.fire({
             title: "Success!",
             text: response.data.message,
@@ -126,7 +121,6 @@ const ImportUser = () => {
           });
         });
     } else {
-      console.log("No file selected.");
       setFileError("Please Select file OR Submit the selected file.");
     }
   };

@@ -16,17 +16,18 @@ const UserFiles = (props) => {
   const userId = props.match.params.id;
   const [activeTab, setActiveTab] = useState("user-files/:id");
   const [selectedFile, setSelectedFile] = useState(null); //excel file
-
   const [fileData, setFileData] = useState([]);
-
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
   const [showModal, setShowModal] = useState(false); //delete button modal
   const [token, setToken] = useState(); //auth token
   const [userID, setUserID] = useState("");
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(true);
   const [deactive, setDeactive] = useState(true);
   const [allFillData, setAllFillData] = useState([]); //set fill data
   const dropzoneRef = useRef(null);
+  const [fileName, setFileName] = useState();
+  const [fileType, setFileType] = useState(null);
+  const [fileUrl, setFileUrl] = useState();
   const history = useHistory();
 
   const handleTabChange = (tab) => {
@@ -130,7 +131,6 @@ const UserFiles = (props) => {
       const queryParams = {
         user_id: userId,
         active: active,
-        deactive: deactive,
       };
       const url = new URL(
         "https://v1.eonlearning.tech/lms-service/upload_file"
@@ -161,11 +161,48 @@ const UserFiles = (props) => {
   };
 
   const handleDelete = () => {};
+
   const handleDownload = () => {};
-  const handlePreview = () => {
+
+  const handlePreview = (e, id, name, fileFormat, file) => {
+    console.log("inside handle preview", id, name, fileFormat);
     setShowPreviewModal(true);
+    setFileName(name);
+    setFileType(fileFormat);
+    setFileUrl(file);
   };
 
+  const convertFileSize = (fileSizeString) => {
+    const numericValue = parseFloat(fileSizeString);
+    const fileSizeKB = numericValue / 1024;
+    const fileSizeMB = fileSizeKB / 1024;
+    return {
+      KB: fileSizeKB.toFixed(2),
+      MB: fileSizeMB.toFixed(2),
+    };
+  };
+
+  const renderExcel = () => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", fileUrl, true);
+    xhr.responseType = "arraybuffer";
+
+    xhr.onload = (e) => {
+      const arrayBuffer = e.target.response;
+      const data = new Uint8Array(arrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+
+      // Assuming you want to display the first sheet
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      const html = XLSX.utils.sheet_to_html(sheet);
+
+      // Use dangerouslySetInnerHTML to render the HTML in React
+      return <div dangerouslySetInnerHTML={{ __html: html }} />;
+    };
+
+    xhr.send();
+  };
   return (
     <Fragment>
       <div className="row">
@@ -267,13 +304,23 @@ const UserFiles = (props) => {
                             <center>{data.filename}</center>
                           </td>
                           <td>
-                            <center>{data.active}</center>
+                            <center>
+                              {data.active === 1 ? "True" : "False"}
+                            </center>
                           </td>
                           <td>
                             <center>{data.file_type}</center>
                           </td>
                           <td>
-                            <center>{data.file_size_mb}</center>
+                            <center>
+                              {convertFileSize(data.file_size_formatted).MB >= 1
+                                ? `${
+                                    convertFileSize(data.file_size_formatted).MB
+                                  } MB`
+                                : `${
+                                    convertFileSize(data.file_size_formatted).KB
+                                  } KB`}
+                            </center>
                           </td>
                           <td>
                             <center>-</center>
@@ -282,7 +329,15 @@ const UserFiles = (props) => {
                             <center>
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
-                                onClick={(e) => handlePreview(e, data.id)}>
+                                onClick={(e) =>
+                                  handlePreview(
+                                    e,
+                                    data.id,
+                                    data.filename,
+                                    data.file_type,
+                                    data.file
+                                  )
+                                }>
                                 <MdPreview
                                   className="fs-18 fs-bold"
                                   title="Preview"
@@ -337,7 +392,28 @@ const UserFiles = (props) => {
         <Modal.Header closeButton>
           <Modal.Title>Preview</Modal.Title>
         </Modal.Header>
-        <Modal.Body></Modal.Body>
+        <Modal.Body>
+          <p className="fs-16">
+            File Name :<b>{fileName}</b>
+          </p>
+          <div>
+            {fileType === "pdf" ? (
+              <iframe
+                src={fileUrl}
+                title="PDF"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "mp4" ? (
+              <video controls src={fileUrl} style={{ width: "100%" }} />
+            ) : fileType === "mp3" ? (
+              <audio controls src={fileUrl} />
+            ) : fileType === "xlsx" ? (
+              renderExcel()
+            ) : (
+              ""
+            )}
+          </div>
+        </Modal.Body>
         <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>

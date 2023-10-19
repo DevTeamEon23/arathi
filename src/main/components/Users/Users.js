@@ -397,7 +397,12 @@ const Users = () => {
                       <Button
                         className="ml-2"
                         onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={endIndex >= (currentData?.length || 0)}>
+                        disabled={
+                          endIndex >=
+                          (userRole === "Superadmin"
+                            ? userAllData?.length || 0
+                            : userAdminData?.length || 0)
+                        }>
                         Next
                       </Button>
                     </div>
