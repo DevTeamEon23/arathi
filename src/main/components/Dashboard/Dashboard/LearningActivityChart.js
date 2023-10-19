@@ -1,184 +1,110 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
+import axios from "axios";
 
 class LearningActivityChart extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			series: [
-				{
-					name: '',
-					data: [60, 70, 80, 50, 60, 50, 90]
-						
-				}, 
-				{
-				  name: '',
-				  data: [40, 50, 40, 60, 90, 70, 90]
-				}, 				
-			],
-			options: {
-				chart: {
-					type: 'area',
-					height: 300,
-					toolbar: {
-						show: false,
-					},
-					zoom: {
-						enabled: false
-					},
-				},
-				
-				dataLabels: {
-				  enabled: false
-				},
-				stroke: {
-				  width: [3, 3, 3],
-				  colors:['var(--secondary)','var(--primary)'],
-				  curve: 'straight'
-				},
-				legend: {
-					show:false,
-					tooltipHoverFormatter: function(val, opts) {
-						return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
-					},
-					markers: {
-						fillColors:['var(--secondary)','var(--primary)'],
-						width: 16,
-						height: 16,
-						strokeWidth: 0,
-						radius: 16
-					}
-				},
-				markers: {
-					size: [8,8],
-					strokeWidth: [4,4],
-					strokeColors: ['#fff','#fff'],
-					border:2,
-					radius: 2,
-					colors:['var(--secondary)','var(--primary)','#fff'],
-					hover: {
-						size: 10,
-					}
-				},
-				xaxis: {
-					categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-					labels: {
-						style: {
-						  colors: '#3E4954',
-						  fontSize: '14px',
-						   fontFamily: 'Poppins',
-						  fontWeight: 100,
-						  
-						},
-					},
-					axisBorder:{
-					  show: false,
-					}
-				},
-				yaxis: {
-					labels: {
-						minWidth: 20,
-						offsetX:-16,
-						style: {
-							colors: '#3E4954',
-							fontSize: '14px',
-							fontFamily: 'Poppins',
-							fontWeight: 100,
-						  
-						},
-					},
-				},
-				fill: {
-					colors:['#fff','#FF9432'],
-					type:'gradient',
-					opacity: 1,
-					gradient: {
-						shade:'light',
-						shadeIntensity: 1,
-						colorStops: [ 
-						  [
-							{
-							  offset: 0,
-							  color: '#fff',
-							  opacity: 0
-							},
-							{
-							  offset: 0.6,
-							  color: '#fff',
-							  opacity: 0
-							},
-							{
-							  offset: 100,
-							  color: '#fff',
-							  opacity: 0
-							}
-						  ],
-						  [
-							{
-							  offset: 0,
-							  color: 'var(--primary)',
-							  opacity: .4
-							},
-							{
-							  offset: 50,
-							  color: 'var(--primary)',
-							  opacity: 0.25
-							},
-							{
-							  offset: 100,
-							  color: '#fff',
-							  opacity: 0
-							}
-						  ]
-						]
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      chartOptions: {
+        chart: {
+          type: "area",
+          height: 300,
+          toolbar: {
+            show: true,
+          },
+        },
+        xaxis: {
+          categories: [],
+        },
+        yaxis: {
+          labels: {
+            minWidth: 20,
+            offsetX: -16,
+          },
+        },
+        // The series data is moved to chartOptions.series
+        series: [
+          {
+            name: "Points",
+            data: [], // Your data for the "Points" series goes here
+          },
+        ],
+        dataLabels: {
+          enabled: true,
+          style: {
+            fontSize: "12px",
+            width: "100px", // Increase the width as needed
+          },
+        },
+        legend: {
+          itemMargin: {
+            horizontal: 30, // Increase the horizontal margin as needed
+            vertical: 10, // Adjust the vertical margin as needed
+          },
+        },
+        tooltip: {
+          style: {
+            width: "100px", // Increase the width as needed
+          },
+        },
+      },
+    };
+  }
 
-					},
-				},
-				colors:['#1EA7C5','#FF9432'],
-				grid: {
-					borderColor: '#f1f1f1',
-					xaxis: {
-						lines: {
-							show: true
-						}
-					},
-					yaxis: {
-						lines: {
-							show: false
-						}
-					},
-				},
-				responsive: [{
-					breakpoint: 1602,
-					options: {
-						markers: {
-							size: [6,6,4],
-							hover: {
-								size: 7,
-							}
-						},
-						chart: {
-							height: 230,
-						},	
-					},
-					
-				}]				
-			}, 
-		};
-	}
+  componentDidMount() {
+    axios
+      .get("http://127.0.0.1:8000/auth/fetch_userpoints_by_userid")
+      .then((response) => {
+        const user_ids = response.data.data.user_ids;
+        const loginDates = user_ids.map((user) => user.login_date);
+        const userIDs = user_ids.map((user) => user.user_id); // Use user_id instead of full_name
+        const userLevels = user_ids.map((user) => user.user_level);
+        const pointsData = user_ids.map((user) => user.points);
+        this.setState({
+          data: user_ids,
+          chartOptions: {
+            ...this.state.chartOptions, // Preserve other chart options
+            xaxis: {
+              ...this.state.chartOptions.xaxis,
+              categories: loginDates,
+            },
+            // Set the series data with user_id
+            series: [
+              {
+                name: "Points",
+                data: pointsData,
+              },
+              {
+                name: "User ID", // Update the label to User ID
+                data: userIDs, // Use user_id instead of full_name
+              },
+              {
+                name: "User Level",
+                data: userLevels,
+              },
+            ],
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
 
-	render() {
-		return (
-			<div id="chart" >
-				<ReactApexChart
-				  options={this.state.options}
-				  series={this.state.series}
-				  type="area"
-				  height={300} 
-				/>
-			</div>
-		);
-	}
+  render() {
+    return (
+      <div>
+        <ReactApexChart
+          options={this.state.chartOptions}
+          series={this.state.chartOptions.series}
+          type="area"
+          height={300}
+        />
+      </div>
+    );
+  }
 }
 
 export default LearningActivityChart;
