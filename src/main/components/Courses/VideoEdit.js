@@ -94,7 +94,6 @@ const VideoEdit = (props) => {
       formData.append("deactive", isDeactive);
       formData.append("generate_token", true);
 
-      console.log(courseId, vdName, selectedVideo, isActive, isDeactive);
       const url =
         "https://v1.eonlearning.tech/lms-service/update_course_contents";
       axios
@@ -114,7 +113,6 @@ const VideoEdit = (props) => {
           toast.error("Failed !!! Unable to add content...");
         });
     } else {
-      console.log("inside else");
       const course_id = courseId;
       const newData = {
         video_unitname: vdName,
@@ -186,7 +184,7 @@ const VideoEdit = (props) => {
                             required
                           /> */}
                         <div className="col-lg-6">
-                          {VideoUrl && (
+                          {VideoUrl ? (
                             <div>
                               <video width="400" height="250" controls>
                                 <source src={VideoUrl} type="video/mp4" />
@@ -199,6 +197,14 @@ const VideoEdit = (props) => {
                                 Remove
                               </button>
                             </div>
+                          ) : (
+                            <input
+                              type="file"
+                              accept="video/*"
+                              className="form-control"
+                              onChange={handleVideoChange}
+                              required
+                            />
                           )}
                           {selectedVideo && (
                             <div>
