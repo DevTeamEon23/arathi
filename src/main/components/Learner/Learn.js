@@ -49,64 +49,6 @@ const ProfileActivityChart = loadable(() =>
   pMinDelay(import("../Dashboard/Dashboard/ProfileActivityChart"), 1000)
 );
 
-const WidgetBlog = ({ changeImage, title }) => {
-  return (
-    <>
-      <div className="col-xl-6 col-lg-6 col-sm-6">
-        <div className="card profile-widget">
-          <div className="card-body">
-            <div className="widget-courses align-items-center d-flex justify-content-between style-1 flex-wrap">
-              <div className="d-flex">
-                <img src={changeImage} alt="" />
-                <div className="ms-4">
-                  <h4>100</h4>
-                  <span>{title}</span>
-                </div>
-              </div>
-              {/* <Link to={"./courses"}>
-                <i className="las la-angle-right text-primary"></i>
-              </Link> */}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const CurrentCourse = ({ bg1, changeClass, title, percent, numb1, numb2 }) => {
-  return (
-    <>
-      <div className="col-xl-6 col-sm-5">
-        <div className="card">
-          <div className="card-body">
-            <div className="students1">
-              <div className="d-inline-block position-relative donut-chart-sale me-4">
-                <DonutChart
-                  className="donut1"
-                  value={percent}
-                  backgroundColor={bg1}
-                  backgroundColor2="rgba(245, 245, 245, 1)"
-                />
-                <small className={changeClass}>{percent}%</small>
-              </div>
-
-              <div className="">
-                <span>Class</span>
-                <h4 className="fs-18 mb-3">{title}</h4>
-                <span>Total Courses</span>
-                <h5 className="fs-18">
-                  {numb1} / {numb2}
-                </h5>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
 const Learn = () => {
   const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
@@ -117,13 +59,64 @@ const Learn = () => {
   const [token, setToken] = useState(); //auth token
   const [selectedItem, setSelectedItem] = useState(null);
   const [userImg, setUserImg] = useState(null);
-  let history = useHistory();
+
+  const [userName, setUserName] = useState(""); //Full name
+  const [registerDate, setRegisterDate] = useState("");
+  const [profileImg, setProfileImg] = useState(""); //img file
+  const [bio, setBio] = useState("");
+  const [userPoints, setUserPoints] = useState(0);
+  const [userLevels, setUserLevels] = useState(0);
+  const [courseCount, setcourseCount] = useState();
+  const [courseData, setcourseData] = useState([]);
+  const user_id = localStorage.getItem("id");
+  const history = useHistory();
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     getUsers();
+    fetchLearnerData(token);
   }, []);
+
+  const fetchLearnerData = async (accessToken) => {
+    try {
+      const queryParams = {
+        user_id: user_id,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/learner_overview"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const data = response.data.data;
+      const dateTimeString = data.user_infographics.created_at;
+      const date = new Date(dateTimeString);
+      const day = date.getDate();
+      const month = date.getMonth() + 1; // Months are zero-based, so add 1
+      const year = date.getFullYear();
+      const formattedDate = `${day < 10 ? "0" + day : day}-${
+        month < 10 ? "0" + month : month
+      }-${year}`;
+
+      console.log(data.course_names);
+      setUserName(data.user_infographics.full_name);
+      setRegisterDate(formattedDate);
+      setProfileImg(data.user_infographics.file);
+      setBio(data.user_infographics.bio);
+      setUserPoints(data.user_infographics.points);
+      setUserLevels(data.user_infographics.user_level);
+      setcourseCount(data.user_infographics.total_course_count);
+      setcourseData(data.course_names);
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to fetch data !");
+    }
+  };
 
   const handleExport = () => {
     const headings = [
@@ -166,6 +159,31 @@ const Learn = () => {
       });
   };
 
+  const WidgetBlog = ({ changeImage, title }) => {
+    return (
+      <>
+        <div className="col-xl-6 col-lg-6 col-sm-6">
+          <div className="card profile-widget">
+            <div className="card-body">
+              <div className="widget-courses align-items-center d-flex justify-content-between style-1 flex-wrap">
+                <div className="d-flex">
+                  <img src={changeImage} alt="" />
+                  <div className="ms-4">
+                    <h4>{title === "Course Completed" ? 0 : courseCount}</h4>
+                    <span>{title}</span>
+                  </div>
+                </div>
+                {/* <Link to={"./courses"}>
+                  <i className="las la-angle-right text-primary"></i>
+                </Link> */}
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   const handlePointsRule = () => {
     setShowAboutPane(true);
   };
@@ -189,6 +207,58 @@ const Learn = () => {
     setUserImg(img);
   };
 
+  const CurrentCourse = ({
+    bg1,
+    changeClass,
+    title,
+    percent,
+    numb1,
+    numb2,
+  }) => {
+    return (
+      <>
+        <div className="col-xl-6 col-sm-5">
+          <div className="card">
+            <div className="card-body">
+              <div className="students1">
+                <div className="d-inline-block position-relative donut-chart-sale me-4">
+                  <DonutChart
+                    className="donut1"
+                    value={percent}
+                    backgroundColor={bg1}
+                    backgroundColor2="rgba(245, 245, 245, 1)"
+                  />
+                  <small className={changeClass}>{percent}%</small>
+                </div>
+
+                <div className="">
+                  <span>Course</span>
+                  <h4 className="fs-18 mb-3">{title}</h4>
+                  <span>Total Courses {courseCount}</span>
+                  {/* <h5 className="fs-18">
+                    {numb1} / {numb2}
+                  </h5> */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const getRandomPercentage = () => {
+    return Math.floor(Math.random() * 101); // Generate a random percentage between 0 and 100
+  };
+
+  const getRandomNumber1 = () => {
+    return Math.floor(Math.random() * 101); // Generate a random number for numb1
+  };
+
+  const getRandomNumber2 = () => {
+    return Math.floor(Math.random() * 101); // Generate a random number for numb2
+  };
+
   return (
     <>
       <div className="row">
@@ -198,58 +268,29 @@ const Learn = () => {
 
             <div className="card-body text-center pb-3">
               <div className="instructors-media">
-                <img src={pic2} alt="" />
+                <img src={profileImg} alt="profile" />
                 <div className="instructors-media-info mt-4">
-                  <h4 className="mb-1">Nella Vita</h4>
-                  <span className="fs-18">Member Since 2020</span>
+                  <h4 className="mb-1">{userName}</h4>
+                  <span className="fs-18">Member Since {registerDate}</span>
                   <div className="d-flex justify-content-center my-3 mt-4">
                     <span
                       className="btn info-box text-start style-1"
                       onClick={() => setLargeModal(true)}>
                       <span>Points</span>
-                      <h4>2300</h4>
+                      <h4>{userPoints}</h4>
                     </span>
                     <div className="btn info-box text-start style-1">
-                      <span>Certificate</span>
-                      <h4>0</h4>
+                      <span>Levels</span>
+                      <h4>{userLevels}</h4>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="achievements ">
-                <h4 className="text-start mb-3">Achievements</h4>
-                <div className="achievements-content flex-wrap">
-                  <span>
-                    <img src={cup} alt="" />
-                  </span>
-                  <span>
-                    <img src={puzzle} alt="" />
-                  </span>
-                  <span>
-                    <img src={planet} alt="" />
-                  </span>
-                  <span>
-                    <img src={skill} alt="" />
-                  </span>
-                  <span>
-                    <img src={readingtime} alt="" />
-                  </span>
-                </div>
-              </div>
               <div className="bio text-start my-4">
                 <h4 className="mb-3">Bio</h4>
                 <div className="bio-content">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
-                  <p className="mb-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
-                  </p>
+                  <p className="mb-0">{bio}</p>
                 </div>
               </div>
             </div>
@@ -257,12 +298,12 @@ const Learn = () => {
         </div>
         <div className="col-xl-8 col-xxl-7 col-lg-12 ">
           <div className="row">
-            <WidgetBlog changeImage={certificate} title="Completed" />
-            <WidgetBlog changeImage={clock} title="Progress" />
+            <WidgetBlog changeImage={certificate} title="Course Completed" />
+            <WidgetBlog changeImage={clock} title="Course Progress" />
 
             <div className="widget-heading d-flex justify-content-between align-items-center">
               <h3 className="m-0">Current Courses</h3>
-              <Link to={"./courses"} className="btn btn-primary btn1">
+              <Link to={"./learn-course"} className="btn btn-primary btn1">
                 View all
               </Link>
               {/* <Button className="btn btn-primary btn2" onClick={handleExport}>
@@ -276,7 +317,7 @@ const Learn = () => {
 						</Button>
 						</div>
 						</div>	 */}
-            <CurrentCourse
+            {/* <CurrentCourse
               changeclassName="text-secondary"
               bg1="rgba(76, 188, 154, 1)"
               title="UI Design Beginner"
@@ -291,7 +332,25 @@ const Learn = () => {
               percent="62"
               numb1="50"
               numb2="80"
-            />
+            /> */}
+
+            {courseData.map((course, index) => (
+              <CurrentCourse
+                key={index}
+                bg1={
+                  index % 2 === 0
+                    ? "rgba(76, 188, 154, 1)"
+                    : "rgba(254, 198, 79, 1)"
+                }
+                changeClass={
+                  index % 2 === 0 ? "text-secondary" : "text-warning"
+                }
+                percent="0"
+                numb1={getRandomNumber1()}
+                numb2={getRandomNumber2()}
+                title={course}
+              />
+            ))}
 
             <div className="col-xl-12">
               <div className="card score-active style-1">
