@@ -474,6 +474,7 @@ const UserFiles = (props) => {
       </div>
       {/* Preview Modal */}
       <Modal
+        size="xl"
         show={showPreviewModal}
         onHide={() => setShowPreviewModal(false)}
         centered>
@@ -485,7 +486,16 @@ const UserFiles = (props) => {
             File Name :<b>{fileName} </b>
           </p>
           <div>
-            {fileType === "jpg" ? (
+            {fileType === "txt" ? (
+              <pre>{fileUrl}</pre>
+            ) : fileType === "jpg" ? (
+              <img
+                src={fileUrl}
+                alt="img"
+                title="jpg"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "png" ? (
               <img
                 src={fileUrl}
                 alt="img"
@@ -499,12 +509,9 @@ const UserFiles = (props) => {
                 style={{ width: "100%", height: "500px" }}
               />
             ) : fileType === "mp4" ? (
-              <video
-                controls
-                src={fileUrl}
-                type={fileUrl.type}
-                style={{ width: "100%" }}
-              />
+              <>
+                <video controls src={fileUrl} style={{ width: "100%" }} />
+              </>
             ) : fileType === "mp3" ? (
               <audio controls src={fileUrl} />
             ) : fileType === "xlsx" ? (

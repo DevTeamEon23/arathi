@@ -719,32 +719,28 @@ const EditcourseForm = (props) => {
                               Course Intro Video{" "}
                             </label>
                             <div className="input-group mb-2 col-lg-6 ">
-                              {!courselink == null ? (
+                              {courselink ? (
                                 <p className="mt-2 fw-bold">
-                                  {" "}
-                                  <a
-                                    href={courselink}
-                                    target="_blank"
-                                    rel="noopener noreferrer">
-                                    {courselink}
-                                  </a>
+                                  <p>{courselink}</p>
                                 </p>
                               ) : (
-                                <p className="mt-2 fw-bold">
-                                  No link available
-                                </p>
+                                <>
+                                  <p className="mt-2 fw-bold">
+                                    No link available
+                                  </p>
+
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Paste YouTube link here..."
+                                    id="courselink"
+                                    value={youTubeLink}
+                                    onChange={handleInputChange}
+                                    onBlur={() => setBtnSubmitLoader("")}
+                                  />
+                                </>
                               )}
-                              {courselink == null && (
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Paste YouTube link here..."
-                                  id="courselink"
-                                  value={youTubeLink}
-                                  onChange={handleInputChange}
-                                  onBlur={() => setBtnSubmitLoader("")}
-                                />
-                              )}
+
                               {!isValidLink && (
                                 <p style={{ color: "red" }}>
                                   Please enter a valid YouTube link.
