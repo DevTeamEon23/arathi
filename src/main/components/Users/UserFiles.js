@@ -3,7 +3,6 @@ import { Link, useHistory } from "react-router-dom";
 import Dropzone from "react-dropzone-uploader";
 import { useDropzone } from "react-dropzone";
 import "react-dropzone-uploader/dist/styles.css";
-import { utils, writeFile } from "xlsx";
 import * as XLSX from "xlsx";
 import { RotatingLines } from "react-loader-spinner";
 import { toast } from "react-toastify";
@@ -14,21 +13,21 @@ import axios from "axios";
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
+  const [fileID, setFileID] = useState("");
   const [activeTab, setActiveTab] = useState("user-files/:id");
   const [selectedFile, setSelectedFile] = useState(null); //excel file
-  const [fileData, setFileData] = useState([]);
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
   const [showModal, setShowModal] = useState(false); //delete button modal
   const [token, setToken] = useState(); //auth token
-  const [userID, setUserID] = useState("");
-  const [active, setActive] = useState(true);
-  const [deactive, setDeactive] = useState(true);
+  const [activeFile, setActiveFile] = useState(true);
   const [allFillData, setAllFillData] = useState([]); //set fill data
   const dropzoneRef = useRef(null);
+  const [fileError, setFileError] = useState("");
   const [fileName, setFileName] = useState();
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const history = useHistory();
+  let accessToken = window.localStorage.getItem("jwt_access_token");
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -36,16 +35,15 @@ const UserFiles = (props) => {
   };
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem("jwt_access_token");
-    setToken(accessToken);
-    getAllFiles();
-  }, []);
-
-  useEffect(() => {
     const currentPath = history.location.pathname;
     const tab = currentPath.substring(1);
     setActiveTab(tab);
   }, [history.location.pathname]);
+
+  useEffect(() => {
+    setToken(accessToken);
+    getAllFiles();
+  }, []);
 
   const getAllFiles = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
@@ -65,44 +63,9 @@ const UserFiles = (props) => {
     }
   };
 
-  // const handleFileDrop = async (files, allFiles) => {
-  //   if (files.length > 0) {
-  //     setSelectedFile(files[0].file);
-
-  //     const reader = new FileReader();
-  //     reader.onload = async (event) => {
-  //       const arrayBuffer = event.target.result;
-  //       const data = new Uint8Array(arrayBuffer);
-  //       const workbook = XLSX.read(data, { type: "array" });
-  //       const sheetName = workbook.SheetNames[0];
-  //       const sheet = workbook.Sheets[sheetName];
-  //       const jsonData = XLSX.utils.sheet_to_json(sheet, {
-  //         header: 1,
-  //         raw: true,
-  //       });
-  //       setFileData(jsonData);
-  //     };
-  //     reader.readAsArrayBuffer(files[0].file);
-  //   }
-  // };
-
-  const onDrop = (acceptedFiles) => {
-    // Do something with the acceptedFiles, for example, save the first one to state
-    setSelectedFile(acceptedFiles[0]);
-  };
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: "*/*", // Accept all file types
-  });
-
-  const handleChangeStatus = (files) => {
-    // Do something with the meta data of the uploaded file
-    setSelectedFile(files[0].file);
-  };
   const styles = {
     dropzone: {
-      minHeight: 200,
+      minHeight: 170,
       maxHeight: 250,
       width: "100%",
       backgroundColor: "#f2f4fa",
@@ -117,41 +80,43 @@ const UserFiles = (props) => {
     },
   };
 
-  const handleFileDrop = async (files, allFiles) => {
+  const handleFileDrop = async (files, acceptedFiles) => {
     if (files.length > 0) {
       setSelectedFile(files[0].file);
-
-      // Your file processing logic here
-      // For this example, we'll just log the file information
-      console.log("Uploaded File:", files[0].file);
     }
   };
-  const handleSubmit = async () => {
-    try {
-      const queryParams = {
-        user_id: userId,
-        active: active,
-      };
-      const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/upload_file"
-      );
-      url.search = new URLSearchParams(queryParams).toString();
 
+  // File upload
+  const handleSubmit = async () => {
+    if (selectedFile) {
+      setFileError("");
       const formData = new FormData();
       formData.append("file", selectedFile);
+      const user_id = userId;
+      const active = activeFile;
+      const authToken = accessToken;
+      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${user_id}&active=${active}`;
 
-      const response = await axios.post(url.toString(), formData, {
-        headers: {
-          "Auth-Token": token,
-          "Content-Type": "multipart/form-data", // Make sure to set this for file uploads
-        },
-      });
-
-      // Handle the response here
-      console.log("API Response:", response.data);
-    } catch (error) {
-      // Handle errors here
-      console.error("API Error:", error);
+      try {
+        const response = await axios.post(uploadUrl, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken, // Add the Auth-Token header
+          },
+        });
+        toast.success("File Uploaded successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setSelectedFile(null);
+        getAllFiles();
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        toast.error("An error occurred. Please try again later.", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    } else {
+      setFileError("Please Select file OR Submit the selected file.");
     }
   };
 
@@ -160,9 +125,27 @@ const UserFiles = (props) => {
     // history.push(`/edit-courses/${id}`);
   };
 
-  const handleDelete = () => {};
-
-  const handleDownload = () => {};
+  const handleDownload = async (e, fileName) => {
+    console.log(fileName);
+    try {
+      const url = new URL(
+        `https://v1.eonlearning.tech/lms-service/file_download/${fileName}`
+      );
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      if (response.data.error) {
+        toast.error("Failed to download file!");
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to download file!");
+    }
+  };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
     console.log("inside handle preview", id, name, fileFormat);
@@ -170,6 +153,40 @@ const UserFiles = (props) => {
     setFileName(name);
     setFileType(fileFormat);
     setFileUrl(file);
+  };
+
+  const deleteFile = (e, id) => {
+    setShowModal(true);
+    setFileID(id);
+  };
+  const handleDelete = () => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: fileID,
+    };
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/remove_file_byid`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        getAllFiles();
+        toast.success("File deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setShowModal(false);
+        toast.error("Failed to delete file!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
   };
 
   const convertFileSize = (fileSizeString) => {
@@ -220,19 +237,20 @@ const UserFiles = (props) => {
               <h4 className="card-title">Files</h4>
             </div>
             <div className="card-body">
-              {/* <Dropzone
+              <Dropzone
                 onSubmit={handleFileDrop}
                 ref={dropzoneRef}
                 inputContent="Choose files to upload or drag-and-drop here"
-                styles={styles}></Dropzone> */}
-              <Dropzone
-                onSubmit={handleFileDrop}
-                inputContent="Drag a file or click to browse"
-                styles={styles}
-                autoUpload={true}></Dropzone>
-              ;
+                styles={styles}></Dropzone>
+
               <br />
-              <button onClick={handleSubmit}>Submit</button>
+              <div>
+                <Button onClick={handleSubmit}>Upload File</Button>
+              </div>
+
+              {selectedFile === null && (
+                <div className="text-danger fs-16 mt-1">{fileError}</div>
+              )}
             </div>
             {allFillData.length === 0 ? (
               <div className="loader-container">
@@ -283,18 +301,15 @@ const UserFiles = (props) => {
                   </thead>
                   <tbody>
                     {allFillData.map((data) => {
-                      // Input date and time string
-                      const inputDateTime = data.updated_at; //2
-                      // Convert inputDateTime to a JavaScript Date object
+                      const inputDateTime = data.updated_at;
                       const dateObj = new Date(inputDateTime);
-                      // Get the date in dd-mm-yyyy format
                       const day1 = dateObj
                         .getDate()
                         .toString()
                         .padStart(2, "0");
                       const month1 = (dateObj.getMonth() + 1)
                         .toString()
-                        .padStart(2, "0"); // Months are zero-based
+                        .padStart(2, "0");
                       const year1 = dateObj.getFullYear().toString();
                       const formattedDate = `${day1}-${month1}-${year1}`;
 
@@ -345,8 +360,10 @@ const UserFiles = (props) => {
                               </div>
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
-                                style={{ cursor: "not-allowed" }}
-                                onClick={(e) => handleDownload(e, data.id)}>
+                                // style={{ cursor: "not-allowed" }}
+                                onClick={(e) =>
+                                  handleDownload(e, data.filename)
+                                }>
                                 <FaDownload
                                   className="fs-14 fs-bold"
                                   title="Download"
@@ -361,9 +378,8 @@ const UserFiles = (props) => {
                               </div>
                               <div
                                 className="btn btn-danger shadow btn-xs sharp"
-                                style={{ cursor: "not-allowed" }}
                                 title="Delete"
-                                onClick={(e) => handleDelete(e, data.id)}>
+                                onClick={(e) => deleteFile(e, data.id)}>
                                 <i className="fa fa-trash"></i>
                               </div>
                             </center>
@@ -415,6 +431,23 @@ const UserFiles = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
+      </Modal>
+      {/* Delete Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <strong>Are you sure you want to delete File?</strong>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="btn btn-primary" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
       </Modal>
     </Fragment>
   );
