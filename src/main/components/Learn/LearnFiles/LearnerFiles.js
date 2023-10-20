@@ -25,7 +25,7 @@ const LearnerFiles = () => {
 
   const getAllFiles = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/fetch_files";
+    const url = "https://v1.eonlearning.tech/lms-service/fetch_active_files";
     try {
       const response = await axios.get(url, {
         headers: {

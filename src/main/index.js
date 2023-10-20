@@ -356,7 +356,7 @@ const Markup = () => {
     { url: "learn-course", component: LearnerCourse },
     { url: "learn-course-view/:id", component: LearnCourseView },
 
-    // Learn Files
+    // Learn Groups
     { url: "learn-group", component: Lgroups },
 
     // Learn Certificate
