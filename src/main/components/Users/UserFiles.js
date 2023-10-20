@@ -126,7 +126,7 @@ const UserFiles = (props) => {
     setShowEditModal(true);
     try {
       const url = new URL(
-        `http://127.0.0.1:8000/lms-service/fetch_files_byId/${file_id}`
+        `https://v1.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -155,7 +155,7 @@ const UserFiles = (props) => {
     };
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/lms-service/update_file_new/${fileId}/?user_id=${userId}`,
+        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userId}`,
         formData,
         {
           headers: {
@@ -172,21 +172,47 @@ const UserFiles = (props) => {
     }
   };
 
-  const handleDownload = async (e, fileName) => {
-    console.log(fileName);
+  const handleDownload = async (e, files_name) => {
+    console.log(files_name);
     try {
       const url = new URL(
-        `https://v1.eonlearning.tech/lms-service/file_download/${fileName}`
+        `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
           "Auth-Token": accessToken,
           "Content-Type": "multipart/form-data",
         },
+        responseType: "arraybuffer",
       });
       console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
+      } else {
+        // Extract the content type from the response
+        const contentType = response.headers["content-type"];
+
+        // Create a Blob object from the response data
+        const blob = new Blob([response.data], { type: contentType });
+
+        // Create a temporary URL for the Blob
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        // Create a hidden anchor element for downloading
+        const downloadLink = document.createElement("a");
+        downloadLink.href = blobUrl;
+        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.style.display = "none";
+
+        // Append the anchor to the document
+        document.body.appendChild(downloadLink);
+
+        // Simulate a click event to trigger the download
+        downloadLink.click();
+
+        // Clean up
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(downloadLink);
       }
     } catch (error) {
       console.error("API Error:", error);

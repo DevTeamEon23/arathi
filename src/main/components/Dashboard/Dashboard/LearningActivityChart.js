@@ -55,7 +55,7 @@ class LearningActivityChart extends React.Component {
 
   componentDidMount() {
     axios
-      .get("http://127.0.0.1:8000/auth/fetch_userpoints_by_userid")
+      .get("https://v1.eonlearning.tech/auth/fetch_userpoints_by_userid")
       .then((response) => {
         const user_ids = response.data.data.user_ids;
         const loginDates = user_ids.map((user) => user.login_date);

@@ -71,14 +71,17 @@ export default function CourseBlog() {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
 
     axios
-      .get("http://127.0.0.1:8000/lms-service/fetch_infographics_of_users", {
-        params: {
-          user_id: ID, // Use the retrieved ID
-        },
-        headers: {
-          "Auth-Token": jwtToken, // Use the retrieved jwtToken
-        },
-      })
+      .get(
+        "https://v1.eonlearning.tech/lms-service/fetch_infographics_of_users",
+        {
+          params: {
+            user_id: ID, // Use the retrieved ID
+          },
+          headers: {
+            "Auth-Token": jwtToken, // Use the retrieved jwtToken
+          },
+        }
+      )
       .then((response) => {
         const userInfographics = response.data.data.user_infographics;
         const totalCourseCount = userInfographics[0].total_course_count;
