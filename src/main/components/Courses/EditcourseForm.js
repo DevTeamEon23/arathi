@@ -118,8 +118,13 @@ const EditcourseForm = (props) => {
   const handleEditFormSubmit = (event) => {
     event.preventDefault();
     setBtnSubmitLoader(true);
-    if (courselink === null && selectedVideo === "" && videoUrl === null) {
-      console.log("no video or link");
+    if (
+      courselink === null &&
+      selectedVideo === "" &&
+      videoUrl === null &&
+      youTubeLink === null
+    ) {
+      console.log("no video or link", courselink, selectedVideo, videoUrl);
       setSubmitError("Please Upload video or provide a youtube link.");
       setBtnSubmitLoader(false);
     } else if (selectedVideo && youTubeLink) {
@@ -713,10 +718,8 @@ const EditcourseForm = (props) => {
                               htmlFor="courselink">
                               Course Intro Video{" "}
                             </label>
-
-                            {console.log("link", youTubeLink, courselink)}
                             <div className="input-group mb-2 col-lg-6 ">
-                              {courselink && (
+                              {!courselink == null ? (
                                 <p className="mt-2 fw-bold">
                                   {" "}
                                   <a
@@ -725,6 +728,10 @@ const EditcourseForm = (props) => {
                                     rel="noopener noreferrer">
                                     {courselink}
                                   </a>
+                                </p>
+                              ) : (
+                                <p className="mt-2 fw-bold">
+                                  No link available
                                 </p>
                               )}
                               {courselink == null && (
@@ -744,8 +751,6 @@ const EditcourseForm = (props) => {
                                 </p>
                               )}
                             </div>
-
-                            <div className="input-group mb-2 col-lg-1 "></div>
                           </div>
                           <div className="form-group mb-1 row">
                             <label className="col-lg-4 col-form-label"></label>
@@ -801,7 +806,6 @@ const EditcourseForm = (props) => {
                                 <br />
                                 <button
                                   className="btn btn-danger p-1 mb-3"
-                                  // style={{ marginLeft: "10px" }}
                                   onClick={handleYTLinkDelete}>
                                   Remove Video OR Youtube Link
                                 </button>
