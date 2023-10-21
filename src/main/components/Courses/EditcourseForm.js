@@ -57,6 +57,7 @@ const EditcourseForm = (props) => {
   const [isValidLink, setIsValidLink] = useState(true);
   const [errorVideo, setErrorVideo] = useState(null);
   const history = useHistory();
+  const roleType = window.localStorage.getItem("role");
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -549,11 +550,25 @@ const EditcourseForm = (props) => {
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
-            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
-              <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
-              <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
-            </Tabs>
+            {roleType === "Instructor" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+                <Tab
+                  eventKey={`adm_course_users/${courseID}`}
+                  title="Users"></Tab>
+                <Tab
+                  eventKey={`adm_course_groups/${courseID}`}
+                  title="Groups"></Tab>
+              </Tabs>
+            ) : (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+                <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
+                <Tab
+                  eventKey={`course_groups/${courseID}`}
+                  title="Groups"></Tab>
+              </Tabs>
+            )}
             <div className="card-header">
               <h4 className="card-title">Edit Course</h4>
             </div>

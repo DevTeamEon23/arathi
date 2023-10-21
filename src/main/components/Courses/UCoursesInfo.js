@@ -349,6 +349,7 @@ const UCoursesInfo = (props) => {
                                 ) : (
                                   <>{data.user_role}</>
                                 )}
+                                {/* {data.user_role} */}
                               </td>
                               <td className="text-center">
                                 {data.enrolled_on === null ? (
@@ -397,55 +398,53 @@ const UCoursesInfo = (props) => {
                           const formattedDate = `${
                             day < 10 ? "0" + day : day
                           }-${month < 10 ? "0" + month : month}-${year}`;
-                          if (data.user_role === "Admin") {
-                            return (
-                              <tr key={index}>
-                                <td>{data.coursename}</td>
-                                <td className="text-center">
-                                  {data.user_course_enrollment_id === null ? (
-                                    "Created"
-                                  ) : (
-                                    <>{data.user_role}</>
-                                  )}
-                                </td>
-                                <td className="text-center">
-                                  {data.enrolled_on === null ? (
-                                    "Not Enrolled"
-                                  ) : (
-                                    <>{formattedDate}</>
-                                  )}
-                                </td>
-                                <td className="text-center">-</td>
-                                <td className="text-center">
-                                  {/* {data.user_role === "Admin" &&
+
+                          return (
+                            <tr key={index}>
+                              <td>{data.coursename}</td>
+                              <td className="text-center">
+                                {data.user_course_enrollment_id === null ? (
+                                  "Created"
+                                ) : (
+                                  <>{data.user_role}</>
+                                )}
+                              </td>
+                              <td className="text-center">
+                                {data.enrolled_on === null ? (
+                                  "Not Enrolled"
+                                ) : (
+                                  <>{formattedDate}</>
+                                )}
+                              </td>
+                              <td className="text-center">-</td>
+                              <td className="text-center">
+                                {/* {data.user_role === "Admin" &&
                                   data.data_user_course_enrollment_id ===
                                     null && ( */}
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Enroll"
-                                    onClick={(e) =>
-                                      handleEnroll(e, data.course_id)
-                                    }>
-                                    <i className="fa-solid fa-plus"></i>
-                                  </div>
-                                  {/* )} */}
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Enroll"
+                                  onClick={(e) =>
+                                    handleEnroll(e, data.course_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+                                {/* )} */}
 
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Unenroll"
-                                    onClick={(e) =>
-                                      handleUnEnrollAdmin(
-                                        e,
-                                        data.data_user_course_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa-solid fa-minus"></i>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          }
-                          return null; // This course is not "Admin," so we return null.
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Unenroll"
+                                  onClick={(e) =>
+                                    handleUnEnrollAdmin(
+                                      e,
+                                      data.data_user_course_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              </td>
+                            </tr>
+                          );
                         })}
                       </tbody>
                     )}
@@ -471,12 +470,21 @@ const UCoursesInfo = (props) => {
                     <span className=" fs-18 fw-bold ">
                       Page {currentPage} &nbsp;&nbsp;
                     </span>
-                    <Button
-                      className="ml-2"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= (currentData?.length || 0)}>
-                      Next
-                    </Button>
+                    {role === "Superadmin" ? (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (coursesAll?.length || 0)}>
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (coursesAdmin?.length || 0)}>
+                        Next
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

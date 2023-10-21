@@ -7,17 +7,17 @@ import { RotatingLines } from "react-loader-spinner";
 
 const Coursegroups = (props) => {
   const courseID = props.match.params.id;
-
   const [allGrps, setAllGrps] = useState([]);
+  const [allAdminGrps, setAllAdminGrps] = useState([]); //user list data admin
   const [totalGrpData, setTotalGrpData] = useState(); //user list data
+  const [totalGrpAdminData, setTotalGrpAdminData] = useState(); //user list data admin
   const [activeTab, setActiveTab] = useState("course_groups/:id");
   const [token, setToken] = useState(); //auth token
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = allGrps.slice(startIndex, endIndex);
+  const roleType = window.localStorage.getItem("role");
+  const jwtToken = window.localStorage.getItem("jwt_access_token");
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -33,7 +33,11 @@ const Coursegroups = (props) => {
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    getAllGroups();
+    if (roleType === "Admin") {
+      getAdminGroups();
+    } else {
+      getAllGroups();
+    }
   }, []);
 
   // User List Api
@@ -60,6 +64,29 @@ const Coursegroups = (props) => {
       .catch((error) => {
         toast.error("Failed to fetch groups!!!");
       });
+  };
+
+  const getAdminGroups = async () => {
+    try {
+      const queryParams = {
+        course_id: courseID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_groups_course_enrolled_for_inst_learn"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const data = response.data.data;
+      setAllAdminGrps(data === null ? data : data.group_ids);
+      setTotalGrpAdminData(data === null ? 0 : data.group_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
   };
 
   const handleAddGrp = (e, group_id) => {
@@ -122,18 +149,47 @@ const Coursegroups = (props) => {
       });
   };
 
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  let currentData;
+  if (roleType === "Superadmin") {
+    currentData = allGrps === null ? null : allGrps.slice(startIndex, endIndex);
+  } else {
+    currentData =
+      allAdminGrps === null ? null : allAdminGrps.slice(startIndex, endIndex);
+  }
+
   return (
     <Fragment>
       <Row>
         <Col lg={12}>
           <Card>
-            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+            {/* <Tabs activeKey={activeTab} onSelect={handleTabChange}>
               <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
               <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
               <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
-            </Tabs>
+            </Tabs> */}
+            {roleType === "Instructor" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+                <Tab
+                  eventKey={`adm_course_users/${courseID}`}
+                  title="Users"></Tab>
+                <Tab
+                  eventKey={`course_groups/${courseID}`}
+                  title="Groups"></Tab>
+              </Tabs>
+            ) : (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+                <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
+                <Tab
+                  eventKey={`course_groups/${courseID}`}
+                  title="Groups"></Tab>
+              </Tabs>
+            )}
             <Card.Body>
-              {currentData.length === 0 ? (
+              {currentData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -143,6 +199,12 @@ const Coursegroups = (props) => {
                     visible={true}
                   />
                 </div>
+              ) : currentData === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
+                  </div>
+                </>
               ) : (
                 <>
                   <Table responsive>
@@ -160,23 +222,68 @@ const Coursegroups = (props) => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {currentData?.map((item, index) => {
-                        return (
-                          <tr>
-                            <td>
-                              <strong>{item.groupname}</strong>
-                              {item.enrolled_coursename === null ? (
-                                ""
-                              ) : (
-                                <span className="enrolled-label">
-                                  Group Member
-                                </span>
-                              )}
-                            </td>
-                            <td>
-                              <center>
-                                {item.course_group_enrollment_id === null ? (
+                    {roleType === "Superadmin" ? (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr>
+                              <td>
+                                <strong>{item.groupname}</strong>
+                                {item.enrolled_coursename === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                <center>
+                                  {item.course_group_enrollment_id === null ? (
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Add to group"
+                                      onClick={(e) =>
+                                        handleAddGrp(e, item.group_id)
+                                      }>
+                                      <i className="fa-solid fa-plus"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Remove from group"
+                                      onClick={(e) =>
+                                        handleRemoveGrp(
+                                          e,
+                                          item.course_group_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa-solid fa-minus"></i>
+                                    </div>
+                                  )}
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr>
+                              <td>
+                                <strong>{item.groupname}</strong>
+                                {/* {item.enrolled_coursename === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )} */}
+                              </td>
+                              <td>
+                                <center>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Add to group"
@@ -185,7 +292,7 @@ const Coursegroups = (props) => {
                                     }>
                                     <i className="fa-solid fa-plus"></i>
                                   </div>
-                                ) : (
+
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
                                     title="Remove from group"
@@ -197,43 +304,56 @@ const Coursegroups = (props) => {
                                     }>
                                     <i className="fa-solid fa-minus"></i>
                                   </div>
-                                )}
-                              </center>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    )}
                   </Table>
-                  <div className="pagination-down">
-                    <div className="d-flex align-items-center  ">
-                      <h4 className=" ">
-                        Showing <span>1-10 </span>from{" "}
-                        <span>{totalGrpData} </span>
-                        data
-                      </h4>
-                      <div className="d-flex align-items-center ms-auto mt-2">
-                        <Button
-                          className="mr-2"
-                          onClick={() => setCurrentPage(currentPage - 1)}
-                          disabled={currentPage === 1}>
-                          Previous
-                        </Button>
-                        &nbsp;&nbsp;
-                        <span className=" fs-18 fw-bold ">
-                          Page {currentPage} &nbsp;&nbsp;
-                        </span>
-                        <Button
-                          className="ml-2"
-                          onClick={() => setCurrentPage(currentPage + 1)}
-                          disabled={endIndex >= allGrps.length}>
-                          Next
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
                 </>
               )}
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from{" "}
+                    <span>
+                      {roleType === "Superadmin"
+                        ? totalGrpData
+                        : totalGrpAdminData}{" "}
+                    </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    {roleType === "Superadmin" ? (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= allGrps?.length || 0}>
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (allAdminGrps?.length || 0)}>
+                        Next
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
