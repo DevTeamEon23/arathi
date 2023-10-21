@@ -16,9 +16,9 @@ const LearnerFiles = () => {
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
+  const accessToken = window.localStorage.getItem("jwt_access_token");
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem("jwt_access_token");
     setToken(accessToken);
     getAllFiles();
   }, []);
@@ -51,7 +51,53 @@ const LearnerFiles = () => {
     };
   };
 
-  const handleDownload = () => {};
+  const handleDownload = async (e, files_name) => {
+    console.log(files_name);
+    try {
+      const url = new URL(
+        `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
+      );
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+        responseType: "arraybuffer",
+      });
+      console.log(response);
+      if (response.data.error) {
+        toast.error("Failed to download file!");
+      } else {
+        // Extract the content type from the response
+        const contentType = response.headers["content-type"];
+
+        // Create a Blob object from the response data
+        const blob = new Blob([response.data], { type: contentType });
+
+        // Create a temporary URL for the Blob
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        // Create a hidden anchor element for downloading
+        const downloadLink = document.createElement("a");
+        downloadLink.href = blobUrl;
+        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.style.display = "none";
+
+        // Append the anchor to the document
+        document.body.appendChild(downloadLink);
+
+        // Simulate a click event to trigger the download
+        downloadLink.click();
+
+        // Clean up
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(downloadLink);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to download file!");
+    }
+  };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
     console.log("inside handle preview", id, name, fileFormat);
@@ -203,7 +249,7 @@ const LearnerFiles = () => {
                                       data.id,
                                       data.filename,
                                       data.file_type,
-                                      data.file
+                                      data.file_data
                                     )
                                   }>
                                   <MdPreview
@@ -213,8 +259,9 @@ const LearnerFiles = () => {
                                 </div>
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
-                                  style={{ cursor: "not-allowed" }}
-                                  onClick={(e) => handleDownload(e, data.id)}>
+                                  onClick={(e) =>
+                                    handleDownload(e, data.filename)
+                                  }>
                                   <FaDownload
                                     className="fs-14 fs-bold"
                                     title="Download"
@@ -241,6 +288,7 @@ const LearnerFiles = () => {
       </div>
       {/* Preview Modal */}
       <Modal
+        size="xl"
         show={showPreviewModal}
         onHide={() => setShowPreviewModal(false)}
         centered>
@@ -249,17 +297,35 @@ const LearnerFiles = () => {
         </Modal.Header>
         <Modal.Body>
           <p className="fs-16">
-            File Name :<b>{fileName}</b>
+            File Name :<b>{fileName} </b>
           </p>
           <div>
-            {fileType === "pdf" ? (
+            {fileType === "txt" ? (
+              <pre>{fileUrl}</pre>
+            ) : fileType === "jpg" ? (
+              <img
+                src={fileUrl}
+                alt="img"
+                title="jpg"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "png" ? (
+              <img
+                src={fileUrl}
+                alt="img"
+                title="jpg"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "pdf" ? (
               <iframe
                 src={fileUrl}
                 title="PDF"
                 style={{ width: "100%", height: "500px" }}
               />
             ) : fileType === "mp4" ? (
-              <video controls src={fileUrl} style={{ width: "100%" }} />
+              <>
+                <video controls src={fileUrl} style={{ width: "100%" }} />
+              </>
             ) : fileType === "mp3" ? (
               <audio controls src={fileUrl} />
             ) : fileType === "xlsx" ? (

@@ -13,11 +13,12 @@ import axios from "axios";
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
-  const [fileID, setFileID] = useState("");
+  const [fileId, setFileId] = useState("");
   const [activeTab, setActiveTab] = useState("user-files/:id");
   const [selectedFile, setSelectedFile] = useState(null); //excel file
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
-  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [showModal, setShowModal] = useState(false); //delete modal
+  const [showEditModal, setShowEditModal] = useState(false); //Preview modal
   const [token, setToken] = useState(); //auth token
   const [activeFile, setActiveFile] = useState(true);
   const [allFillData, setAllFillData] = useState([]); //set fill data
@@ -120,16 +121,12 @@ const UserFiles = (props) => {
     }
   };
 
-  const handleEdit = (id) => {
-    console.log("inside handle edit", id);
-    // history.push(`/edit-courses/${id}`);
-  };
-
-  const handleDownload = async (e, fileName) => {
-    console.log(fileName);
+  const handleEdit = async (e, file_id) => {
+    console.log("inside handle edit", file_id);
+    setShowEditModal(true);
     try {
       const url = new URL(
-        `https://v1.eonlearning.tech/lms-service/file_download/${fileName}`
+        `https://v1.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -137,9 +134,85 @@ const UserFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log(response.data.data.active);
+      const active = response.data.data.active;
+      setActiveFile(active === 1 ? "True" : "False");
+      setFileUrl(response.data.data.file_data);
+      setFileId(file_id);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch file data!"); // Handle the error
+    }
+  };
+
+  const handleEditFile = async () => {
+    const formData = new FormData();
+    formData.append("active", activeFile);
+    formData.append("file", selectedFile === null ? "" : selectedFile);
+
+    const headers = {
+      "Auth-Token": accessToken,
+    };
+    try {
+      const response = await axios.put(
+        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userId}`,
+        formData,
+        {
+          headers: {
+            ...headers,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setShowEditModal(false);
+      getAllFiles();
+      console.log("API Response:", response.data);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  };
+
+  const handleDownload = async (e, files_name) => {
+    console.log(files_name);
+    try {
+      const url = new URL(
+        `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
+      );
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+        responseType: "arraybuffer",
+      });
       console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
+      } else {
+        // Extract the content type from the response
+        const contentType = response.headers["content-type"];
+
+        // Create a Blob object from the response data
+        const blob = new Blob([response.data], { type: contentType });
+
+        // Create a temporary URL for the Blob
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        // Create a hidden anchor element for downloading
+        const downloadLink = document.createElement("a");
+        downloadLink.href = blobUrl;
+        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.style.display = "none";
+
+        // Append the anchor to the document
+        document.body.appendChild(downloadLink);
+
+        // Simulate a click event to trigger the download
+        downloadLink.click();
+
+        // Clean up
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(downloadLink);
       }
     } catch (error) {
       console.error("API Error:", error);
@@ -148,7 +221,7 @@ const UserFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat);
+    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);
@@ -157,7 +230,7 @@ const UserFiles = (props) => {
 
   const deleteFile = (e, id) => {
     setShowModal(true);
-    setFileID(id);
+    setFileId(id);
   };
   const handleDelete = () => {
     const config = {
@@ -166,7 +239,7 @@ const UserFiles = (props) => {
       },
     };
     const requestBody = {
-      id: fileID,
+      id: fileId,
     };
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/remove_file_byid`, {
@@ -176,6 +249,7 @@ const UserFiles = (props) => {
       .then((response) => {
         setShowModal(false);
         getAllFiles();
+        setFileId("");
         toast.success("File deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -350,7 +424,7 @@ const UserFiles = (props) => {
                                     data.id,
                                     data.filename,
                                     data.file_type,
-                                    data.file
+                                    data.file_data
                                   )
                                 }>
                                 <MdPreview
@@ -360,7 +434,6 @@ const UserFiles = (props) => {
                               </div>
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
-                                // style={{ cursor: "not-allowed" }}
                                 onClick={(e) =>
                                   handleDownload(e, data.filename)
                                 }>
@@ -371,7 +444,6 @@ const UserFiles = (props) => {
                               </div>
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
-                                style={{ cursor: "not-allowed" }}
                                 title="Edit"
                                 onClick={(e) => handleEdit(e, data.id)}>
                                 <i className="fas fa-pencil-alt"></i>
@@ -402,6 +474,7 @@ const UserFiles = (props) => {
       </div>
       {/* Preview Modal */}
       <Modal
+        size="xl"
         show={showPreviewModal}
         onHide={() => setShowPreviewModal(false)}
         centered>
@@ -410,17 +483,35 @@ const UserFiles = (props) => {
         </Modal.Header>
         <Modal.Body>
           <p className="fs-16">
-            File Name :<b>{fileName}</b>
+            File Name :<b>{fileName} </b>
           </p>
           <div>
-            {fileType === "pdf" ? (
+            {fileType === "txt" ? (
+              <pre>{fileUrl}</pre>
+            ) : fileType === "jpg" ? (
+              <img
+                src={fileUrl}
+                alt="img"
+                title="jpg"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "png" ? (
+              <img
+                src={fileUrl}
+                alt="img"
+                title="jpg"
+                style={{ width: "100%", height: "500px" }}
+              />
+            ) : fileType === "pdf" ? (
               <iframe
                 src={fileUrl}
                 title="PDF"
                 style={{ width: "100%", height: "500px" }}
               />
             ) : fileType === "mp4" ? (
-              <video controls src={fileUrl} style={{ width: "100%" }} />
+              <>
+                <video controls src={fileUrl} style={{ width: "100%" }} />
+              </>
             ) : fileType === "mp3" ? (
               <audio controls src={fileUrl} />
             ) : fileType === "xlsx" ? (
@@ -448,6 +539,41 @@ const UserFiles = (props) => {
             Delete
           </Button>
         </Modal.Footer>
+      </Modal>
+      {/* Edit Modal */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="form-group mb-3 row">
+            <label className="col-lg-4 col-form-label" htmlFor="groupname">
+              Visibility
+            </label>
+            <div className="col-lg-6">
+              <input
+                type="text"
+                className="form-control"
+                id="groupname"
+                value={activeFile}
+                onChange={(e) => activeFile(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <div className="form-group my-auto row ">
+            <div className="col-lg-4"> </div>
+            <div className="col-lg-4">
+              <Button onClick={handleEditFile} className="btn btn-primary">
+                Update File
+              </Button>{" "}
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>
   );
