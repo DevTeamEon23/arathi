@@ -7,19 +7,27 @@ import { RotatingLines } from "react-loader-spinner";
 
 const Courseusers = (props) => {
   const courseID = props.match.params.id;
-  console.log({ courseID });
   const [adminUsers, setAdminUsers] = useState([]);
   const [token, setToken] = useState(); //auth token
+  const [userAdmin, setuserAdmin] = useState([]);
+  const [userAdminTotal, setuserAdminTotal] = useState(0);
   const [activeTab, setActiveTab] = useState("course_users/:id");
-  const [totalUserData, setTotalUserData] = useState(); //user list data
+  const [totalUserData, setTotalUserData] = useState(0); //user list data
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
+  const jwtToken = window.localStorage.getItem("jwt_access_token");
+  const roleType = window.localStorage.getItem("role");
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
-    setToken(token);
+    setToken(jwtToken);
     getAllUsers();
+    if (roleType === "Admin") {
+      fetchUsers();
+    } else {
+      getAllUsers();
+    }
   }, []);
 
   // User List Api
@@ -48,6 +56,32 @@ const Courseusers = (props) => {
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
+  };
+
+  const fetchUsers = async () => {
+    let ID = window.localStorage.getItem("id");
+    try {
+      const queryParams = {
+        course_id: courseID,
+        admin_user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setuserAdmin(data === null ? data : data.course_ids);
+      setuserAdminTotal(data === null ? 0 : data.course_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
   };
 
   const handleEnroll = (e, user_id) => {
@@ -122,7 +156,16 @@ const Courseusers = (props) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = adminUsers.slice(startIndex, endIndex);
+  let currentData;
+
+  console.log(adminUsers, userAdmin);
+  if (roleType === "Superadmin") {
+    currentData =
+      adminUsers === null ? null : adminUsers.slice(startIndex, endIndex);
+  } else {
+    currentData =
+      userAdmin === null ? null : userAdmin.slice(startIndex, endIndex);
+  }
 
   return (
     <Fragment>
@@ -138,7 +181,7 @@ const Courseusers = (props) => {
               <Card.Title>Enroll Course</Card.Title>
             </Card.Header>
             <Card.Body>
-              {currentData.length === 0 ? (
+              {currentData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -148,7 +191,13 @@ const Courseusers = (props) => {
                     visible={true}
                   />
                 </div>
-              ) : currentData.length > 0 ? (
+              ) : currentData === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              ) : (
                 <>
                   <Table responsive>
                     <thead>
@@ -173,25 +222,76 @@ const Courseusers = (props) => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {currentData?.map((item, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {item.full_name}
-                              {item.enrolled_coursename === null ? (
-                                ""
-                              ) : (
-                                <span className="enrolled-label">Enrolled</span>
-                              )}
-                            </td>
-                            <td>{item.role}</td>
-                            <td>
-                              <center>-</center>
-                            </td>
-                            <td>
-                              <center>
+                    {roleType === "Superadmin" ? (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {item.full_name}
                                 {item.enrolled_coursename === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Enrolled
+                                  </span>
+                                )}
+                              </td>
+                              <td>{item.role}</td>
+                              <td>
+                                <center>-</center>
+                              </td>
+                              <td>
+                                <center>
+                                  {item.enrolled_coursename === null ? (
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Enroll"
+                                      onClick={(e) =>
+                                        handleEnroll(e, item.user_id)
+                                      }>
+                                      <i className="fa-solid fa-plus"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Unenroll"
+                                      onClick={(e) =>
+                                        handleUnEnroll(
+                                          e,
+                                          item.user_course_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa-solid fa-minus"></i>
+                                    </div>
+                                  )}
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {item.full_name}
+                                {/* {item.enrolled_coursename === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Enrolled
+                                  </span>
+                                )} */}
+                              </td>
+                              <td>{item.role}</td>
+                              <td>
+                                <center>-</center>
+                              </td>
+                              <td>
+                                <center>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Enroll"
@@ -200,7 +300,7 @@ const Courseusers = (props) => {
                                     }>
                                     <i className="fa-solid fa-plus"></i>
                                   </div>
-                                ) : (
+
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
                                     title="Unenroll"
@@ -212,27 +312,26 @@ const Courseusers = (props) => {
                                     }>
                                     <i className="fa-solid fa-minus"></i>
                                   </div>
-                                )}
-                              </center>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    )}
                   </Table>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-center fs-20 fw-bold">No User Found.</p>
-                  </div>
                 </>
               )}
               <br />
               <div className="pagination-down">
                 <div className="d-flex align-items-center  ">
                   <h4 className=" ">
-                    Showing <span>1-10 </span>from <span>{totalUserData} </span>
+                    Showing <span>1-10 </span>from{" "}
+                    <span>
+                      {roleType === "Superadmin"
+                        ? totalUserData
+                        : userAdminTotal}{" "}
+                    </span>
                     data
                   </h4>
                   <div className="d-flex align-items-center ms-auto mt-2">
@@ -246,12 +345,21 @@ const Courseusers = (props) => {
                     <span className=" fs-18 fw-bold ">
                       Page {currentPage} &nbsp;&nbsp;
                     </span>
-                    <Button
-                      className="ml-2"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= adminUsers.length}>
-                      Next
-                    </Button>
+                    {roleType === "Superadmin" ? (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= adminUsers.length}>
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= userAdmin.length}>
+                        Next
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

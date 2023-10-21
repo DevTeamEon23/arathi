@@ -493,6 +493,7 @@ const Learn = () => {
                                   <tbody>
                                     {userData
                                       ?.sort((a, b) => b.points - a.points)
+                                      .slice(0, 3)
                                       .map((item, index) => {
                                         const img = `${backendBaseUrl}/${item.file}`;
                                         let medalIcon = null;
@@ -737,89 +738,93 @@ const Learn = () => {
                                 <>
                                   <Table responsive>
                                     <tbody>
-                                      {userData?.map((item, index) => {
-                                        const img = `${backendBaseUrl}/${item.file}`;
+                                      {userData
+                                        ?.slice(0, 3)
+                                        .map((item, index) => {
+                                          const img = `${backendBaseUrl}/${item.file}`;
 
-                                        let medalIcon = null;
-                                        if (index === 0) {
-                                          medalIcon = (
-                                            <BiSolidBadgeCheck
-                                              style={{
-                                                color: "gold",
-                                                fontSize: "30px",
-                                                fontWeight: "bold",
-                                              }}
-                                            />
-                                          );
-                                        } else if (index === 1) {
-                                          medalIcon = (
-                                            <BiSolidBadgeCheck
-                                              style={{
-                                                color: "silver",
-                                                fontSize: "30px",
-                                                fontWeight: "bold",
-                                              }}
-                                            />
-                                          );
-                                        } else if (index === 2) {
-                                          medalIcon = (
-                                            <BiSolidBadgeCheck
-                                              style={{
-                                                color: "#cd7f32", // bronze color
-                                                fontSize: "30px",
-                                                fontWeight: "bold",
-                                              }}
-                                            />
-                                          );
-                                        }
+                                          let medalIcon = null;
+                                          if (index === 0) {
+                                            medalIcon = (
+                                              <BiSolidBadgeCheck
+                                                style={{
+                                                  color: "gold",
+                                                  fontSize: "30px",
+                                                  fontWeight: "bold",
+                                                }}
+                                              />
+                                            );
+                                          } else if (index === 1) {
+                                            medalIcon = (
+                                              <BiSolidBadgeCheck
+                                                style={{
+                                                  color: "silver",
+                                                  fontSize: "30px",
+                                                  fontWeight: "bold",
+                                                }}
+                                              />
+                                            );
+                                          } else if (index === 2) {
+                                            medalIcon = (
+                                              <BiSolidBadgeCheck
+                                                style={{
+                                                  color: "#cd7f32", // bronze color
+                                                  fontSize: "30px",
+                                                  fontWeight: "bold",
+                                                }}
+                                              />
+                                            );
+                                          }
 
-                                        return (
-                                          <tr key={index}>
-                                            <td>
-                                              <center>{medalIcon}</center>
-                                            </td>
-                                            <td
-                                              style={{
-                                                width: "20%",
-                                              }}>
-                                              {" "}
-                                              <center>
-                                                <img
-                                                  src={img}
-                                                  style={{
-                                                    width: "70px",
-                                                    height: "50px",
-                                                    borderRadius: " 0.625rem",
-                                                  }}
-                                                  alt="img"
-                                                />
-                                              </center>
-                                            </td>
-                                            <td>
-                                              <center>{item.full_name}</center>
-                                            </td>
-                                            <td>
-                                              <center> 3</center>
-                                            </td>
-                                            <td>
-                                              <center>
-                                                <FiPlay
-                                                  style={{
-                                                    fontSize: "22px",
-                                                    fontWeight: "bold",
-                                                  }}
-                                                  onClick={() =>
-                                                    handleBadges(
-                                                      item.full_name,
-                                                      item.file
-                                                    )
-                                                  }
-                                                />
-                                              </center>
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
+                                          return (
+                                            <tr key={index}>
+                                              <td>
+                                                <center>{medalIcon}</center>
+                                              </td>
+                                              <td
+                                                style={{
+                                                  width: "20%",
+                                                }}>
+                                                {" "}
+                                                <center>
+                                                  <img
+                                                    src={img}
+                                                    style={{
+                                                      width: "70px",
+                                                      height: "50px",
+                                                      borderRadius: " 0.625rem",
+                                                    }}
+                                                    alt="img"
+                                                  />
+                                                </center>
+                                              </td>
+                                              <td>
+                                                <center>
+                                                  {item.full_name}
+                                                </center>
+                                              </td>
+                                              <td>
+                                                <center> 3</center>
+                                              </td>
+                                              <td>
+                                                <center>
+                                                  <FiPlay
+                                                    style={{
+                                                      fontSize: "22px",
+                                                      fontWeight: "bold",
+                                                    }}
+                                                    onClick={() =>
+                                                      handleBadges(
+                                                        item.full_name,
+                                                        item.file
+                                                      )
+                                                    }
+                                                  />
+                                                </center>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
                                     </tbody>
                                   </Table>
                                 </>

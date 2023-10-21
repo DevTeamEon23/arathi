@@ -12,6 +12,7 @@ import profile06 from "@images/profile/6.jpg";
 import profile07 from "@images/profile/7.jpg";
 import profile08 from "@images/profile/8.jpg";
 import profile09 from "@images/profile/9.jpg";
+import dummy from "@images/profile/dummy.jpg";
 import axios from "axios";
 
 const AppProfile = () => {
@@ -73,16 +74,29 @@ const AppProfile = () => {
               </div> */}
               <div className="profile-info">
                 <div className="cover-photo rounded">
-                  <img
-                    src={profileImg}
-                    className="img-fluid rounded-circle"
-                    style={{
-                      width: "180px",
-                      height: "150px",
-                      objectFit: "cover",
-                    }}
-                    alt="profile"
-                  />
+                  {profileImg === "File not available" ? (
+                    <img
+                      src={dummy}
+                      className="img-fluid rounded-circle"
+                      style={{
+                        width: "180px",
+                        height: "150px",
+                        objectFit: "cover",
+                      }}
+                      alt="profile"
+                    />
+                  ) : (
+                    <img
+                      src={profileImg}
+                      className="img-fluid rounded-circle"
+                      style={{
+                        width: "180px",
+                        height: "150px",
+                        objectFit: "cover",
+                      }}
+                      alt="profile"
+                    />
+                  )}
                 </div>
                 <div className="profile-details">
                   <div className="profile-name px-5 pt-2">
@@ -97,7 +111,7 @@ const AppProfile = () => {
                     <h4 className="text-muted mb-0">{apiRes.dept}</h4>
                     <p>Department</p>
                   </div>
-                  <Dropdown className="dropdown ms-auto">
+                  {/* <Dropdown className="dropdown ms-auto">
                     <Dropdown.Toggle
                       variant="primary"
                       className="btn btn-primary light sharp i-false"
@@ -128,7 +142,7 @@ const AppProfile = () => {
                         Edit Profile
                       </Dropdown.Item>
                     </Dropdown.Menu>
-                  </Dropdown>
+                  </Dropdown> */}
                 </div>
               </div>
             </div>
