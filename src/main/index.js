@@ -468,9 +468,9 @@ const Markup = () => {
     { url: "adm_survey-option", component: AdmSurveyOption },
     { url: "adm_assignment", component: AdmAssignment },
     { url: "adm_instructor-led", component: AdmInstructorLed },
-    { url: "adm_course_users", component: AdmCourseusers },
+    { url: "adm_course_users/:id", component: AdmCourseusers }, //instructor course>>users
     { url: "adm_enroll_users", component: AdmEnrollUsers },
-    { url: "adm_course_groups", component: AdmCoursegroups },
+    { url: "adm_course_groups", component: AdmCoursegroups }, //instructor course>>groups
     // { url: "adm_users_course_progress", component: AdmUsersCourseProgress },
     { url: "adm_rules-path", component: AdmRulesPath },
     { url: "adm_course_user_report", component: AdmCourseUserReports },
