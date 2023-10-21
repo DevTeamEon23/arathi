@@ -36,17 +36,25 @@ const Groups = () => {
   const [selectCourseError, setselectCourseError] = useState(null);
   const [groups, setGroups] = useState([]); //admin instructor
   const [courses, setCourses] = useState([]); //admin instructor
-  const roleType = useSelector(selectUser).role[0];
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
   let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
     setToken(accessToken);
-    getAllGroups();
-    getAllCourses();
-    fetchGroupsData(accessToken, ID);
-    fetchCourseData(accessToken, ID);
+    // getAllGroups();
+    // getAllCourses();
+    // fetchGroupsData(accessToken, ID);
+    // fetchCourseData(accessToken, ID);
+    if (roleType === "Superadmin") {
+      getAllGroups();
+      getAllCourses();
+    } else {
+      fetchGroupsData(accessToken, ID);
+      fetchCourseData(accessToken, ID);
+    }
   }, []);
 
   // All Groups List
