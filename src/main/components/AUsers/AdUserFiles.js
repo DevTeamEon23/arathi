@@ -317,7 +317,7 @@ const AdUserFiles = (props) => {
                 styles={styles}></Dropzone>
 
               <br />
-              <div>
+              <div className="text-center">
                 <Button onClick={handleSubmit}>Upload File</Button>
               </div>
 
