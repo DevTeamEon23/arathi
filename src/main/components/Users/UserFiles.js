@@ -10,6 +10,7 @@ import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
+import { ExcelFile, ExcelSheet } from "react-data-export";
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
@@ -112,9 +113,11 @@ const UserFiles = (props) => {
         getAllFiles();
       } catch (error) {
         console.error("Error uploading file:", error);
+        setSelectedFile(null);
         toast.error("An error occurred. Please try again later.", {
           position: toast.POSITION.TOP_CENTER,
         });
+        getAllFiles();
       }
     } else {
       setFileError("Please Select file OR Submit the selected file.");
@@ -486,6 +489,11 @@ const UserFiles = (props) => {
             File Name :<b>{fileName} </b>
           </p>
           <div>
+            <ExcelFile element={<button>Download Data</button>}>
+              <ExcelSheet data={fileUrl} name="Sheet 1">
+                {/* Define the structure of your Excel data here */}
+              </ExcelSheet>
+            </ExcelFile>
             {fileType === "txt" ? (
               <pre>{fileUrl}</pre>
             ) : fileType === "jpg" ? (
