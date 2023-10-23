@@ -191,7 +191,9 @@ const GroupCourses = (props) => {
               ) : currentData === null ? (
                 <>
                   <div>
-                    <p className="text-center fs-20 fw-bold">No Group Found.</p>
+                    <p className="text-center fs-20 fw-bold">
+                      No Course Found.
+                    </p>
                   </div>
                 </>
               ) : (

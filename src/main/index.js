@@ -493,9 +493,9 @@ const Markup = () => {
     { url: "adm_groups", component: AdmGroups },
     { url: "adm_add-groups", component: AdmAddGroups },
     { url: "adm_edit-groups", component: AdmEditGroups },
-    { url: "adm_groups-users", component: AdmGroupsUsers },
-    { url: "adm_group-courses", component: AdmGroupCourses },
-    { url: "adm_group-files", component: AdmGroupFiles },
+    { url: "adm_groups-users/:id", component: AdmGroupsUsers }, //instructor Group >> users
+    { url: "adm_group-courses/:id", component: AdmGroupCourses }, //instructor Group >> coursea
+    { url: "adm_group-files/:id", component: AdmGroupFiles }, //instructor Group >> files
 
     // Instructor Groups -----
     { url: "inst_groups", component: InstGroups },
