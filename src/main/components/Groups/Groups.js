@@ -36,17 +36,25 @@ const Groups = () => {
   const [selectCourseError, setselectCourseError] = useState(null);
   const [groups, setGroups] = useState([]); //admin instructor
   const [courses, setCourses] = useState([]); //admin instructor
-  const roleType = useSelector(selectUser).role[0];
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
   let history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
     setToken(accessToken);
-    getAllGroups();
-    getAllCourses();
-    fetchGroupsData(accessToken, ID);
-    fetchCourseData(accessToken, ID);
+    // getAllGroups();
+    // getAllCourses();
+    // fetchGroupsData(accessToken, ID);
+    // fetchCourseData(accessToken, ID);
+    if (roleType === "Superadmin") {
+      getAllGroups();
+      getAllCourses();
+    } else {
+      fetchGroupsData(accessToken, ID);
+      fetchCourseData(accessToken, ID);
+    }
   }, []);
 
   // All Groups List
@@ -418,10 +426,16 @@ const Groups = () => {
                       </thead>
                       <tbody>
                         {groups?.map((item, index) => {
+                          const truncatedGroupDesc =
+                            item.groupdesc.length > 30
+                              ? item.groupdesc.slice(0, 30) + "..."
+                              : item.groupdesc;
                           return (
                             <tr key={index}>
                               <td className="text-center">{item.groupname}</td>
-                              <td className="text-center">{item.groupdesc}</td>
+                              <td className="text-center">
+                                {truncatedGroupDesc}
+                              </td>
                               <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"

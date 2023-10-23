@@ -17,17 +17,21 @@ const GroupsUsers = (props) => {
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
+  const role = window.localStorage.getItem("role");
+  const ID = window.localStorage.getItem("id");
 
   useEffect(() => {
-    const role = window.localStorage.getItem("role");
     setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    getAllUsers();
-    getAllUsersAdmin();
+    if (role === "Superadmin") {
+      getAllUsers();
+    } else {
+      getAllUsersAdmin();
+    }
   }, []);
 
-  // User List admin
+  // User List superadmin
   const getAllUsers = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -45,18 +49,15 @@ const GroupsUsers = (props) => {
       )
       .then((response) => {
         const allUsers = response.data.data;
-        // const adminUsers = allUsers.filter((user) => user.role === "Admin");
         setAdminUsers(allUsers == null ? allUsers : allUsers.user_ids);
-        setTotalUserData(
-          allUsers == null ? allUsers : allUsers.user_ids.length
-        );
+        setTotalUserData(allUsers == null ? 0 : allUsers.user_ids.length);
       })
       .catch((error) => {
         toast.error("Failed to fetch users!");
       });
   };
 
-  // User List instructor
+  // User List admin
   const getAllUsersAdmin = () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
@@ -65,22 +66,19 @@ const GroupsUsers = (props) => {
       },
       params: {
         group_id: grpId,
+        admin_user_id: ID,
       },
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/group_tab1/fetch_instructors_of_group",
+        "https://v1.eonlearning.tech/lms-service/fetch_users_of_group_enrolled_for_inst_learn",
         config
       )
       .then((response) => {
         console.log(response.data.data);
         const allUsers = response.data.data;
-        setInstructorUsers(
-          allUsers == null ? allUsers : allUsers.instructors_ids
-        );
-        setTotalUserDataIns(
-          allUsers == null ? allUsers : allUsers.instructors_ids.length
-        );
+        setInstructorUsers(allUsers == null ? allUsers : allUsers.group_ids);
+        setTotalUserDataIns(allUsers == null ? 0 : allUsers.group_ids.length);
       })
       .catch((error) => {
         console.log(error);
@@ -182,7 +180,7 @@ const GroupsUsers = (props) => {
               <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
             <Card.Body>
-              {adminUsers?.length <= 0 ? (
+              {currentData?.length <= 0 ? (
                 <div className="loader-container">
                   <RotatingLines
                     strokeColor="grey"
@@ -192,7 +190,7 @@ const GroupsUsers = (props) => {
                     visible={true}
                   />
                 </div>
-              ) : adminUsers === null ? (
+              ) : currentData === null ? (
                 <>
                   <div>
                     <p className="text-center fs-20 fw-bold">No User Found.</p>
@@ -215,24 +213,70 @@ const GroupsUsers = (props) => {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {currentData.map((item, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {item.full_name}
-                              {item.user_group_enrollment_id === null ? (
-                                ""
-                              ) : (
-                                <span className="enrolled-label">
-                                  Group Member
-                                </span>
-                              )}
-                            </td>
-
-                            <td>
-                              <center>
+                    {role === "Superadmin" ? (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {item.full_name}
                                 {item.user_group_enrollment_id === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )}
+                              </td>
+
+                              <td>
+                                <center>
+                                  {item.user_group_enrollment_id === null ? (
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Add to group"
+                                      onClick={(e) =>
+                                        handleEnroll(e, item.user_id)
+                                      }>
+                                      <i className="fa-solid fa-plus"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Remove from group"
+                                      onClick={(e) =>
+                                        handleUnEnroll(
+                                          e,
+                                          item.user_group_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa-solid fa-minus"></i>
+                                    </div>
+                                  )}
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {currentData?.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>
+                                {item.full_name}
+                                {item.user_group_enrollment_id === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Group Member
+                                  </span>
+                                )}
+                              </td>
+
+                              <td>
+                                <center>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Add to group"
@@ -241,7 +285,7 @@ const GroupsUsers = (props) => {
                                     }>
                                     <i className="fa-solid fa-plus"></i>
                                   </div>
-                                ) : (
+
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
                                     title="Remove from group"
@@ -253,13 +297,13 @@ const GroupsUsers = (props) => {
                                     }>
                                     <i className="fa-solid fa-minus"></i>
                                   </div>
-                                )}
-                              </center>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                                </center>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    )}
                   </Table>
                 </>
               )}
@@ -286,12 +330,21 @@ const GroupsUsers = (props) => {
                     <span className=" fs-18 fw-bold ">
                       Page {currentPage} &nbsp;&nbsp;
                     </span>
-                    <Button
-                      className="ml-2"
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= adminUsers.length}>
-                      Next
-                    </Button>
+                    {role === "Superadmin" ? (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (adminUsers?.length || 0)}>
+                        Next
+                      </Button>
+                    ) : (
+                      <Button
+                        className="ml-2"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={endIndex >= (instructorUsers?.length || 0)}>
+                        Next
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

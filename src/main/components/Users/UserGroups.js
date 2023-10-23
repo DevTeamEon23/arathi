@@ -253,7 +253,9 @@ const UserGroups = (props) => {
                               <td>
                                 {data.groupname}
                                 {data.user_group_enrollment_id === null ? (
-                                  "Created"
+                                  <span className="enrolled-label">
+                                    Created
+                                  </span>
                                 ) : (
                                   <span className="enrolled-label">
                                     Group Member

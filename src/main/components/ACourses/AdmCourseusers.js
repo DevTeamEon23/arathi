@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 // import PageTitle from "../../layouts/PageTitle";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
@@ -7,152 +7,271 @@ import {
   Col,
   Card,
   Table,
-  Badge,
   Dropdown,
-  ProgressBar,
   Button,
-  Nav,
+  Tab,
+  Tabs,
   Modal,
 } from "react-bootstrap";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
+const AdmCourseusers = (props) => {
+  const courseID = props.match.params.id;
+  const [activeTab, setActiveTab] = useState("adm_course_users/:id");
+  const [userIns, setuserIns] = useState([]);
+  const [userInsTotal, setuserInsTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const itemsPerPage = 10; // Number of items to display per page
+  let history = useHistory();
+  let token = window.localStorage.getItem("jwt_access_token");
 
-const AdmCourseusers = () => {
-    const [sendMessage, setSendMessage] = useState(false);
-  const [popup, setPopup] = useState({
-    show: false, // initial values set to false and null
-    id: null,
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
+
+  useEffect(() => {
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
+
+  const fetchUsers = async () => {
+    let ID = window.localStorage.getItem("id");
+    try {
+      const queryParams = {
+        course_id: courseID,
+        admin_user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": token,
+          "Content-Type": "multipart/form-data",
+        },
       });
-  const chackbox = document.querySelectorAll(".bs_exam_topper input");
-  const motherChackBox = document.querySelector(".bs_exam_topper_all input");
-  const chackboxFun = (type) => {
-    for (let i = 0; i < chackbox.length; i++) {
-      const element = chackbox[i];
-      if (type === "all") {
-        if (motherChackBox.checked) {
-          element.checked = true;
-        } else {
-          element.checked = false;
-        }
-      } else {
-        if (!element.checked) {
-          motherChackBox.checked = false;
-          break;
-        } else {
-          motherChackBox.checked = true;
-        }
-      }
+      console.log("API Response:", response.data.data);
+      const data = response.data.data;
+      setuserIns(data === null ? data : data.course_ids);
+      setuserInsTotal(data === null ? 0 : data.course_ids.length);
+    } catch (error) {
+      console.error("API Error:", error);
     }
   };
 
-  const svg1 = (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1">
-      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <rect x="0" y="0" width="24" height="24"></rect>
-        <circle fill="#000000" cx="5" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="12" cy="12" r="2"></circle>
-        <circle fill="#000000" cx="19" cy="12" r="2"></circle>
-      </g>
-    </svg>
-  );
-let history = useHistory();
+  const handleEnroll = (e, user_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("user_id", user_id);
+    formData.append("course_id", courseID);
+    formData.append("generate_token", true);
+    const url =
+      "https://v1.eonlearning.tech/course_tab1/enroll_users_to_course";
+    const authToken = token;
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": authToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Course Enroll successfully!!!");
+        fetchUsers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to enroll course...");
+      });
+  };
+
+  const handleUnEnroll = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(
+        `https://v1.eonlearning.tech/course_tab1/remove_users_from_course`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
+      .then((response) => {
+        toast.success("Unenroll successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        fetchUsers();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to Unenroll!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData =
+    userIns === null ? null : userIns.slice(startIndex, endIndex);
+
   return (
     <Fragment>
-      <Nav >
-		<Nav.Item as='div' className="nav nav-tabs" id="nav-tab" role="tablist">
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/dashboard">Dashboard</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/adm_courses-info">Courses</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/adm_course_users">Users</Link>
-        <Link as="button" className="nav-link  nt-unseen" id="nav-following-tab" eventkey='Follow' type="button" to="/adm_course_groups">Groups</Link>
-        </Nav.Item>
-      </Nav>
+      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+        <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+        <Tab eventKey={`adm_course_users/${courseID}`} title="Users"></Tab>
+        <Tab eventKey={`adm_course_groups/${courseID}`} title="Groups"></Tab>
+      </Tabs>
+
       <Row>
         <Col lg={12}>
           <Card>
+            {" "}
+            <Card.Header>
+              <Card.Title>Enroll Course</Card.Title>
+            </Card.Header>
             <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th className="width80">
-                      <strong>USER</strong>
-                    </th>
-                    <th></th>
-                    <th>
-                      <strong>COMPLETION DATE</strong>
-                    </th>
-                    <th>
-                      <strong>OPTION</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>Hitesh Ingale</strong>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          className="light sharp i-false"
-                        >
-                          {svg1}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => setSendMessage(true)}><i class="bi bi-plus-circle">&nbsp;</i>Add</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </tr>
-                  								  {/* send Modal */}
-								  <Modal className="modal fade" show={sendMessage}>
-									<div className="modal-content">
-									  <div className="modal-header">
-										<h5 className="modal-title">Send Message to Enroll this User</h5>
-										<Button variant="" type="button" className="close" data-dismiss="modal" onClick={() => setSendMessage(false)}>
-										  <span>×</span>
-										</Button>
-									  </div>
-									  <div className="modal-body">
-										<form className="comment-form" onSubmit={(e) => { e.preventDefault(); setSendMessage(false); }}>
-										  <div className="row">
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="author" className="text-black font-w600">  Name <span className="required">*</span> </label>
-												<input type="text" className="form-control" defaultValue="Author" name="Author" placeholder="Author" required/>
-											  </div>
-											</div>
-											<div className="col-lg-6">
-											  <div className="form-group mb-3">
-												<label htmlFor="email" className="text-black font-w600"> Email <span className="required">*</span></label>
-												<input type="text" className="form-control" defaultValue="Email" placeholder="Email" name="Email" required/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<label htmlFor="comment" className="text-black font-w600">Comment</label>
-												<textarea rows={8} className="form-control" name="comment" placeholder="Comment" defaultValue={""}/>
-											  </div>
-											</div>
-											<div className="col-lg-12">
-											  <div className="form-group mb-3">
-												<input type="submit" value="Enroll User" className="submit btn btn-primary" name="submit"/>
-											  </div>
-											</div>
-										  </div>
-										</form>
-									  </div>
-									</div>
-								  </Modal>
-                </tbody>
-              </Table>
+              {currentData?.length <= 0 ? (
+                <div className="loader-container">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
+                    visible={true}
+                  />
+                </div>
+              ) : currentData === null ? (
+                <>
+                  <div>
+                    <p className="text-center fs-20 fw-bold">No User Found.</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Table responsive>
+                    <thead>
+                      <tr>
+                        <th>
+                          <strong>USER</strong>
+                        </th>
+                        <th>
+                          <strong>ROLE</strong>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>COMPLETION DATE</strong>
+                          </center>
+                        </th>
+                        <th>
+                          <center>
+                            {" "}
+                            <strong>OPTION</strong>
+                          </center>
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {currentData?.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>
+                              {item.full_name}
+                              {/* {item.enrolled_coursename === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Enrolled
+                                  </span>
+                                )} */}
+                            </td>
+                            <td>{item.role}</td>
+                            <td>
+                              <center>-</center>
+                            </td>
+                            <td>
+                              <center>
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Enroll"
+                                  onClick={(e) =>
+                                    handleEnroll(e, item.user_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Unenroll"
+                                  onClick={(e) =>
+                                    handleUnEnroll(
+                                      e,
+                                      item.user_course_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              </center>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              )}
+              <br />
+              <div className="pagination-down">
+                <div className="d-flex align-items-center  ">
+                  <h4 className=" ">
+                    Showing <span>1-10 </span>from <span>{userInsTotal} </span>
+                    data
+                  </h4>
+                  <div className="d-flex align-items-center ms-auto mt-2">
+                    <Button
+                      className="mr-2"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}>
+                      Previous
+                    </Button>
+                    &nbsp;&nbsp;
+                    <span className=" fs-18 fw-bold ">
+                      Page {currentPage} &nbsp;&nbsp;
+                    </span>
+                    <Button
+                      className="ml-2"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={endIndex >= userIns.length}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <div>
-      <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={() => history.goBack()}>Back</Button>
       </div>
     </Fragment>
   );
