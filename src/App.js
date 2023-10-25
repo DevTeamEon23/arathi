@@ -8,10 +8,10 @@ import { Route, Switch, withRouter } from "react-router-dom";
 import "./theme/vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./theme/css/style.css";
 import { useAuth } from "./auth/AuthContext";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useSelector } from "react-redux";
+import { selectUser } from "src/store/user/userSlice";
 const SignUp = lazy(() => import("./main/pages/Registration"));
 const ForgotPassword = lazy(() => import("./main/pages/ForgotPassword"));
 const Reset = lazy(() => import("./main/pages/Reset"));
@@ -24,13 +24,28 @@ const Login = lazy(() => {
 function App(props) {
   const dispatch = useDispatch();
   const { isAuthenticated } = useAuth();
+  const user = useSelector(selectUser);
+  const roleType = user && user.role && user.role[0];
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     props.history.replace("/dashboard");
+  //   } else {
+  //     props.history.replace("/login");
+  //   }
+  // }, [dispatch, props.history, isAuthenticated]);
+
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && roleType === "Learner") {
+      console.log("inside if");
+      props.history.replace("/learn-dash");
+    } else if (isAuthenticated) {
+      console.log("inside else if");
+
       props.history.replace("/dashboard");
     } else {
       props.history.replace("/login");
     }
-  }, [dispatch, props.history, isAuthenticated]);
+  }, [dispatch, props.history, isAuthenticated, roleType]);
 
   let routes = (
     <Switch>

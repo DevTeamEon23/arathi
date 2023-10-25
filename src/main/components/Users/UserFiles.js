@@ -10,7 +10,7 @@ import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
-import { ExcelFile, ExcelSheet } from "react-data-export";
+// import { ExcelFile, ExcelSheet } from "react-data-export";
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
@@ -489,11 +489,10 @@ const UserFiles = (props) => {
             File Name :<b>{fileName} </b>
           </p>
           <div>
-            <ExcelFile element={<button>Download Data</button>}>
+            {/* <ExcelFile element={<button>Download Data</button>}>
               <ExcelSheet data={fileUrl} name="Sheet 1">
-                {/* Define the structure of your Excel data here */}
               </ExcelSheet>
-            </ExcelFile>
+            </ExcelFile> */}
             {fileType === "txt" ? (
               <pre>{fileUrl}</pre>
             ) : fileType === "jpg" ? (

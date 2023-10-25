@@ -18,7 +18,7 @@ import { FiPlay } from "react-icons/fi";
 import { FaMedal } from "react-icons/fa";
 import { BiSolidBadgeCheck } from "react-icons/bi";
 import DonutChart from "../Dashboard/Dashboard/DonutChart";
-//import ProfileActivityChart from './Dashboard/ProfileActivityChart';
+import dummy from "@images/profile/dummy.jpg";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
@@ -59,7 +59,6 @@ const Learn = () => {
   const [token, setToken] = useState(); //auth token
   const [selectedItem, setSelectedItem] = useState(null);
   const [userImg, setUserImg] = useState(null);
-
   const [userName, setUserName] = useState(""); //Full name
   const [registerDate, setRegisterDate] = useState("");
   const [profileImg, setProfileImg] = useState(""); //img file
@@ -268,7 +267,11 @@ const Learn = () => {
 
             <div className="card-body text-center pb-3">
               <div className="instructors-media">
-                <img src={profileImg} alt="profile" />
+                {profileImg === "File not available" ? (
+                  <img src={dummy} alt="profile" />
+                ) : (
+                  <img src={profileImg} alt="profile" />
+                )}
                 <div className="instructors-media-info mt-4">
                   <h4 className="mb-1">{userName}</h4>
                   <span className="fs-18">Member Since {registerDate}</span>
@@ -495,7 +498,9 @@ const Learn = () => {
                                       ?.sort((a, b) => b.points - a.points)
                                       .slice(0, 3)
                                       .map((item, index) => {
-                                        const img = `${backendBaseUrl}/${item.file}`;
+                                        const img = item.file
+                                          ? `${backendBaseUrl}/${item.file}`
+                                          : "";
                                         let medalIcon = null;
                                         if (index === 0) {
                                           medalIcon = (
@@ -539,7 +544,7 @@ const Learn = () => {
                                               }}>
                                               {" "}
                                               <center>
-                                                <img
+                                                {/* <img
                                                   src={img}
                                                   style={{
                                                     width: "70px",
@@ -547,7 +552,30 @@ const Learn = () => {
                                                     borderRadius: " 0.625rem",
                                                   }}
                                                   alt=" img"
-                                                />
+                                                /> */}
+                                                {item.file ? (
+                                                  <img
+                                                    src={img}
+                                                    style={{
+                                                      width: "70px",
+                                                      height: "50px",
+                                                      borderRadius: "0.625rem",
+                                                    }}
+                                                    alt="img"
+                                                  />
+                                                ) : (
+                                                  <img
+                                                    src={dummy}
+                                                    style={{
+                                                      width: "70px",
+                                                      height: "50px",
+                                                      borderRadius: "0.625rem",
+                                                      border:
+                                                        "2px solid darkgrey",
+                                                    }}
+                                                    alt="img"
+                                                  />
+                                                )}
                                               </center>
                                             </td>
                                             <td>
@@ -625,7 +653,9 @@ const Learn = () => {
                                 <Table responsive>
                                   <tbody>
                                     {userData?.map((item, index) => {
-                                      const img = `${backendBaseUrl}/${item.file}`;
+                                      const img = item.file
+                                        ? `${backendBaseUrl}/${item.file}`
+                                        : "";
                                       let medalStyle = {
                                         fontSize: "28px",
                                         fontWeight: "bold",
@@ -668,15 +698,29 @@ const Learn = () => {
                                           </td>
                                           <td style={{ width: "20%" }}>
                                             <center>
-                                              <img
-                                                src={img}
-                                                style={{
-                                                  width: "70px",
-                                                  height: "50px",
-                                                  borderRadius: "0.625rem",
-                                                }}
-                                                alt="img"
-                                              />
+                                              {item.file ? (
+                                                <img
+                                                  src={img}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: "0.625rem",
+                                                  }}
+                                                  alt="img"
+                                                />
+                                              ) : (
+                                                <img
+                                                  src={dummy}
+                                                  style={{
+                                                    width: "70px",
+                                                    height: "50px",
+                                                    borderRadius: "0.625rem",
+                                                    border:
+                                                      "2px solid darkgrey",
+                                                  }}
+                                                  alt="img"
+                                                />
+                                              )}
                                             </center>
                                           </td>
                                           <td>
@@ -741,8 +785,9 @@ const Learn = () => {
                                       {userData
                                         ?.slice(0, 3)
                                         .map((item, index) => {
-                                          const img = `${backendBaseUrl}/${item.file}`;
-
+                                          const img = item.file
+                                            ? `${backendBaseUrl}/${item.file}`
+                                            : "";
                                           let medalIcon = null;
                                           if (index === 0) {
                                             medalIcon = (
@@ -787,15 +832,31 @@ const Learn = () => {
                                                 }}>
                                                 {" "}
                                                 <center>
-                                                  <img
-                                                    src={img}
-                                                    style={{
-                                                      width: "70px",
-                                                      height: "50px",
-                                                      borderRadius: " 0.625rem",
-                                                    }}
-                                                    alt="img"
-                                                  />
+                                                  {item.file ? (
+                                                    <img
+                                                      src={img}
+                                                      style={{
+                                                        width: "70px",
+                                                        height: "50px",
+                                                        borderRadius:
+                                                          " 0.625rem",
+                                                      }}
+                                                      alt="img"
+                                                    />
+                                                  ) : (
+                                                    <img
+                                                      src={dummy}
+                                                      style={{
+                                                        width: "70px",
+                                                        height: "50px",
+                                                        borderRadius:
+                                                          "0.625rem",
+                                                        border:
+                                                          "2px solid darkgrey",
+                                                      }}
+                                                      alt="img"
+                                                    />
+                                                  )}
                                                 </center>
                                               </td>
                                               <td>
