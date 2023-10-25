@@ -10,7 +10,13 @@ import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
+import Select from "react-select";
 // import { ExcelFile, ExcelSheet } from "react-data-export";
+
+const options = [
+  { value: true, label: "True" },
+  { value: false, label: "False" },
+];
 
 const UserFiles = (props) => {
   const userId = props.match.params.id;
@@ -23,6 +29,7 @@ const UserFiles = (props) => {
   const [token, setToken] = useState(); //auth token
   const [activeFile, setActiveFile] = useState(true);
   const [allFillData, setAllFillData] = useState([]); //set fill data
+  const [isActive, setIsActive] = useState({}); //for edit
   const dropzoneRef = useRef(null);
   const [fileError, setFileError] = useState("");
   const [fileName, setFileName] = useState();
@@ -139,7 +146,8 @@ const UserFiles = (props) => {
       });
       console.log(response.data.data.active);
       const active = response.data.data.active;
-      setActiveFile(active === 1 ? "True" : "False");
+      // setActiveFile(active === 1 ? "true" : "false");
+      setIsActive({ value: active, label: active === 1 ? "True" : "False" });
       setFileUrl(response.data.data.file_data);
       setFileId(file_id);
     } catch (error) {
@@ -150,9 +158,9 @@ const UserFiles = (props) => {
 
   const handleEditFile = async () => {
     const formData = new FormData();
-    formData.append("active", activeFile);
+    formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
-
+    console.log(isActive, "@@");
     const headers = {
       "Auth-Token": accessToken,
     };
@@ -274,6 +282,10 @@ const UserFiles = (props) => {
       KB: fileSizeKB.toFixed(2),
       MB: fileSizeMB.toFixed(2),
     };
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setIsActive(selectedOption);
   };
 
   const renderExcel = () => {
@@ -561,13 +573,18 @@ const UserFiles = (props) => {
               Visibility
             </label>
             <div className="col-lg-6">
-              <input
+              {/* <input
                 type="text"
                 className="form-control"
                 id="groupname"
                 value={activeFile}
-                onChange={(e) => activeFile(e.target.value)}
+                onChange={(e) => setActiveFile(e.target.value)}
                 required
+              /> */}
+              <Select
+                options={options}
+                value={isActive}
+                onChange={handleSelectChange}
               />
             </div>
           </div>

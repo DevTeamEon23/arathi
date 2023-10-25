@@ -26,6 +26,7 @@ function App(props) {
   const { isAuthenticated } = useAuth();
   const user = useSelector(selectUser);
   const roleType = user && user.role && user.role[0];
+
   // useEffect(() => {
   //   if (isAuthenticated) {
   //     props.history.replace("/dashboard");
@@ -36,11 +37,8 @@ function App(props) {
 
   useEffect(() => {
     if (isAuthenticated && roleType === "Learner") {
-      console.log("inside if");
       props.history.replace("/learn-dash");
     } else if (isAuthenticated) {
-      console.log("inside else if");
-
       props.history.replace("/dashboard");
     } else {
       props.history.replace("/login");

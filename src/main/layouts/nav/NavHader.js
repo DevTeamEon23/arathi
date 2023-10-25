@@ -17,7 +17,6 @@ const NavHader = () => {
     <div className="nav-header">
       {roleType === "Learner" ? (
         <Link to="/learn-dash" className="brand-logo">
-          {console.log("inside nav header 1")}
           {background.value === "dark" || navigationHader !== "color_1" ? (
             <>
               &nbsp;&nbsp;&nbsp;
@@ -223,7 +222,6 @@ const NavHader = () => {
         </Link>
       ) : (
         <Link to="/dashboard" className="brand-logo">
-          {console.log("inside nav header 2")}
           {background.value === "dark" || navigationHader !== "color_1" ? (
             <>
               &nbsp;&nbsp;&nbsp;
