@@ -12,7 +12,6 @@ import axios from "axios";
 
 const GroupFiles = (props) => {
   const grpId = props.match.params.id;
-  console.log({ grpId });
   const [fileId, setFileId] = useState("");
   const [selectedFile, setSelectedFile] = useState(null); //excel file
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
@@ -318,7 +317,7 @@ const GroupFiles = (props) => {
                   styles={styles}></Dropzone>
 
                 <br />
-                <div>
+                <div className="text-center">
                   <Button onClick={handleSubmit}>Upload File</Button>
                 </div>
 

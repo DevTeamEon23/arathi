@@ -3,15 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {
-  Dropdown,
-  DropdownButton,
-  ButtonGroup,
-  Nav,
-  Button,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import DateRangePicker from "react-bootstrap-daterangepicker";
 import { RotatingLines } from "react-loader-spinner";
 
@@ -27,6 +19,7 @@ const EditGroups = (props) => {
   const [groupkey, setGroupkey] = useState("");
   const [activeTab, setActiveTab] = useState("edit-groups/:id");
   const history = useHistory();
+  const roleType = window.localStorage.getItem("role");
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -113,51 +106,26 @@ const EditGroups = (props) => {
 
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to={`/edit-groups/${grpId}`}>
-            Info
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to="/groups-users">
-            Users
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to="/group-courses">
-            Courses
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            type="button"
-            to="/group-files">
-            Files
-          </Link>
-        </Nav.Item>
-      </Nav> */}
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
-            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`edit-groups/${grpId}`} title="Info"></Tab>
-              <Tab eventKey={`groups-users/${grpId}`} title="Users"></Tab>
-              <Tab eventKey={`group-courses/${grpId}`} title="Courses"></Tab>
-              <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
-            </Tabs>
+            {roleType === "Instructor" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-groups/${grpId}`} title="Info"></Tab>
+                <Tab eventKey={`adm_groups-users/${grpId}`} title="Users"></Tab>
+                <Tab
+                  eventKey={`adm_group-courses/${grpId}`}
+                  title="Courses"></Tab>
+                <Tab eventKey={`adm_group-files/${grpId}`} title="Files"></Tab>
+              </Tabs>
+            ) : (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-groups/${grpId}`} title="Info"></Tab>
+                <Tab eventKey={`groups-users/${grpId}`} title="Users"></Tab>
+                <Tab eventKey={`group-courses/${grpId}`} title="Courses"></Tab>
+                <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
+              </Tabs>
+            )}
             <div className="card-header">
               <h4 className="card-title">Edit Groups</h4>
             </div>

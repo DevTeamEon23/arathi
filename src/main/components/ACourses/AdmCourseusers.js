@@ -134,16 +134,18 @@ const AdmCourseusers = (props) => {
 
   return (
     <Fragment>
-      <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
-        <Tab eventKey={`adm_course_users/${courseID}`} title="Users"></Tab>
-        <Tab eventKey={`adm_course_groups/${courseID}`} title="Groups"></Tab>
-      </Tabs>
-
       <Row>
         <Col lg={12}>
           <Card>
-            {" "}
+            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
+              <Tab
+                eventKey={`adm_course_users/${courseID}`}
+                title="Users"></Tab>
+              <Tab
+                eventKey={`adm_course_groups/${courseID}`}
+                title="Groups"></Tab>
+            </Tabs>
             <Card.Header>
               <Card.Title>Enroll Course</Card.Title>
             </Card.Header>
