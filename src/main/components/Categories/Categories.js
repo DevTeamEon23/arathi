@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import axios from 'axios'
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
 import {
   Row,
   Col,
@@ -10,99 +10,99 @@ import {
   Modal,
   Tab,
   Tabs,
-} from 'react-bootstrap'
-import { toast } from 'react-toastify'
-import { RotatingLines } from 'react-loader-spinner'
+} from "react-bootstrap";
+import { toast } from "react-toastify";
+import { RotatingLines } from "react-loader-spinner";
 
 const Categories = () => {
-  const [getAllCategoriesData, setGetAllCategoriesData] = useState([])
-  const [token, setToken] = useState() //auth token
-  const [categoryId, setCategoryId] = useState() //cat id save for delete
-  const [showModal, setShowModal] = useState(false) //delete button modal
-  const [activeTab, setActiveTab] = useState('dashboard')
-  const history = useHistory()
+  const [getAllCategoriesData, setGetAllCategoriesData] = useState([]);
+  const [token, setToken] = useState(); //auth token
+  const [categoryId, setCategoryId] = useState(); //cat id save for delete
+  const [showModal, setShowModal] = useState(false); //delete button modal
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const history = useHistory();
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem('jwt_access_token')
-    setToken(accessToken)
-    getAllCategories()
-  }, [])
+    let accessToken = window.localStorage.getItem("jwt_access_token");
+    setToken(accessToken);
+    getAllCategories();
+  }, []);
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab)
-    history.push(`/${tab}`)
-  }
+    setActiveTab(tab);
+    history.push(`/${tab}`);
+  };
 
   useEffect(() => {
-    const currentPath = history.location.pathname
-    const tab = currentPath.substring(1)
-    setActiveTab(tab)
-  }, [history.location.pathname])
+    const currentPath = history.location.pathname;
+    const tab = currentPath.substring(1);
+    setActiveTab(tab);
+  }, [history.location.pathname]);
 
   // All Categories List
   const getAllCategories = async () => {
-    const jwtToken = window.localStorage.getItem('jwt_access_token')
-    const url = 'https://v1.eonlearning.tech/lms-service/categories'
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const url = "https://v1.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
-          'Auth-Token': jwtToken,
+          "Auth-Token": jwtToken,
         },
-      })
+      });
 
-      const data = response.data.data
-      setGetAllCategoriesData(data === null ? data : data.categories_data)
+      const data = response.data.data;
+      setGetAllCategoriesData(data === null ? data : data.categories_data);
     } catch (error) {
-      console.error('Error fetching data:', error)
-      toast.error('Failed to fetch Categories !') // Handle the error
+      console.error("Error fetching data:", error);
+      toast.error("Failed to fetch Categories !"); // Handle the error
     }
-  }
+  };
 
   const deleteOperation = (catId) => {
-    setShowModal(true)
-    setCategoryId(catId)
-  }
+    setShowModal(true);
+    setCategoryId(catId);
+  };
 
   const handleCatDelete = () => {
     const config = {
       headers: {
-        'Auth-Token': token, // Attach the JWT token in the Authorization header
+        "Auth-Token": token, // Attach the JWT token in the Authorization header
       },
-    }
+    };
     const requestBody = {
       id: categoryId,
-    }
+    };
     axios
       .delete(`https://v1.eonlearning.tech/lms-service/delete_category`, {
         ...config,
         data: requestBody,
       })
       .then((response) => {
-        setShowModal(false)
+        setShowModal(false);
 
-        getAllCategories()
-        toast.success('Category deleted successfully!', {
+        getAllCategories();
+        toast.success("Category deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
+        });
       })
       .catch((error) => {
-        console.error(error)
-        setShowModal(false)
-        toast.error('Failed to delete Category!', {
+        console.error(error);
+        setShowModal(false);
+        toast.error("Failed to delete Category!", {
           position: toast.POSITION.TOP_RIGHT,
-        })
-      })
-  }
+        });
+      });
+  };
 
   const handleEdit = (id) => {
-    history.push(`/edit-category/${id}`)
-  }
+    history.push(`/edit-category/${id}`);
+  };
 
   return (
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey='dashboard' title='Dashboard'></Tab>
-        <Tab eventKey='add-category' title='Add Category'></Tab>
+        <Tab eventKey="dashboard" title="Dashboard"></Tab>
+        <Tab eventKey="add-category" title="Add Category"></Tab>
       </Tabs>
       <Row>
         <Col lg={12}>
@@ -110,31 +110,24 @@ const Categories = () => {
             <Card.Header>
               <Card.Title>Categories</Card.Title>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Link to='/add-category'>
-                <Button variant='primary'>Add Categories</Button>
-              </Link>
-              <Link to='/courses'>
-                <h6>
-                  View Course Catalog&nbsp;&nbsp;
-                  <i className='bi bi-arrow-right-square-fill'></i>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                </h6>
+              <Link to="/add-category">
+                <Button variant="primary">Add Categories</Button>
               </Link>
             </Card.Header>
             <Card.Body>
               {getAllCategoriesData?.length <= 0 ? (
-                <div className='loader-container'>
+                <div className="loader-container">
                   <RotatingLines
-                    strokeColor='grey'
-                    strokeWidth='5'
-                    animationDuration='0.75'
-                    width='140'
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="140"
                     visible={true}
                   />
                 </div>
               ) : getAllCategoriesData === null ? (
                 <div>
-                  <p className='text-center fs-20 fw-bold'>
+                  <p className="text-center fs-20 fw-bold">
                     No Category Found.
                   </p>
                 </div>
@@ -167,25 +160,23 @@ const Categories = () => {
                             <td></td>
                             <td></td>
                             <td>
-                              <div className='d-flex'>
+                              <div className="d-flex">
                                 <div
-                                  className='btn btn-primary shadow btn-xs sharp me-1'
-                                  title='Edit'
-                                  onClick={(e) => handleEdit(item.id)}
-                                >
-                                  <i className='fas fa-pencil-alt'></i>
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Edit"
+                                  onClick={(e) => handleEdit(item.id)}>
+                                  <i className="fas fa-pencil-alt"></i>
                                 </div>
                                 <div
-                                  className='btn btn-danger shadow btn-xs sharp'
-                                  title='Delete'
-                                  onClick={() => deleteOperation(item.id)}
-                                >
-                                  <i className='fa fa-trash'></i>
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Delete"
+                                  onClick={() => deleteOperation(item.id)}>
+                                  <i className="fa fa-trash"></i>
                                 </div>
                               </div>
                             </td>
                           </tr>
-                        )
+                        );
                       })}
                     </tbody>
                   </Table>
@@ -206,16 +197,16 @@ const Categories = () => {
           <strong>Are you sure you want to delete this Category?</strong>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='danger light' onClick={() => setShowModal(false)}>
+          <Button variant="danger light" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant='btn btn-primary' onClick={handleCatDelete}>
+          <Button variant="btn btn-primary" onClick={handleCatDelete}>
             Delete
           </Button>
         </Modal.Footer>
       </Modal>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Categories
+export default Categories;
