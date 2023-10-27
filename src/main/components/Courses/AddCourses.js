@@ -33,7 +33,7 @@ const AddCourses = () => {
   const [description, setDescription] = useState(""); //Description
   const [isActive, setIsActive] = useState(false); //Active
   const [isHide, setIsHide] = useState(false); //Hide
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [courselink, setCourselink] = useState(""); //to save youtube link
   const [isValidLink, setIsValidLink] = useState(true);
   const fileInputRef = useRef(null);
@@ -429,7 +429,7 @@ const AddCourses = () => {
                               id="isActive"
                               name="isActive"
                               checked={isActive}
-                              onChange={handleActiveChange}
+                              onChange={(e) => setIsActive(e.target.checked)}
                             />
                             Active
                           </label>
@@ -446,7 +446,7 @@ const AddCourses = () => {
                               id="isHide"
                               name="isHide"
                               checked={isHide}
-                              onChange={handleHideChange}
+                              onChange={(e) => setIsHide(e.target.checked)}
                             />
                             Hide from Course store
                           </label>
@@ -490,7 +490,6 @@ const AddCourses = () => {
                             placeholder="₹21.60"
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
-                            required
                           />
                         </div>
                       </div>

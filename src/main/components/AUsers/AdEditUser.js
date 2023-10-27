@@ -41,6 +41,7 @@ const EditUser = (props) => {
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [userData, setUserData] = useState(); //user list data
   const [userRole, setUserRole] = useState(); // For user base view Role
+  const [errorImg, setErrorImg] = useState(null);
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
@@ -222,8 +223,25 @@ const EditUser = (props) => {
   }, [history.location.pathname]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFile(file);
+    // const file = e.target.files[0];
+    // setFile(file);
+
+    const selectedFile = e.target.files[0];
+    if (selectedFile && isValidFileType(selectedFile)) {
+      setFile(selectedFile);
+      setErrorImg("");
+    } else {
+      setFile(null);
+      setErrorImg(
+        "Please select a valid image file (jpeg, jpg, png) that is no larger than 3 MB."
+      );
+    }
+  };
+
+  const isValidFileType = (file) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    return allowedTypes.includes(file.type) && file.size <= maxSize;
   };
 
   const handleImageDelete = () => {
@@ -521,6 +539,11 @@ const EditUser = (props) => {
                                   className="form-control-file"
                                 />
                               </label>
+                              {errorImg && (
+                                <div className="error-message text-danger fs-14">
+                                  {errorImg}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

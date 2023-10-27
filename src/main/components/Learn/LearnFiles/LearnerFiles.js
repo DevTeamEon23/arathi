@@ -7,6 +7,7 @@ import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
+import { CircularProgress } from "@material-ui/core";
 import * as XLSX from "xlsx";
 
 const LearnerFiles = () => {
@@ -15,6 +16,7 @@ const LearnerFiles = () => {
   const [fileName, setFileName] = useState();
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
+  const [loadingStates, setLoadingStates] = useState({});
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
   const accessToken = window.localStorage.getItem("jwt_access_token");
 
@@ -52,7 +54,7 @@ const LearnerFiles = () => {
   };
 
   const handleDownload = async (e, files_name) => {
-    console.log(files_name);
+    setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
@@ -68,25 +70,14 @@ const LearnerFiles = () => {
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
-        // Extract the content type from the response
         const contentType = response.headers["content-type"];
-
-        // Create a Blob object from the response data
         const blob = new Blob([response.data], { type: contentType });
-
-        // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(blob);
-
-        // Create a hidden anchor element for downloading
         const downloadLink = document.createElement("a");
         downloadLink.href = blobUrl;
-        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.download = files_name;
         downloadLink.style.display = "none";
-
-        // Append the anchor to the document
         document.body.appendChild(downloadLink);
-
-        // Simulate a click event to trigger the download
         downloadLink.click();
 
         // Clean up
@@ -96,6 +87,8 @@ const LearnerFiles = () => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to download file!");
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
     }
   };
 
@@ -262,10 +255,20 @@ const LearnerFiles = () => {
                                   onClick={(e) =>
                                     handleDownload(e, data.filename)
                                   }>
-                                  <FaDownload
-                                    className="fs-14 fs-bold"
-                                    title="Download"
-                                  />
+                                  {loadingStates[data.filename] ? (
+                                    <CircularProgress
+                                      style={{
+                                        width: "16px",
+                                        height: "16px",
+                                        color: "#fff",
+                                      }}
+                                    />
+                                  ) : (
+                                    <FaDownload
+                                      className="fs-14 fs-bold"
+                                      title="Download"
+                                    />
+                                  )}
                                 </div>
                               </center>
                             </td>
