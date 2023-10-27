@@ -173,8 +173,10 @@ const LearnCourseView = (props) => {
       </Row>
 
       <div>
-        <Button onClick={() => history.goBack()}>Back</Button>
+        <Button onClick={(e) => history.goBack(e)}>Back</Button>
       </div>
+      <br />
+      <br />
     </>
   );
 };

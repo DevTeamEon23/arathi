@@ -81,10 +81,17 @@ const Lgroups = () => {
                     </thead>
                     <tbody>
                       {groups?.map((item, index) => {
+                        const truncatedGroupDesc =
+                          item.groupdesc.length > 40
+                            ? item.groupdesc.slice(0, 40) + "..."
+                            : item.groupdesc;
                         return (
                           <tr key={index}>
                             <td className="text-center">{item.groupname}</td>
-                            <td className="text-center">{item.groupdesc}</td>
+                            <td className="text-center">
+                              {" "}
+                              {truncatedGroupDesc}
+                            </td>
                           </tr>
                         );
                       })}

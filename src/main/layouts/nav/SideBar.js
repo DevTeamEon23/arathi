@@ -73,14 +73,7 @@ const SideBar = () => {
     learngroups = ["learn-group"],
     learncertificate = ["learn-certificate"],
     learntimeline = ["learn-timeline"],
-    users = [
-      "users-list",
-      "add-user",
-      "import-user",
-      "export-user",
-      "user-types",
-      "add-user-type",
-    ],
+    users = ["users-list", "add-user", "user-types", "add-user-type"],
     ausers = [
       "users-list",
       "add-user",

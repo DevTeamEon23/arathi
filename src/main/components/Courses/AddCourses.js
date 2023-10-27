@@ -225,18 +225,6 @@ const AddCourses = () => {
     setEnddate("");
   };
 
-  // "Active" is checked
-  const handleActiveChange = (e) => {
-    setIsActive(e.target.checked);
-    setIsHide(false);
-  };
-
-  // "Deactive" is checked
-  const handleHideChange = (e) => {
-    setIsHide(e.target.checked);
-    setIsActive(false);
-  };
-
   //image file handle
   const handleChange = (e) => {
     setErrorMessageCapacity("");
