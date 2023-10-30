@@ -106,46 +106,48 @@ const CoursesMain = () => {
             </>
           ) : (
             <>
-              {currentData?.map((item, index) => {
-                const img = `${backendBaseUrl}/${item.file}`;
-                return (
-                  <div className="col-xl-4 col-md-6" key={index}>
-                    <div className="card all-crs-wid">
-                      <div className="card-body">
-                        <div className="courses-bx">
-                          <div style={{ height: "10vw" }}>
-                            <img
-                              src={img}
-                              style={{
-                                objectFit: "cover",
-                                width: "100%",
-                                borderRadius: " 0.625rem",
-                                height: "10vw",
-                              }}
-                              alt="course img"
-                              id="file"
-                              name="file"
-                            />
-                          </div>
-                          <div className="dlab-info">
-                            <div className="dlab-title d-flex justify-content-between">
-                              <div>
-                                <h4>
-                                  <Link to={`/course-details-1/${item.id}`}>
-                                    {item.coursename}
-                                  </Link>
-                                </h4>
-                                <p className="m-0">
-                                  Course Code : {item.coursecode}
-                                </p>
-                              </div>
-                              <h4 className="text-primary">
-                                <span>₹</span>
-                                {item.price}
-                              </h4>
+              {currentData
+                ?.filter((item) => item.isHide === 0)
+                .map((item, index) => {
+                  const img = `${backendBaseUrl}/${item.file}`;
+                  return (
+                    <div className="col-xl-4 col-md-6" key={index}>
+                      <div className="card all-crs-wid">
+                        <div className="card-body">
+                          <div className="courses-bx">
+                            <div style={{ height: "10vw" }}>
+                              <img
+                                src={img}
+                                style={{
+                                  objectFit: "cover",
+                                  width: "100%",
+                                  borderRadius: " 0.625rem",
+                                  height: "10vw",
+                                }}
+                                alt="course img"
+                                id="file"
+                                name="file"
+                              />
                             </div>
-                            <div className="d-flex content">
-                              {/* <span>
+                            <div className="dlab-info">
+                              <div className="dlab-title d-flex justify-content-between">
+                                <div>
+                                  <h4>
+                                    <Link to={`/course-details-1/${item.id}`}>
+                                      {item.coursename}
+                                    </Link>
+                                  </h4>
+                                  <p className="m-0">
+                                    Course Code : {item.coursecode}
+                                  </p>
+                                </div>
+                                <h4 className="text-primary">
+                                  <span>₹</span>
+                                  {item.price}
+                                </h4>
+                              </div>
+                              <div className="d-flex content">
+                                {/* <span>
                                 <svg
                                   className="me-2"
                                   width="24"
@@ -160,19 +162,19 @@ const CoursesMain = () => {
                                 </svg>
                                 110+ Content
                               </span> */}
-                              <Link
-                                to={`/course-details-1/${item.id}`}
-                                className="btn btn-primary btn-sm">
-                                View all
-                              </Link>
+                                <Link
+                                  to={`/course-details-1/${item.id}`}
+                                  className="btn btn-primary btn-sm">
+                                  View all
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </>
           )}
         </div>
@@ -196,59 +198,61 @@ const CoursesMain = () => {
             </>
           ) : (
             <>
-              {currentData?.map((item, index) => {
-                const img = `${backendBaseUrl}/${item.file}`;
-                return (
-                  <div className="col-xl-4 col-md-6" key={index}>
-                    <div className="card all-crs-wid">
-                      <div className="card-body">
-                        <div className="courses-bx">
-                          <div style={{ height: "10vw" }}>
-                            <img
-                              src={img}
-                              style={{
-                                objectFit: "cover",
-                                width: "100%",
-                                borderRadius: " 0.625rem",
-                                height: "10vw",
-                              }}
-                              alt="course img"
-                              id="file"
-                              name="file"
-                            />
-                          </div>
-                          <div className="dlab-info">
-                            <div className="dlab-title d-flex justify-content-between">
-                              <div>
-                                <h4>
-                                  <Link
-                                    to={`/course-details-1/${item.course_id}`}>
-                                    {item.coursename}
-                                  </Link>
-                                </h4>
-                                <p className="m-0">
-                                  Course Code : {item.coursecode}
-                                </p>
-                              </div>
-                              <h4 className="text-primary">
-                                <span>₹</span>
-                                {item.price}
-                              </h4>
+              {currentData
+                ?.filter((item) => item.isHide === 0)
+                .map((item, index) => {
+                  const img = `${backendBaseUrl}/${item.file}`;
+                  return (
+                    <div className="col-xl-4 col-md-6" key={index}>
+                      <div className="card all-crs-wid">
+                        <div className="card-body">
+                          <div className="courses-bx">
+                            <div style={{ height: "10vw" }}>
+                              <img
+                                src={img}
+                                style={{
+                                  objectFit: "cover",
+                                  width: "100%",
+                                  borderRadius: " 0.625rem",
+                                  height: "10vw",
+                                }}
+                                alt="course img"
+                                id="file"
+                                name="file"
+                              />
                             </div>
-                            <div className="d-flex justify-content-between content align-items-center">
-                              <Link
-                                to={`/course-details-1/${item.course_id}`}
-                                className="btn btn-primary btn-sm">
-                                View all
-                              </Link>
+                            <div className="dlab-info">
+                              <div className="dlab-title d-flex justify-content-between">
+                                <div>
+                                  <h4>
+                                    <Link
+                                      to={`/course-details-1/${item.course_id}`}>
+                                      {item.coursename}
+                                    </Link>
+                                  </h4>
+                                  <p className="m-0">
+                                    Course Code : {item.coursecode}
+                                  </p>
+                                </div>
+                                <h4 className="text-primary">
+                                  <span>₹</span>
+                                  {item.price}
+                                </h4>
+                              </div>
+                              <div className="d-flex justify-content-between content align-items-center">
+                                <Link
+                                  to={`/course-details-1/${item.course_id}`}
+                                  className="btn btn-primary btn-sm">
+                                  View all
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </>
           )}
         </div>

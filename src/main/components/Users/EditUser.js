@@ -618,6 +618,12 @@ const EditUser = (props) => {
                                 />
                               </label>
                             </div>
+
+                            {errorImg && (
+                              <div className="error-message text-danger fs-14">
+                                {errorImg}
+                              </div>
+                            )}
                           </div>
                         </div>
 

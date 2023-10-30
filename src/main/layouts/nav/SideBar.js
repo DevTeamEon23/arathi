@@ -73,14 +73,7 @@ const SideBar = () => {
     learngroups = ["learn-group"],
     learncertificate = ["learn-certificate"],
     learntimeline = ["learn-timeline"],
-    users = [
-      "users-list",
-      "add-user",
-      "import-user",
-      "export-user",
-      "user-types",
-      "add-user-type",
-    ],
+    users = ["users-list", "add-user", "user-types", "add-user-type"],
     ausers = [
       "users-list",
       "add-user",
@@ -805,7 +798,7 @@ const SideBar = () => {
           {/* *********************************** Learner Dashboard Options************************************ */}
           {roleType === "Learner" && (
             <>
-              <li className={`${learner.includes(path) ? "mm-active" : ""}`}>
+              <li className={`${learner.includes(path) ? "/learn-dash" : ""}`}>
                 <Link className="has-arrow" to="#">
                   <i className="bi bi-grid"></i>
                   <span className="nav-text">LEARNERS</span>

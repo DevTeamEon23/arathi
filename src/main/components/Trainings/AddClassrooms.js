@@ -129,22 +129,7 @@ const AddClassrooms = () => {
                           />
                         </div>
                       </div>
-                      <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="starttime">
-                          Start Time
-                          <span className="text-danger">*</span>
-                        </label>
-                        <div className="col-lg-6">
-                          <TimePicker
-                            id="starttime"
-                            onChange={handleTimeChange}
-                            value={selectedTime.split(" ")[0]}
-                            clearIcon={null} // Remove the clear button
-                          />
-                        </div>
-                      </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -192,9 +177,29 @@ const AddClassrooms = () => {
                           Make sure that the duration is below your plan limits*
                         </div>
                       </div>
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="starttime">
+                          Start Time
+                          <span className="text-danger">*</span>
+                        </label>
+                        <div className="col-lg-6">
+                          <TimePicker
+                            id="starttime"
+                            onChange={handleTimeChange}
+                            value={selectedTime.split(" ")[0]}
+                            clearIcon={null}
+                          />
+                        </div>
+                      </div>
                       <br />
-
-                      <div className="form-group mb-5 row">
+                      <br />
+                      <br />
+                      <br />
+                      <br />
+                      <br />
+                      <div className="form-group mt-5 row">
                         <div className="col-lg-8 ms-auto">
                           <br />
                           <Button

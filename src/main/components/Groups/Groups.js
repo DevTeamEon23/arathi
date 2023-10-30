@@ -366,10 +366,17 @@ const Groups = () => {
                       </thead>
                       <tbody>
                         {grpData?.map((item, index) => {
+                          const truncatedGroupDesc =
+                            item.groupdesc.length > 30
+                              ? item.groupdesc.slice(0, 30) + "..."
+                              : item.groupdesc;
                           return (
                             <tr key={index}>
                               <td className="text-center">{item.groupname}</td>
-                              <td className="text-center">{item.groupdesc}</td>
+                              <td className="text-center">
+                                {" "}
+                                {truncatedGroupDesc}
+                              </td>
                               <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
