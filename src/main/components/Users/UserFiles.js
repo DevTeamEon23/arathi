@@ -32,7 +32,7 @@ const UserFiles = (props) => {
   const [isActive, setIsActive] = useState({}); //for edit
   const dropzoneRef = useRef(null);
   const [fileError, setFileError] = useState("");
-  const [fileName, setFileName] = useState();
+  const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const history = useHistory();
@@ -131,8 +131,9 @@ const UserFiles = (props) => {
     }
   };
 
-  const handleEdit = async (e, file_id) => {
-    console.log("inside handle edit", file_id);
+  const handleEdit = async (e, file_id, name) => {
+    console.log("inside handle edit", file_id, name);
+    setFileName(name);
     setShowEditModal(true);
     try {
       const url = new URL(
@@ -156,6 +157,10 @@ const UserFiles = (props) => {
     }
   };
 
+  const handleVideoDelete = () => {
+    setFileName(undefined);
+  };
+
   const handleEditFile = async () => {
     const formData = new FormData();
     formData.append("active", isActive.value);
@@ -175,10 +180,18 @@ const UserFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setSelectedFile(null);
+      toast.success("File Updated successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       getAllFiles();
       console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("An error occurred. Please try again later.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      setShowEditModal(false);
     }
   };
 
@@ -285,6 +298,11 @@ const UserFiles = (props) => {
 
   const handleSelectChange = (selectedOption) => {
     setIsActive(selectedOption);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const renderExcel = () => {
@@ -461,7 +479,9 @@ const UserFiles = (props) => {
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Edit"
-                                    onClick={(e) => handleEdit(e, data.id)}>
+                                    onClick={(e) =>
+                                      handleEdit(e, data.id, data.filename)
+                                    }>
                                     <i className="fas fa-pencil-alt"></i>
                                   </div>
 
@@ -577,14 +597,6 @@ const UserFiles = (props) => {
               Visibility
             </label>
             <div className="col-lg-6">
-              {/* <input
-                type="text"
-                className="form-control"
-                id="groupname"
-                value={activeFile}
-                onChange={(e) => setActiveFile(e.target.value)}
-                required
-              /> */}
               <Select
                 options={options}
                 value={isActive}
@@ -592,16 +604,35 @@ const UserFiles = (props) => {
               />
             </div>
           </div>
+          <div className="form-group mb-3 row">
+            <label className="col-lg-4 col-form-label" htmlFor="groupname">
+              File Name
+            </label>
+            <div className="col-lg-6">
+              <span className="fs-16 fw-bold"> {fileName}</span>
+
+              {fileName !== undefined && (
+                <button
+                  className="btn btn-danger p-1"
+                  style={{ marginLeft: "5px" }}
+                  onClick={handleVideoDelete}>
+                  Change file
+                </button>
+              )}
+              {fileName === undefined && (
+                <input type="file" onChange={handleFileChange} />
+              )}
+            </div>
+          </div>
           <div className="form-group my-auto row ">
             <div className="col-lg-4"> </div>
             <div className="col-lg-4">
-              <Button onClick={handleEditFile} className="btn btn-primary">
+              <Button onClick={handleEditFile} className="btn btn-primary mt-2">
                 Update File
               </Button>{" "}
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>
   );

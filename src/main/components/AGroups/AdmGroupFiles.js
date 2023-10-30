@@ -94,6 +94,15 @@ const AdmGroupFiles = (props) => {
     setIsActive(selectedOption);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleVideoDelete = () => {
+    setFileName(undefined);
+  };
+
   // File upload
   const handleSubmit = async () => {
     if (selectedFile) {
@@ -172,10 +181,17 @@ const AdmGroupFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setSelectedFile(null);
+      toast.success("File Updated successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       getAllFiles();
       console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("An error occurred. Please try again later.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 
@@ -573,16 +589,35 @@ const AdmGroupFiles = (props) => {
               />
             </div>
           </div>
+          <div className="form-group mb-3 row">
+            <label className="col-lg-4 col-form-label" htmlFor="groupname">
+              File Name
+            </label>
+            <div className="col-lg-6">
+              <span className="fs-16 fw-bold"> {fileName}</span>
+
+              {fileName !== undefined && (
+                <button
+                  className="btn btn-danger p-1"
+                  style={{ marginLeft: "5px" }}
+                  onClick={handleVideoDelete}>
+                  Change file
+                </button>
+              )}
+              {fileName === undefined && (
+                <input type="file" onChange={handleFileChange} />
+              )}
+            </div>
+          </div>
           <div className="form-group my-auto row ">
             <div className="col-lg-4"> </div>
             <div className="col-lg-4">
-              <Button onClick={handleEditFile} className="btn btn-primary">
+              <Button onClick={handleEditFile} className="btn btn-primary mt-2">
                 Update File
               </Button>{" "}
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>
   );
