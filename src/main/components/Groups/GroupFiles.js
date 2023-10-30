@@ -9,6 +9,12 @@ import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
+import Select from "react-select";
+
+const options = [
+  { value: true, label: "True" },
+  { value: false, label: "False" },
+];
 
 const GroupFiles = (props) => {
   const grpId = props.match.params.id;
@@ -26,8 +32,10 @@ const GroupFiles = (props) => {
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const [activeTab, setActiveTab] = useState("group-files/:id");
+  const [isActive, setIsActive] = useState({}); //for edit
   const history = useHistory();
-  let accessToken = window.localStorage.getItem("jwt_access_token");
+  const accessToken = window.localStorage.getItem("jwt_access_token");
+  const userID = localStorage.getItem("id");
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -86,6 +94,10 @@ const GroupFiles = (props) => {
     }
   };
 
+  const handleSelectChange = (selectedOption) => {
+    setIsActive(selectedOption);
+  };
+
   // File upload
   const handleSubmit = async () => {
     if (selectedFile) {
@@ -95,7 +107,7 @@ const GroupFiles = (props) => {
       const user_id = grpId;
       const active = activeFile;
       const authToken = accessToken;
-      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${user_id}&active=${active}`;
+      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${userID}&active=${active}`;
 
       try {
         const response = await axios.post(uploadUrl, formData, {
@@ -135,7 +147,7 @@ const GroupFiles = (props) => {
       });
       console.log(response.data.data.active);
       const active = response.data.data.active;
-      setActiveFile(active === 1 ? "True" : "False");
+      setIsActive({ value: active, label: active === 1 ? "True" : "False" });
       setFileUrl(response.data.data.file_data);
       setFileId(file_id);
     } catch (error) {
@@ -146,7 +158,7 @@ const GroupFiles = (props) => {
 
   const handleEditFile = async () => {
     const formData = new FormData();
-    formData.append("active", activeFile);
+    formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
 
     const headers = {
@@ -154,7 +166,7 @@ const GroupFiles = (props) => {
     };
     try {
       const response = await axios.put(
-        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${grpId}`,
+        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userID}`,
         formData,
         {
           headers: {
@@ -164,10 +176,17 @@ const GroupFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setSelectedFile(null);
+      toast.success("File Updated successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       getAllFiles();
       console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("An error occurred. Please try again later.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 
@@ -272,6 +291,15 @@ const GroupFiles = (props) => {
     };
   };
 
+  const handleVideoDelete = () => {
+    setFileName(undefined);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
   const renderExcel = () => {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", fileUrl, true);
@@ -319,11 +347,11 @@ const GroupFiles = (props) => {
                 <br />
                 <div className="text-center">
                   <Button onClick={handleSubmit}>Upload File</Button>
-                </div>
 
-                {selectedFile === null && (
-                  <div className="text-danger fs-16 mt-1">{fileError}</div>
-                )}
+                  {selectedFile === null && (
+                    <div className="text-danger fs-16 mt-1">{fileError}</div>
+                  )}
+                </div>
               </div>
               {allFillData.length === 0 ? (
                 <div className="loader-container">
@@ -444,18 +472,22 @@ const GroupFiles = (props) => {
                                     title="Download"
                                   />
                                 </div>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Edit"
-                                  onClick={(e) => handleEdit(e, data.id)}>
-                                  <i className="fas fa-pencil-alt"></i>
-                                </div>
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Delete"
-                                  onClick={(e) => deleteFile(e, data.id)}>
-                                  <i className="fa fa-trash"></i>
-                                </div>
+                                {data.user_id == userID && (
+                                  <>
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Edit"
+                                      onClick={(e) => handleEdit(e, data.id)}>
+                                      <i className="fas fa-pencil-alt"></i>
+                                    </div>
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Delete"
+                                      onClick={(e) => deleteFile(e, data.id)}>
+                                      <i className="fa fa-trash"></i>
+                                    </div>
+                                  </>
+                                )}
                               </center>
                             </td>
                           </tr>
@@ -556,26 +588,44 @@ const GroupFiles = (props) => {
                 Visibility
               </label>
               <div className="col-lg-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="groupname"
-                  value={activeFile}
-                  onChange={(e) => activeFile(e.target.value)}
-                  required
+                <Select
+                  options={options}
+                  value={isActive}
+                  onChange={handleSelectChange}
                 />
+              </div>
+            </div>
+            <div className="form-group mb-3 row">
+              <label className="col-lg-4 col-form-label" htmlFor="groupname">
+                File Name
+              </label>
+              <div className="col-lg-6">
+                <span className="fs-16 fw-bold"> {fileName}</span>
+
+                {fileName !== undefined && (
+                  <button
+                    className="btn btn-danger p-1"
+                    style={{ marginLeft: "5px" }}
+                    onClick={handleVideoDelete}>
+                    Change file
+                  </button>
+                )}
+                {fileName === undefined && (
+                  <input type="file" onChange={handleFileChange} />
+                )}
               </div>
             </div>
             <div className="form-group my-auto row ">
               <div className="col-lg-4"> </div>
               <div className="col-lg-4">
-                <Button onClick={handleEditFile} className="btn btn-primary">
+                <Button
+                  onClick={handleEditFile}
+                  className="btn btn-primary mt-2">
                   Update File
                 </Button>{" "}
               </div>
             </div>
           </Modal.Body>
-          <Modal.Footer></Modal.Footer>
         </Modal>
       </Fragment>
     </>

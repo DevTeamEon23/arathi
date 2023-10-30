@@ -107,14 +107,14 @@ const LearnerCourse = () => {
   return (
     <Fragment>
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-        <Tab eventKey="learn-course" title="Info"></Tab>
+        <Tab eventKey="learn-course" title="Enrolled Courses"></Tab>
         <Tab eventKey="courses" title="Course Store"></Tab>
       </Tabs>
       <Row>
         <Col lg={12}>
           <Card>
             <Card.Header>
-              <Card.Title>Courses</Card.Title>
+              <Card.Title>Enrolled Courses</Card.Title>
             </Card.Header>
             <Card.Body>
               {courses?.length <= 0 ? (

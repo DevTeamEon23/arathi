@@ -424,18 +424,6 @@ const EditcourseForm = (props) => {
     }
   };
 
-  // "Active" is checked
-  const handleActiveChange = (e) => {
-    setIsActive(e.target.checked);
-    setIsHide(false);
-  };
-
-  // "Deactive" is checked
-  const handleHideChange = (e) => {
-    setIsHide(e.target.checked);
-    setIsActive(false);
-  };
-
   // youtube link handle
   const handleInputChange = (event) => {
     const value = event.target.value;
@@ -662,9 +650,11 @@ const EditcourseForm = (props) => {
                                   id="isActive"
                                   name="isActive"
                                   checked={isActive}
-                                  onChange={handleActiveChange}
+                                  onChange={(e) =>
+                                    setIsActive(e.target.checked)
+                                  }
                                 />
-                                Active
+                                <p className="fw-bold fs-16"> Active</p>
                               </label>
                             </div>
                             <div className="col-lg-5 ms-auto">
@@ -680,9 +670,11 @@ const EditcourseForm = (props) => {
                                   id="isHide"
                                   name="isHide"
                                   checked={isHide}
-                                  onChange={handleHideChange}
+                                  onChange={(e) => setIsHide(e.target.checked)}
                                 />
-                                Hide from Course store
+                                <p className="fw-mid-bold fs-16">
+                                  Hide from Course store
+                                </p>
                               </label>
                               <br />
                             </div>
