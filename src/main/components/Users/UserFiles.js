@@ -36,7 +36,8 @@ const UserFiles = (props) => {
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const history = useHistory();
-  let accessToken = window.localStorage.getItem("jwt_access_token");
+  const accessToken = window.localStorage.getItem("jwt_access_token");
+  const userID = localStorage.getItem("id");
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -101,10 +102,9 @@ const UserFiles = (props) => {
       setFileError("");
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const user_id = userId;
       const active = activeFile;
       const authToken = accessToken;
-      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${user_id}&active=${active}`;
+      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${userID}&active=${active}`;
 
       try {
         const response = await axios.post(uploadUrl, formData, {
@@ -160,13 +160,12 @@ const UserFiles = (props) => {
     const formData = new FormData();
     formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
-    console.log(isActive, "@@");
     const headers = {
       "Auth-Token": accessToken,
     };
     try {
       const response = await axios.put(
-        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userId}`,
+        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userID}`,
         formData,
         {
           headers: {
@@ -457,18 +456,23 @@ const UserFiles = (props) => {
                                   title="Download"
                                 />
                               </div>
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                title="Edit"
-                                onClick={(e) => handleEdit(e, data.id)}>
-                                <i className="fas fa-pencil-alt"></i>
-                              </div>
-                              <div
-                                className="btn btn-danger shadow btn-xs sharp"
-                                title="Delete"
-                                onClick={(e) => deleteFile(e, data.id)}>
-                                <i className="fa fa-trash"></i>
-                              </div>
+                              {data.user_id == userID && (
+                                <>
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Edit"
+                                    onClick={(e) => handleEdit(e, data.id)}>
+                                    <i className="fas fa-pencil-alt"></i>
+                                  </div>
+
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Delete"
+                                    onClick={(e) => deleteFile(e, data.id)}>
+                                    <i className="fa fa-trash"></i>
+                                  </div>
+                                </>
+                              )}
                             </center>
                           </td>
                         </tr>
