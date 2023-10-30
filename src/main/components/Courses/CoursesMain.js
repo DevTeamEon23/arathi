@@ -38,9 +38,16 @@ const CoursesMain = () => {
           "Auth-Token": jwtToken,
         },
       });
+      // const data = response.data.data;
+      // setData(data === null ? data : data.courses_data);
       const data = response.data.data;
-      setData(data === null ? data : data.courses_data);
-      setTotalCourseDataMain(data === null ? 0 : data.courses_data.length);
+      const filteredData =
+        data === null
+          ? data
+          : data.courses_data.filter((item) => item.isHide === 0);
+      setData(filteredData);
+
+      setTotalCourseDataMain(data === null ? 0 : filteredData.length);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to fetch Courses !"); // Handle the error
@@ -62,9 +69,16 @@ const CoursesMain = () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      // const list = response.data.data;
+      // setCourses(list === null ? list : list.course_ids);
       const list = response.data.data;
-      setCourses(list === null ? list : list.course_ids);
-      setTotalCourseData(list === null ? 0 : list.course_ids.length);
+      const filteredData =
+        list === null
+          ? list
+          : list.course_ids.filter((item) => item.isHide === 0);
+      setCourses(filteredData);
+
+      setTotalCourseData(list === null ? 0 : filteredData.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -106,48 +120,46 @@ const CoursesMain = () => {
             </>
           ) : (
             <>
-              {currentData
-                ?.filter((item) => item.isHide === 0)
-                .map((item, index) => {
-                  const img = `${backendBaseUrl}/${item.file}`;
-                  return (
-                    <div className="col-xl-4 col-md-6" key={index}>
-                      <div className="card all-crs-wid">
-                        <div className="card-body">
-                          <div className="courses-bx">
-                            <div style={{ height: "10vw" }}>
-                              <img
-                                src={img}
-                                style={{
-                                  objectFit: "cover",
-                                  width: "100%",
-                                  borderRadius: " 0.625rem",
-                                  height: "10vw",
-                                }}
-                                alt="course img"
-                                id="file"
-                                name="file"
-                              />
-                            </div>
-                            <div className="dlab-info">
-                              <div className="dlab-title d-flex justify-content-between">
-                                <div>
-                                  <h4>
-                                    <Link to={`/course-details-1/${item.id}`}>
-                                      {item.coursename}
-                                    </Link>
-                                  </h4>
-                                  <p className="m-0">
-                                    Course Code : {item.coursecode}
-                                  </p>
-                                </div>
-                                <h4 className="text-primary">
-                                  <span>₹</span>
-                                  {item.price}
+              {currentData?.map((item, index) => {
+                const img = `${backendBaseUrl}/${item.file}`;
+                return (
+                  <div className="col-xl-4 col-md-6" key={index}>
+                    <div className="card all-crs-wid">
+                      <div className="card-body">
+                        <div className="courses-bx">
+                          <div style={{ height: "10vw" }}>
+                            <img
+                              src={img}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                borderRadius: " 0.625rem",
+                                height: "10vw",
+                              }}
+                              alt="course img"
+                              id="file"
+                              name="file"
+                            />
+                          </div>
+                          <div className="dlab-info">
+                            <div className="dlab-title d-flex justify-content-between">
+                              <div>
+                                <h4>
+                                  <Link to={`/course-details-1/${item.id}`}>
+                                    {item.coursename}
+                                  </Link>
                                 </h4>
+                                <p className="m-0">
+                                  Course Code : {item.coursecode}
+                                </p>
                               </div>
-                              <div className="d-flex content">
-                                {/* <span>
+                              <h4 className="text-primary">
+                                <span>₹</span>
+                                {item.price}
+                              </h4>
+                            </div>
+                            <div className="d-flex content">
+                              {/* <span>
                                 <svg
                                   className="me-2"
                                   width="24"
@@ -162,19 +174,19 @@ const CoursesMain = () => {
                                 </svg>
                                 110+ Content
                               </span> */}
-                                <Link
-                                  to={`/course-details-1/${item.id}`}
-                                  className="btn btn-primary btn-sm">
-                                  View all
-                                </Link>
-                              </div>
+                              <Link
+                                to={`/course-details-1/${item.id}`}
+                                className="btn btn-primary btn-sm">
+                                View all
+                              </Link>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
             </>
           )}
         </div>
@@ -294,7 +306,6 @@ const CoursesMain = () => {
                 Next
               </Button>
             )}
-            {console.log(endIndex)}
           </div>
         </div>
       </div>

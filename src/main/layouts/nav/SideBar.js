@@ -646,7 +646,7 @@ const SideBar = () => {
                             path === "courses-info" ? "mm-active" : ""
                           }`}
                           to="/courses-info">
-                          Courses
+                          Enrolled Courses
                         </Link>
                       </li>
                       <li>
@@ -826,7 +826,7 @@ const SideBar = () => {
                             path === "learn-course" ? "mm-active" : ""
                           }`}
                           to="/learn-course">
-                          Info
+                          Enrolled Courses
                         </Link>
                       </li>
                       <li>

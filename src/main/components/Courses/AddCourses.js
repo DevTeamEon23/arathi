@@ -31,7 +31,7 @@ const AddCourses = () => {
   const [coursename, setCoursename] = useState("");
   const [coursecode, setCoursecode] = useState("");
   const [description, setDescription] = useState(""); //Description
-  const [isActive, setIsActive] = useState(false); //Active
+  const [isActive, setIsActive] = useState(true); //Active
   const [isHide, setIsHide] = useState(false); //Hide
   const [price, setPrice] = useState(0);
   const [courselink, setCourselink] = useState(""); //to save youtube link
@@ -304,29 +304,6 @@ const AddCourses = () => {
 
   return (
     <Fragment>
-      {/* <Nav>
-        <Nav.Item as="div" className="nav nav-tabs" id="nav-tab" role="tablist">
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/dashboard">
-            Dashboard
-          </Link>
-          <Link
-            as="button"
-            className="nav-link  nt-unseen"
-            id="nav-following-tab"
-            eventkey="Follow"
-            type="button"
-            to="/courses-info">
-            Course
-          </Link>
-        </Nav.Item>
-      </Nav> */}
-
       <Tabs activeKey={activeTab} onSelect={handleTabChange}>
         <Tab eventKey="dashboard" title="Dashboard"></Tab>
         <Tab eventKey="courses-info" title="Course"></Tab>
@@ -419,7 +396,7 @@ const AddCourses = () => {
                               checked={isActive}
                               onChange={(e) => setIsActive(e.target.checked)}
                             />
-                            Active
+                            <p className="fw-bold fs-16"> Active</p>
                           </label>
                         </div>
                         <div className="col-lg-5 ms-auto">
@@ -436,7 +413,10 @@ const AddCourses = () => {
                               checked={isHide}
                               onChange={(e) => setIsHide(e.target.checked)}
                             />
-                            Hide from Course store
+                            <p className="fw-mid-bold fs-16">
+                              {" "}
+                              Hide from Course store
+                            </p>
                           </label>
                           <br />
                         </div>

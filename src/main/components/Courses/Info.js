@@ -215,7 +215,7 @@ const Info = () => {
         <Col lg={12}>
           <Card>
             <Card.Header>
-              <Card.Title>Courses</Card.Title>
+              <Card.Title>Enrolled Courses</Card.Title>
               <div>
                 <Link to="/add-courses">
                   <Button variant="primary">Add Courses</Button>
