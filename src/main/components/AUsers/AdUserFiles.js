@@ -149,7 +149,6 @@ const AdUserFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
       setFileUrl(response.data.data.file_data);
