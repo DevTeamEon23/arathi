@@ -119,7 +119,11 @@ const UserGroups = (props) => {
       })
       .then((response) => {
         toast.success("Added to group successfully!!!");
-        getAllGroups();
+        if (role === "Admin") {
+          fetchGroupsAdminIns();
+        } else {
+          getAllGroups();
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -263,26 +267,28 @@ const UserGroups = (props) => {
                                 )}
                               </td>
                               <td className="text-center">
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Add to group"
-                                  onClick={(e) =>
-                                    handleAddGrp(e, data.group_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Remove from group"
-                                  onClick={(e) =>
-                                    handleRemoveGrp(
-                                      e,
-                                      data.user_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {data.user_role === "Admin" ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, data.group_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleRemoveGrp(
+                                        e,
+                                        data.user_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           );
