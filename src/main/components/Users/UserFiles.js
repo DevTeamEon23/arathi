@@ -326,6 +326,75 @@ const UserFiles = (props) => {
 
     xhr.send();
   };
+
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = [
+      "txt",
+      "xml",
+      "json",
+      "html",
+      "css",
+      "js",
+      "pdf",
+    ];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
+
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
+
+    if (supportedTextTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedDocumentTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
+  };
+
   return (
     <Fragment>
       <div className="row">
@@ -524,45 +593,7 @@ const UserFiles = (props) => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <div>
-            {/* <ExcelFile element={<button>Download Data</button>}>
-              <ExcelSheet data={fileUrl} name="Sheet 1">
-              </ExcelSheet>
-            </ExcelFile> */}
-            {fileType === "txt" ? (
-              <pre>{fileUrl}</pre>
-            ) : fileType === "jpg" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "png" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "pdf" ? (
-              <iframe
-                src={fileUrl}
-                title="PDF"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "mp4" ? (
-              <>
-                <video controls src={fileUrl} style={{ width: "100%" }} />
-              </>
-            ) : fileType === "mp3" ? (
-              <audio controls src={fileUrl} />
-            ) : fileType === "xlsx" ? (
-              renderExcel()
-            ) : (
-              ""
-            )}
-          </div>
+          <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
       </Modal>

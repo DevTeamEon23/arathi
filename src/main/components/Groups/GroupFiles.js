@@ -33,6 +33,7 @@ const GroupFiles = (props) => {
   const [fileUrl, setFileUrl] = useState();
   const [activeTab, setActiveTab] = useState("group-files/:id");
   const [isActive, setIsActive] = useState({}); //for edit
+  const [excelData, setExcelData] = useState(null);
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -315,11 +316,128 @@ const GroupFiles = (props) => {
 
       const html = XLSX.utils.sheet_to_html(sheet);
 
-      // Use dangerouslySetInnerHTML to render the HTML in React
-      return <div dangerouslySetInnerHTML={{ __html: html }} />;
+      // Set the Excel data in state
+      setExcelData(<div dangerouslySetInnerHTML={{ __html: html }} />);
     };
 
     xhr.send();
+  };
+
+  const FileViewer1 = ({ fileType, fileUrl }) => {
+    switch (fileType) {
+      case "txt":
+        return (
+          <iframe
+            title="txt"
+            src={fileUrl}
+            style={{ width: "100%", height: "500px" }}
+            onError={(e) => console.error("Iframe error", e)}
+          />
+        );
+      case "jpg":
+      case "png":
+        return (
+          <img
+            src={fileUrl}
+            alt="img"
+            title={fileType}
+            style={{ width: "100%", height: "500px" }}
+          />
+        );
+      case "pdf":
+        return (
+          <iframe
+            src={fileUrl}
+            title="PDF"
+            style={{ width: "100%", height: "500px" }}
+          />
+        );
+      case "mp4":
+        return <video controls src={fileUrl} style={{ width: "100%" }} />;
+      case "mp3":
+        return <audio controls src={fileUrl} />;
+      case "xlsx":
+        return renderExcel(); // Assuming renderExcel is a function
+      case "docx":
+        return (
+          <iframe
+            title="docx"
+            src={fileUrl}
+            style={{ width: "100%", height: "500px" }}
+            onError={(e) => console.error("Iframe error", e)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = [
+      "txt",
+      "xml",
+      "json",
+      "html",
+      "css",
+      "js",
+      "pdf",
+    ];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
+
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
+
+    if (supportedTextTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedDocumentTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
   };
 
   return (
@@ -517,11 +635,16 @@ const GroupFiles = (props) => {
           </Modal.Header>
           <Modal.Body>
             <p className="fs-16">
-              File Name :<b>{fileName} </b>
+              File Name : <b>{fileName} </b>
             </p>
-            <div>
+            {/* <div>
               {fileType === "txt" ? (
-                <pre>{fileUrl}</pre>
+                <iframe
+                  title="txt"
+                  src={fileUrl}
+                  style={{ width: "100%", height: "500px" }}
+                  onError={(e) => console.error("Iframe error", e)}
+                />
               ) : fileType === "jpg" ? (
                 <img
                   src={fileUrl}
@@ -550,12 +673,19 @@ const GroupFiles = (props) => {
                 <audio controls src={fileUrl} />
               ) : fileType === "xlsx" ? (
                 renderExcel()
+              ) : fileType === "docx" ? (
+                <iframe
+                  title="docx"
+                  src={fileUrl}
+                  style={{ width: "100%", height: "500px" }}
+                  onError={(e) => console.error("Iframe error", e)}
+                />
               ) : (
                 ""
               )}
-            </div>
+            </div> */}
+            <FileViewer fileType={fileType} fileUrl={fileUrl} />
           </Modal.Body>
-          <Modal.Footer></Modal.Footer>
         </Modal>
         {/* Delete Modal */}
         <Modal show={showModal} onHide={() => setShowModal(false)} centered>
