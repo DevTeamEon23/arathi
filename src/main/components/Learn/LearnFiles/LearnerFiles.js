@@ -187,11 +187,10 @@ const LearnerFiles = () => {
                     </thead>
                     <tbody>
                       {allFileData.map((data) => {
-                        // Input date and time string
-                        const inputDateTime = data.updated_at; //2
-                        // Convert inputDateTime to a JavaScript Date object
+                        const inputDateTime = data.created_at;
+
                         const dateObj = new Date(inputDateTime);
-                        // Get the date in dd-mm-yyyy format
+
                         const day1 = dateObj
                           .getDate()
                           .toString()
@@ -230,26 +229,28 @@ const LearnerFiles = () => {
                               </center>
                             </td>
                             <td>
-                              <center>-</center>
+                              <center>{formattedDate}</center>
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  onClick={(e) =>
-                                    handlePreview(
-                                      e,
-                                      data.id,
-                                      data.filename,
-                                      data.file_type,
-                                      data.file_data
-                                    )
-                                  }>
-                                  <MdPreview
-                                    className="fs-18 fs-bold"
-                                    title="Preview"
-                                  />
-                                </div>
+                                {data.file_type !== "zip" && (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    onClick={(e) =>
+                                      handlePreview(
+                                        e,
+                                        data.id,
+                                        data.filename,
+                                        data.file_type,
+                                        data.file_data
+                                      )
+                                    }>
+                                    <MdPreview
+                                      className="fs-18 fs-bold"
+                                      title="Preview"
+                                    />
+                                  </div>
+                                )}
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   onClick={(e) =>
