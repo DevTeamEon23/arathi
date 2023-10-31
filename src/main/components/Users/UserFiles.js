@@ -11,7 +11,7 @@ import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
-// import { ExcelFile, ExcelSheet } from "react-data-export";
+import { CircularProgress } from "@material-ui/core";
 
 const options = [
   { value: true, label: "True" },
@@ -28,11 +28,12 @@ const UserFiles = (props) => {
   const [showEditModal, setShowEditModal] = useState(false); //Preview modal
   const [token, setToken] = useState(); //auth token
   const [activeFile, setActiveFile] = useState(true);
+  const [loadingStates, setLoadingStates] = useState({});
   const [allFillData, setAllFillData] = useState([]); //set fill data
   const [isActive, setIsActive] = useState({}); //for edit
   const dropzoneRef = useRef(null);
   const [fileError, setFileError] = useState("");
-  const [fileName, setFileName] = useState();
+  const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const history = useHistory();
@@ -65,7 +66,6 @@ const UserFiles = (props) => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
       setAllFillData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -131,8 +131,8 @@ const UserFiles = (props) => {
     }
   };
 
-  const handleEdit = async (e, file_id) => {
-    console.log("inside handle edit", file_id);
+  const handleEdit = async (e, file_id, name) => {
+    setFileName(name);
     setShowEditModal(true);
     try {
       const url = new URL(
@@ -144,7 +144,6 @@ const UserFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       // setActiveFile(active === 1 ? "true" : "false");
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
@@ -154,6 +153,10 @@ const UserFiles = (props) => {
       console.error(error);
       toast.error("Failed to fetch file data!"); // Handle the error
     }
+  };
+
+  const handleVideoDelete = () => {
+    setFileName(undefined);
   };
 
   const handleEditFile = async () => {
@@ -175,15 +178,22 @@ const UserFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setSelectedFile(null);
+      toast.success("File Updated successfully!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
+      toast.error("An error occurred. Please try again later.", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      setShowEditModal(false);
     }
   };
 
   const handleDownload = async (e, files_name) => {
-    console.log(files_name);
+    setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
@@ -195,29 +205,17 @@ const UserFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
-        // Extract the content type from the response
         const contentType = response.headers["content-type"];
-
-        // Create a Blob object from the response data
         const blob = new Blob([response.data], { type: contentType });
-
-        // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(blob);
-
-        // Create a hidden anchor element for downloading
         const downloadLink = document.createElement("a");
         downloadLink.href = blobUrl;
-        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.download = files_name;
         downloadLink.style.display = "none";
-
-        // Append the anchor to the document
         document.body.appendChild(downloadLink);
-
-        // Simulate a click event to trigger the download
         downloadLink.click();
 
         // Clean up
@@ -227,11 +225,12 @@ const UserFiles = (props) => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to download file!");
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
     }
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);
@@ -287,6 +286,11 @@ const UserFiles = (props) => {
     setIsActive(selectedOption);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
   const renderExcel = () => {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", fileUrl, true);
@@ -308,6 +312,75 @@ const UserFiles = (props) => {
 
     xhr.send();
   };
+
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = [
+      "txt",
+      "xml",
+      "json",
+      "html",
+      "css",
+      "js",
+      "pdf",
+    ];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
+
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
+
+    if (supportedTextTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedDocumentTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
+
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
+  };
+
   return (
     <Fragment>
       <div className="row">
@@ -389,7 +462,7 @@ const UserFiles = (props) => {
                   </thead>
                   <tbody>
                     {allFillData.map((data) => {
-                      const inputDateTime = data.updated_at;
+                      const inputDateTime = data.created_at;
                       const dateObj = new Date(inputDateTime);
                       const day1 = dateObj
                         .getDate()
@@ -426,42 +499,56 @@ const UserFiles = (props) => {
                             </center>
                           </td>
                           <td>
-                            <center>-</center>
+                            <center>{formattedDate}</center>
                           </td>
                           <td>
                             <center>
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                onClick={(e) =>
-                                  handlePreview(
-                                    e,
-                                    data.id,
-                                    data.filename,
-                                    data.file_type,
-                                    data.file_data
-                                  )
-                                }>
-                                <MdPreview
-                                  className="fs-18 fs-bold"
-                                  title="Preview"
-                                />
-                              </div>
+                              {data.file_type !== "zip" && (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  onClick={(e) =>
+                                    handlePreview(
+                                      e,
+                                      data.id,
+                                      data.filename,
+                                      data.file_type,
+                                      data.file_data
+                                    )
+                                  }>
+                                  <MdPreview
+                                    className="fs-18 fs-bold"
+                                    title="Preview"
+                                  />
+                                </div>
+                              )}
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
                                 onClick={(e) =>
                                   handleDownload(e, data.filename)
                                 }>
-                                <FaDownload
-                                  className="fs-14 fs-bold"
-                                  title="Download"
-                                />
+                                {loadingStates[data.filename] ? (
+                                  <CircularProgress
+                                    style={{
+                                      width: "16px",
+                                      height: "16px",
+                                      color: "#fff",
+                                    }}
+                                  />
+                                ) : (
+                                  <FaDownload
+                                    className="fs-14 fs-bold"
+                                    title="Download"
+                                  />
+                                )}
                               </div>
                               {data.user_id == userID && (
                                 <>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Edit"
-                                    onClick={(e) => handleEdit(e, data.id)}>
+                                    onClick={(e) =>
+                                      handleEdit(e, data.id, data.filename)
+                                    }>
                                     <i className="fas fa-pencil-alt"></i>
                                   </div>
 
@@ -504,45 +591,7 @@ const UserFiles = (props) => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <div>
-            {/* <ExcelFile element={<button>Download Data</button>}>
-              <ExcelSheet data={fileUrl} name="Sheet 1">
-              </ExcelSheet>
-            </ExcelFile> */}
-            {fileType === "txt" ? (
-              <pre>{fileUrl}</pre>
-            ) : fileType === "jpg" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "png" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "pdf" ? (
-              <iframe
-                src={fileUrl}
-                title="PDF"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "mp4" ? (
-              <>
-                <video controls src={fileUrl} style={{ width: "100%" }} />
-              </>
-            ) : fileType === "mp3" ? (
-              <audio controls src={fileUrl} />
-            ) : fileType === "xlsx" ? (
-              renderExcel()
-            ) : (
-              ""
-            )}
-          </div>
+          <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
       </Modal>
@@ -577,14 +626,6 @@ const UserFiles = (props) => {
               Visibility
             </label>
             <div className="col-lg-6">
-              {/* <input
-                type="text"
-                className="form-control"
-                id="groupname"
-                value={activeFile}
-                onChange={(e) => setActiveFile(e.target.value)}
-                required
-              /> */}
               <Select
                 options={options}
                 value={isActive}
@@ -592,16 +633,35 @@ const UserFiles = (props) => {
               />
             </div>
           </div>
+          <div className="form-group mb-3 row">
+            <label className="col-lg-4 col-form-label" htmlFor="groupname">
+              File Name
+            </label>
+            <div className="col-lg-6">
+              <span className="fs-16 fw-bold"> {fileName}</span>
+
+              {fileName !== undefined && (
+                <button
+                  className="btn btn-danger p-1"
+                  style={{ marginLeft: "5px" }}
+                  onClick={handleVideoDelete}>
+                  Change file
+                </button>
+              )}
+              {fileName === undefined && (
+                <input type="file" onChange={handleFileChange} />
+              )}
+            </div>
+          </div>
           <div className="form-group my-auto row ">
             <div className="col-lg-4"> </div>
             <div className="col-lg-4">
-              <Button onClick={handleEditFile} className="btn btn-primary">
+              <Button onClick={handleEditFile} className="btn btn-primary mt-2">
                 Update File
               </Button>{" "}
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>
   );
