@@ -11,6 +11,7 @@ import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import Select from "react-select";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 
 const options = [
   { value: true, label: "True" },
@@ -34,6 +35,7 @@ const AdUserFiles = (props) => {
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const [isActive, setIsActive] = useState({}); //for edit
+  const [loadingStates, setLoadingStates] = useState({});
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -133,9 +135,10 @@ const AdUserFiles = (props) => {
     setIsActive(selectedOption);
   };
 
-  const handleEdit = async (e, file_id) => {
+  const handleEdit = async (e, file_id, name) => {
     console.log("inside handle edit", file_id);
     setShowEditModal(true);
+    setFileName(name);
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
@@ -192,7 +195,7 @@ const AdUserFiles = (props) => {
   };
 
   const handleDownload = async (e, files_name) => {
-    console.log(files_name);
+    setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
@@ -208,25 +211,14 @@ const AdUserFiles = (props) => {
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
-        // Extract the content type from the response
         const contentType = response.headers["content-type"];
-
-        // Create a Blob object from the response data
         const blob = new Blob([response.data], { type: contentType });
-
-        // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(blob);
-
-        // Create a hidden anchor element for downloading
         const downloadLink = document.createElement("a");
         downloadLink.href = blobUrl;
-        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.download = files_name;
         downloadLink.style.display = "none";
-
-        // Append the anchor to the document
         document.body.appendChild(downloadLink);
-
-        // Simulate a click event to trigger the download
         downloadLink.click();
 
         // Clean up
@@ -236,6 +228,8 @@ const AdUserFiles = (props) => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to download file!");
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
     }
   };
 
@@ -301,26 +295,72 @@ const AdUserFiles = (props) => {
     setFileName(undefined);
   };
 
-  const renderExcel = () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", fileUrl, true);
-    xhr.responseType = "arraybuffer";
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = [
+      "txt",
+      "xml",
+      "json",
+      "html",
+      "css",
+      "js",
+      "pdf",
+    ];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
 
-    xhr.onload = (e) => {
-      const arrayBuffer = e.target.response;
-      const data = new Uint8Array(arrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
 
-      // Assuming you want to display the first sheet
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    if (supportedTextTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
 
-      const html = XLSX.utils.sheet_to_html(sheet);
+    if (supportedDocumentTypes.includes(fileType)) {
+      return (
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+          onError={(e) => console.error("Iframe error", e)}
+        />
+      );
+    }
 
-      // Use dangerouslySetInnerHTML to render the HTML in React
-      return <div dangerouslySetInnerHTML={{ __html: html }} />;
-    };
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
 
-    xhr.send();
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
   };
 
   return (
@@ -401,7 +441,7 @@ const AdUserFiles = (props) => {
                   </thead>
                   <tbody>
                     {allFillData.map((data) => {
-                      const inputDateTime = data.updated_at;
+                      const inputDateTime = data.created_at;
                       const dateObj = new Date(inputDateTime);
                       const day1 = dateObj
                         .getDate()
@@ -438,42 +478,56 @@ const AdUserFiles = (props) => {
                             </center>
                           </td>
                           <td>
-                            <center>-</center>
+                            <center>{formattedDate}</center>
                           </td>
                           <td>
                             <center>
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                onClick={(e) =>
-                                  handlePreview(
-                                    e,
-                                    data.id,
-                                    data.filename,
-                                    data.file_type,
-                                    data.file_data
-                                  )
-                                }>
-                                <MdPreview
-                                  className="fs-18 fs-bold"
-                                  title="Preview"
-                                />
-                              </div>
+                              {data.file_type !== "zip" && (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  onClick={(e) =>
+                                    handlePreview(
+                                      e,
+                                      data.id,
+                                      data.filename,
+                                      data.file_type,
+                                      data.file_data
+                                    )
+                                  }>
+                                  <MdPreview
+                                    className="fs-18 fs-bold"
+                                    title="Preview"
+                                  />
+                                </div>
+                              )}
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
                                 onClick={(e) =>
                                   handleDownload(e, data.filename)
                                 }>
-                                <FaDownload
-                                  className="fs-14 fs-bold"
-                                  title="Download"
-                                />
+                                {loadingStates[data.filename] ? (
+                                  <CircularProgress
+                                    style={{
+                                      width: "16px",
+                                      height: "16px",
+                                      color: "#fff",
+                                    }}
+                                  />
+                                ) : (
+                                  <FaDownload
+                                    className="fs-14 fs-bold"
+                                    title="Download"
+                                  />
+                                )}
                               </div>
                               {data.user_id == userID && (
                                 <>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Edit"
-                                    onClick={(e) => handleEdit(e, data.id)}>
+                                    onClick={(e) =>
+                                      handleEdit(e, data.id, data.filename)
+                                    }>
                                     <i className="fas fa-pencil-alt"></i>
                                   </div>
                                   <div
@@ -515,41 +569,7 @@ const AdUserFiles = (props) => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <div>
-            {fileType === "txt" ? (
-              <pre>{fileUrl}</pre>
-            ) : fileType === "jpg" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "png" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "pdf" ? (
-              <iframe
-                src={fileUrl}
-                title="PDF"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "mp4" ? (
-              <>
-                <video controls src={fileUrl} style={{ width: "100%" }} />
-              </>
-            ) : fileType === "mp3" ? (
-              <audio controls src={fileUrl} />
-            ) : fileType === "xlsx" ? (
-              renderExcel()
-            ) : (
-              ""
-            )}
-          </div>
+          <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
         <Modal.Footer></Modal.Footer>
       </Modal>

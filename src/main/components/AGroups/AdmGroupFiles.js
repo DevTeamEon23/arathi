@@ -10,6 +10,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 
 const options = [
   { value: true, label: "True" },
@@ -32,6 +33,7 @@ const AdmGroupFiles = (props) => {
   const [fileName, setFileName] = useState();
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
+  const [loadingStates, setLoadingStates] = useState({});
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -137,9 +139,10 @@ const AdmGroupFiles = (props) => {
     }
   };
 
-  const handleEdit = async (e, file_id) => {
+  const handleEdit = async (e, file_id, name) => {
     console.log("inside handle edit", file_id);
     setShowEditModal(true);
+    setFileName(name);
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
@@ -196,7 +199,7 @@ const AdmGroupFiles = (props) => {
   };
 
   const handleDownload = async (e, files_name) => {
-    console.log(files_name);
+    setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
@@ -212,25 +215,14 @@ const AdmGroupFiles = (props) => {
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
-        // Extract the content type from the response
         const contentType = response.headers["content-type"];
-
-        // Create a Blob object from the response data
         const blob = new Blob([response.data], { type: contentType });
-
-        // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(blob);
-
-        // Create a hidden anchor element for downloading
         const downloadLink = document.createElement("a");
         downloadLink.href = blobUrl;
-        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.download = files_name;
         downloadLink.style.display = "none";
-
-        // Append the anchor to the document
         document.body.appendChild(downloadLink);
-
-        // Simulate a click event to trigger the download
         downloadLink.click();
 
         // Clean up
@@ -240,6 +232,8 @@ const AdmGroupFiles = (props) => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to download file!");
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
     }
   };
 
@@ -468,7 +462,7 @@ const AdmGroupFiles = (props) => {
                   </thead>
                   <tbody>
                     {allFillData.map((data) => {
-                      const inputDateTime = data.updated_at;
+                      const inputDateTime = data.created_at;
                       const dateObj = new Date(inputDateTime);
                       const day1 = dateObj
                         .getDate()
@@ -505,42 +499,56 @@ const AdmGroupFiles = (props) => {
                             </center>
                           </td>
                           <td>
-                            <center>-</center>
+                            <center>{formattedDate}</center>
                           </td>
                           <td>
                             <center>
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                onClick={(e) =>
-                                  handlePreview(
-                                    e,
-                                    data.id,
-                                    data.filename,
-                                    data.file_type,
-                                    data.file_data
-                                  )
-                                }>
-                                <MdPreview
-                                  className="fs-18 fs-bold"
-                                  title="Preview"
-                                />
-                              </div>
+                              {data.file_type !== "zip" && (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  onClick={(e) =>
+                                    handlePreview(
+                                      e,
+                                      data.id,
+                                      data.filename,
+                                      data.file_type,
+                                      data.file_data
+                                    )
+                                  }>
+                                  <MdPreview
+                                    className="fs-18 fs-bold"
+                                    title="Preview"
+                                  />
+                                </div>
+                              )}
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
                                 onClick={(e) =>
                                   handleDownload(e, data.filename)
                                 }>
-                                <FaDownload
-                                  className="fs-14 fs-bold"
-                                  title="Download"
-                                />
+                                {loadingStates[data.filename] ? (
+                                  <CircularProgress
+                                    style={{
+                                      width: "16px",
+                                      height: "16px",
+                                      color: "#fff",
+                                    }}
+                                  />
+                                ) : (
+                                  <FaDownload
+                                    className="fs-14 fs-bold"
+                                    title="Download"
+                                  />
+                                )}
                               </div>
                               {data.user_id == userID && (
                                 <>
                                   <div
                                     className="btn btn-primary shadow btn-xs sharp me-1"
                                     title="Edit"
-                                    onClick={(e) => handleEdit(e, data.id)}>
+                                    onClick={(e) =>
+                                      handleEdit(e, data.id, data.filename)
+                                    }>
                                     <i className="fas fa-pencil-alt"></i>
                                   </div>
                                   <div

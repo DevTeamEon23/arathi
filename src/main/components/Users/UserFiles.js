@@ -11,6 +11,7 @@ import { FaDownload } from "react-icons/fa";
 import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
+import { CircularProgress } from "@material-ui/core";
 // import { ExcelFile, ExcelSheet } from "react-data-export";
 
 const options = [
@@ -28,6 +29,7 @@ const UserFiles = (props) => {
   const [showEditModal, setShowEditModal] = useState(false); //Preview modal
   const [token, setToken] = useState(); //auth token
   const [activeFile, setActiveFile] = useState(true);
+  const [loadingStates, setLoadingStates] = useState({});
   const [allFillData, setAllFillData] = useState([]); //set fill data
   const [isActive, setIsActive] = useState({}); //for edit
   const dropzoneRef = useRef(null);
@@ -196,7 +198,7 @@ const UserFiles = (props) => {
   };
 
   const handleDownload = async (e, files_name) => {
-    console.log(files_name);
+    setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
         `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
@@ -212,25 +214,14 @@ const UserFiles = (props) => {
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
-        // Extract the content type from the response
         const contentType = response.headers["content-type"];
-
-        // Create a Blob object from the response data
         const blob = new Blob([response.data], { type: contentType });
-
-        // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(blob);
-
-        // Create a hidden anchor element for downloading
         const downloadLink = document.createElement("a");
         downloadLink.href = blobUrl;
-        downloadLink.download = files_name; // Use the provided file name
+        downloadLink.download = files_name;
         downloadLink.style.display = "none";
-
-        // Append the anchor to the document
         document.body.appendChild(downloadLink);
-
-        // Simulate a click event to trigger the download
         downloadLink.click();
 
         // Clean up
@@ -240,6 +231,8 @@ const UserFiles = (props) => {
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to download file!");
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
     }
   };
 
@@ -476,7 +469,7 @@ const UserFiles = (props) => {
                   </thead>
                   <tbody>
                     {allFillData.map((data) => {
-                      const inputDateTime = data.updated_at;
+                      const inputDateTime = data.created_at;
                       const dateObj = new Date(inputDateTime);
                       const day1 = dateObj
                         .getDate()
@@ -513,35 +506,47 @@ const UserFiles = (props) => {
                             </center>
                           </td>
                           <td>
-                            <center>-</center>
+                            <center>{formattedDate}</center>
                           </td>
                           <td>
                             <center>
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                onClick={(e) =>
-                                  handlePreview(
-                                    e,
-                                    data.id,
-                                    data.filename,
-                                    data.file_type,
-                                    data.file_data
-                                  )
-                                }>
-                                <MdPreview
-                                  className="fs-18 fs-bold"
-                                  title="Preview"
-                                />
-                              </div>
+                              {data.file_type !== "zip" && (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  onClick={(e) =>
+                                    handlePreview(
+                                      e,
+                                      data.id,
+                                      data.filename,
+                                      data.file_type,
+                                      data.file_data
+                                    )
+                                  }>
+                                  <MdPreview
+                                    className="fs-18 fs-bold"
+                                    title="Preview"
+                                  />
+                                </div>
+                              )}
                               <div
                                 className="btn btn-primary shadow btn-xs sharp me-1"
                                 onClick={(e) =>
                                   handleDownload(e, data.filename)
                                 }>
-                                <FaDownload
-                                  className="fs-14 fs-bold"
-                                  title="Download"
-                                />
+                                {loadingStates[data.filename] ? (
+                                  <CircularProgress
+                                    style={{
+                                      width: "16px",
+                                      height: "16px",
+                                      color: "#fff",
+                                    }}
+                                  />
+                                ) : (
+                                  <FaDownload
+                                    className="fs-14 fs-bold"
+                                    title="Download"
+                                  />
+                                )}
                               </div>
                               {data.user_id == userID && (
                                 <>
