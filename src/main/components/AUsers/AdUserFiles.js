@@ -66,7 +66,6 @@ const AdUserFiles = (props) => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
       setAllFillData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -136,7 +135,6 @@ const AdUserFiles = (props) => {
   };
 
   const handleEdit = async (e, file_id, name) => {
-    console.log("inside handle edit", file_id);
     setShowEditModal(true);
     setFileName(name);
     try {
@@ -184,7 +182,6 @@ const AdUserFiles = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("An error occurred. Please try again later.", {
@@ -206,7 +203,6 @@ const AdUserFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
@@ -225,7 +221,6 @@ const AdUserFiles = (props) => {
         document.body.removeChild(downloadLink);
       }
     } catch (error) {
-      console.error("API Error:", error);
       toast.error("Failed to download file!");
     } finally {
       setLoadingStates((prevState) => ({ ...prevState, [files_name]: false }));
@@ -233,7 +228,6 @@ const AdUserFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);
@@ -335,7 +329,6 @@ const AdUserFiles = (props) => {
           title={fileType}
           src={fileUrl}
           style={{ width: "100%", height: "500px" }}
-          onError={(e) => console.error("Iframe error", e)}
         />
       );
     }

@@ -12,7 +12,6 @@ import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
 import { CircularProgress } from "@material-ui/core";
-// import { ExcelFile, ExcelSheet } from "react-data-export";
 
 const options = [
   { value: true, label: "True" },
@@ -67,7 +66,6 @@ const UserFiles = (props) => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
       setAllFillData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -134,7 +132,6 @@ const UserFiles = (props) => {
   };
 
   const handleEdit = async (e, file_id, name) => {
-    console.log("inside handle edit", file_id, name);
     setFileName(name);
     setShowEditModal(true);
     try {
@@ -147,7 +144,6 @@ const UserFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       // setActiveFile(active === 1 ? "true" : "false");
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
@@ -187,7 +183,6 @@ const UserFiles = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("An error occurred. Please try again later.", {
@@ -210,7 +205,6 @@ const UserFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
@@ -237,7 +231,6 @@ const UserFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);

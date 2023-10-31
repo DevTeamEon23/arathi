@@ -66,7 +66,6 @@ const GroupFiles = (props) => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
       setAllFillData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -136,7 +135,6 @@ const GroupFiles = (props) => {
   };
 
   const handleEdit = async (e, file_id, name) => {
-    console.log("inside handle edit", file_id);
     setFileName(name);
     setShowEditModal(true);
     try {
@@ -149,7 +147,6 @@ const GroupFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
       setFileUrl(response.data.data.file_data);
@@ -185,7 +182,6 @@ const GroupFiles = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("An error occurred. Please try again later.", {
@@ -207,7 +203,6 @@ const GroupFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
@@ -234,7 +229,6 @@ const GroupFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);

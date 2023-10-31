@@ -140,7 +140,6 @@ const AdmGroupFiles = (props) => {
   };
 
   const handleEdit = async (e, file_id, name) => {
-    console.log("inside handle edit", file_id);
     setShowEditModal(true);
     setFileName(name);
     try {
@@ -153,7 +152,6 @@ const AdmGroupFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
       setFileUrl(response.data.data.file_data);
@@ -189,7 +187,6 @@ const AdmGroupFiles = (props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("An error occurred. Please try again later.", {
@@ -211,7 +208,6 @@ const AdmGroupFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
@@ -238,7 +234,6 @@ const AdmGroupFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);
