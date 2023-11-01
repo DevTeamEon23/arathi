@@ -36,6 +36,8 @@ const UserFiles = (props) => {
   const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const [disabled, setDisabled] = useState(false); //btn disabled
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -160,6 +162,7 @@ const UserFiles = (props) => {
   };
 
   const handleEditFile = async () => {
+    setBtnLoader(true);
     const formData = new FormData();
     formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
@@ -178,6 +181,8 @@ const UserFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setBtnLoader(false);
+      setDisabled(true);
       setSelectedFile(null);
       toast.success("File Updated successfully!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -185,6 +190,7 @@ const UserFiles = (props) => {
       getAllFiles();
     } catch (error) {
       console.error("API Error:", error);
+      setBtnLoader(false);
       toast.error("An error occurred. Please try again later.", {
         position: toast.POSITION.TOP_CENTER,
       });
@@ -241,6 +247,7 @@ const UserFiles = (props) => {
     setShowModal(true);
     setFileId(id);
   };
+
   const handleDelete = () => {
     const config = {
       headers: {
@@ -741,8 +748,21 @@ const UserFiles = (props) => {
           <div className="form-group my-auto row ">
             <div className="col-lg-4"> </div>
             <div className="col-lg-4">
-              <Button onClick={handleEditFile} className="btn btn-primary mt-2">
-                Update File
+              <Button
+                onClick={handleEditFile}
+                className="btn btn-primary mt-2 w-100"
+                disabled={disabled}>
+                {btnLoader ? (
+                  <CircularProgress
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#fff",
+                    }}
+                  />
+                ) : (
+                  "Update File"
+                )}
               </Button>{" "}
             </div>
           </div>

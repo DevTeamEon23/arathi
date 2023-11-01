@@ -36,6 +36,8 @@ const GroupFiles = (props) => {
   const [isActive, setIsActive] = useState({}); //for edit
   const [excelData, setExcelData] = useState(null);
   const [loadingStates, setLoadingStates] = useState({});
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const [disabled, setDisabled] = useState(false); //btn disabled
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -158,6 +160,7 @@ const GroupFiles = (props) => {
   };
 
   const handleEditFile = async () => {
+    setBtnLoader(true);
     const formData = new FormData();
     formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
@@ -177,6 +180,8 @@ const GroupFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setBtnLoader(false);
+      setDisabled(true);
       setSelectedFile(null);
       toast.success("File Updated successfully!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -184,6 +189,7 @@ const GroupFiles = (props) => {
       getAllFiles();
     } catch (error) {
       console.error("API Error:", error);
+      setBtnLoader(false);
       toast.error("An error occurred. Please try again later.", {
         position: toast.POSITION.TOP_CENTER,
       });
@@ -311,72 +317,14 @@ const GroupFiles = (props) => {
     xhr.send();
   };
 
-  const FileViewer1 = ({ fileType, fileUrl }) => {
-    switch (fileType) {
-      case "txt":
-        return (
-          <iframe
-            title="txt"
-            src={fileUrl}
-            style={{ width: "100%", height: "500px" }}
-            onError={(e) => console.error("Iframe error", e)}
-          />
-        );
-      case "jpg":
-      case "png":
-        return (
-          <img
-            src={fileUrl}
-            alt="img"
-            title={fileType}
-            style={{ width: "100%", height: "500px" }}
-          />
-        );
-      case "pdf":
-        return (
-          <iframe
-            src={fileUrl}
-            title="PDF"
-            style={{ width: "100%", height: "500px" }}
-          />
-        );
-      case "mp4":
-        return <video controls src={fileUrl} style={{ width: "100%" }} />;
-      case "mp3":
-        return <audio controls src={fileUrl} />;
-      case "xlsx":
-        return renderExcel(); // Assuming renderExcel is a function
-      case "docx":
-        return (
-          <iframe
-            title="docx"
-            src={fileUrl}
-            style={{ width: "100%", height: "500px" }}
-            onError={(e) => console.error("Iframe error", e)}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   const FileViewer = ({ fileType, fileUrl }) => {
     const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
-    const supportedTextTypes = [
-      "txt",
-      "xml",
-      "json",
-      "html",
-      "css",
-      "js",
-      "pdf",
-    ];
+    const supportedTextTypes = ["txt", "xml", "js", "pdf", "csv"];
     const supportedDocumentTypes = [
       "doc",
       "docx",
-      "xls",
-      "xlsx",
       "ppt",
+      "xlsx",
       "pptx",
       "odt",
       "ods",
@@ -396,25 +344,51 @@ const GroupFiles = (props) => {
     }
 
     if (supportedTextTypes.includes(fileType)) {
-      return (
-        <iframe
-          title={fileType}
-          src={fileUrl}
-          style={{ width: "100%", height: "500px" }}
-          onError={(e) => console.error("Iframe error", e)}
-        />
-      );
+      if (supportedTextTypes.includes(fileType)) {
+        if (fileType === "pdf" || fileType === "txt" || fileType === "csv") {
+          return (
+            <iframe
+              title={fileType === "csv" ? "CSV Preview" : fileType}
+              src={
+                fileType === "csv"
+                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(
+                      fileUrl
+                    )}`
+                  : fileUrl
+              }
+              style={{ width: "100%", height: "500px" }}
+              onError={(e) => console.error("Iframe error", e)}
+            />
+          );
+        } else {
+          return <p>Text document preview not available.</p>;
+        }
+      }
     }
 
     if (supportedDocumentTypes.includes(fileType)) {
-      return (
+      if (
+        fileType === "xlsx" ||
+        fileType === "docx" ||
+        fileType === "pptx" ||
+        fileType === "doc"
+      ) {
+        return (
+          <iframe
+            title="PDF Preview"
+            src={`https://view.officeapps.live.com/op/embed.aspx?src=${fileUrl}`}
+            style={{ width: "100%", height: "500px" }}
+          />
+        );
+      } else if (fileType === "odt" || fileType === "ods") {
         <iframe
           title={fileType}
           src={fileUrl}
           style={{ width: "100%", height: "500px" }}
-          onError={(e) => console.error("Iframe error", e)}
-        />
-      );
+        />;
+      } else {
+        return <p>Document preview not available.</p>;
+      }
     }
 
     if (supportedVideoTypes.includes(fileType)) {
@@ -752,9 +726,20 @@ const GroupFiles = (props) => {
               <div className="col-lg-4">
                 <Button
                   onClick={handleEditFile}
-                  className="btn btn-primary mt-2">
-                  Update File
-                </Button>{" "}
+                  className="btn btn-primary mt-2 w-100"
+                  disabled={disabled}>
+                  {btnLoader ? (
+                    <CircularProgress
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        color: "#fff",
+                      }}
+                    />
+                  ) : (
+                    "Update File"
+                  )}
+                </Button>
               </div>
             </div>
           </Modal.Body>
