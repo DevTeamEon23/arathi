@@ -685,7 +685,6 @@ const UserFiles = (props) => {
           </p>
           <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
       {/* Delete Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
