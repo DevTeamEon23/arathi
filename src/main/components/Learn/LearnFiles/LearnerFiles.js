@@ -100,26 +100,89 @@ const LearnerFiles = () => {
     setFileUrl(file);
   };
 
-  const renderExcel = () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", fileUrl, true);
-    xhr.responseType = "arraybuffer";
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = ["txt", "xml", "js", "pdf", "csv"];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "ppt",
+      "xlsx",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
 
-    xhr.onload = (e) => {
-      const arrayBuffer = e.target.response;
-      const data = new Uint8Array(arrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
 
-      // Assuming you want to display the first sheet
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    if (supportedTextTypes.includes(fileType)) {
+      if (supportedTextTypes.includes(fileType)) {
+        if (fileType === "pdf" || fileType === "txt" || fileType === "csv") {
+          return (
+            <iframe
+              title={fileType === "csv" ? "CSV Preview" : fileType}
+              src={
+                fileType === "csv"
+                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(
+                      fileUrl
+                    )}`
+                  : fileUrl
+              }
+              style={{ width: "100%", height: "500px" }}
+              onError={(e) => console.error("Iframe error", e)}
+            />
+          );
+        } else {
+          return <p>Text document preview not available.</p>;
+        }
+      }
+    }
 
-      const html = XLSX.utils.sheet_to_html(sheet);
+    if (supportedDocumentTypes.includes(fileType)) {
+      if (
+        fileType === "xlsx" ||
+        fileType === "docx" ||
+        fileType === "pptx" ||
+        fileType === "doc"
+      ) {
+        return (
+          <iframe
+            title="PDF Preview"
+            src={`https://view.officeapps.live.com/op/embed.aspx?src=${fileUrl}`}
+            style={{ width: "100%", height: "500px" }}
+          />
+        );
+      } else if (fileType === "odt" || fileType === "ods") {
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+        />;
+      } else {
+        return <p>Document preview not available.</p>;
+      }
+    }
 
-      // Use dangerouslySetInnerHTML to render the HTML in React
-      return <div dangerouslySetInnerHTML={{ __html: html }} />;
-    };
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
 
-    xhr.send();
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
   };
 
   return (
@@ -303,43 +366,8 @@ const LearnerFiles = () => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <div>
-            {fileType === "txt" ? (
-              <pre>{fileUrl}</pre>
-            ) : fileType === "jpg" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "png" ? (
-              <img
-                src={fileUrl}
-                alt="img"
-                title="jpg"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "pdf" ? (
-              <iframe
-                src={fileUrl}
-                title="PDF"
-                style={{ width: "100%", height: "500px" }}
-              />
-            ) : fileType === "mp4" ? (
-              <>
-                <video controls src={fileUrl} style={{ width: "100%" }} />
-              </>
-            ) : fileType === "mp3" ? (
-              <audio controls src={fileUrl} />
-            ) : fileType === "xlsx" ? (
-              renderExcel()
-            ) : (
-              ""
-            )}
-          </div>
+          <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
     </Fragment>
   );

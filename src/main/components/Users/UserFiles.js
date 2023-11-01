@@ -12,7 +12,6 @@ import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
 import { CircularProgress } from "@material-ui/core";
-// import { ExcelFile, ExcelSheet } from "react-data-export";
 
 const options = [
   { value: true, label: "True" },
@@ -37,6 +36,8 @@ const UserFiles = (props) => {
   const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
+  const [disabled, setDisabled] = useState(false); //btn disabled
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -67,7 +68,6 @@ const UserFiles = (props) => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
       setAllFillData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -134,7 +134,6 @@ const UserFiles = (props) => {
   };
 
   const handleEdit = async (e, file_id, name) => {
-    console.log("inside handle edit", file_id, name);
     setFileName(name);
     setShowEditModal(true);
     try {
@@ -147,7 +146,6 @@ const UserFiles = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.data.active);
       const active = response.data.data.active;
       // setActiveFile(active === 1 ? "true" : "false");
       setIsActive({ value: active, label: active === 1 ? "True" : "False" });
@@ -164,6 +162,7 @@ const UserFiles = (props) => {
   };
 
   const handleEditFile = async () => {
+    setBtnLoader(true);
     const formData = new FormData();
     formData.append("active", isActive.value);
     formData.append("file", selectedFile === null ? "" : selectedFile);
@@ -182,14 +181,16 @@ const UserFiles = (props) => {
         }
       );
       setShowEditModal(false);
+      setBtnLoader(false);
+      setDisabled(true);
       setSelectedFile(null);
       toast.success("File Updated successfully!", {
         position: toast.POSITION.TOP_RIGHT,
       });
       getAllFiles();
-      console.log("API Response:", response.data);
     } catch (error) {
       console.error("API Error:", error);
+      setBtnLoader(false);
       toast.error("An error occurred. Please try again later.", {
         position: toast.POSITION.TOP_CENTER,
       });
@@ -210,7 +211,6 @@ const UserFiles = (props) => {
         },
         responseType: "arraybuffer",
       });
-      console.log(response);
       if (response.data.error) {
         toast.error("Failed to download file!");
       } else {
@@ -237,7 +237,6 @@ const UserFiles = (props) => {
   };
 
   const handlePreview = (e, id, name, fileFormat, file) => {
-    console.log("inside handle preview", id, name, fileFormat, file);
     setShowPreviewModal(true);
     setFileName(name);
     setFileType(fileFormat);
@@ -248,6 +247,7 @@ const UserFiles = (props) => {
     setShowModal(true);
     setFileId(id);
   };
+
   const handleDelete = () => {
     const config = {
       headers: {
@@ -320,7 +320,7 @@ const UserFiles = (props) => {
     xhr.send();
   };
 
-  const FileViewer = ({ fileType, fileUrl }) => {
+  const FileViewer1 = ({ fileType, fileUrl }) => {
     const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
     const supportedTextTypes = [
       "txt",
@@ -336,6 +336,7 @@ const UserFiles = (props) => {
       "docx",
       "xls",
       "xlsx",
+      "csv",
       "ppt",
       "pptx",
       "odt",
@@ -388,6 +389,91 @@ const UserFiles = (props) => {
     return null;
   };
 
+  const FileViewer = ({ fileType, fileUrl }) => {
+    const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const supportedTextTypes = ["txt", "xml", "js", "pdf", "csv"];
+    const supportedDocumentTypes = [
+      "doc",
+      "docx",
+      "ppt",
+      "xlsx",
+      "pptx",
+      "odt",
+      "ods",
+    ];
+    const supportedVideoTypes = ["mp4", "mkv"];
+    const supportedAudioTypes = ["mp3"];
+
+    if (supportedImageTypes.includes(fileType)) {
+      return (
+        <img
+          src={fileUrl}
+          alt="img"
+          title={fileType}
+          style={{ width: "100%", height: "500px" }}
+        />
+      );
+    }
+
+    if (supportedTextTypes.includes(fileType)) {
+      if (supportedTextTypes.includes(fileType)) {
+        if (fileType === "pdf" || fileType === "txt" || fileType === "csv") {
+          return (
+            <iframe
+              title={fileType === "csv" ? "CSV Preview" : fileType}
+              src={
+                fileType === "csv"
+                  ? `https://docs.google.com/viewer?url=${encodeURIComponent(
+                      fileUrl
+                    )}`
+                  : fileUrl
+              }
+              style={{ width: "100%", height: "500px" }}
+              onError={(e) => console.error("Iframe error", e)}
+            />
+          );
+        } else {
+          return <p>Text document preview not available.</p>;
+        }
+      }
+    }
+
+    if (supportedDocumentTypes.includes(fileType)) {
+      if (
+        fileType === "xlsx" ||
+        fileType === "docx" ||
+        fileType === "pptx" ||
+        fileType === "doc"
+      ) {
+        return (
+          <iframe
+            title="PDF Preview"
+            src={`https://view.officeapps.live.com/op/embed.aspx?src=${fileUrl}`}
+            style={{ width: "100%", height: "500px" }}
+          />
+        );
+      } else if (fileType === "odt" || fileType === "ods") {
+        <iframe
+          title={fileType}
+          src={fileUrl}
+          style={{ width: "100%", height: "500px" }}
+        />;
+      } else {
+        return <p>Document preview not available.</p>;
+      }
+    }
+
+    if (supportedVideoTypes.includes(fileType)) {
+      return <video controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    if (supportedAudioTypes.includes(fileType)) {
+      return <audio controls src={fileUrl} style={{ width: "100%" }} />;
+    }
+
+    return null;
+  };
+
   return (
     <Fragment>
       <div className="row">
@@ -414,11 +500,10 @@ const UserFiles = (props) => {
               <br />
               <div className="text-center">
                 <Button onClick={handleSubmit}>Upload File</Button>
+                {selectedFile === null && (
+                  <div className="text-danger fs-16 mt-1">{fileError}</div>
+                )}{" "}
               </div>
-
-              {selectedFile === null && (
-                <div className="text-danger fs-16 mt-1">{fileError}</div>
-              )}
             </div>
             {allFillData.length === 0 ? (
               <div className="loader-container">
@@ -600,7 +685,6 @@ const UserFiles = (props) => {
           </p>
           <FileViewer fileType={fileType} fileUrl={fileUrl} />
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
       </Modal>
       {/* Delete Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
@@ -663,8 +747,21 @@ const UserFiles = (props) => {
           <div className="form-group my-auto row ">
             <div className="col-lg-4"> </div>
             <div className="col-lg-4">
-              <Button onClick={handleEditFile} className="btn btn-primary mt-2">
-                Update File
+              <Button
+                onClick={handleEditFile}
+                className="btn btn-primary mt-2 w-100"
+                disabled={disabled}>
+                {btnLoader ? (
+                  <CircularProgress
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      color: "#fff",
+                    }}
+                  />
+                ) : (
+                  "Update File"
+                )}
               </Button>{" "}
             </div>
           </div>

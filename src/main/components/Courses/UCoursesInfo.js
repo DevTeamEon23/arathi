@@ -150,33 +150,61 @@ const UCoursesInfo = (props) => {
       });
   };
 
-  const handleUnEnrollAdmin = (e, id) => {
-    e.preventDefault();
+  const handleUnEnrollAdmin1 = (e, id) => {
+    // Define the URL and query parameter
+    const baseUrl =
+      "https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user";
+    const data_user_course_enrollment_id = id;
+
+    // Define the headers
+    const headers = {
+      "Auth-Token": token,
+    };
+
+    // Create a configuration object for Axios
     const config = {
-      headers: {
-        "Auth-Token": token,
-      },
+      headers: headers,
     };
-    const requestBody = {
-      data_user_course_enrollment_id: id,
-    };
+
+    // Send the DELETE request
     axios
       .delete(
-        `https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user`,
-        {
-          ...config,
-          data: requestBody,
-        }
+        `${baseUrl}?data_user_course_enrollment_id=${data_user_course_enrollment_id}`,
+        config
+      )
+      .then((response) => {
+        // Handle the response here (e.g., success or error handling)
+        console.log("Request was successful");
+      })
+      .catch((error) => {
+        // Handle errors here
+        console.error("Error:", error);
+      });
+  };
+  const handleUnEnrollAdmin = (e, id) => {
+    e.preventDefault();
+    const baseUrl =
+      "https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user";
+    const data_user_course_enrollment_id = id;
+
+    const headers = {
+      "Auth-Token": token,
+    };
+    const config = {
+      headers: headers,
+    };
+
+    axios
+      .delete(
+        `${baseUrl}?data_user_course_enrollment_id=${data_user_course_enrollment_id}`,
+        config
       )
       .then((response) => {
         toast.success("Course unenroll successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        if (role === "Admin") {
-          fetchCoursesAdminIns();
-        } else {
-          getAllCourses();
-        }
+
+        fetchCoursesAdminIns();
       })
       .catch((error) => {
         console.error(error);
@@ -342,7 +370,16 @@ const UCoursesInfo = (props) => {
                           }-${month < 10 ? "0" + month : month}-${year}`;
                           return (
                             <tr key={index}>
-                              <td>{data.coursename}</td>
+                              <td>
+                                {data.coursename}
+                                {data.user_course_enrollment_id === null ? (
+                                  ""
+                                ) : (
+                                  <span className="enrolled-label">
+                                    Enrolled
+                                  </span>
+                                )}
+                              </td>
                               <td className="text-center">
                                 {data.user_course_enrollment_id === null ? (
                                   "-"
@@ -401,7 +438,14 @@ const UCoursesInfo = (props) => {
 
                           return (
                             <tr key={index}>
-                              <td>{data.coursename}</td>
+                              <td>
+                                {data.coursename}
+                                {data.user_role === "Instructor" && (
+                                  <span className="enrolled-label">
+                                    Enrolled
+                                  </span>
+                                )}
+                              </td>
                               <td className="text-center">
                                 {data.user_course_enrollment_id === null ? (
                                   "Created"
@@ -418,30 +462,29 @@ const UCoursesInfo = (props) => {
                               </td>
                               <td className="text-center">-</td>
                               <td className="text-center">
-                                {/* {data.user_role === "Admin" &&
-                                  data.data_user_course_enrollment_id ===
-                                    null && ( */}
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Enroll"
-                                  onClick={(e) =>
-                                    handleEnroll(e, data.course_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-                                {/* )} */}
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Unenroll"
-                                  onClick={(e) =>
-                                    handleUnEnrollAdmin(
-                                      e,
-                                      data.data_user_course_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {data.user_role === "Admin" && (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Enroll"
+                                    onClick={(e) =>
+                                      handleEnroll(e, data.course_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                )}
+                                {data.user_role === "Instructor" && (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Unenroll"
+                                    onClick={(e) =>
+                                      handleUnEnrollAdmin(
+                                        e,
+                                        data.data_user_course_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           );

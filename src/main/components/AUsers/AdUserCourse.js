@@ -14,6 +14,7 @@ import {
   Nav,
 } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
 
 const options_1 = [
@@ -33,6 +34,7 @@ const AdUserCourse = (props) => {
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 10; // Number of items to display per page
   const history = useHistory();
+  const token = window.localStorage.getItem("jwt_access_token");
 
   useEffect(() => {
     fetchCoursesAdminIns();
@@ -76,9 +78,62 @@ const AdUserCourse = (props) => {
     }
   };
 
-  const handleEnroll = () => {};
+  const handleEnroll = (e, course_id) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("user_id", userId);
+    formData.append("course_id", course_id);
+    formData.append("generate_token", true);
+    const url = "https://v1.eonlearning.tech/user-tab1/enroll_courses_to_user";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        toast.success("Course Enroll successfully!!!");
+        fetchCoursesAdminIns();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed !!! Unable to enroll course...");
+      });
+  };
 
-  const handleUnEnroll = () => {};
+  const handleUnEnroll = (e, id) => {
+    e.preventDefault();
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: id,
+    };
+    axios
+      .delete(
+        `https://v1.eonlearning.tech/user-tab1/unenroll_courses_from_user`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
+      .then((response) => {
+        toast.success("Course unenroll successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        fetchCoursesAdminIns();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to Unenroll!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -180,26 +235,28 @@ const AdUserCourse = (props) => {
                             </td>
                             <td className="text-center">-</td>
                             <td className="text-center">
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                title="Enroll"
-                                onClick={(e) =>
-                                  handleEnroll(e, data.course_id)
-                                }>
-                                <i className="fa-solid fa-plus"></i>
-                              </div>
-
-                              <div
-                                className="btn btn-danger shadow btn-xs sharp"
-                                title="Unenroll"
-                                onClick={(e) =>
-                                  handleUnEnroll(
-                                    e,
-                                    data.user_course_enrollment_id
-                                  )
-                                }>
-                                <i className="fa-solid fa-minus"></i>
-                              </div>
+                              {data.user_course_enrollment_id === null ? (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Enroll"
+                                  onClick={(e) =>
+                                    handleEnroll(e, data.course_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+                              ) : (
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Unenroll"
+                                  onClick={(e) =>
+                                    handleUnEnroll(
+                                      e,
+                                      data.user_course_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
