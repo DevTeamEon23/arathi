@@ -78,8 +78,28 @@ const UCoursesInfo = (props) => {
       });
       console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setcoursesAdmin(data === null ? data : data.course_ids);
-      setTotalCourseData(data === null ? 0 : data.course_ids.length);
+      const courseData = data === null ? null : data.course_ids;
+
+      const courseMap = new Map(); // Create a map to keep track of courses by their course_id
+
+      // Iterate through the courseData and keep only one entry with "Instructor" role
+      courseData.forEach((course) => {
+        const { course_id, user_role } = course;
+
+        if (!courseMap.has(course_id)) {
+          courseMap.set(course_id, course);
+        } else if (user_role === "Instructor") {
+          courseMap.set(course_id, course);
+        }
+      });
+
+      // Convert the map values back to an array
+      const filteredCourses = Array.from(courseMap.values());
+
+      // Set the filtered courses to state
+      setcoursesAdmin(filteredCourses);
+      // setcoursesAdmin(data === null ? data : data.course_ids);
+      setTotalCourseData(filteredCourses === null ? 0 : filteredCourses.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -150,37 +170,6 @@ const UCoursesInfo = (props) => {
       });
   };
 
-  const handleUnEnrollAdmin1 = (e, id) => {
-    // Define the URL and query parameter
-    const baseUrl =
-      "https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user";
-    const data_user_course_enrollment_id = id;
-
-    // Define the headers
-    const headers = {
-      "Auth-Token": token,
-    };
-
-    // Create a configuration object for Axios
-    const config = {
-      headers: headers,
-    };
-
-    // Send the DELETE request
-    axios
-      .delete(
-        `${baseUrl}?data_user_course_enrollment_id=${data_user_course_enrollment_id}`,
-        config
-      )
-      .then((response) => {
-        // Handle the response here (e.g., success or error handling)
-        console.log("Request was successful");
-      })
-      .catch((error) => {
-        // Handle errors here
-        console.error("Error:", error);
-      });
-  };
   const handleUnEnrollAdmin = (e, id) => {
     e.preventDefault();
     const baseUrl =
@@ -213,6 +202,7 @@ const UCoursesInfo = (props) => {
         });
       });
   };
+
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     history.push(`/${tab}`);
@@ -234,60 +224,6 @@ const UCoursesInfo = (props) => {
   } else {
     currentData =
       coursesAdmin === null ? null : coursesAdmin.slice(startIndex, endIndex);
-  }
-
-  const filteredDataAdmin = currentData.filter(
-    (data) => data.user_role === "Admin"
-  );
-
-  const courseRoles = {};
-
-  filteredDataAdmin.forEach((course) => {
-    if (!courseRoles[course.course_id]) {
-      courseRoles[course.course_id] = [];
-    }
-    courseRoles[course.course_id].push(course.user_role);
-  });
-
-  console.log(courseRoles);
-  const hasBothRoles = (courseId) => {
-    const roles = courseRoles[courseId];
-    return roles.includes("Admin") && roles.includes("Instructor");
-  };
-
-  const filteredData = coursesAdmin.filter((item) => {
-    return (
-      coursesAdmin.filter(
-        (innerItem) =>
-          innerItem.coursename === item.coursename &&
-          innerItem.user_role === "Admin"
-      ).length > 0 &&
-      coursesAdmin.filter(
-        (innerItem) =>
-          innerItem.coursename === item.coursename &&
-          innerItem.user_role === "Instructor"
-      ).length > 0
-    );
-  });
-
-  const courseRoleCount = {};
-
-  for (const data of currentData) {
-    const courseName = data.coursename;
-    const userRole = data.user_role;
-
-    if (!courseRoleCount[courseName]) {
-      courseRoleCount[courseName] = {
-        Admin: 0,
-        Instructor: 0,
-      };
-    }
-
-    if (userRole === "Admin") {
-      courseRoleCount[courseName].Admin++;
-    } else if (userRole === "Instructor") {
-      courseRoleCount[courseName].Instructor++;
-    }
   }
 
   return (
