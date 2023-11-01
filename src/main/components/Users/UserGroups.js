@@ -85,8 +85,20 @@ const UserGroups = (props) => {
       });
       console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setGroupsAdmin(data === null ? data : data.group_ids);
-      setTotalGrpAdminIns(data === null ? 0 : data.group_ids.length);
+      const groupData = data === null ? data : data.group_ids;
+      const groupMap = new Map();
+      groupData.forEach((group) => {
+        const { group_id, user_role } = group;
+
+        if (!groupMap.has(group_id)) {
+          groupMap.set(group_id, group);
+        } else if (user_role === "Instructor") {
+          groupMap.set(group_id, group);
+        }
+      });
+      const filteredGroups = Array.from(groupMap.values());
+      setGroupsAdmin(filteredGroups);
+      setTotalGrpAdminIns(filteredGroups === null ? 0 : filteredGroups.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -155,6 +167,39 @@ const UserGroups = (props) => {
       .catch((error) => {
         console.error(error);
         toast.error("Failed !!! Unable to remove...", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  const handleRemoveGrpAdmin = (e, id) => {
+    e.preventDefault();
+    const baseUrl =
+      "https://v1.eonlearning.tech/lms-service/remove_groups_from_enrolled_user";
+    const data_user_group_enrollment_id = id;
+
+    const headers = {
+      "Auth-Token": token,
+    };
+    const config = {
+      headers: headers,
+    };
+
+    axios
+      .delete(
+        `${baseUrl}?data_user_group_enrollment_id=${data_user_group_enrollment_id}`,
+        config
+      )
+      .then((response) => {
+        toast.success("Course unenroll successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        fetchGroupsAdminIns();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to Unenroll!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       });
@@ -256,13 +301,16 @@ const UserGroups = (props) => {
                             <tr key={index}>
                               <td>
                                 {data.groupname}
-                                {data.user_group_enrollment_id === null ? (
-                                  <span className="enrolled-label">
-                                    Created
-                                  </span>
-                                ) : (
+                                {data.user_role === "Instructor" ? (
                                   <span className="enrolled-label">
                                     Group Member
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {data.user_group_enrollment_id === null && (
+                                  <span className="enrolled-label">
+                                    Created
                                   </span>
                                 )}
                               </td>
@@ -281,7 +329,7 @@ const UserGroups = (props) => {
                                     className="btn btn-danger shadow btn-xs sharp"
                                     title="Remove from group"
                                     onClick={(e) =>
-                                      handleRemoveGrp(
+                                      handleRemoveGrpAdmin(
                                         e,
                                         data.user_group_enrollment_id
                                       )
