@@ -35,7 +35,7 @@ const AdUserGroups = (props) => {
     try {
       const queryParams = {
         user_id: userId,
-        admin_user_id: ID,
+        inst_user_id: ID,
       };
       const url = new URL(
         "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_for_inst_learn"
@@ -47,10 +47,29 @@ const AdUserGroups = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setGroups(data === null ? data : data.group_ids);
-      setTotalGrpIns(data === null ? 0 : data.group_ids.length);
+      let groupData = data === null ? data : data.group_ids;
+      if (groupData === null) {
+        groupData = null;
+      }
+      const groupMap = new Map();
+      if (groupData !== null) {
+        groupData.forEach((group) => {
+          const { group_id, user_role } = group;
+
+          if (!groupMap.has(group_id)) {
+            groupMap.set(group_id, group);
+          } else if (user_role === "Learner") {
+            groupMap.set(group_id, group);
+          }
+        });
+      }
+      let filteredGroups = Array.from(groupMap.values());
+      if (filteredGroups.length === 0) {
+        filteredGroups = null;
+      }
+      setGroups(filteredGroups);
+      setTotalGrpIns(filteredGroups === null ? 0 : filteredGroups.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -82,23 +101,27 @@ const AdUserGroups = (props) => {
 
   const handleRemoveGrp = (e, id) => {
     e.preventDefault();
+    const baseUrl =
+      "https://v1.eonlearning.tech/lms-service/remove_groups_from_enrolled_user";
+    const data_user_group_enrollment_id = id;
+
+    const headers = {
+      "Auth-Token": jwtToken,
+    };
     const config = {
-      headers: {
-        "Auth-Token": jwtToken,
-      },
+      headers: headers,
     };
-    const requestBody = {
-      id: id,
-    };
+
     axios
-      .delete(`https://v1.eonlearning.tech/user-tab2/remove_groups_from_user`, {
-        ...config,
-        data: requestBody,
-      })
+      .delete(
+        `${baseUrl}?data_user_group_enrollment_id=${data_user_group_enrollment_id}`,
+        config
+      )
       .then((response) => {
-        toast.success("Removed from group successfully!", {
+        toast.success("Removed from group successfully!!!", {
           position: toast.POSITION.TOP_RIGHT,
         });
+
         fetchGroupsAdminIns();
       })
       .catch((error) => {
@@ -165,33 +188,40 @@ const AdUserGroups = (props) => {
                           <tr key={index}>
                             <td>
                               {data.groupname}
-                              {data.user_group_enrollment_id === null ? (
-                                "Created"
-                              ) : (
+                              {data.user_role === "Learner" ? (
                                 <span className="enrolled-label">
                                   Group Member
                                 </span>
+                              ) : (
+                                ""
+                              )}
+                              {data.user_group_enrollment_id === null && (
+                                <span className="enrolled-label">Created</span>
                               )}
                             </td>
                             <td className="text-center">
-                              <div
-                                className="btn btn-primary shadow btn-xs sharp me-1"
-                                title="Add to group"
-                                onClick={(e) => handleAddGrp(e, data.group_id)}>
-                                <i className="fa-solid fa-plus"></i>
-                              </div>
-
-                              <div
-                                className="btn btn-danger shadow btn-xs sharp"
-                                title="Remove from group"
-                                onClick={(e) =>
-                                  handleRemoveGrp(
-                                    e,
-                                    data.user_group_enrollment_id
-                                  )
-                                }>
-                                <i className="fa-solid fa-minus"></i>
-                              </div>
+                              {data.user_role === "Instructor" ? (
+                                <div
+                                  className="btn btn-primary shadow btn-xs sharp me-1"
+                                  title="Add to group"
+                                  onClick={(e) =>
+                                    handleAddGrp(e, data.group_id)
+                                  }>
+                                  <i className="fa-solid fa-plus"></i>
+                                </div>
+                              ) : (
+                                <div
+                                  className="btn btn-danger shadow btn-xs sharp"
+                                  title="Remove from group"
+                                  onClick={(e) =>
+                                    handleRemoveGrp(
+                                      e,
+                                      data.user_group_enrollment_id
+                                    )
+                                  }>
+                                  <i className="fa-solid fa-minus"></i>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );
