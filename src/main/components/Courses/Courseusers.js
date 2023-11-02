@@ -66,7 +66,7 @@ const Courseusers = (props) => {
         admin_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
+        "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {

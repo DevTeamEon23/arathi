@@ -38,6 +38,7 @@ const Groups = () => {
   const [courses, setCourses] = useState([]); //admin instructor
   const user = useSelector(selectUser);
   const roleType = user && user.role && user.role[0];
+  const ID = window.localStorage.getItem("id");
   let history = useHistory();
 
   useEffect(() => {
@@ -188,6 +189,35 @@ const Groups = () => {
       .then((response) => {
         setShowModal(false);
         getAllGroups();
+        toast.success("Group deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Failed to delete group!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  const handleDeleteMain2 = async (grpId) => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: grpId,
+    };
+    await axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_group`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        fetchGroupsData(token, ID);
         toast.success("Group deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -449,15 +479,27 @@ const Groups = () => {
                                   onClick={(e) => handleEdit(item.id)}>
                                   <i className="fas fa-pencil-alt"></i>
                                 </div>
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  onClick={() =>
-                                    deleteGrp(
-                                      item.data_user_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa fa-trash"></i>
-                                </div>
+                                {}
+
+                                {item.data_user_group_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    onClick={() =>
+                                      handleDeleteMain2(item.group_id)
+                                    }>
+                                    <i className="fa fa-trash"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    onClick={() =>
+                                      deleteGrp(
+                                        item.data_user_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa fa-trash"></i>
+                                  </div>
+                                )}
                               </td>
                             </tr>
                           );

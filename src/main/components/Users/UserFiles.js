@@ -37,7 +37,6 @@ const UserFiles = (props) => {
   const [fileType, setFileType] = useState(null);
   const [fileUrl, setFileUrl] = useState();
   const [btnLoader, setBtnLoader] = useState(false); //Loader
-  const [disabled, setDisabled] = useState(false); //btn disabled
   const history = useHistory();
   const accessToken = window.localStorage.getItem("jwt_access_token");
   const userID = localStorage.getItem("id");
@@ -182,7 +181,6 @@ const UserFiles = (props) => {
       );
       setShowEditModal(false);
       setBtnLoader(false);
-      setDisabled(true);
       setSelectedFile(null);
       toast.success("File Updated successfully!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -749,8 +747,7 @@ const UserFiles = (props) => {
             <div className="col-lg-4">
               <Button
                 onClick={handleEditFile}
-                className="btn btn-primary mt-2 w-100"
-                disabled={disabled}>
+                className="btn btn-primary mt-2 w-100">
                 {btnLoader ? (
                   <CircularProgress
                     style={{
