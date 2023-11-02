@@ -67,7 +67,7 @@ const UCoursesInfo = (props) => {
         admin_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_for_inst_learn"
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -76,29 +76,32 @@ const UCoursesInfo = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("API Response:", response.data.data);
       const data = response.data.data;
-      const courseData = data === null ? null : data.course_ids;
-
+      let courseData = data === null ? data : data.course_ids;
+      if (courseData === null) {
+        courseData = null;
+      }
       const courseMap = new Map(); // Create a map to keep track of courses by their course_id
 
       // Iterate through the courseData and keep only one entry with "Instructor" role
-      courseData.forEach((course) => {
-        const { course_id, user_role } = course;
+      if (courseData !== null) {
+        courseData.forEach((course) => {
+          const { course_id, user_role } = course;
 
-        if (!courseMap.has(course_id)) {
-          courseMap.set(course_id, course);
-        } else if (user_role === "Instructor") {
-          courseMap.set(course_id, course);
-        }
-      });
-
+          if (!courseMap.has(course_id)) {
+            courseMap.set(course_id, course);
+          } else if (user_role === "Instructor") {
+            courseMap.set(course_id, course);
+          }
+        });
+      }
       // Convert the map values back to an array
-      const filteredCourses = Array.from(courseMap.values());
-
+      let filteredCourses = Array.from(courseMap.values());
+      if (filteredCourses.length === 0) {
+        filteredCourses = null;
+      }
       // Set the filtered courses to state
       setcoursesAdmin(filteredCourses);
-      // setcoursesAdmin(data === null ? data : data.course_ids);
       setTotalCourseData(filteredCourses === null ? 0 : filteredCourses.length);
     } catch (error) {
       console.error("API Error:", error);

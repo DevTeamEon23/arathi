@@ -71,7 +71,7 @@ const GroupsUsers = (props) => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/lms-service/fetch_users_of_group_enrolled_for_inst_learn",
+        "https://v1.eonlearning.tech/lms-service/fetch_users_of_group_enrolled_for_admin",
         config
       )
       .then((response) => {
