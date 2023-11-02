@@ -58,7 +58,7 @@ const AdUserCourse = (props) => {
     try {
       const queryParams = {
         user_id: userId,
-        admin_user_id: ID,
+        inst_user_id: ID,
       };
       const url = new URL(
         "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_for_inst_learn"
@@ -71,8 +71,29 @@ const AdUserCourse = (props) => {
         },
       });
       const data = response.data.data;
-      setcoursesIns(data === null ? data : data.course_ids);
-      setTotalCourseData(data === null ? 0 : data.course_ids.length);
+      let courseData = data === null ? data : data.course_ids;
+      if (courseData === null) {
+        courseData = null;
+      }
+      const courseMap = new Map(); // Create a map to keep track of courses by their course_id
+
+      if (courseData !== null) {
+        courseData.forEach((course) => {
+          const { course_id, user_role } = course;
+
+          if (!courseMap.has(course_id)) {
+            courseMap.set(course_id, course);
+          } else if (user_role === "Learner") {
+            courseMap.set(course_id, course);
+          }
+        });
+      }
+      let filteredCourses = Array.from(courseMap.values());
+      if (filteredCourses.length === 0) {
+        filteredCourses = null;
+      }
+      setcoursesIns(filteredCourses);
+      setTotalCourseData(filteredCourses === null ? 0 : filteredCourses.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -218,24 +239,29 @@ const AdUserCourse = (props) => {
                         }-${year}`;
                         return (
                           <tr key={index}>
-                            <td>{data.coursename}</td>
+                            <td>
+                              {data.coursename}{" "}
+                              {data.user_role === "Learner" && (
+                                <span className="enrolled-label">Enrolled</span>
+                              )}
+                            </td>
                             <td className="text-center">
                               {data.user_course_enrollment_id === null ? (
-                                "-"
+                                "Created"
                               ) : (
                                 <>{data.user_role}</>
                               )}
                             </td>
                             <td className="text-center">
                               {data.enrolled_on === null ? (
-                                "-"
+                                "Not Enrolled"
                               ) : (
                                 <>{formattedDate}</>
                               )}
                             </td>
                             <td className="text-center">-</td>
                             <td className="text-center">
-                              {data.user_course_enrollment_id === null ? (
+                              {data.user_role === "Instructor" ? (
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   title="Enroll"

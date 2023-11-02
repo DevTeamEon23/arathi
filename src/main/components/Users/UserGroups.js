@@ -83,20 +83,27 @@ const UserGroups = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("API Response:", response.data.data);
       const data = response.data.data;
-      const groupData = data === null ? data : data.group_ids;
+      let groupData = data === null ? data : data.group_ids;
+      if (groupData === null) {
+        groupData = null;
+      }
       const groupMap = new Map();
-      groupData.forEach((group) => {
-        const { group_id, user_role } = group;
+      if (groupData !== null) {
+        groupData.forEach((group) => {
+          const { group_id, user_role } = group;
 
-        if (!groupMap.has(group_id)) {
-          groupMap.set(group_id, group);
-        } else if (user_role === "Instructor") {
-          groupMap.set(group_id, group);
-        }
-      });
-      const filteredGroups = Array.from(groupMap.values());
+          if (!groupMap.has(group_id)) {
+            groupMap.set(group_id, group);
+          } else if (user_role === "Instructor") {
+            groupMap.set(group_id, group);
+          }
+        });
+      }
+      let filteredGroups = Array.from(groupMap.values());
+      if (filteredGroups.length === 0) {
+        filteredGroups = null;
+      }
       setGroupsAdmin(filteredGroups);
       setTotalGrpAdminIns(filteredGroups === null ? 0 : filteredGroups.length);
     } catch (error) {
