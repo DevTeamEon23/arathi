@@ -74,7 +74,7 @@ const UserGroups = (props) => {
         admin_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_for_inst_learn"
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -191,7 +191,7 @@ const UserGroups = (props) => {
         config
       )
       .then((response) => {
-        toast.success("Course unenroll successfully!", {
+        toast.success("Removed from group successfully!!!", {
           position: toast.POSITION.TOP_RIGHT,
         });
 
@@ -199,7 +199,7 @@ const UserGroups = (props) => {
       })
       .catch((error) => {
         console.error(error);
-        toast.error("Failed to Unenroll!", {
+        toast.error("Failed !!! Unable to remove...", {
           position: toast.POSITION.TOP_RIGHT,
         });
       });
