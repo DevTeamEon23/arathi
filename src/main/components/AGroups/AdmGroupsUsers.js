@@ -39,7 +39,7 @@ const AdmGroupsUsers = (props) => {
       },
       params: {
         group_id: grpId,
-        admin_user_id: ID,
+        inst_user_id: ID,
       },
     };
     axios

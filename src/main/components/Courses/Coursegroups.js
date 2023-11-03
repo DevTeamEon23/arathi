@@ -302,7 +302,7 @@ const Coursegroups = (props) => {
                                 <strong>{item.groupname}</strong>
                                 {item.course_group_enrollment_id !== null && (
                                   <span className="enrolled-label">
-                                    Course Added
+                                    Added to Course
                                   </span>
                                 )}
                               </td>
