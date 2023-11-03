@@ -450,10 +450,10 @@ const Groups = () => {
                     <Table responsive>
                       <thead>
                         <tr>
-                          <th className="text-center">
+                          <th>
                             <strong>NAME</strong>
                           </th>
-                          <th className="text-center">
+                          <th>
                             <strong>DESCRIPTION</strong>
                           </th>
                           <th className="text-center">
@@ -469,17 +469,23 @@ const Groups = () => {
                               : item.groupdesc;
                           return (
                             <tr key={index}>
-                              <td className="text-center">{item.groupname}</td>
-                              <td className="text-center">
-                                {truncatedGroupDesc}
+                              <td>
+                                {item.groupname}{" "}
+                                {item.data_user_group_enrollment_id === null ? (
+                                  <span className="enrolled-label">
+                                    Created
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
                               </td>
+                              <td>{truncatedGroupDesc}</td>
                               <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
                                   onClick={(e) => handleEdit(item.id)}>
                                   <i className="fas fa-pencil-alt"></i>
                                 </div>
-                                {}
 
                                 {item.data_user_group_enrollment_id === null ? (
                                   <div

@@ -186,26 +186,28 @@ const AdmCoursegroups = (props) => {
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Add to group"
-                                  onClick={(e) =>
-                                    handleAddGrp(e, item.group_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Remove from group"
-                                  onClick={(e) =>
-                                    handleRemoveGrp(
-                                      e,
-                                      item.course_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {item.course_group_enrollment_id !== null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, item.group_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleRemoveGrp(
+                                        e,
+                                        item.course_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
                               </center>
                             </td>
                           </tr>

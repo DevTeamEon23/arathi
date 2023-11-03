@@ -82,8 +82,32 @@ const Coursegroups = (props) => {
         },
       });
       const data = response.data.data;
-      setAllAdminGrps(data === null ? data : data.group_ids);
-      setTotalGrpAdminData(data === null ? 0 : data.group_ids.length);
+      let groupData = data === null ? data : data.group_ids;
+      if (groupData === null) {
+        groupData = null;
+      }
+      const groupMap = new Map(); // Create a map to keep track of courses by their course_id
+
+      // Iterate through the groupData and keep only one entry with "Instructor" role
+      if (groupData !== null) {
+        groupData.forEach((course) => {
+          const { group_id, user_id } = course;
+
+          if (!groupMap.has(group_id)) {
+            groupMap.set(group_id, course);
+          } else if (user_id === null) {
+            groupMap.set(group_id, course);
+          }
+        });
+      }
+      // Convert the map values back to an array
+      let filteredGroups = Array.from(groupMap.values());
+      if (filteredGroups.length === 0) {
+        filteredGroups = null;
+      }
+      console.log(filteredGroups, "filteredGroups");
+      setAllAdminGrps(filteredGroups);
+      setTotalGrpAdminData(filteredGroups === null ? 0 : filteredGroups.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -138,7 +162,11 @@ const Coursegroups = (props) => {
         toast.success("Course remove from group successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        getAllGroups();
+        if (roleType === "Admin") {
+          getAdminGroups();
+        } else {
+          getAllGroups();
+        }
       })
       .catch((error) => {
         // Handle the error
@@ -164,11 +192,6 @@ const Coursegroups = (props) => {
       <Row>
         <Col lg={12}>
           <Card>
-            {/* <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
-              <Tab eventKey={`course_users/${courseID}`} title="Users"></Tab>
-              <Tab eventKey={`course_groups/${courseID}`} title="Groups"></Tab>
-            </Tabs> */}
             {roleType === "Instructor" ? (
               <Tabs activeKey={activeTab} onSelect={handleTabChange}>
                 <Tab eventKey={`edit-courses/${courseID}`} title="Course"></Tab>
@@ -188,6 +211,9 @@ const Coursegroups = (props) => {
                   title="Groups"></Tab>
               </Tabs>
             )}
+            <Card.Header>
+              <Card.Title>Enrolled Groups</Card.Title>
+            </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
                 <div className="loader-container">
@@ -274,36 +300,36 @@ const Coursegroups = (props) => {
                             <tr>
                               <td>
                                 <strong>{item.groupname}</strong>
-                                {/* {item.enrolled_coursename === null ? (
-                                  ""
-                                ) : (
+                                {item.course_group_enrollment_id !== null && (
                                   <span className="enrolled-label">
-                                    Group Member
+                                    Course Added
                                   </span>
-                                )} */}
+                                )}
                               </td>
                               <td>
                                 <center>
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Add to group"
-                                    onClick={(e) =>
-                                      handleAddGrp(e, item.group_id)
-                                    }>
-                                    <i className="fa-solid fa-plus"></i>
-                                  </div>
-
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Remove from group"
-                                    onClick={(e) =>
-                                      handleRemoveGrp(
-                                        e,
-                                        item.course_group_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa-solid fa-minus"></i>
-                                  </div>
+                                  {item.course_group_enrollment_id !== null ? (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Remove from group"
+                                      onClick={(e) =>
+                                        handleRemoveGrp(
+                                          e,
+                                          item.course_group_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa-solid fa-minus"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Add to group"
+                                      onClick={(e) =>
+                                        handleAddGrp(e, item.group_id)
+                                      }>
+                                      <i className="fa-solid fa-plus"></i>
+                                    </div>
+                                  )}
                                 </center>
                               </td>
                             </tr>

@@ -232,7 +232,7 @@ const Courseusers = (props) => {
               </Tabs>
             )}
             <Card.Header>
-              <Card.Title>Courses</Card.Title>
+              <Card.Title>Enrolled Users</Card.Title>
             </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
