@@ -74,10 +74,34 @@ const GroupCourses = (props) => {
       )
       .then((response) => {
         console.log(response.data.data);
-        const allUsers = response.data.data;
-        setCoursesInstructor(allUsers == null ? allUsers : allUsers.course_ids);
+        const data = response.data.data;
+        let groupData = data === null ? data : data.course_ids;
+        if (groupData === null) {
+          groupData = null;
+        }
+        const groupMap = new Map(); // Create a map to keep track of courses by their course_id
+
+        // Iterate through the groupData and keep only one entry with "Instructor" role
+        if (groupData !== null) {
+          groupData.forEach((course) => {
+            const { course_id, user_id } = course;
+
+            if (!groupMap.has(course_id)) {
+              groupMap.set(course_id, course);
+            } else if (user_id === null) {
+              groupMap.set(course_id, course);
+            }
+          });
+        }
+        // Convert the map values back to an array
+        let filteredGroups = Array.from(groupMap.values());
+        if (filteredGroups.length === 0) {
+          filteredGroups = null;
+        }
+        console.log(filteredGroups, "filteredGroups");
+        setCoursesInstructor(filteredGroups);
         setTotalCourseDataIns(
-          allUsers == null ? allUsers : allUsers.course_ids.length
+          filteredGroups == null ? 0 : filteredGroups.length
         );
       })
       .catch((error) => {
@@ -113,7 +137,11 @@ const GroupCourses = (props) => {
       })
       .then((response) => {
         toast.success("Course Added to group successfully!!!");
-        getAllCourses();
+        if (role === "Superadmin") {
+          getAllCourses();
+        } else {
+          getAllCoursesAdmin();
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -143,7 +171,11 @@ const GroupCourses = (props) => {
         toast.success("Course remove from group successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        getAllCourses();
+        if (role === "Superadmin") {
+          getAllCourses();
+        } else {
+          getAllCoursesAdmin();
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -177,6 +209,9 @@ const GroupCourses = (props) => {
               <Tab eventKey={`group-courses/${grpId}`} title="Courses"></Tab>
               <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
+            <Card.Header>
+              <Card.Title>Added Courses</Card.Title>
+            </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
                 <div className="loader-container">
@@ -221,7 +256,7 @@ const GroupCourses = (props) => {
                                   ""
                                 ) : (
                                   <span className="enrolled-label">
-                                    Group Member
+                                    Added to Group
                                   </span>
                                 )}
                               </td>
@@ -263,37 +298,37 @@ const GroupCourses = (props) => {
                             <tr key={index}>
                               <td>
                                 {data.coursename}
-                                {data.course_group_enrollment_id === null ? (
-                                  ""
-                                ) : (
+                                {data.course_group_enrollment_id !== null && (
                                   <span className="enrolled-label">
-                                    Group Member
+                                    Added to Group
                                   </span>
                                 )}
                               </td>
 
                               <td>
                                 <center>
-                                  <div
-                                    className="btn btn-primary shadow btn-xs sharp me-1"
-                                    title="Add to group"
-                                    onClick={(e) =>
-                                      handleAddGrp(e, data.course_id)
-                                    }>
-                                    <i className="fa-solid fa-plus"></i>
-                                  </div>
-
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Remove from group"
-                                    onClick={(e) =>
-                                      handleRemoveGrp(
-                                        e,
-                                        data.course_group_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa-solid fa-minus"></i>
-                                  </div>
+                                  {data.course_group_enrollment_id !== null ? (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Remove from group"
+                                      onClick={(e) =>
+                                        handleRemoveGrp(
+                                          e,
+                                          data.course_group_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa-solid fa-minus"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-primary shadow btn-xs sharp me-1"
+                                      title="Add to group"
+                                      onClick={(e) =>
+                                        handleAddGrp(e, data.course_id)
+                                      }>
+                                      <i className="fa-solid fa-plus"></i>
+                                    </div>
+                                  )}
                                 </center>
                               </td>
                             </tr>

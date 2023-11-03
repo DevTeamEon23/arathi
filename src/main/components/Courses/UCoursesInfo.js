@@ -243,7 +243,7 @@ const UCoursesInfo = (props) => {
               <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <Card.Header>
-              <Card.Title>Courses</Card.Title>
+              <Card.Title>Enrolled Courses</Card.Title>
             </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (

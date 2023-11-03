@@ -226,7 +226,7 @@ const UserGroups = (props) => {
               <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
             </Tabs>
             <div className="card-header">
-              <h4 className="card-title">Groups</h4>
+              <h4 className="card-title">Enrolled Groups</h4>
             </div>
             <div className="card-body">
               {currentData?.length <= 0 ? (

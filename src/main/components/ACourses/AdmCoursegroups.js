@@ -46,8 +46,33 @@ const AdmCoursegroups = (props) => {
         },
       });
       const data = response.data.data;
-      setUserInsGroups(data === null ? data : data.group_ids);
-      setUserInsGroupsTotal(data === null ? 0 : data.group_ids.length);
+      let groupData = data === null ? data : data.group_ids;
+      if (groupData === null) {
+        groupData = null;
+      }
+      const groupMap = new Map(); // Create a map to keep track of courses by their course_id
+
+      // Iterate through the groupData and keep only one entry with "Instructor" role
+      if (groupData !== null) {
+        groupData.forEach((course) => {
+          const { group_id, user_id } = course;
+
+          if (!groupMap.has(group_id)) {
+            groupMap.set(group_id, course);
+          } else if (user_id === null) {
+            groupMap.set(group_id, course);
+          }
+        });
+      }
+      // Convert the map values back to an array
+      let filteredGroups = Array.from(groupMap.values());
+      if (filteredGroups.length === 0) {
+        filteredGroups = null;
+      }
+      setUserInsGroups(filteredGroups);
+      setUserInsGroupsTotal(
+        filteredGroups === null ? 0 : filteredGroups.length
+      );
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -133,7 +158,7 @@ const AdmCoursegroups = (props) => {
                 title="Groups"></Tab>
             </Tabs>
             <Card.Header>
-              <Card.Title>Enroll Group</Card.Title>
+              <Card.Title>Enrolled Group</Card.Title>
             </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
@@ -176,36 +201,36 @@ const AdmCoursegroups = (props) => {
                           <tr>
                             <td key={index}>
                               {item.groupname}
-                              {/* {item.enrolled_coursename === null ? (
-                                  ""
-                                ) : (
-                                  <span className="enrolled-label">
-                                    Group Member
-                                  </span>
-                                )} */}
+                              {item.course_group_enrollment_id !== null && (
+                                <span className="enrolled-label">
+                                  Added to Course
+                                </span>
+                              )}
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Add to group"
-                                  onClick={(e) =>
-                                    handleAddGrp(e, item.group_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Remove from group"
-                                  onClick={(e) =>
-                                    handleRemoveGrp(
-                                      e,
-                                      item.course_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {item.course_group_enrollment_id !== null ? (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleRemoveGrp(
+                                        e,
+                                        item.course_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, item.group_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                )}
                               </center>
                             </td>
                           </tr>
