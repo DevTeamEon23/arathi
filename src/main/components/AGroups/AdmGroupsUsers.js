@@ -49,11 +49,37 @@ const AdmGroupsUsers = (props) => {
       )
       .then((response) => {
         console.log(response.data.data);
-        const allUsers = response.data.data;
-        setAllLearnerUsers(allUsers == null ? allUsers : allUsers.group_ids);
-        setAllLearnerUsersTotal(
-          allUsers == null ? 0 : allUsers.group_ids.length
+        const data = response.data.data;
+        let userData = data === null ? data : data.group_ids;
+        if (userData === null) {
+          userData = null;
+        }
+        const userMap = new Map(); // Create a map to keep track of courses by their course_id
+
+        // Iterate through the userData and keep only one entry with "Instructor" role
+        if (userData !== null) {
+          userData.forEach((group) => {
+            const { user_id, user_group_enrollment_id } = group;
+
+            if (!userMap.has(user_id)) {
+              userMap.set(user_id, group);
+            } else if (user_group_enrollment_id !== null) {
+              userMap.set(user_id, group);
+            }
+          });
+        }
+        // Convert the map values back to an array
+        let filteredGrpUsers = Array.from(userMap.values());
+        if (filteredGrpUsers.length === 0) {
+          filteredGrpUsers = null;
+        }
+        const filteredData = filteredGrpUsers.filter(
+          (user) => user.user_id != ID
         );
+        console.log(filteredGrpUsers, filteredData);
+
+        setAllLearnerUsers(filteredData);
+        setAllLearnerUsersTotal(filteredData == null ? 0 : filteredData.length);
       })
       .catch((error) => {
         console.log(error);
@@ -138,6 +164,9 @@ const AdmGroupsUsers = (props) => {
                 title="Courses"></Tab>
               <Tab eventKey={`adm_group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
+            <Card.Header>
+              <Card.Title>Added Users</Card.Title>
+            </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
                 <div className="loader-container">
@@ -177,35 +206,38 @@ const AdmGroupsUsers = (props) => {
                           <tr key={index}>
                             <td>
                               {item.full_name}
-                              {/* {item.user_group_enrollment_id === null ? (
+                              {item.user_group_enrollment_id === null ? (
                                 ""
                               ) : (
                                 <span className="enrolled-label">
                                   Group Member
                                 </span>
-                              )} */}
+                              )}
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Add to group"
-                                  onClick={(e) =>
-                                    handleEnroll(e, item.user_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Remove from group"
-                                  onClick={(e) =>
-                                    handleUnEnroll(
-                                      e,
-                                      item.user_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {item.user_group_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleEnroll(e, item.user_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleUnEnroll(
+                                        e,
+                                        item.user_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
                               </center>
                             </td>
                           </tr>

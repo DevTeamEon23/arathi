@@ -177,6 +177,9 @@ const GroupCourses = (props) => {
               <Tab eventKey={`group-courses/${grpId}`} title="Courses"></Tab>
               <Tab eventKey={`group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
+            <Card.Header>
+              <Card.Title>Added Courses</Card.Title>
+            </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
                 <div className="loader-container">

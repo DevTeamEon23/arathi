@@ -348,19 +348,19 @@ const Groups = () => {
         <Col lg={12}>
           <Card>
             <Card.Header>
-              <Card.Title>
-                <div>
-                  <Link to="/add-groups">
-                    <Button variant="primary">Add Groups</Button>
-                  </Link>
-                </div>
-              </Card.Title>
+              <Card.Title>Groups</Card.Title>
+              <div className="" style={{ marginLeft: "40rem" }}>
+                <Link to="/add-groups">
+                  <Button variant="primary">Add Groups</Button>
+                </Link>
+              </div>
+
               <Select
                 defaultValue={selectedOption}
                 onChange={handleSelectChange}
                 options={options}
                 placeholder="Mass Action"
-                className="col-lg-5"></Select>
+                className="col-lg-4"></Select>
             </Card.Header>
             {roleType === "Superadmin" && (
               <Card.Body>
