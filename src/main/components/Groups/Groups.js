@@ -349,7 +349,7 @@ const Groups = () => {
           <Card>
             <Card.Header>
               <Card.Title>Groups</Card.Title>
-              <div className="" style={{ marginLeft: "40rem" }}>
+              <div className="" style={{ marginLeft: "35rem" }}>
                 <Link to="/add-groups">
                   <Button variant="primary">Add Groups</Button>
                 </Link>
