@@ -259,7 +259,7 @@ const Coursegroups = (props) => {
                                   ""
                                 ) : (
                                   <span className="enrolled-label">
-                                    Group Member
+                                    Added to Course
                                   </span>
                                 )}
                               </td>
