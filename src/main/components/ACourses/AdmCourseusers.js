@@ -1,13 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
-// import PageTitle from "../../layouts/PageTitle";
-import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import {
   Row,
   Col,
   Card,
   Table,
-  Dropdown,
   Button,
   Tab,
   Tabs,
@@ -26,6 +23,7 @@ const AdmCourseusers = (props) => {
   const itemsPerPage = 10; // Number of items to display per page
   let history = useHistory();
   let token = window.localStorage.getItem("jwt_access_token");
+  const ID = window.localStorage.getItem("id");
 
   useEffect(() => {
     fetchUsers();
@@ -43,11 +41,10 @@ const AdmCourseusers = (props) => {
   }, [history.location.pathname]);
 
   const fetchUsers = async () => {
-    let ID = window.localStorage.getItem("id");
     try {
       const queryParams = {
         course_id: courseID,
-        admin_user_id: ID,
+        inst_user_id: ID,
       };
       const url = new URL(
         "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
@@ -59,10 +56,33 @@ const AdmCourseusers = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("API Response:", response.data.data);
       const data = response.data.data;
-      setuserIns(data === null ? data : data.course_ids);
-      setuserInsTotal(data === null ? 0 : data.course_ids.length);
+      let userData = data === null ? data : data.course_ids;
+      if (userData === null) {
+        userData = null;
+      }
+      const userMap = new Map(); // Create a map to keep track of courses by their course_id
+
+      // Iterate through the userData and keep only one entry with "Instructor" role
+      if (userData !== null) {
+        userData.forEach((course) => {
+          const { user_id, user_course_enrollment_id } = course;
+
+          if (!userMap.has(user_id)) {
+            userMap.set(user_id, course);
+          } else if (user_course_enrollment_id !== null) {
+            userMap.set(user_id, course);
+          }
+        });
+      }
+      // Convert the map values back to an array
+      let filteredCourses = Array.from(userMap.values());
+      if (filteredCourses.length === 0) {
+        filteredCourses = null;
+      }
+      const filteredData = filteredCourses.filter((user) => user.user_id != ID);
+      setuserIns(filteredData);
+      setuserInsTotal(filteredData === null ? 0 : filteredData.length);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -85,7 +105,6 @@ const AdmCourseusers = (props) => {
         },
       })
       .then((response) => {
-        console.log(response.data);
         toast.success("Course Enroll successfully!!!");
         fetchUsers();
       })
@@ -147,7 +166,7 @@ const AdmCourseusers = (props) => {
                 title="Groups"></Tab>
             </Tabs>
             <Card.Header>
-              <Card.Title>Enroll Course</Card.Title>
+              <Card.Title>Enroll Courses</Card.Title>
             </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
@@ -198,13 +217,11 @@ const AdmCourseusers = (props) => {
                           <tr key={index}>
                             <td>
                               {item.full_name}
-                              {/* {item.enrolled_coursename === null ? (
-                                  ""
-                                ) : (
-                                  <span className="enrolled-label">
-                                    Enrolled
-                                  </span>
-                                )} */}
+                              {item.enrolled_on === null ? (
+                                ""
+                              ) : (
+                                <span className="enrolled-label">Enrolled</span>
+                              )}
                             </td>
                             <td>{item.role}</td>
                             <td>
@@ -212,26 +229,28 @@ const AdmCourseusers = (props) => {
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Enroll"
-                                  onClick={(e) =>
-                                    handleEnroll(e, item.user_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Unenroll"
-                                  onClick={(e) =>
-                                    handleUnEnroll(
-                                      e,
-                                      item.user_course_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {item.user_course_enrollment_id === null ? (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Enroll"
+                                    onClick={(e) =>
+                                      handleEnroll(e, item.user_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Unenroll"
+                                    onClick={(e) =>
+                                      handleUnEnroll(
+                                        e,
+                                        item.user_course_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                )}
                               </center>
                             </td>
                           </tr>
@@ -262,7 +281,7 @@ const AdmCourseusers = (props) => {
                     <Button
                       className="ml-2"
                       onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={endIndex >= userIns.length}>
+                      disabled={endIndex >= (userIns?.length || 0)}>
                       Next
                     </Button>
                   </div>
