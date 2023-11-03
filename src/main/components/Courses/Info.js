@@ -377,23 +377,17 @@ const Info = () => {
                       <thead>
                         <tr>
                           <th>
-                            <strong>
-                              <center>COURSE NAME</center>
-                            </strong>
+                            <strong>COURSE NAME</strong>
+                          </th>
+                          <th>
+                            <strong>CATEGORY</strong>
+                          </th>
+                          <th>
+                            <strong>LAST UPDATED ON</strong>
                           </th>
                           <th>
                             <strong>
-                              <center>CATEGORY</center>
-                            </strong>
-                          </th>
-                          <th>
-                            <strong>
-                              <center>LAST UPDATED ON</center>
-                            </strong>
-                          </th>
-                          <th>
-                            <strong>
-                              <center>OPTION</center>
+                              <center>OPTIONS</center>
                             </strong>
                           </th>
                         </tr>
@@ -421,9 +415,18 @@ const Info = () => {
 
                           return (
                             <tr key={data.id}>
-                              <td className="text-center">{data.coursename}</td>
-                              <td className="text-center">{data.category}</td>
-                              <td className="text-center">
+                              <td>
+                                {data.coursename}
+                                {data.user_course_enrollment_id === null ? (
+                                  <span className="enrolled-label">
+                                    Created
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                              </td>
+                              <td>{data.category}</td>
+                              <td>
                                 {formattedDate}&nbsp;&nbsp;{formattedTime}
                               </td>
                               <td>

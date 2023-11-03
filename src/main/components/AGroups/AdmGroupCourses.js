@@ -32,10 +32,9 @@ const AdmGroupCourses = (props) => {
   }, [history.location.pathname]);
 
   const getAllCourses = () => {
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
-        "Auth-Token": jwtToken,
+        "Auth-Token": token,
       },
       params: {
         group_id: grpId,
@@ -47,15 +46,32 @@ const AdmGroupCourses = (props) => {
         config
       )
       .then((response) => {
-        const allUsers = response.data.data;
-        setAllCourses(allUsers == null ? allUsers : allUsers.course_ids);
-        setAllCoursesTotal(
-          allUsers == null ? allUsers : allUsers.course_ids.length
-        );
+        const data = response.data.data;
+        let groupData = data === null ? data : data.course_ids;
+        if (groupData === null) {
+          groupData = null;
+        }
+        const groupMap = new Map();
+        if (groupData !== null) {
+          groupData.forEach((course) => {
+            const { course_id, user_id } = course;
+
+            if (!groupMap.has(course_id)) {
+              groupMap.set(course_id, course);
+            } else if (user_id === null) {
+              groupMap.set(course_id, course);
+            }
+          });
+        }
+        let filteredGroups = Array.from(groupMap.values());
+        if (filteredGroups.length === 0) {
+          filteredGroups = null;
+        }
+        setAllCourses(filteredGroups);
+        setAllCoursesTotal(filteredGroups == null ? 0 : filteredGroups.length);
       })
       .catch((error) => {
         console.log(error);
-        toast.error("Failed to fetch users!");
       });
   };
 
@@ -133,6 +149,9 @@ const AdmGroupCourses = (props) => {
                 title="Courses"></Tab>
               <Tab eventKey={`adm_group-files/${grpId}`} title="Files"></Tab>
             </Tabs>
+            <Card.Header>
+              <Card.Title>Added Courses</Card.Title>
+            </Card.Header>
             <Card.Body>
               {currentData?.length <= 0 ? (
                 <div className="loader-container">
@@ -163,7 +182,7 @@ const AdmGroupCourses = (props) => {
                         <th>
                           <center>
                             {" "}
-                            <strong>OPTION</strong>
+                            <strong>OPTIONS</strong>
                           </center>
                         </th>
                       </tr>
@@ -174,35 +193,36 @@ const AdmGroupCourses = (props) => {
                           <tr key={index}>
                             <td>
                               {item.coursename}
-                              {/* {item.user_group_enrollment_id === null ? (
-                                ""
-                              ) : (
+                              {item.course_group_enrollment_id !== null && (
                                 <span className="enrolled-label">
-                                  Group Member
+                                  Added to Group
                                 </span>
-                              )} */}
+                              )}
                             </td>
                             <td>
                               <center>
-                                <div
-                                  className="btn btn-primary shadow btn-xs sharp me-1"
-                                  title="Add to group"
-                                  onClick={(e) =>
-                                    handleAddGrp(e, item.user_id)
-                                  }>
-                                  <i className="fa-solid fa-plus"></i>
-                                </div>
-                                <div
-                                  className="btn btn-danger shadow btn-xs sharp"
-                                  title="Remove from group"
-                                  onClick={(e) =>
-                                    handleRemoveGrp(
-                                      e,
-                                      item.user_group_enrollment_id
-                                    )
-                                  }>
-                                  <i className="fa-solid fa-minus"></i>
-                                </div>
+                                {item.course_group_enrollment_id !== null ? (
+                                  <div
+                                    className="btn btn-danger shadow btn-xs sharp"
+                                    title="Remove from group"
+                                    onClick={(e) =>
+                                      handleRemoveGrp(
+                                        e,
+                                        item.course_group_enrollment_id
+                                      )
+                                    }>
+                                    <i className="fa-solid fa-minus"></i>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Add to group"
+                                    onClick={(e) =>
+                                      handleAddGrp(e, item.user_id)
+                                    }>
+                                    <i className="fa-solid fa-plus"></i>
+                                  </div>
+                                )}
                               </center>
                             </td>
                           </tr>
