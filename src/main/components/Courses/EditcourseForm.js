@@ -119,6 +119,7 @@ const EditcourseForm = (props) => {
   const handleEditFormSubmit = (event) => {
     event.preventDefault();
     setBtnSubmitLoader(true);
+    console.log("courselink", courselink, "youTubeLink", youTubeLink);
     if (
       courselink === null &&
       selectedVideo === "" &&
@@ -139,7 +140,7 @@ const EditcourseForm = (props) => {
       setBtnSubmitLoader(true);
 
       if (file !== null && videoUrl) {
-        console.log("if img change", file, selectedVideo, videoUrl);
+        console.log("if img change", file, videoUrl);
         const formData = new FormData();
         formData.append("id", id);
         formData.append("user_id", userId);
@@ -163,6 +164,7 @@ const EditcourseForm = (props) => {
         formData.append("isHide", isHide);
         formData.append("file", file);
 
+        console.log("check", youTubeLink);
         const url =
           "https://v1.eonlearning.tech/lms-service/update_courses_new";
         axios
@@ -279,37 +281,45 @@ const EditcourseForm = (props) => {
           });
       } else {
         console.log("inside else");
-        const id = courseID;
-        const newData = {
-          coursename: coursename,
-          description: description,
-          coursecode: coursecode,
-          price: price,
-          capacity: capacity,
-          startdate: startdate,
-          enddate: enddate,
-          certificate: selectedOptionCertificate.value,
-          level: selectedOptionLevel.value,
-          category: selectCategoriesData.value,
-          isActive: isActive,
-          isHide: isHide,
-          courselink: courselink === null ? youTubeLink : courselink,
-        };
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("user_id", userId);
+        formData.append("coursename", coursename);
+        formData.append("description", description);
+        formData.append("coursecode", coursecode);
+        formData.append("price", price);
+        formData.append("courselink", courselink);
+        formData.append("coursevideo", videoUrl ? "" : videoUrl);
+        formData.append("capacity", capacity);
+        formData.append("startdate", startdate);
+        formData.append("enddate", enddate);
+        formData.append("timelimit", timelimit);
+        formData.append("certificate", selectedOptionCertificate.value);
+        formData.append("level", selectedOptionLevel.value);
+        formData.append("category", selectCategoriesData.value);
+        formData.append("isActive", isActive);
+        formData.append("isHide", isHide);
+        formData.append("file", file);
 
-        const url = `https://v1.eonlearning.tech/lms-service/update_course/${id}`;
+        console.log("check", youTubeLink);
+        const url =
+          "https://v1.eonlearning.tech/lms-service/update_courses_new";
         axios
-          .put(url, newData, {
+          .post(url, formData, {
             headers: {
+              "Content-Type": "multipart/form-data",
               "Auth-Token": token,
             },
           })
           .then((response) => {
-            toast.success("Course updated successfully!!!");
+            console.log(response.data);
             setBtnSubmitLoader(false);
+            toast.success("Course updated successfully!!!");
             history.push(`/video/edit/${courseID}`);
           })
           .catch((error) => {
-            console.error("Error making PUT request:", error);
+            console.error(error);
+            setBtnSubmitLoader(false);
             toast.error("Failed !!! Unable to update course...");
           });
       }
@@ -352,7 +362,10 @@ const EditcourseForm = (props) => {
       // Create the formatted date string in "yyyy-MM-dd" format
       const formattedEnd = `${year2}-${month2}-${day2}`;
 
-      const link = res.courselink === null ? "No youTube link" : res.courselink;
+      const link =
+        res.courselink === null || undefined
+          ? "No youTube link"
+          : res.courselink;
       if (response.data.status === "success") {
         setCoursename(res.coursename);
         setDescription(res.description);
@@ -365,7 +378,7 @@ const EditcourseForm = (props) => {
         setEnddate(formattedEnd);
         setTimelimit(res.timelimit);
         setImageUrl(res.file);
-        setCourselink(res.courselink);
+        setCourselink(link);
         setVideoUrl(
           res.coursevideo === "https://v1.eonlearning.tech/"
             ? null
