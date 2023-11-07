@@ -37405,6 +37405,13 @@ button:focus {
   width: 100%;
   height: auto;
 }
+
+.error-message {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #f75a5b;
+}
+
 /* ******************** */
 .light.tp-btn {
   background-color: transparent;
