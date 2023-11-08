@@ -274,7 +274,7 @@ const AddCourses = () => {
           toast.error("Failed !!! Unable to add course...");
         });
     } else {
-      setErrorData("Please fill in all required fields.");
+      // setErrorData("Please fill in all required fields.");
     }
   };
 
@@ -838,9 +838,6 @@ const AddCourses = () => {
                     <Link to="/courses-info">
                       <Button className="btn me-2 btn-light">Cancel</Button>
                     </Link>
-                    {errorData && (
-                      <div className="error-message">{errorData}</div>
-                    )}
                   </div>
                 </form>
               </div>
