@@ -326,6 +326,50 @@ const EditcourseForm = (props) => {
     }
   };
 
+  const handleEditFormSubmitTry = async (event) => {
+    event.preventDefault();
+    setBtnSubmitLoader(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("id", id);
+      formData.append("user_id", userId);
+      formData.append("coursename", coursename);
+      formData.append("description", description);
+      formData.append("coursecode", coursecode);
+      formData.append("price", price);
+      formData.append("courselink", courselink || youTubeLink || "");
+      formData.append("coursevideo", videoUrl || selectedVideo || "");
+      formData.append("capacity", capacity);
+      formData.append("startdate", startdate);
+      formData.append("enddate", enddate);
+      formData.append("timelimit", timelimit);
+      formData.append("certificate", selectedOptionCertificate.value);
+      formData.append("level", selectedOptionLevel.value);
+      formData.append("category", selectCategoriesData.value);
+      formData.append("isActive", isActive);
+      formData.append("isHide", isHide);
+      formData.append("file", file);
+
+      const url = "https://v1.eonlearning.tech/lms-service/update_courses_new";
+      const headers = {
+        "Content-Type": "multipart/form-data",
+        "Auth-Token": token,
+      };
+
+      const response = await axios.post(url, formData, { headers });
+
+      console.log(response.data);
+      setBtnSubmitLoader(false);
+      toast.success("Course updated successfully!!!");
+      history.push(`/video/edit/${courseID}`);
+    } catch (error) {
+      console.error(error);
+      setBtnSubmitLoader(false);
+      toast.error("Failed !!! Unable to update course...");
+    }
+  };
+
   // Course details by ID
   const getCourseById = async (id, authToken) => {
     try {
@@ -587,7 +631,7 @@ const EditcourseForm = (props) => {
                   </div>
                 ) : (
                   <>
-                    <form onSubmit={handleEditFormSubmit}>
+                    <form onSubmit={handleEditFormSubmitTry}>
                       <div className="row">
                         <div className="col-xl-7">
                           <div className="form-group mb-3 row">
