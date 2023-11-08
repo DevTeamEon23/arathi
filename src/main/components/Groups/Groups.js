@@ -549,7 +549,7 @@ const Groups = () => {
                               <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
-                                  onClick={(e) => handleEdit(item.id)}>
+                                  onClick={(e) => handleEdit(item.group_id)}>
                                   <i className="fas fa-pencil-alt"></i>
                                 </div>
 

@@ -9,7 +9,6 @@ import { RotatingLines } from "react-loader-spinner";
 
 const EditGroups = (props) => {
   const grpId = props.match.params.id;
-  console.log({ grpId });
   const [groupId, setGrpId] = useState("");
   const [token, setToken] = useState(); //auth token
   const [grpData, setGrpData] = useState(); //Group data by id
