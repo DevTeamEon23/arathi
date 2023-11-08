@@ -522,9 +522,24 @@ const Groups = () => {
                             <tr key={index}>
                               <td>
                                 {item.groupname}{" "}
-                                {item.data_user_group_enrollment_id === null ? (
+                                {roleType === "Instructor" &&
+                                item.data_user_group_enrollment_id === null ? (
                                   <span className="enrolled-label">
                                     Created
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {roleType === "Admin" &&
+                                item.user_group_enrollment_id === null &&
+                                item.created_by_role === "Instructor" ? (
+                                  <span className="enrolled-label">
+                                    Instructor Created
+                                  </span>
+                                ) : item.user_group_enrollment_id === null &&
+                                  item.created_by_role === "Admin" ? (
+                                  <span className="enrolled-label">
+                                    Admin Created
                                   </span>
                                 ) : (
                                   ""

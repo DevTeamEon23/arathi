@@ -483,7 +483,17 @@ const Info = () => {
                             <tr key={data.id}>
                               <td>
                                 {data.coursename}
-                                {data.user_course_enrollment_id === null &&
+                                {roleType === "Instructor" &&
+                                data.user_course_enrollment_id === null ? (
+                                  <span className="enrolled-label">
+                                    Created
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+
+                                {roleType === "Admin" &&
+                                data.user_course_enrollment_id === null &&
                                 data.user_role === "Instructor" ? (
                                   <span className="enrolled-label">
                                     Instructor Created
