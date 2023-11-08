@@ -8,7 +8,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { MdPreview } from "react-icons/md";
 import { FaDownload } from "react-icons/fa";
 import { CircularProgress } from "@material-ui/core";
-import * as XLSX from "xlsx";
+import FileViewer from "react-file-viewer";
 
 const LearnerFiles = () => {
   const [token, setToken] = useState(); //auth token
@@ -100,7 +100,7 @@ const LearnerFiles = () => {
     setFileUrl(file);
   };
 
-  const FileViewer = ({ fileType, fileUrl }) => {
+  const FileViewerMain = ({ fileType, fileUrl }) => {
     const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
     const supportedTextTypes = ["txt", "xml", "js", "pdf", "csv"];
     const supportedDocumentTypes = [
@@ -221,11 +221,7 @@ const LearnerFiles = () => {
                             <center>NAME</center>
                           </strong>
                         </th>
-                        <th>
-                          <strong>
-                            <center>VISIBILITY</center>
-                          </strong>
-                        </th>
+
                         <th>
                           <strong>
                             <center>TYPE</center>
@@ -269,11 +265,7 @@ const LearnerFiles = () => {
                             <td>
                               <center>{data.filename}</center>
                             </td>
-                            <td>
-                              <center>
-                                {data.active === 1 ? "True" : "False"}
-                              </center>
-                            </td>
+
                             <td>
                               <center>{data.file_type}</center>
                             </td>
@@ -366,7 +358,15 @@ const LearnerFiles = () => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <FileViewer fileType={fileType} fileUrl={fileUrl} />
+          {fileType === "csv" ? (
+            <FileViewer
+              className="file-viewer-style"
+              fileType={fileType}
+              filePath={fileUrl}
+            />
+          ) : (
+            <FileViewerMain fileType={fileType} fileUrl={fileUrl} />
+          )}
         </Modal.Body>
       </Modal>
     </Fragment>

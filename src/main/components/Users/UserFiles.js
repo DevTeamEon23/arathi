@@ -12,6 +12,7 @@ import { Button, Table, Tab, Tabs, Modal } from "react-bootstrap";
 import axios from "axios";
 import Select from "react-select";
 import { CircularProgress } from "@material-ui/core";
+import FileViewer from "react-file-viewer";
 
 const options = [
   { value: true, label: "True" },
@@ -387,7 +388,7 @@ const UserFiles = (props) => {
     return null;
   };
 
-  const FileViewer = ({ fileType, fileUrl }) => {
+  const FileViewerMain = ({ fileType, fileUrl }) => {
     const supportedImageTypes = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
     const supportedTextTypes = ["txt", "xml", "js", "pdf", "csv"];
     const supportedDocumentTypes = [
@@ -681,7 +682,15 @@ const UserFiles = (props) => {
           <p className="fs-16">
             File Name :<b>{fileName} </b>
           </p>
-          <FileViewer fileType={fileType} fileUrl={fileUrl} />
+          {fileType === "csv" ? (
+            <FileViewer
+              className="file-viewer-style"
+              fileType={fileType}
+              filePath={fileUrl}
+            />
+          ) : (
+            <FileViewerMain fileType={fileType} fileUrl={fileUrl} />
+          )}
         </Modal.Body>
       </Modal>
       {/* Delete Modal */}

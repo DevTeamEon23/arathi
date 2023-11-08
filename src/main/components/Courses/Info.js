@@ -31,18 +31,21 @@ const Info = () => {
   const user = useSelector(selectUser);
   const roleType = user && user.role && user.role[0];
   let history = useHistory();
+  const accessToken = window.localStorage.getItem("jwt_access_token");
+  const ID = window.localStorage.getItem("id");
 
   useEffect(() => {
-    let accessToken = window.localStorage.getItem("jwt_access_token");
-    let ID = window.localStorage.getItem("id");
     setToken(accessToken);
     if (roleType === "Superadmin") {
       getAllCourses();
+    } else if (roleType === "Admin") {
+      fetchCourseDataAdmin(accessToken, ID);
     } else {
       fetchCourseData(accessToken, ID);
     }
   }, []);
 
+  //superadmin course fetch
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const url = "https://v1.eonlearning.tech/lms-service/courses";
@@ -64,6 +67,33 @@ const Info = () => {
     }
   };
 
+  //admin course fetch
+  const fetchCourseDataAdmin = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const list = response.data.data;
+      setCourses(
+        list === null ? response.data.data : response.data.data.course_ids
+      );
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to fetch Courses !");
+    }
+  };
+
+  //inst course fetch
   const fetchCourseData = async (accessToken, ID) => {
     try {
       const queryParams = {
@@ -123,6 +153,42 @@ const Info = () => {
       .then((response) => {
         setShowModal(false);
         getAllCourses();
+        toast.success("Course deleted successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setShowModal(false);
+        toast.error("Failed to delete Course!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      });
+  };
+
+  //delete for admin inst created
+  const handleDeleteCourseMain2 = (Id) => {
+    console.log(Id);
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+    };
+    const requestBody = {
+      id: Id,
+    };
+    axios
+      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
+        ...config,
+        data: requestBody,
+      })
+      .then((response) => {
+        setShowModal(false);
+        if (roleType === "Admin") {
+          fetchCourseDataAdmin(accessToken, ID);
+        } else {
+          fetchCourseData(accessToken, ID);
+        }
         toast.success("Course deleted successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -448,16 +514,28 @@ const Info = () => {
                                     onClick={(e) => handleEdit(data.id)}>
                                     <i className="fas fa-pencil-alt"></i>
                                   </div>
-                                  <div
-                                    className="btn btn-danger shadow btn-xs sharp"
-                                    title="Delete"
-                                    onClick={() =>
-                                      deleteOperation(
-                                        data.data_user_course_enrollment_id
-                                      )
-                                    }>
-                                    <i className="fa fa-trash"></i>
-                                  </div>
+                                  {data.data_user_course_enrollment_id ===
+                                  null ? (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Delete"
+                                      onClick={() =>
+                                        handleDeleteCourseMain2(data.course_id)
+                                      }>
+                                      <i className="fa fa-trash"></i>
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="btn btn-danger shadow btn-xs sharp"
+                                      title="Delete"
+                                      onClick={() =>
+                                        deleteOperation(
+                                          data.data_user_course_enrollment_id
+                                        )
+                                      }>
+                                      <i className="fa fa-trash"></i>
+                                    </div>
+                                  )}
                                 </center>
                               </td>
                             </tr>

@@ -54,7 +54,13 @@ const Groups = () => {
       getAllCourses();
     } else {
       fetchGroupsData(accessToken, ID);
-      fetchCourseData(accessToken, ID);
+      if (roleType === "Admin") {
+        console.log("1");
+        fetchCourseDataAdmin(accessToken, ID);
+      } else {
+        console.log("2");
+        fetchCourseData(accessToken, ID);
+      }
     }
   }, []);
 
@@ -98,7 +104,7 @@ const Groups = () => {
     }
   };
 
-  //All Courses List admin instructor
+  //All Courses List instructor
   const fetchCourseData = async (accessToken, ID) => {
     try {
       const queryParams = {
@@ -126,6 +132,32 @@ const Groups = () => {
     }
   };
 
+  //admin course fetch
+  const fetchCourseDataAdmin = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const list = response.data.data;
+      setCourses(
+        list === null ? response.data.data : response.data.data.course_ids
+      );
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to fetch Courses !");
+    }
+  };
+
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     history.push(`/${tab}`);
@@ -143,7 +175,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_created_groups_of_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -201,6 +233,7 @@ const Groups = () => {
       });
   };
 
+  //delete for admin inst created
   const handleDeleteMain2 = async (grpId) => {
     const config = {
       headers: {

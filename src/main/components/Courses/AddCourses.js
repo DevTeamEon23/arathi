@@ -24,13 +24,20 @@ const AddCourses = () => {
   const [file, setFile] = useState(null); //image
   const fileRef = useRef(null); //for image
   const [errorImg, setErrorImg] = useState(null);
+  const [errorData, setErrorData] = useState("");
   const [errorVideo, setErrorVideo] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
     useState(""); //Certificate
+  const [selectedOptionCertificateError, setSelectedOptionCertificateError] =
+    useState("");
   const [selectedOptionLevel, setSelectedOptionLevel] = useState(""); // Level
+  const [selectedOptionLevelError, setSelectedOptionLevelError] = useState("");
   const [coursename, setCoursename] = useState("");
+  const [coursenameError, setCoursenameError] = useState("");
   const [coursecode, setCoursecode] = useState("");
+  const [coursecodeError, setCoursecodeError] = useState("");
   const [description, setDescription] = useState(""); //Description
+  const [descriptionError, setDescriptionError] = useState("");
   const [isActive, setIsActive] = useState(true); //Active
   const [isHide, setIsHide] = useState(false); //Hide
   const [price, setPrice] = useState(0);
@@ -40,17 +47,21 @@ const AddCourses = () => {
   const [capacity, setCapacity] = useState(""); //Capacity
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
+  const [dateError, setDateError] = useState("");
   const [timelimit, setTimelimit] = useState(null); //in future should be remove
   const [token, setToken] = useState(); //auth token
   const [getAllCategoriesData, setGetAllCategoriesData] = useState({}); //save all categories data
   const [selectCategoriesData, setSelectCategoriesData] = useState(null); //categories
-  let history = useHistory();
+  const [categoriesError, setCategoriesError] = useState("");
+
   const [selectedVideo, setSelectedVideo] = useState(null); //to save video link
   const [activeTab, setActiveTab] = useState("/add-courses");
   const [btnSubmitLoader, setBtnSubmitLoader] = useState(false); //Loader
   const [submitError, setSubmitError] = useState(""); //show YT or video upload
   const [errorMessageCapacity, setErrorMessageCapacity] = useState("");
   const [courseID, setCourseID] = useState("");
+  const ID = window.localStorage.getItem("id");
+  const history = useHistory();
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
@@ -130,8 +141,58 @@ const AddCourses = () => {
   // Add course API
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!coursename) {
+      setCoursenameError("Course Name is required.");
+    } else {
+      setCoursenameError("");
+    }
+    if (selectCategoriesData === null) {
+      setCategoriesError("Please select a Course Category.");
+    } else {
+      setCategoriesError("");
+    }
+    if (!description) {
+      setDescriptionError("Description is required.");
+    } else {
+      setDescriptionError("");
+    }
+    if (!coursecode) {
+      setCoursecodeError("Course Code is required.");
+    } else {
+      setCoursecodeError("");
+    }
+    if (!capacity) {
+      setErrorMessageCapacity("Course Capacity is required.");
+    } else {
+      setErrorMessageCapacity("");
+    }
+    if (!selectedOptionCertificate) {
+      setSelectedOptionCertificateError("Please select a Course Certificate.");
+    } else {
+      setSelectedOptionCertificateError("");
+    }
+    if (!selectedOptionLevel) {
+      setSelectedOptionLevelError("Please select a Course Level.");
+    } else {
+      setSelectedOptionLevelError("");
+    }
+    if (!selectedOptionLevel) {
+      setSelectedOptionLevelError("Please select a Course Level.");
+    } else {
+      setSelectedOptionLevelError("");
+    }
+    if (file === null) {
+      setErrorImg("Please select a Image File.");
+    } else {
+      setErrorImg("");
+    }
+    if (!startdate || !enddate) {
+      setDateError("Please select a Date.");
+    } else {
+      setDateError("");
+    }
     setBtnSubmitLoader(true);
-    const ID = window.localStorage.getItem("id");
+
     if (selectedVideo && courselink) {
       setSubmitError(
         "Please choose either a video or provide a youtube link, not both."
@@ -145,11 +206,7 @@ const AddCourses = () => {
       setBtnSubmitLoader(false);
     }
 
-    if (file === null) {
-      console.log("file log");
-      alert("Please add valid Photo or Video");
-      setBtnSubmitLoader(false);
-    } else {
+    if (file !== null && (selectedVideo || courselink)) {
       const formData = new FormData();
       formData.append("id", courseID);
       formData.append("coursename", coursename);
@@ -175,11 +232,25 @@ const AddCourses = () => {
       formData.append("generate_token", true);
 
       console.log(
-        selectedVideo,
+        "at API call",
+        courseID,
+        coursename,
+        file,
+        ID,
+        description,
+        coursecode,
+        price,
         courselink,
-        selectedOptionLevel.value,
+        selectedVideo,
+        capacity,
+        startdate,
+        enddate,
+        timelimit,
         selectedOptionCertificate.value,
-        selectCategoriesData
+        selectedOptionLevel.value,
+        selectCategoriesData.value,
+        isActive,
+        isHide
       );
       const url = "https://v1.eonlearning.tech/lms-service/addcourses";
       await axios
@@ -202,7 +273,14 @@ const AddCourses = () => {
           setBtnSubmitLoader(false);
           toast.error("Failed !!! Unable to add course...");
         });
+    } else {
+      setErrorData("Please fill in all required fields.");
     }
+  };
+
+  const handleBlurCode = () => {
+    setErrorMessageCapacity("");
+    setCoursecodeError("");
   };
 
   const clearAllState = () => {
@@ -335,8 +413,13 @@ const AddCourses = () => {
                             value={coursename}
                             placeholder="e.g. React-Redux"
                             onChange={(e) => setCoursename(e.target.value)}
-                            required
+                            onBlur={() => setCoursenameError("")}
                           />
+                          {coursenameError && (
+                            <div className="error-message">
+                              {coursenameError}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
@@ -355,8 +438,13 @@ const AddCourses = () => {
                             onChange={(selectCategoriesData) =>
                               setSelectCategoriesData(selectCategoriesData)
                             }
-                            placeholder="Select a category"
-                            required></Select>
+                            onBlur={() => setCategoriesError("")}
+                            placeholder="Select a category"></Select>
+                          {categoriesError && (
+                            <div className="error-message">
+                              {categoriesError}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -377,7 +465,12 @@ const AddCourses = () => {
                             placeholder="Add a course description upto 5000 characters"
                             onChange={(e) => setDescription(e.target.value)}
                             style={{ resize: "none" }}
-                            required></textarea>
+                            onBlur={() => setDescriptionError("")}></textarea>
+                          {descriptionError && (
+                            <div className="error-message">
+                              {descriptionError}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -437,8 +530,13 @@ const AddCourses = () => {
                             placeholder="E.g. PHYS339"
                             value={coursecode}
                             onChange={(e) => setCoursecode(e.target.value)}
-                            required
+                            onBlur={handleBlurCode}
                           />
+                          {coursecodeError && (
+                            <div className="error-message">
+                              {coursecodeError}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -447,7 +545,6 @@ const AddCourses = () => {
                           className="col-lg-4 col-form-label"
                           htmlFor="price">
                           Price
-                          <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
                           <input
@@ -478,11 +575,11 @@ const AddCourses = () => {
                             value={courselink}
                             onChange={handleInputChange}
                           />{" "}
-                          {!isValidLink && (
+                          {/* {!isValidLink && (
                             <p style={{ color: "red" }}>
                               Please enter a valid YouTube link.
                             </p>
-                          )}
+                          )} */}
                         </div>
                       </div>
                       <div className="form-group mb-1 row">
@@ -541,7 +638,9 @@ const AddCourses = () => {
                         </div>
                       </div>
                       {submitError && (
-                        <p className="error-message text-danger text-center fs-16">
+                        <p
+                          className="error-message text-danger text-center fs-16"
+                          style={{ marginLeft: "6rem" }}>
                           {submitError}
                         </p>
                       )}
@@ -562,10 +661,9 @@ const AddCourses = () => {
                             value={capacity}
                             onChange={handleCapacityChange}
                             onBlur={() => setErrorMessageCapacity("")}
-                            required
                           />
                           {errorMessageCapacity && (
-                            <p className="text-danger">
+                            <p className="error-message">
                               {errorMessageCapacity}
                             </p>
                           )}
@@ -582,12 +680,6 @@ const AddCourses = () => {
                         <div className="col-lg-3 mb-3">
                           <div className="example rangeDatePicker">
                             <p className="mb-1">Course Start Date</p>
-                            {/* <DateRangePicker
-                              startText="Start"
-                              endText="End"
-                              startPlaceholder="Start Date"
-                              endPlaceholder="End Date"
-                            />   */}
 
                             <input
                               type="date"
@@ -597,7 +689,11 @@ const AddCourses = () => {
                               value={startdate}
                               min={today}
                               onChange={(e) => setStartdate(e.target.value)}
+                              onBlur={() => setDateError("")}
                             />
+                            {dateError && (
+                              <div className="error-message">{dateError}</div>
+                            )}
                           </div>
                         </div>
                         <div className="col-lg-3 mb-3">
@@ -611,36 +707,12 @@ const AddCourses = () => {
                               value={enddate}
                               min={tomorrowFormatted}
                               onChange={(e) => setEnddate(e.target.value)}
+                              onBlur={() => setDateError("")}
                             />
                           </div>
-                        </div>
-                        {/* <div className='row mb-0'>
-                          <div className='col-lg-5'></div>
-                          <div className='col-md-4'>
-                            <strong>
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR
-                            </strong>
-                          </div>
-                        </div> */}
-                        {/* <div className='row mt-0'>
-                          <div className='col-lg-5'>&nbsp;&nbsp;</div>
-                          <div className='col-md-4 mb-5'>
-                            <div className='example rangeDatePicker'>
-                              <br />
-                              <br />
-                              Enter Total Days of Course
-                              <input
-                                type='text'
-                                className='form-control'
-                                id='timelimit'
-                                name='timelimit'
-                                placeholder='30 Days or 2 Months'
-                                onChange={(e) => setTimelimit(e.target.value)}
-                              />
-                            </div>
-                          </div>
-                        </div> */}
+                        </div>{" "}
                       </div>
+
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
@@ -659,7 +731,14 @@ const AddCourses = () => {
                             }
                             name="certificate"
                             id="certificate"
-                            required></Select>
+                            onBlur={() =>
+                              setSelectedOptionCertificateError("")
+                            }></Select>
+                          {selectedOptionCertificateError && (
+                            <div className="error-message">
+                              {selectedOptionCertificateError}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
@@ -678,7 +757,14 @@ const AddCourses = () => {
                             }
                             name="level"
                             id="level"
-                            required></Select>
+                            onBlur={() =>
+                              setSelectedOptionLevelError("")
+                            }></Select>
+                          {selectedOptionLevelError && (
+                            <div className="error-message">
+                              {selectedOptionLevelError}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -715,13 +801,10 @@ const AddCourses = () => {
                               ref={fileRef}
                               accept=".jpeg, .png, .jpg"
                               onChange={handleChange}
-                              required
                             />
                             <br />
                             {errorImg && (
-                              <div className="error-message text-danger fs-14">
-                                {errorImg}
-                              </div>
+                              <div className="error-message">{errorImg}</div>
                             )}
                           </div>
                         </div>
@@ -732,32 +815,36 @@ const AddCourses = () => {
 
                   <br />
 
-                  <div className="form-group mb-3 row">
-                    <div className="col-lg-10 ms-auto">
-                      <Button
-                        type="submit"
-                        className="btn me-2 btn-primary"
-                        value="submit">
-                        {btnSubmitLoader ? (
-                          <div className="w-25">
-                            <CircularProgress
-                              style={{
-                                width: "20px",
-                                height: "20px",
-                                color: "#fff",
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          "Save Course and Add Content"
-                        )}
-                      </Button>{" "}
-                      or &nbsp;&nbsp;
-                      <Link to="/courses-info">
-                        <Button className="btn me-2 btn-light">Cancel</Button>
-                      </Link>
-                    </div>
-                    {/* <div className="col-lg-4 ">
+                  <div className="col-lg-10 ms-auto">
+                    <Button
+                      type="submit"
+                      className="btn me-2 btn-primary"
+                      value="submit">
+                      {btnSubmitLoader ? (
+                        <div className="w-25">
+                          <CircularProgress
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              color: "#fff",
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        "Save Course and Add Content"
+                      )}
+                    </Button>{" "}
+                    or &nbsp;&nbsp;
+                    <Link to="/courses-info">
+                      <Button className="btn me-2 btn-light">Cancel</Button>
+                    </Link>
+                    {errorData && (
+                      <div className="error-message">{errorData}</div>
+                    )}
+                  </div>
+                </form>
+              </div>
+              {/* <div className="col-lg-4 ">
                       <DropdownButton
                         as={ButtonGroup}
                         id="dropdown-button-drop-up"
@@ -1124,9 +1211,8 @@ const AddCourses = () => {
                         </Modal>
                       </DropdownButton>
                     </div> */}
-                  </div>
-                </form>
-              </div>
+
+              {/* </form> */}
             </div>
           </div>
         </div>
@@ -1136,3 +1222,34 @@ const AddCourses = () => {
 };
 
 export default AddCourses;
+
+{
+  /* <div className='row mb-0'>
+                          <div className='col-lg-5'></div>
+                          <div className='col-md-4'>
+                            <strong>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR
+                            </strong>
+                          </div>
+                        </div> */
+}
+{
+  /* <div className='row mt-0'>
+                          <div className='col-lg-5'>&nbsp;&nbsp;</div>
+                          <div className='col-md-4 mb-5'>
+                            <div className='example rangeDatePicker'>
+                              <br />
+                              <br />
+                              Enter Total Days of Course
+                              <input
+                                type='text'
+                                className='form-control'
+                                id='timelimit'
+                                name='timelimit'
+                                placeholder='30 Days or 2 Months'
+                                onChange={(e) => setTimelimit(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div> */
+}
