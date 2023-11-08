@@ -45,22 +45,15 @@ const Groups = () => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
     let ID = window.localStorage.getItem("id");
     setToken(accessToken);
-    // getAllGroups();
-    // getAllCourses();
-    // fetchGroupsData(accessToken, ID);
-    // fetchCourseData(accessToken, ID);
     if (roleType === "Superadmin") {
       getAllGroups();
       getAllCourses();
+    } else if (roleType === "Admin") {
+      fetchGroupsDataAdmin(accessToken, ID);
+      fetchCourseDataAdmin(accessToken, ID);
     } else {
       fetchGroupsData(accessToken, ID);
-      if (roleType === "Admin") {
-        console.log("1");
-        fetchCourseDataAdmin(accessToken, ID);
-      } else {
-        console.log("2");
-        fetchCourseData(accessToken, ID);
-      }
+      fetchCourseData(accessToken, ID);
     }
   }, []);
 
@@ -149,9 +142,11 @@ const Groups = () => {
         },
       });
       const list = response.data.data;
-      setCourses(
-        list === null ? response.data.data : response.data.data.course_ids
-      );
+      const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
+        value: id,
+        label: coursename,
+      }));
+      setCourses(list === null ? list : expectedOutput);
     } catch (error) {
       console.error("API Error:", error);
       toast.error("Failed to fetch Courses !");
@@ -169,13 +164,36 @@ const Groups = () => {
     setActiveTab(tab);
   }, [history.location.pathname]);
 
-  const fetchGroupsData = async (accessToken, ID) => {
+  const fetchGroupsDataAdmin = async (accessToken, ID) => {
     try {
       const queryParams = {
         user_id: ID,
       };
       const url = new URL(
         "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_created_groups_of_admin"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const list = response.data.data;
+      setGroups(list === null ? list : list.group_ids);
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error("Failed to fetch Groups !");
+    }
+  };
+
+  const fetchGroupsData = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -430,7 +448,7 @@ const Groups = () => {
                       <tbody>
                         {grpData?.map((item, index) => {
                           const truncatedGroupDesc =
-                            item.groupdesc.length > 30
+                            item.groupdesc?.length > 30
                               ? item.groupdesc.slice(0, 30) + "..."
                               : item.groupdesc;
                           return (
@@ -497,16 +515,31 @@ const Groups = () => {
                       <tbody>
                         {groups?.map((item, index) => {
                           const truncatedGroupDesc =
-                            item.groupdesc.length > 30
+                            item.groupdesc?.length > 30
                               ? item.groupdesc.slice(0, 30) + "..."
                               : item.groupdesc;
                           return (
                             <tr key={index}>
                               <td>
                                 {item.groupname}{" "}
-                                {item.data_user_group_enrollment_id === null ? (
+                                {roleType === "Instructor" &&
+                                item.data_user_group_enrollment_id === null ? (
                                   <span className="enrolled-label">
                                     Created
+                                  </span>
+                                ) : (
+                                  ""
+                                )}
+                                {roleType === "Admin" &&
+                                item.user_group_enrollment_id === null &&
+                                item.created_by_role === "Instructor" ? (
+                                  <span className="enrolled-label">
+                                    Instructor Created
+                                  </span>
+                                ) : item.user_group_enrollment_id === null &&
+                                  item.created_by_role === "Admin" ? (
+                                  <span className="enrolled-label">
+                                    Admin Created
                                   </span>
                                 ) : (
                                   ""
@@ -516,7 +549,7 @@ const Groups = () => {
                               <td className="text-center">
                                 <div
                                   className="btn btn-primary shadow btn-xs sharp me-1"
-                                  onClick={(e) => handleEdit(item.id)}>
+                                  onClick={(e) => handleEdit(item.group_id)}>
                                   <i className="fas fa-pencil-alt"></i>
                                 </div>
 

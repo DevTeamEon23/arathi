@@ -36,7 +36,7 @@ const EditcourseForm = (props) => {
   const [isActive, setIsActive] = useState(false); //Active
   const [isHide, setIsHide] = useState(false); //Hide
   const [price, setPrice] = useState("");
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef();
   const [capacity, setCapacity] = useState(""); //Capacity
   const [startdate, setStartdate] = useState(""); //Course StartDate
   const [enddate, setEnddate] = useState(""); //Course EndDate
@@ -326,6 +326,76 @@ const EditcourseForm = (props) => {
     }
   };
 
+  const handleEditFormSubmitTry = async (event) => {
+    event.preventDefault();
+    setBtnSubmitLoader(true);
+    if (selectedVideo && youTubeLink) {
+      setSubmitError(
+        "Please choose either a video or provide a youtube link, not both."
+      );
+      setBtnSubmitLoader(false);
+    } else if (selectedVideo === "" && courselink === null) {
+      setSubmitError("Please Upload video or provide a youtube link.");
+      setBtnSubmitLoader(false);
+    } else {
+      setSubmitError("");
+      setBtnSubmitLoader(false);
+
+      console.log(
+        "selectedVideo",
+        selectedVideo,
+        "youTubeLink",
+        youTubeLink,
+        "courselink",
+        courselink
+      );
+      try {
+        setBtnSubmitLoader(true);
+        const formData = new FormData();
+        formData.append("id", id);
+        formData.append("user_id", userId);
+        formData.append("coursename", coursename);
+        formData.append("description", description);
+        formData.append("coursecode", coursecode);
+        formData.append("price", price);
+        formData.append("courselink", courselink || youTubeLink);
+        formData.append(
+          "coursevideo",
+          selectedVideo === undefined ? "" : selectedVideo
+        );
+        formData.append("capacity", capacity);
+        formData.append("startdate", startdate);
+        formData.append("enddate", enddate);
+        formData.append("timelimit", timelimit);
+        formData.append("certificate", selectedOptionCertificate.value);
+        formData.append("level", selectedOptionLevel.value);
+        formData.append("category", selectCategoriesData.value);
+        formData.append("isActive", isActive);
+        formData.append("isHide", isHide);
+        formData.append("file", file);
+
+        console.log("at API call");
+        const url =
+          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+        const headers = {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        };
+
+        const response = await axios.post(url, formData, { headers });
+
+        console.log(response.data);
+        setBtnSubmitLoader(false);
+        toast.success("Course updated successfully!!!");
+        history.push(`/video/edit/${courseID}`);
+      } catch (error) {
+        console.error(error);
+        setBtnSubmitLoader(false);
+        toast.error("Failed !!! Unable to update course...");
+      }
+    }
+  };
+
   // Course details by ID
   const getCourseById = async (id, authToken) => {
     try {
@@ -341,11 +411,7 @@ const EditcourseForm = (props) => {
         }
       );
       const res = response.data.data;
-      console.log(
-        "editcourse",
-        response.data.data,
-        response.data.data.courselink
-      );
+      console.log("editcourse@@", typeof response.data.data.courselink);
       setCourseData(response.data.data);
 
       const dateObject = new Date(res.startdate);
@@ -362,10 +428,8 @@ const EditcourseForm = (props) => {
       // Create the formatted date string in "yyyy-MM-dd" format
       const formattedEnd = `${year2}-${month2}-${day2}`;
 
-      const link =
-        res.courselink === null || undefined
-          ? "No youTube link"
-          : res.courselink;
+      const link = res.courselink === null || "" ? null : res.courselink;
+      console.log(link);
       if (response.data.status === "success") {
         setCoursename(res.coursename);
         setDescription(res.description);
@@ -380,7 +444,8 @@ const EditcourseForm = (props) => {
         setImageUrl(res.file);
         setCourselink(link);
         setVideoUrl(
-          res.coursevideo === "https://v1.eonlearning.tech/"
+          res.coursevideo === "https://v1.eonlearning.tech/null" ||
+            res.coursevideo === "https://v1.eonlearning.tech/"
             ? null
             : res.coursevideo
         );
@@ -587,7 +652,7 @@ const EditcourseForm = (props) => {
                   </div>
                 ) : (
                   <>
-                    <form onSubmit={handleEditFormSubmit}>
+                    <form onSubmit={handleEditFormSubmitTry}>
                       <div className="row">
                         <div className="col-xl-7">
                           <div className="form-group mb-3 row">
@@ -739,15 +804,12 @@ const EditcourseForm = (props) => {
                               Course Intro Video{" "}
                             </label>
                             <div className="input-group mb-2 col-lg-6 ">
-                              {courselink ? (
-                                <p className="mt-2 fw-bold">
-                                  <p>{courselink}</p>
-                                </p>
-                              ) : (
+                              {console.log("courselink")}
+                              {courselink === null ? (
                                 <>
-                                  <p className="mt-2 fw-bold">
+                                  {/* <p className="mt-2 fw-bold">
                                     No link available
-                                  </p>
+                                  </p> */}
 
                                   <input
                                     type="text"
@@ -759,15 +821,24 @@ const EditcourseForm = (props) => {
                                     onBlur={() => setBtnSubmitLoader("")}
                                   />
                                 </>
-                              )}
-
-                              {!isValidLink && (
-                                <p style={{ color: "red" }}>
-                                  Please enter a valid YouTube link.
+                              ) : (
+                                <p className="mt-2 fw-bold">
+                                  <p>
+                                    {courselink === "null"
+                                      ? "No link available"
+                                      : courselink}
+                                  </p>
                                 </p>
                               )}
                             </div>
+
+                            {!isValidLink && (
+                              <p style={{ color: "red", marginLeft: "290px" }}>
+                                Please enter a valid YouTube link.
+                              </p>
+                            )}
                           </div>
+
                           <div className="form-group mb-1 row">
                             <label className="col-lg-4 col-form-label"></label>
                             <div className="input-group mb-1 col-lg-6 ">
@@ -823,7 +894,7 @@ const EditcourseForm = (props) => {
                                 <button
                                   className="btn btn-danger p-1 mb-3"
                                   onClick={handleYTLinkDelete}>
-                                  Remove Video OR Youtube Link
+                                  Remove Video/Youtube Link
                                 </button>
                               </div>
                             </div>
