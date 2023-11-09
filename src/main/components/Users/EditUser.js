@@ -23,6 +23,12 @@ const langtype = [
   { value: "Marathi", label: "Marathi" },
 ];
 
+const categorytype = [
+  { value: "Admin", label: "Admin" },
+  { value: "Instructor", label: "Instructor" },
+  { value: "Learner", label: "Learner" },
+];
+
 const EditUser = (props) => {
   const userId = props.match.params.id;
   const [userName, setUserName] = useState(""); //Full name
@@ -37,30 +43,48 @@ const EditUser = (props) => {
   const [password, setPassword] = useState();
   const [file, setFile] = useState(null); //for change image file
   const [imgCdnUrl, setImgCdnUrl] = useState(null); //image cdn file
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [userData, setUserData] = useState(); //user list data
-  const [userRole, setUserRole] = useState(); // For user base view Role
+  const [userRole, setUserRole] = useState(); // edit form user Role
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
+  const [selectedOptionRole, setSelectedOptionRole] = useState(null); // Role
   const [errorImg, setErrorImg] = useState(null);
+  const [error, setError] = useState(""); //for all error
   const [activeTab, setActiveTab] = useState("edit-user/:id");
   const user = useSelector(selectUser);
-  const roleType = user && user.role && user.role[0];
+  const roleType = user && user.role && user.role[0]; //login user role
   const history = useHistory();
 
   useEffect(() => {
-    const role = window.localStorage.getItem("role");
-    setUserRole(role);
+    // const role = window.localStorage.getItem("role");
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     if (userId !== undefined) {
       getUsersById(userId, token);
     }
   }, []);
+
+  const handleEID = () => {
+    const jwtToken = window.localStorage.getItem("jwt_access_token");
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/eids", config)
+      .then((response) => {
+        setEid(response.data.data.eid_data[0].next_eid);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   // User details by ID
   const getUsersById = async (id, authToken) => {
@@ -77,6 +101,9 @@ const EditUser = (props) => {
         }
       );
       setUserData(response.data.data);
+      if (response.data.data.eid === null) {
+        handleEID();
+      }
       if (response.data.status === "success") {
         const res = response.data.data;
         setEid(res.eid);
@@ -88,6 +115,7 @@ const EditUser = (props) => {
         setAdhr(res.adhr);
         setBio(res.bio);
         setUsername(res.username);
+        setUserRole(res.role);
         // setSelectedOptionTimeZone({ value: res.timezone, label: res.timezone });
         setSelectedOptionLang({ value: res.langtype, label: res.langtype });
         setImgCdnUrl(res.cdn_file_link);
@@ -117,43 +145,49 @@ const EditUser = (props) => {
   };
 
   //Update User info API
-  const handleSubmit1 = (e) => {
+  const handleSubmit2 = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("id", userId);
-    formData.append("eid", eid);
-    formData.append("sid", sid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", userRole === "Superadmin" ? "admin" : "Instructor");
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive === false ? 0 : 1);
-    formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
-    formData.append("file", file);
-    formData.append("cdn_file_link", imgCdnUrl);
-    const url = "https://v1.eonlearning.tech/lms-service/update_users";
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": token,
-        },
-      })
-      .then((response) => {
-        toast.success("User updated successfully!!!");
-        history.push(`/users-list`);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to update user...");
-      });
+    if (file === null) {
+      setError("Please fill in all required fields OR Add Image");
+    } else {
+      setError("");
+      const formData = new FormData();
+      formData.append("id", userId);
+      formData.append("eid", eid);
+      formData.append("sid", eid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", selectedOptionRole.value);
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
+      formData.append("cdn_file_link", imgCdnUrl);
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
+
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("User updated successfully!!!");
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
   };
 
   //Update User info API
@@ -175,7 +209,7 @@ const EditUser = (props) => {
       formData.append("bio", bio);
       formData.append(
         "role",
-        userRole === "Superadmin" ? "admin" : "Instructor"
+        roleType === "Superadmin" ? "admin" : "Instructor"
       );
       formData.append("timezone", selectedOptionTimeZone.value);
       formData.append("langtype", selectedOptionLang.value);
@@ -202,6 +236,78 @@ const EditUser = (props) => {
         });
     } else {
       console.log("inside else");
+      const id = userId;
+      const newData = {
+        eid: eid,
+        full_name: userName,
+        dept: dept,
+        adhr: adhr,
+        username: username,
+        bio: bio,
+        timezone: selectedOptionTimeZone.value,
+        langtype: selectedOptionLang.value,
+        active: isActive,
+        deactive: isDeactive === false ? 0 : 1,
+        exclude_from_email: excludeFromEmail === false ? 0 : 1,
+      };
+
+      const url = `https://v1.eonlearning.tech/lms-service/update_user/${id}`;
+      axios
+        .put(url, newData, {
+          headers: {
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("User updated successfully!!!");
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error("Error making PUT request:", error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    }
+  };
+
+  const handleSubmit1 = (e) => {
+    e.preventDefault();
+    if (file !== null) {
+      const formData = new FormData();
+      formData.append("id", userId);
+      formData.append("eid", eid);
+      formData.append("sid", sid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", userRole);
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive === false ? 0 : 1);
+      formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
+      formData.append("file", file);
+      formData.append("cdn_file_link", imgCdnUrl);
+      const url = "https://v1.eonlearning.tech/lms-service/update_users";
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          toast.success("User updated successfully!!!");
+          history.push(`/users-list`);
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to update user...");
+        });
+    } else {
       const id = userId;
       const newData = {
         eid: eid,
@@ -269,13 +375,6 @@ const EditUser = (props) => {
   }, [history.location.pathname]);
 
   const handleImageChange = (e) => {
-    // const file = e.target.files[0];
-    console.log("@@@", file);
-    // setFile(file);
-    // if (file) {
-    //   const imageUrl = URL.createObjectURL(file);
-    //   setFile(imageUrl);
-    // }
     const selectedFile = e.target.files[0];
     if (selectedFile && isValidFileType(selectedFile)) {
       setFile(selectedFile);
@@ -304,18 +403,29 @@ const EditUser = (props) => {
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
-            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
-              <Tab
-                eventKey={`user-courses-info/${userId}`}
-                title="Courses"></Tab>
-              <Tab eventKey={`user-groups/${userId}`} title="Groups"></Tab>
-              <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
-            </Tabs>
+            {userRole === "Learner" && roleType === "Superadmin" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
+              </Tabs>
+            ) : userRole === "Instructor" && roleType === "Superadmin" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
+              </Tabs>
+            ) : (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`edit-user/${userId}`} title="Info"></Tab>
+                <Tab
+                  eventKey={`user-courses-info/${userId}`}
+                  title="Courses"></Tab>
+                <Tab eventKey={`user-groups/${userId}`} title="Groups"></Tab>
+                <Tab eventKey={`user-files/${userId}`} title="Files"></Tab>
+              </Tabs>
+            )}
+
             <div className="card-header">
               <h4 className="card-title">
                 Edit User Form{" "}
-                {userRole === "Superadmin" ? "(Admin)" : "(Instructor)"}
+                {/* {roleType === "Superadmin" ? "(Admin)" : "(Instructor)"} */}
               </h4>
             </div>
             <div className="card-body">
@@ -332,7 +442,12 @@ const EditUser = (props) => {
                   </div>
                 ) : (
                   <>
-                    <form onSubmit={handleSubmit}>
+                    <form
+                      onSubmit={
+                        sid === null
+                          ? (e) => handleSubmit2(e)
+                          : (e) => handleSubmit1(e)
+                      }>
                       <div className="row">
                         <div className="col-xl-7">
                           <div className="form-group mb-3 row">
@@ -484,7 +599,39 @@ const EditUser = (props) => {
                               />
                             </div>
                           </div> */}
+                          {sid === null && (
+                            <div className="form-group mb-3 row">
+                              <label
+                                className="col-lg-4 col-form-label"
+                                htmlFor="val-website">
+                                User Role <span className="text-danger">*</span>
+                              </label>
+                              <div className="col-lg-6">
+                                <Select
+                                  value={selectedOptionRole}
+                                  onChange={(selectedOptionRole) =>
+                                    setSelectedOptionRole(selectedOptionRole)
+                                  }
+                                  options={categorytype}></Select>
 
+                                {/* <input
+                                  type="text"
+                                  className="form-control"
+                                  value={
+                                    userRole === "Superadmin"
+                                      ? "Admin"
+                                      : userRole === "Admin"
+                                      ? "Instructor"
+                                      : userRole === "Instructor"
+                                      ? "Learner"
+                                      : ""
+                                  }
+                                  style={{ cursor: "not-allowed" }}
+                                  disabled
+                                /> */}
+                              </div>
+                            </div>
+                          )}
                           <div className="form-group mb-3 row">
                             <label
                               className="col-lg-4 col-form-label"
@@ -695,6 +842,9 @@ const EditUser = (props) => {
                             <Link to="/users-list">
                               <Button className="btn btn-light">Cancel</Button>
                             </Link>
+                            {error && (
+                              <div className="error-message">{error}</div>
+                            )}
                           </div>
                         </div>
                       </div>

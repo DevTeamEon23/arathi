@@ -333,7 +333,7 @@ const Users = () => {
                               </td>
                               <td>
                                 <center>
-                                  {userRole === "Superadmin" ? (
+                                  {/* {userRole === "Superadmin" ? (
                                     <>
                                       {item.role === "Admin" && (
                                         <div
@@ -355,7 +355,14 @@ const Users = () => {
                                         </div>
                                       )}
                                     </>
-                                  )}
+                                  )} */}
+
+                                  <div
+                                    className="btn btn-primary shadow btn-xs sharp me-1"
+                                    title="Edit"
+                                    onClick={(e) => handleEdit(item.id)}>
+                                    <i className="fas fa-pencil-alt"></i>
+                                  </div>
 
                                   <div
                                     className="btn btn-danger shadow btn-xs sharp"
