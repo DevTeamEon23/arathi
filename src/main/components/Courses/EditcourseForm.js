@@ -334,21 +334,10 @@ const EditcourseForm = (props) => {
         "Please choose either a video or provide a youtube link, not both."
       );
       setBtnSubmitLoader(false);
-    } else if (selectedVideo === "" && courselink === null) {
-      setSubmitError("Please Upload video or provide a youtube link.");
-      setBtnSubmitLoader(false);
     } else {
       setSubmitError("");
       setBtnSubmitLoader(false);
 
-      console.log(
-        "selectedVideo",
-        selectedVideo,
-        "youTubeLink",
-        youTubeLink,
-        "courselink",
-        courselink
-      );
       try {
         setBtnSubmitLoader(true);
         const formData = new FormData();

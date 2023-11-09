@@ -40,18 +40,17 @@ const EditUser = (props) => {
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [userData, setUserData] = useState(); //user list data
-  const [userRole, setUserRole] = useState(); // For user base view Role
+  const [userRole, setUserRole] = useState(); // edit form user role
   const [errorImg, setErrorImg] = useState(null);
   const [token, setToken] = useState(); //auth token
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState({}); // timezone
   const [selectedOptionLang, setSelectedOptionLang] = useState({}); // Language
   const [activeTab, setActiveTab] = useState("insedit-user/:id");
+  const role = window.localStorage.getItem("role");
   const history = useHistory();
 
   useEffect(() => {
-    const role = window.localStorage.getItem("role");
-    setUserRole(role);
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
     if (userId !== undefined) {
@@ -91,6 +90,7 @@ const EditUser = (props) => {
         setIsActive(res.active);
         setIsDeactive(res.deactive);
         setExcludeFromEmail(res.exclude_from_email);
+        setUserRole(res.role);
         const selectedOption = timezonetype.find(
           (option) =>
             option.value.toLowerCase() === res.timezone.trim().toLowerCase()
@@ -254,12 +254,20 @@ const EditUser = (props) => {
       <div className="row">
         <div className="col-lg-12">
           <div className="card">
-            <Tabs activeKey={activeTab} onSelect={handleTabChange}>
-              <Tab eventKey={`insedit-user/${userId}`} title="Info"></Tab>
-              <Tab eventKey={`insuser-course/${userId}`} title="Courses"></Tab>
-              <Tab eventKey={`insuser-groups/${userId}`} title="Groups"></Tab>
-              <Tab eventKey={`insuser-files/${userId}`} title="Files"></Tab>
-            </Tabs>
+            {userRole === "Learner" && role === "Instructor" ? (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`insedit-user/${userId}`} title="Info"></Tab>
+                <Tab
+                  eventKey={`insuser-course/${userId}`}
+                  title="Courses"></Tab>
+                <Tab eventKey={`insuser-groups/${userId}`} title="Groups"></Tab>
+                <Tab eventKey={`insuser-files/${userId}`} title="Files"></Tab>
+              </Tabs>
+            ) : (
+              <Tabs activeKey={activeTab} onSelect={handleTabChange}>
+                <Tab eventKey={`insedit-user/${userId}`} title="Info"></Tab>
+              </Tabs>
+            )}
             <div className="card-header">
               <h4 className="card-title">Edit User Form (Learner)</h4>
             </div>
