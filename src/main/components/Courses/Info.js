@@ -571,6 +571,8 @@ const Info = () => {
       <div>
         <Button onClick={() => history.goBack()}>Back</Button>
       </div>
+      <br />
+      <br />
       {/* Delete Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
