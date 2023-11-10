@@ -24,7 +24,6 @@ const AddCourses = () => {
   const [file, setFile] = useState(null); //image
   const fileRef = useRef(null); //for image
   const [errorImg, setErrorImg] = useState(null);
-  const [errorData, setErrorData] = useState("");
   const [errorVideo, setErrorVideo] = useState(null);
   const [selectedOptionCertificate, setSelectedOptionCertificate] =
     useState(""); //Certificate
@@ -176,11 +175,7 @@ const AddCourses = () => {
     } else {
       setSelectedOptionLevelError("");
     }
-    if (!selectedOptionLevel) {
-      setSelectedOptionLevelError("Please select a Course Level.");
-    } else {
-      setSelectedOptionLevelError("");
-    }
+
     if (file === null) {
       setErrorImg("Please select a Image File.");
     } else {
@@ -206,7 +201,23 @@ const AddCourses = () => {
       setBtnSubmitLoader(false);
     }
 
-    if (file !== null && (selectedVideo || courselink)) {
+    if (
+      !coursename ||
+      selectCategoriesData === null ||
+      !description ||
+      !coursecode ||
+      !capacity ||
+      !selectedOptionCertificate ||
+      !selectedOptionLevel ||
+      file === null ||
+      !startdate ||
+      !enddate ||
+      (selectedVideo && courselink) ||
+      (!selectedVideo && !courselink)
+    ) {
+      console.log("Validation failed. Please check all fields.");
+      // setErrorData("Please fill in all required fields.");
+    } else {
       const formData = new FormData();
       formData.append("id", courseID);
       formData.append("coursename", coursename);
@@ -231,27 +242,6 @@ const AddCourses = () => {
       formData.append("isHide", isHide);
       formData.append("generate_token", true);
 
-      console.log(
-        "at API call",
-        courseID,
-        coursename,
-        file,
-        ID,
-        description,
-        coursecode,
-        price,
-        courselink,
-        selectedVideo,
-        capacity,
-        startdate,
-        enddate,
-        timelimit,
-        selectedOptionCertificate.value,
-        selectedOptionLevel.value,
-        selectCategoriesData.value,
-        isActive,
-        isHide
-      );
       const url = "https://v1.eonlearning.tech/lms-service/addcourses";
       await axios
         .post(url, formData, {
@@ -261,7 +251,6 @@ const AddCourses = () => {
           },
         })
         .then((response) => {
-          console.log(response.data.course_id);
           const course_id = response.data.course_id;
           toast.success("Course added successfully!!!");
           clearAllState();
@@ -273,8 +262,6 @@ const AddCourses = () => {
           setBtnSubmitLoader(false);
           toast.error("Failed !!! Unable to add course...");
         });
-    } else {
-      // setErrorData("Please fill in all required fields.");
     }
   };
 

@@ -9,11 +9,13 @@ const VideoEdit = (props) => {
   const [id, setId] = useState();
   const [vdName, setVdName] = useState();
   const [token, setToken] = useState(); //auth token
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [VideoUrl, setVideoUrl] = useState();
   const [content, setContentData] = useState();
+  const [dataStatus, setdataStatus] = useState("");
+  const [btnLoader, setBtnLoader] = useState(false); //Loader
   const history = useHistory();
 
   useEffect(() => {
@@ -67,8 +69,14 @@ const VideoEdit = (props) => {
         response.data.data.courselink
       );
       setContentData(response.data.data);
-
+      console.log(
+        "response.data.data",
+        response.data.data,
+        response.data.data.status_code
+      );
+      setdataStatus(response.data.data.status_code);
       if (response.data.status === "success") {
+        console.log(res.id, "res.id");
         setId(res.id);
         setVdName(res.video_unitname);
         setIsActive(res.active);
@@ -81,8 +89,10 @@ const VideoEdit = (props) => {
     }
   };
 
+  //update API
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("inside handleSubmit", dataStatus);
     let token = window.localStorage.getItem("jwt_access_token");
     if (selectedVideo !== null) {
       const formData = new FormData();
@@ -137,6 +147,39 @@ const VideoEdit = (props) => {
     }
   };
 
+  //Add API
+  const handleSubmitAdd = (e) => {
+    e.preventDefault();
+    console.log("inside handleSubmitAdd", dataStatus);
+    setBtnLoader(true);
+    let token = window.localStorage.getItem("jwt_access_token");
+    const formData = new FormData();
+    formData.append("course_id", courseId);
+    formData.append("video_unitname", vdName);
+    formData.append("video_file", selectedVideo);
+    formData.append("active", isActive);
+    formData.append("deactive", isDeactive);
+    formData.append("generate_token", true);
+    const url = "https://v1.eonlearning.tech/lms-service/addcourse_content";
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Auth-Token": token,
+        },
+      })
+      .then((response) => {
+        setBtnLoader(false);
+        toast.success("Content updated successfully!!!");
+        history.push(`/courses-info`);
+      })
+      .catch((error) => {
+        console.error(error);
+        setBtnLoader(false);
+        toast.error("Failed !!! Unable to update course...");
+      });
+  };
+
   return (
     <>
       {" "}
@@ -148,7 +191,12 @@ const VideoEdit = (props) => {
             </div>
             <div className="card-body">
               <div className="form-validation">
-                <form onSubmit={handleSubmit}>
+                <form
+                  onSubmit={
+                    dataStatus === 400
+                      ? (e) => handleSubmitAdd(e)
+                      : (e) => handleSubmit(e)
+                  }>
                   <div className="row">
                     <div className="col-xl-10">
                       <div className="form-group mb-3 row">
