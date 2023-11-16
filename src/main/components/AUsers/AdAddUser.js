@@ -391,6 +391,22 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
+                          htmlFor="val-website">
+                          User Role
+                        </label>
+                        <div className="col-lg-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={roleType === "Instructor" ? "Learner" : ""}
+                            style={{ cursor: "not-allowed" }}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
                           htmlFor="val-suggestions">
                           Bio
                         </label>
