@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 const Video = (props) => {
   const courseId = props.match.params.id;
   const [vdName, setVdName] = useState("");
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [cancelError, setCancelError] = useState("");
