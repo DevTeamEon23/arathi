@@ -234,7 +234,9 @@ const GroupsUsers = (props) => {
                         <th>
                           <strong>USER</strong>
                         </th>
-
+                        <th>
+                          <strong>ROLE</strong>
+                        </th>
                         <th>
                           <center>
                             {" "}
@@ -258,30 +260,36 @@ const GroupsUsers = (props) => {
                                   </span>
                                 )}
                               </td>
+                              <td>{item.role}</td>
 
                               <td>
                                 <center>
-                                  {item.user_group_enrollment_id === null ? (
-                                    <div
-                                      className="btn btn-primary shadow btn-xs sharp me-1"
-                                      title="Add to group"
-                                      onClick={(e) =>
-                                        handleEnroll(e, item.user_id)
-                                      }>
-                                      <i className="fa-solid fa-plus"></i>
-                                    </div>
-                                  ) : (
-                                    <div
-                                      className="btn btn-danger shadow btn-xs sharp"
-                                      title="Remove from group"
-                                      onClick={(e) =>
-                                        handleUnEnroll(
-                                          e,
-                                          item.user_group_enrollment_id
-                                        )
-                                      }>
-                                      <i className="fa-solid fa-minus"></i>
-                                    </div>
+                                  {item.role === "Admin" && (
+                                    <>
+                                      {item.user_group_enrollment_id ===
+                                      null ? (
+                                        <div
+                                          className="btn btn-primary shadow btn-xs sharp me-1"
+                                          title="Add to group"
+                                          onClick={(e) =>
+                                            handleEnroll(e, item.user_id)
+                                          }>
+                                          <i className="fa-solid fa-plus"></i>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className="btn btn-danger shadow btn-xs sharp"
+                                          title="Remove from group"
+                                          onClick={(e) =>
+                                            handleUnEnroll(
+                                              e,
+                                              item.user_group_enrollment_id
+                                            )
+                                          }>
+                                          <i className="fa-solid fa-minus"></i>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </center>
                               </td>
@@ -304,7 +312,7 @@ const GroupsUsers = (props) => {
                                   </span>
                                 )}
                               </td>
-
+                              <td>{item.role}</td>
                               <td>
                                 <center>
                                   {item.user_group_enrollment_id === null ? (

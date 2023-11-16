@@ -193,6 +193,9 @@ const AdmGroupsUsers = (props) => {
                           <strong>USER</strong>
                         </th>
                         <th>
+                          <strong>ROLE</strong>
+                        </th>
+                        <th>
                           <center>
                             {" "}
                             <strong>OPTION</strong>
@@ -214,6 +217,7 @@ const AdmGroupsUsers = (props) => {
                                 </span>
                               )}
                             </td>
+                            <td>{item.role}</td>
                             <td>
                               <center>
                                 {item.user_group_enrollment_id === null ? (

@@ -22,7 +22,10 @@ import dummy from "@images/profile/dummy.jpg";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
-
+import level1 from "@images/svg/Level1.svg";
+import level2 from "@images/svg/Level2.svg";
+import level3 from "@images/svg/Level3.svg";
+import level4 from "@images/svg/Level4.svg";
 //images
 import pic2 from "@images/courses/pic2.jpg";
 import cup from "@images/svg/cup.svg";
