@@ -23,7 +23,7 @@ const Lgroups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_learners"
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
