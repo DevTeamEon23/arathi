@@ -50,6 +50,9 @@ const AddUser = () => {
   const [selectedOptionLangError, setSelectedOptionLangError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [errorImg, setErrorImg] = useState(null);
+  const [departmentData, setDepartmentData] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [errorDepartment, setErrorDepartment] = useState("");
   const authToken = window.localStorage.getItem("jwt_access_token");
   const roleType = useSelector(selectUser).role[0];
   const history = useHistory();
@@ -64,6 +67,7 @@ const AddUser = () => {
     const tab = currentPath.substring(1);
     setActiveTab(tab);
     handleEID();
+    handleDeptList();
     const dept = window.localStorage.getItem("dept");
     if (roleType !== "Superadmin") {
       setDept(dept);
@@ -71,10 +75,9 @@ const AddUser = () => {
   }, [history.location.pathname]);
 
   const handleEID = () => {
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
     const config = {
       headers: {
-        "Auth-Token": jwtToken,
+        "Auth-Token": authToken,
       },
     };
     axios
@@ -85,6 +88,39 @@ const AddUser = () => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const handleDeptList = () => {
+    const config = {
+      headers: {
+        "Auth-Token": authToken,
+      },
+    };
+    axios
+      .get("https://v1.eonlearning.tech/lms-service/dept", config)
+      .then((response) => {
+        console.log(response.data.data, response.data.data.dept_data);
+        const departmentData = response.data.data.dept_data;
+        setDepartmentData(departmentData);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const options = [
+    ...departmentData.map((department) => ({
+      value: department.dept,
+      label: department.dept,
+    })),
+    { value: "addAnother", label: "Add another..." },
+  ];
+
+  const handleDepartmentChange = (selectedOption) => {
+    setSelectedDepartment(selectedOption);
+    if (selectedOption && selectedOption.value === "addAnother") {
+      setDept(""); // Clear the input field when "Add other..." is selected
+    }
   };
 
   const handleActiveChange = (e) => {
@@ -99,17 +135,6 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const originalString = selectedOptionLang.value;
-
-    // const modifiedString = originalString.replace(/['"]/g, '');
-    // console.log(modifiedString);
-
-    // if(isActive === false || isDeactive === false){
-    //   console.log("Plz select any one of this");
-    //   setActiveError("Please select an Active or Deactive before submitting.")
-    // }else{
-    //   setActiveError("")
-    // }
     if (!userName) {
       setNameErrorMsg("Full Name is required.");
     } else {
@@ -145,7 +170,7 @@ const AddUser = () => {
     } else {
       setBioError("");
     }
-    if (!dept) {
+    if (roleType === "Superadmin" && selectedDepartment === null) {
       setDeptError("Department is required.");
     } else {
       setDeptError("");
@@ -160,6 +185,7 @@ const AddUser = () => {
     } else {
       setSelectedOptionLangError("");
     }
+
     if (
       !userName ||
       file === null ||
@@ -168,18 +194,39 @@ const AddUser = () => {
       !username ||
       !password ||
       !bio ||
-      !dept ||
       !selectedOptionTimeZone ||
       !selectedOptionLang
     ) {
       console.log("Validation failed. Please check all fields.");
+      if (selectedDepartment === null && !dept) {
+        setErrorDepartment("Department required!!!");
+      }
     } else {
+      setErrorDepartment("");
       const formData = new FormData();
       formData.append("eid", eid);
       formData.append("sid", eid);
       formData.append("full_name", userName);
       formData.append("email", email);
-      formData.append("dept", dept);
+      // formData.append(
+      //   "dept",
+      //   selectedDepartment.value === "addAnother" ||
+      //     selectedDepartment.value === null
+      //     ? dept
+      //     : selectedDepartment.value
+      // );
+      // formData.append("dept", selectedDepartment.value || dept);
+      if (roleType === "Superadmin") {
+        formData.append(
+          "dept",
+          (selectedDepartment && selectedDepartment.value === "addAnother") ||
+            selectedDepartment === null
+            ? dept
+            : selectedDepartment.value
+        );
+      } else {
+        formData.append("dept", dept);
+      }
       formData.append("adhr", adhr);
       formData.append("username", username);
       formData.append("password", password);
@@ -196,7 +243,7 @@ const AddUser = () => {
       formData.append("generate_token", true);
       formData.append("file", file);
 
-      const url = "http://127.0.0.1:8000/lms-service/addusers";
+      const url = "https://v1.eonlearning.tech/lms-service/addusers";
 
       axios
         .post(url, formData, {
@@ -207,9 +254,16 @@ const AddUser = () => {
         })
         .then((response) => {
           console.log(response.data);
-          toast.success("User added successfully!!!");
-          clearAllState();
+          // toast.success("User added successfully!!!");
+          // history.push(`/users-list`);
+          if (response.data === null) {
+            toast.error("User Already Exists!!!");
+          } else {
+            toast.success("User Added Successfully!!!");
+            history.push(`/users-list`);
+          }
         })
+
         .catch((error) => {
           console.error(error);
           toast.error("Failed !!! Unable to add user...");
@@ -384,22 +438,53 @@ const AddUser = () => {
                           Department<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="dept"
-                            value={dept}
-                            placeholder="e.g. Information Technology"
-                            onChange={(e) => setDept(e.target.value)}
-                            disabled={roleType !== "Superadmin"}
-                            style={{
-                              cursor:
-                                roleType !== "Superadmin"
-                                  ? "not-allowed"
-                                  : "auto",
-                            }}
-                            onBlur={() => setDeptError()}
-                          />
+                          {roleType === "Superadmin" ? (
+                            <>
+                              <Select
+                                value={selectedDepartment}
+                                onChange={handleDepartmentChange}
+                                options={options}
+                                onBlur={() => setDeptError()}
+                              />
+
+                              {selectedDepartment &&
+                                selectedDepartment.value === "addAnother" && (
+                                  <input
+                                    type="text"
+                                    className="form-control mt-1"
+                                    id="dept"
+                                    value={dept}
+                                    placeholder="e.g. Information Technology"
+                                    onChange={(e) => setDept(e.target.value)}
+                                    disabled={roleType !== "Superadmin"}
+                                    style={{
+                                      cursor:
+                                        roleType !== "Superadmin"
+                                          ? "not-allowed"
+                                          : "auto",
+                                    }}
+                                    onBlur={() => setDeptError()}
+                                  />
+                                )}
+                            </>
+                          ) : (
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="dept"
+                              value={dept}
+                              placeholder="e.g. Information Technology"
+                              onChange={(e) => setDept(e.target.value)}
+                              disabled={roleType !== "Superadmin"}
+                              style={{
+                                cursor:
+                                  roleType !== "Superadmin"
+                                    ? "not-allowed"
+                                    : "auto",
+                              }}
+                              onBlur={() => setDeptError()}
+                            />
+                          )}
                           {deptError && (
                             <div className="error-message">{deptError}</div>
                           )}
@@ -715,6 +800,9 @@ const AddUser = () => {
                         <Link to="/users-list">
                           <Button className="btn me-2 btn-light">Cancel</Button>
                         </Link>
+                        {errorDepartment && (
+                          <div className="error-message">{errorDepartment}</div>
+                        )}
                       </div>
                     </div>
                   </div>
