@@ -26,13 +26,17 @@ const AddUser = () => {
   const [userName, setUserName] = useState(""); //Full name
   const [email, setEmail] = useState("");
   const [dept, setDept] = useState("");
+  const [deptError, setDeptError] = useState(""); //dept error
   const [adhr, setAdhr] = useState("");
   const [bio, setBio] = useState("");
+  const [bioError, setBioError] = useState("");
   const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState();
+  const [passwordError, setPasswordError] = useState();
   const fileRef = useRef(null);
   const [file, setFile] = useState(null);
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [isDeactive, setIsDeactive] = useState(false);
   const [excludeFromEmail, setExcludeFromEmail] = useState(false); //Exclude from Email
   const [showPassword, setShowPassword] = useState(false);
@@ -40,8 +44,11 @@ const AddUser = () => {
   const [nameErrorMsg, setNameErrorMsg] = useState(""); //show error Name
   const [aadharNoErrorMsg, setAadharNoErrorMsg] = useState(""); //show error Aadhar no
   const [selectedOptionRole, setSelectedOptionRole] = useState(null); // role
-  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState("ist"); // timezone
-  const [selectedOptionLang, setSelectedOptionLang] = useState("english"); // Language
+  const [selectedOptionTimeZone, setSelectedOptionTimeZone] = useState(""); // timezone
+  const [selectedOptionTimeZoneError, setSelectedOptionTimeZoneError] =
+    useState(""); // timezone error
+  const [selectedOptionLang, setSelectedOptionLang] = useState(""); // Language
+  const [selectedOptionLangError, setSelectedOptionLangError] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [errorImg, setErrorImg] = useState(null);
   const roleType = useSelector(selectUser).role[0];
@@ -93,43 +100,112 @@ const AddUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("eid", eid);
-    formData.append("sid", eid);
-    formData.append("full_name", userName);
-    formData.append("email", email);
-    formData.append("dept", dept);
-    formData.append("adhr", adhr);
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("bio", bio);
-    formData.append("role", "Learner");
-    formData.append("timezone", selectedOptionTimeZone.value);
-    formData.append("langtype", selectedOptionLang.value);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive);
-    formData.append("exclude_from_email", excludeFromEmail);
-    formData.append("generate_token", true);
-    formData.append("file", file);
+    if (!userName) {
+      setNameErrorMsg("Full Name is required.");
+    } else {
+      setNameErrorMsg("");
+    }
+    if (file === null) {
+      setErrorImg("Please select a Image File.");
+    } else {
+      setErrorImg("");
+    }
+    if (!email) {
+      setEmailError("Email ID is required.");
+    } else {
+      setEmailError("");
+    }
+    if (!adhr) {
+      setAadharNoErrorMsg("Aadhar Card number is required.");
+    } else {
+      setAadharNoErrorMsg("");
+    }
+    if (!username) {
+      setUsernameError("Username is required.");
+    } else {
+      setUsernameError("");
+    }
+    if (!password) {
+      setPasswordError("Password is required.");
+    } else {
+      setPasswordError("");
+    }
+    if (!bio) {
+      setBioError("Bio is required.");
+    } else {
+      setBioError("");
+    }
+    if (!dept) {
+      setDeptError("Department is required.");
+    } else {
+      setDeptError("");
+    }
+    if (!selectedOptionTimeZone) {
+      setSelectedOptionTimeZoneError("Please select a Timezone.");
+    } else {
+      setSelectedOptionTimeZoneError("");
+    }
+    if (!selectedOptionLang) {
+      setSelectedOptionLangError("Please select a Language.");
+    } else {
+      setSelectedOptionLangError("");
+    }
+    if (
+      !userName ||
+      file === null ||
+      !email ||
+      !adhr ||
+      !username ||
+      !password ||
+      !bio ||
+      !dept ||
+      !selectedOptionTimeZone ||
+      !selectedOptionLang
+    ) {
+      console.log("Validation failed. Please check all fields.");
+    } else {
+      const formData = new FormData();
+      formData.append("eid", eid);
+      formData.append("sid", eid);
+      formData.append("full_name", userName);
+      formData.append("email", email);
+      formData.append("dept", dept);
+      formData.append("adhr", adhr);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("bio", bio);
+      formData.append("role", "Learner");
+      formData.append("timezone", selectedOptionTimeZone.value);
+      formData.append("langtype", selectedOptionLang.value);
+      formData.append("active", isActive);
+      formData.append("deactive", isDeactive);
+      formData.append("exclude_from_email", excludeFromEmail);
+      formData.append("generate_token", true);
+      formData.append("file", file);
 
-    const url = "https://v1.eonlearning.tech/lms-service/addusers";
-    const authToken = window.localStorage.getItem("jwt_access_token");
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "Auth-Token": authToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        toast.success("User added successfully!!!");
-        clearAllState();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error("Failed !!! Unable to add user...");
-      });
+      const url = "https://v1.eonlearning.tech/lms-service/addusers";
+      const authToken = window.localStorage.getItem("jwt_access_token");
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": authToken,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          if (response.data === null) {
+            toast.error("User Already Exists!!!");
+          } else {
+            toast.success("User Added Successfully!!!");
+            history.push(`/insusers-list`);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to add user...");
+        });
+    }
   };
 
   // To set img file
@@ -199,7 +275,7 @@ const AddUser = () => {
     setPassword("");
     setFile(null);
     fileRef.current.value = "";
-    setIsActive(false);
+    setIsActive(true);
     setIsDeactive(false);
     setExcludeFromEmail(false);
     setShowPassword(false);
@@ -229,9 +305,7 @@ const AddUser = () => {
                   <div className="row">
                     <div className="col-xl-6">
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-email">
+                        <label className="col-lg-4 col-form-label">
                           Employee ID <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -242,7 +316,6 @@ const AddUser = () => {
                             onChange={(e) => setEid(e.target.value)}
                             style={{ cursor: "not-allowed" }}
                             disabled
-                            required
                           />
                         </div>
                       </div>
@@ -256,11 +329,11 @@ const AddUser = () => {
                           <input
                             type="text"
                             className="form-control"
+                            id="val-username"
                             placeholder="Enter Full name"
                             value={userName}
                             onChange={(e) => setUserName(e.target.value)}
                             onBlur={validateName}
-                            required
                           />
                           {nameErrorMsg && (
                             <span className="text-danger fs-14 m-2">
@@ -272,7 +345,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email">
+                          htmlFor="email">
                           Email Address <span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -284,7 +357,6 @@ const AddUser = () => {
                             placeholder="e.g. jdoe@example.com"
                             onChange={(e) => setEmail(e.target.value)}
                             onBlur={handleEmail}
-                            required
                           />
                           {emailError && (
                             <span className="text-danger fs-14 m-2">
@@ -296,7 +368,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email">
+                          htmlFor="dept">
                           Department<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -304,18 +376,21 @@ const AddUser = () => {
                             type="text"
                             className="form-control"
                             id="dept"
-                            name="dept"
                             value={dept}
                             onChange={(e) => setDept(e.target.value)}
                             style={{ cursor: "not-allowed" }}
                             disabled
+                            onBlur={() => setDeptError()}
                           />
+                          {deptError && (
+                            <div className="error-message">{deptError}</div>
+                          )}
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-email">
+                          htmlFor="adhr">
                           Aadhar Card No.<span className="text-danger">*</span>
                         </label>
                         <div className="col-lg-6">
@@ -338,7 +413,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-username">
+                          htmlFor="username">
                           Username <span className="text-danger">*</span>
                         </label>
                         <div className="input-group col-lg-6">
@@ -352,12 +427,20 @@ const AddUser = () => {
                             value={username}
                             placeholder="Enter Username"
                             onChange={(e) => setUsername(e.target.value)}
-                            required
+                            onBlur={() => setUsernameError()}
                           />
+                        </div>
+                        <label className="col-lg-4 col-form-label"></label>
+                        <div className="col-lg-6">
+                          {usernameError && (
+                            <div className="error-message">{usernameError}</div>
+                          )}{" "}
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label className="col-lg-4 col-form-label">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="password">
                           Password <span className="text-danger">*</span>
                         </label>
                         <div className="input-group col-lg-6">
@@ -373,7 +456,7 @@ const AddUser = () => {
                             value={password}
                             placeholder="Enter Password"
                             onChange={(e) => setPassword(e.target.value)}
-                            required
+                            onBlur={() => setPasswordError("")}
                           />
                           <div
                             className="input-group-text "
@@ -385,13 +468,36 @@ const AddUser = () => {
                               <i className="fa fa-eye" />
                             )}
                           </div>
+                          <label className="col-lg-4 col-form-label"></label>
+                          <div className="col-lg-6">
+                            {passwordError && (
+                              <div className="error-message">
+                                {passwordError}
+                              </div>
+                            )}{" "}
+                          </div>
                         </div>
                       </div>
-
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions">
+                          htmlFor="val-website">
+                          User Role
+                        </label>
+                        <div className="col-lg-6">
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={roleType === "Instructor" ? "Learner" : ""}
+                            style={{ cursor: "not-allowed" }}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group mb-3 row">
+                        <label
+                          className="col-lg-4 col-form-label"
+                          htmlFor="bio">
                           Bio
                         </label>
                         <div className="col-lg-8">
@@ -404,14 +510,15 @@ const AddUser = () => {
                             placeholder="Short Description about user..."
                             onChange={(e) => setBio(e.target.value)}
                             style={{ resize: "none" }}></textarea>
+                          {bioError && (
+                            <div className="error-message">{bioError}</div>
+                          )}
                         </div>
                       </div>
                       <br />
 
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-website">
+                        <label className="col-lg-4 col-form-label">
                           Time Zone
                         </label>
                         <div className="col-lg-6">
@@ -421,13 +528,18 @@ const AddUser = () => {
                             onChange={(selectedOptionTimeZone) =>
                               setSelectedOptionTimeZone(selectedOptionTimeZone)
                             }
-                            name="timezonetype"></Select>
+                            onBlur={() =>
+                              setSelectedOptionTimeZoneError()
+                            }></Select>
+                          {selectedOptionTimeZoneError && (
+                            <div className="error-message">
+                              {selectedOptionTimeZoneError}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="form-group mb-3 row">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="val-currency">
+                        <label className="col-lg-4 col-form-label">
                           Language
                         </label>
                         <div className="col-lg-6">
@@ -437,7 +549,15 @@ const AddUser = () => {
                               setSelectedOptionLang(selectedOptionLang)
                             }
                             options={langtype}
-                            name="langtype"></Select>
+                            name="langtype"
+                            onBlur={() =>
+                              setSelectedOptionLangError()
+                            }></Select>
+                          {selectedOptionLangError && (
+                            <div className="error-message">
+                              {selectedOptionLangError}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -445,7 +565,7 @@ const AddUser = () => {
                       <div className="form-group mb-3 row">
                         <label
                           className="col-lg-4 col-form-label"
-                          htmlFor="val-suggestions">
+                          htmlFor="img">
                           Add Photo<span className="text-danger">*</span>
                         </label>
                         <div className="profile-info col-lg-6">
@@ -455,6 +575,7 @@ const AddUser = () => {
                                 {" "}
                                 <img
                                   src={file && URL.createObjectURL(file)}
+                                  id="img"
                                   width="250"
                                   height="250"
                                   alt="file"
@@ -472,7 +593,6 @@ const AddUser = () => {
                               ref={fileRef}
                               accept=".jpeg, .png, .jpg"
                               onChange={handleChange}
-                              required
                             />
                             <br />
                             {errorImg && (
