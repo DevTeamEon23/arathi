@@ -63,12 +63,14 @@ function UpComingEvent() {
 const Inst = () => {
   const [dataCounts, setDataCounts] = useState(0);
   const [userActivity, setuserActivity] = useState("");
+  const [deptCount, setDeptCount] = useState([]);
   const Department = window.localStorage.getItem("dept");
   const jwtToken = window.localStorage.getItem("jwt_access_token");
 
   useEffect(() => {
     getDataCounts();
     getUserActivity();
+    getDeptCount();
   }, []);
 
   //data counts
@@ -109,6 +111,28 @@ const Inst = () => {
         const data = response.data.data;
         console.log(response.data.data.user_ids);
         setuserActivity(data);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //User dept count
+  const getDeptCount = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://v1.eonlearning.tech/lms-service/department_counts_for_instructor",
+        config
+      )
+      .then((response) => {
+        const data = response.data.data;
+        console.log(response.data.data.dept_counts_data);
+        setDeptCount(data);
       })
       .catch((error) => {
         // toast.error("Failed to fetch users!");
