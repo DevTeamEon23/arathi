@@ -1,50 +1,82 @@
-import React, { Component } from "react";
+import React from "react";
 import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
 
-class BarChart5 extends Component {
-  render() {
-    const data = {
-      defaultFontFamily: "Poppins",
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-      datasets: [
-        {
-          label: "My First dataset",
-          data: [65, 59, 80, 81, 56, 55, 40],
-          borderColor: "rgba(255, 106, 89, 1)",
-          borderWidth: "0",
-          backgroundColor: "rgba(255, 106, 89, 0.5)",
-          hoverBackgroundColor: "rgba(255, 106, 89, 0.5)",
-		  barThickness: 40
-        },
-      ],
-    };
-    const options = {
-		plugins:{
-		  legend: false,
-		},
-      scales: {
-        y: 
-          {
-            ticks: {
-              beginAtZero: true,
-            },
-          },
-        
-        x: 
-          {
-            // Change here
-            barPercentage: 0.5,
-          },
-        
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+const BarChart1 = ({ dataCount }) => {
+  console.log(dataCount);
+
+  // Extract data for the chart
+  const labels = dataCount.map((entry) => entry.dept);
+  const dataValues = dataCount.map((entry) => entry.learner_count);
+
+  // Prepare data for the chart
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Learner Count",
+        data: dataValues,
+        backgroundColor: "rgba(63, 140, 255, 0.8)",
+        borderColor: "rgba(63, 140, 255, 1)",
+        borderWidth: 1,
+        barThickness: 50,
       },
-    };
+    ],
+  };
 
-    return (
-      <>
-        <Bar data={data} height={150} options={options} />
-      </>
-    );
-  }
-}
+  const options = {
+    scales: {
+      x: {
+        beginAtZero: true,
+        stepSize: 1,
+      },
+      y: {
+        beginAtZero: true,
+        stepSize: 1,
+        max: 10,
+        ticks: {
+          precision: 0, // Set precision to 0 to ensure integer values
+        },
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label || ""; // Use context.label to get the actual label
+            const learnerCount =
+              dataCount[context.dataIndex]?.learner_count || "N/A";
+            return `${label}: ${learnerCount}`;
+          },
+        },
+      },
+    },
+  };
 
-export default BarChart5;
+  return (
+    <>
+      <Bar data={chartData} options={options} />
+    </>
+  );
+};
+
+export default BarChart1;

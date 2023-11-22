@@ -20,9 +20,9 @@ const LearningActivityChart = ({ data }) => {
   });
 
   useEffect(() => {
-    if (data && Array.isArray(data.user_ids)) {
-      const userPointsData = data.user_ids.map((user) => user.points);
-      const loginDates = data.user_ids.map((user) => user.full_name);
+    if (data) {
+      const userPointsData = data.map((user) => user.points);
+      const loginDates = data.map((user) => user.full_name);
 
       setChartData((prevChartData) => ({
         ...prevChartData,
@@ -49,7 +49,7 @@ const LearningActivityChart = ({ data }) => {
         options={chartData.options}
         series={chartData.series}
         type="area"
-        height={300}
+        height={330}
       />
     </div>
   );

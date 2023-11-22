@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -8,10 +8,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
-} from 'chart.js';
-//import { Bar } from 'react-chartjs-2';
-//import faker from 'faker';
+  ArcElement,
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -23,52 +21,64 @@ ChartJS.register(
   ArcElement
 );
 
-class BarChart1 extends Component {
-  render() {
-    const data = {
-      defaultFontFamily: "Poppins",
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-      datasets: [
-        {
-          label: "My First dataset",
-          data: [65, 59, 80, 81, 56, 55, 40],
-          borderColor: "rgba(255, 106, 89, 1)",
-          borderWidth: "0",
-          backgroundColor: "rgba(255, 106, 89, 1)",
-		  barThickness: 40
-		   
-        },
-      ],
-    };
+const BarChart1 = ({ data }) => {
+  console.log(data);
 
-    const options = {
-     plugins:{
-		  legend: false,
-	
-	 },
-      scales: {
-        y:
-          {
-            ticks: {
-              beginAtZero: true,
-            },
-          },
-        
-        x: 
-          {
-            // Change here
-            barPercentage: 0.5,
-          },
-        
+  // Extract unique course names
+  const courseNames = Array.from(
+    new Set(data.map((entry) => entry.coursename))
+  );
+
+  // Count enrollments for each course
+  const enrollmentsByCourse = courseNames.map((courseName) => {
+    const enrollments = data.filter((entry) => entry.coursename === courseName);
+    return enrollments.length;
+  });
+
+  // Prepare data for the chart
+  const chartData = {
+    labels: courseNames,
+    datasets: [
+      {
+        label: "Enrollments",
+        data: enrollmentsByCourse,
+        backgroundColor: "rgba(63, 140, 255, 0.8)",
+        borderColor: "rgba(63, 140, 255, 1)",
+        borderWidth: 1,
+        barThickness: 50,
       },
-    };
+    ],
+  };
 
-    return (
-      <>
-        <Bar data={data} height={150} options={options} />
-      </>
-    );
-  }
-}
+  const options = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        stepSize: 1,
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label || ""; // Use context.label to get the actual label
+            const fullNameArray = data
+              .filter((entry) => entry.coursename === label)
+              .map((entry) => entry.full_name);
+
+            const fullName = fullNameArray.join(", ");
+            return `${label}: ${context.parsed.y} (User: ${fullName || "N/A"})`;
+          },
+        },
+      },
+    },
+  };
+
+  return (
+    <>
+      <Bar data={chartData} options={options} />
+    </>
+  );
+};
 
 export default BarChart1;
