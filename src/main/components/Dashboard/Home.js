@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { Dropdown } from "react-bootstrap";
+import axios from "axios";
 
 // sample
 // import { useGetUsersQuery } from "../../../services/testService";
@@ -32,38 +33,48 @@ const Home = () => {
   // Smaple
   // const { data, isLoading, isError, isFetching, isSuccess } =
   //   useGetUsersQuery();
-
+  const [dropSelect, setDropSelect] = useState("This Month");
   const { changeBackground } = useContext(ThemeContext);
+
+  const [dataCounts, setDataCounts] = useState([]);
+  const Department = window.localStorage.getItem("dept");
+  const role = window.localStorage.getItem("role");
+  const jwtToken = window.localStorage.getItem("jwt_access_token");
+
   useEffect(() => {
     changeBackground({ value: "light", label: "Light" });
+    if (role === "Admin") {
+      getDataCounts();
+    } else {
+      // getAllCourses();
+    }
   }, []);
-  const [dropSelect, setDropSelect] = useState("This Month");
+
+  //data counts
+  const getDataCounts = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get("http://127.0.0.1:8000/lms-service/data_counts_for_admin", config)
+      .then((response) => {
+        console.log("inside course blog", response.data.data.data_counts_data);
+        setDataCounts(response.data.data.data_counts_data);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
   return (
     <>
       <div className="row">
         <div className="col-xl-6 col-xxl-12">
           <div className="row">
-            <div className="col-xl-12 col-xxl-6">
-              <div className="card dlab-join-card h-auto">
-                <div className="card-body" style={{ height: "280px" }}>
-                  <div className="dlab-media d-flex justify-content-between">
-                    <div className="dlab-content">
-                      <h4>Join Now and Get Discount Voucher Up To 20%</h4>
-                      {/* <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. </p> */}
-                    </div>
-                    <div className="dlab-img">
-                      <img src={Educat} alt="" />
-                    </div>
-                    <div className="dlab-icon">
-                      <img src={Calpng} alt="" className="cal-img" />
-                      <img src={Book} alt="" className="book-img" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div className="col-xl-12 bt-order">
-              <CourseBlog />
+              <CourseBlog data={dataCounts} />
             </div>
             <div className="col-xl-12 col-xxl-6">
               <div className="card score-active">
@@ -114,9 +125,9 @@ const Home = () => {
                     </li>
                   </ul> */}
                 </div>
-                <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
+                {/* <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
                   <LearningActivityChart />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -202,30 +213,16 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <div className="col-xl-4 col-lg-6">
-              <div className="card">
-                <div className="card-body pt-3">
-                  <ProgressChart />
-                  <div className="redial-content">
-                    <h4>My Progress</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                    <Link to={"./course-details-2"} className="btn btn-primary">
-                      More Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-8 col-lg-6">
+          </div>
+        </div>
+      </div>
+      {/* <div className="col-xl-8 col-lg-6">
               <div className="card">
                 <div className="card-body card-calendar home-calendar">
                   <CalendarBlog />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </div> */}
     </>
   );
 };
