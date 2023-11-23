@@ -62,8 +62,6 @@ function BulbIcon() {
 }
 
 export default function CourseBlog({ data }) {
-  console.log("inside course blog", data);
-
   // Retrieve department from localStorage
   const dept = window.localStorage.getItem("dept");
 
