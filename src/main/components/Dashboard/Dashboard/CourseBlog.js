@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import Check from "@images/vector/check.png";
 import Bookmarks from "@images/vector/bookmarks.png";
 import Bulb from "@images/vector/bulb.png";
@@ -62,81 +61,88 @@ function BulbIcon() {
   );
 }
 
-export default function CourseBlog() {
-  const [courseData, setCourseData] = useState([]);
+export default function CourseBlog({ data }) {
+  console.log("inside course blog", data);
 
-  useEffect(() => {
-    // Retrieve ID and jwtToken from localStorage
-    const ID = window.localStorage.getItem("id");
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
+  // Retrieve department from localStorage
+  const dept = window.localStorage.getItem("dept");
 
-    axios
-      .get(
-        "https://v1.eonlearning.tech/lms-service/fetch_infographics_of_users",
-        {
-          params: {
-            user_id: ID, // Use the retrieved ID
-          },
-          headers: {
-            "Auth-Token": jwtToken, // Use the retrieved jwtToken
-          },
-        }
-      )
-      .then((response) => {
-        const userInfographics = response.data.data.user_infographics;
-        const totalCourseCount = userInfographics[0].total_course_count;
+  // Find department-wise data
+  const instCourseCount = data.find((item) => item.dept === dept) || null;
 
-        // Replace the static data with the fetched data
-        const updatedData = [
-          {
-            coloumClass: "col-sm-6",
-            classChange: "bg-secondary",
-            title: "All Courses",
-            number: totalCourseCount,
-            svgicon: <RightIcon />,
-          },
-          {
-            coloumClass: "col-sm-6",
-            image: Bookmarks,
-            imgClass: "bookmarks",
-            title: "Upcoming",
-            number: "0",
-            svgicon: <BookIcon />,
-          },
-          {
-            coloumClass: "col-sm-12",
-            classChange: "bg-primary",
-            image: Bulb,
-            imgClass: "bulb",
-            title: "Progress Courses",
-            number: "0",
-            svgicon: <BulbIcon />,
-          },
-        ];
+  const CourseBlogData = [
+    {
+      coloumClass: "col-sm-6",
+      classChange: "bg-secondary",
+      image: Check,
+      imgClass: "",
+      title: "Total Courses",
+      number: instCourseCount ? instCourseCount.total_courses : "Loading...",
+      svgicon: <RightIcon />,
+    },
+    {
+      coloumClass: "col-sm-6",
+      image: Bookmarks,
+      imgClass: "bookmarks",
+      title: "Upcoming Courses",
+      number: instCourseCount ? instCourseCount.upcoming_courses : "Loading...",
+      svgicon: <BookIcon />,
+    },
+    {
+      coloumClass: "col-sm-12",
+      classChange: "bg-primary",
+      image: Bulb,
+      imgClass: "bulb",
+      title: "Progress Courses",
+      number: instCourseCount
+        ? instCourseCount.total_enrolled_course_count.toString()
+        : "Loading...",
+      svgicon: <BulbIcon />,
+    },
+  ];
 
-        setCourseData(updatedData);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  return (
-    <div className="row">
-      {courseData.map((item, ind) => (
-        <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
-          <div className={`dlab-cource ${item.classChange}`}>
-            <div className="d-flex align-items-center">
-              <span className="course-icon">{item.svgicon}</span>
-              <div className="ms-2">
-                <h4 className="mb-0">{item.number}</h4>
-                <span>{item.title}</span>
+  if (!instCourseCount) {
+    return (
+      <>
+        <div className="row">
+          {CourseBlogData.map((item, ind) => (
+            <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
+              <div className={`dlab-cource ${item.classChange}`}>
+                <div className="d-flex align-items-center">
+                  <span className="course-icon">{item.svgicon}</span>
+                  <div className="ms-2">
+                    <h4 className="mb-0">{item.number}</h4>
+                    <span>{item.title}</span>
+                  </div>
+                </div>
+                <img src={item.image} alt="" className={item.imgClass} />
               </div>
             </div>
-            {/* Render your image here if needed */}
-          </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </>
+    );
+  }
+
+  // Render the actual values once the data is available
+  return (
+    <>
+      <div className="row">
+        {CourseBlogData.map((item, ind) => (
+          <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
+            <div className={`dlab-cource ${item.classChange}`}>
+              <div className="d-flex align-items-center">
+                <span className="course-icon">{item.svgicon}</span>
+                <div className="ms-2">
+                  <h4 className="mb-0">{item.number}</h4>
+                  <span>{item.title}</span>
+                </div>
+              </div>
+              <img src={item.image} alt="" className={item.imgClass} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

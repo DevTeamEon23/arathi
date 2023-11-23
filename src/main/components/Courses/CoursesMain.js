@@ -24,6 +24,8 @@ const CoursesMain = () => {
     setToken(accessToken);
     if (roleType === "Superadmin") {
       getAllCourses();
+    } else if (roleType === "Learner") {
+      fetchCourseDataLearner(accessToken, ID);
     } else {
       fetchCourseData(accessToken, ID);
     }
@@ -84,15 +86,48 @@ const CoursesMain = () => {
     }
   };
 
+  const fetchCourseDataLearner = async (accessToken, ID) => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_learners"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": accessToken,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // const list = response.data.data;
+      // setCourses(list === null ? list : list.course_ids);
+
+      const list = response.data.data;
+
+      const filteredData =
+        list === null
+          ? list
+          : list.course_ids.filter((item) => item.course_isHide === 0);
+      setCourses(filteredData);
+      console.log("filteredData", filteredData);
+      setTotalCourseData(list === null ? 0 : filteredData.length);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  };
+
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   // const currentData = data.slice(startIndex, endIndex);
   let currentData;
 
   if (roleType === "Superadmin") {
-    currentData = data === null ? null : data.slice(startIndex, endIndex);
+    currentData = data === null ? null : data?.slice(startIndex, endIndex);
   } else {
-    currentData = courses === null ? null : courses.slice(startIndex, endIndex);
+    currentData =
+      courses === null ? null : courses?.slice(startIndex, endIndex);
   }
 
   return (
@@ -190,6 +225,82 @@ const CoursesMain = () => {
             </>
           )}
         </div>
+      ) : roleType === "Learner" ? (
+        <div className="row">
+          {courses?.length <= 0 ? (
+            <div className="loader-container">
+              <RotatingLines
+                strokeColor="grey"
+                strokeWidth="5"
+                animationDuration="0.75"
+                width="130"
+                visible={true}
+              />
+            </div>
+          ) : courses === null ? (
+            <>
+              <div>
+                <p className="text-center fs-20 fw-bold">No Course Found.</p>
+              </div>
+            </>
+          ) : (
+            <>
+              {currentData?.map((item, index) => {
+                const img = `${backendBaseUrl}/${item.file}`;
+                return (
+                  <div className="col-xl-4 col-md-6" key={index}>
+                    <div className="card all-crs-wid">
+                      <div className="card-body">
+                        <div className="courses-bx">
+                          <div style={{ height: "10vw" }}>
+                            <img
+                              src={img}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                borderRadius: " 0.625rem",
+                                height: "10vw",
+                              }}
+                              alt="course img"
+                              id="file"
+                              name="file"
+                            />
+                          </div>
+                          <div className="dlab-info">
+                            <div className="dlab-title d-flex justify-content-between">
+                              <div>
+                                <h4>
+                                  <Link
+                                    to={`/course-details-1/${item.course_id}`}>
+                                    {item.coursename}
+                                  </Link>
+                                </h4>
+                                <p className="m-0">
+                                  Course Code : {item.coursecode}
+                                </p>
+                              </div>
+                              <h4 className="text-primary">
+                                <span>₹</span>
+                                {item.price}
+                              </h4>
+                            </div>
+                            <div className="d-flex justify-content-between content align-items-center">
+                              <Link
+                                to={`/course-details-1/${item.course_id}`}
+                                className="btn btn-primary btn-sm">
+                                View all
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
       ) : (
         <div className="row">
           {courses?.length <= 0 ? (
@@ -210,61 +321,59 @@ const CoursesMain = () => {
             </>
           ) : (
             <>
-              {currentData
-                ?.filter((item) => item.isHide === 0)
-                .map((item, index) => {
-                  const img = `${backendBaseUrl}/${item.file}`;
-                  return (
-                    <div className="col-xl-4 col-md-6" key={index}>
-                      <div className="card all-crs-wid">
-                        <div className="card-body">
-                          <div className="courses-bx">
-                            <div style={{ height: "10vw" }}>
-                              <img
-                                src={img}
-                                style={{
-                                  objectFit: "cover",
-                                  width: "100%",
-                                  borderRadius: " 0.625rem",
-                                  height: "10vw",
-                                }}
-                                alt="course img"
-                                id="file"
-                                name="file"
-                              />
-                            </div>
-                            <div className="dlab-info">
-                              <div className="dlab-title d-flex justify-content-between">
-                                <div>
-                                  <h4>
-                                    <Link
-                                      to={`/course-details-1/${item.course_id}`}>
-                                      {item.coursename}
-                                    </Link>
-                                  </h4>
-                                  <p className="m-0">
-                                    Course Code : {item.coursecode}
-                                  </p>
-                                </div>
-                                <h4 className="text-primary">
-                                  <span>₹</span>
-                                  {item.price}
+              {currentData?.map((item, index) => {
+                const img = `${backendBaseUrl}/${item.file}`;
+                return (
+                  <div className="col-xl-4 col-md-6" key={index}>
+                    <div className="card all-crs-wid">
+                      <div className="card-body">
+                        <div className="courses-bx">
+                          <div style={{ height: "10vw" }}>
+                            <img
+                              src={img}
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                borderRadius: " 0.625rem",
+                                height: "10vw",
+                              }}
+                              alt="course img"
+                              id="file"
+                              name="file"
+                            />
+                          </div>
+                          <div className="dlab-info">
+                            <div className="dlab-title d-flex justify-content-between">
+                              <div>
+                                <h4>
+                                  <Link
+                                    to={`/course-details-1/${item.course_id}`}>
+                                    {item.coursename}
+                                  </Link>
                                 </h4>
+                                <p className="m-0">
+                                  Course Code : {item.coursecode}
+                                </p>
                               </div>
-                              <div className="d-flex justify-content-between content align-items-center">
-                                <Link
-                                  to={`/course-details-1/${item.course_id}`}
-                                  className="btn btn-primary btn-sm">
-                                  View all
-                                </Link>
-                              </div>
+                              <h4 className="text-primary">
+                                <span>₹</span>
+                                {item.price}
+                              </h4>
+                            </div>
+                            <div className="d-flex justify-content-between content align-items-center">
+                              <Link
+                                to={`/course-details-1/${item.course_id}`}
+                                className="btn btn-primary btn-sm">
+                                View all
+                              </Link>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
             </>
           )}
         </div>
@@ -280,7 +389,7 @@ const CoursesMain = () => {
             </span>
             data
           </h4>
-          <div className="d-flex align-items-center ms-auto mt-2">
+          <div className="d-flex align-items-center ms-auto mb-3">
             <Button
               className="mr-2"
               onClick={() => setCurrentPage(currentPage - 1)}
