@@ -165,44 +165,44 @@ const Inst = () => {
   return (
     <>
       <div className="row">
-        <div className="col-xl-12 bt-order">
+        <div className="col-xl-12 ">
           <CourseBlog data={dataCounts} />
         </div>
-        <div className="row">
-          <div className="col-xl-6 col-xxl-6">
-            <div className="card">
-              <div className="card-header border-0 flex-wrap">
-                <h4>Department wise User Count</h4>{" "}
-              </div>
-              <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
-                <BarChart5 dataCount={deptCount} />
-              </div>{" "}
-            </div>{" "}
-          </div>
 
-          <div className="col-xl-6 col-xxl-6">
-            <div className="card score-active">
-              <div className="card-header border-0 flex-wrap">
-                <h4>Learning Activity</h4>{" "}
-              </div>
-              <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
-                <LearningActivityChart data={userActivity} />
-              </div>{" "}
+        <div className="col-xl-6 col-lg-12">
+          <div className="card">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Department wise User Count</h4>{" "}
             </div>
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
+              <BarChart5 dataCount={deptCount} />
+            </div>{" "}
+          </div>{" "}
+        </div>
+
+        <div className="col-xl-6 col-lg-12">
+          <div className="card score-active">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Learning Activity</h4>{" "}
+            </div>
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
+              <LearningActivityChart data={userActivity} />
+            </div>{" "}
           </div>
         </div>
 
-        <div className="col-xl-12 col-xxl-6">
+        <div className="col-xl-12 col-lg-6">
           <div className="card score-active">
             <div className="card-header border-0 flex-wrap">
               <h4>Enrolled Courses</h4>{" "}
             </div>
-            <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
               <BarChart1 data={userEnrolledCourses} />
             </div>{" "}
           </div>
         </div>
       </div>
+
       {/* <div className="col-xl-4 col-xxl-6 col-sm-6">
               <div className="card overflow-hidden">
                 <div className="card-header border-0 pb-0">
