@@ -52,7 +52,7 @@ const CourseDetail1 = (props) => {
   const getCourseById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
+        "https://beta.eonlearning.tech/lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,

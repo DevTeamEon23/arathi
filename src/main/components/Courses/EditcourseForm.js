@@ -94,7 +94,7 @@ const EditcourseForm = (props) => {
     formData.append("isHide", isHide);
     formData.append("file", file);
 
-    const url = "https://v1.eonlearning.tech/lms-service/update_courses";
+    const url = "https://beta.eonlearning.tech/lms-service/update_courses";
     console.log(file, selectedVideo);
     axios
       .post(url, formData, {
@@ -166,7 +166,7 @@ const EditcourseForm = (props) => {
 
         console.log("check", youTubeLink);
         const url =
-          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+          "https://beta.eonlearning.tech/lms-service/update_courses_new";
         axios
           .post(url, formData, {
             headers: {
@@ -211,7 +211,7 @@ const EditcourseForm = (props) => {
         formData.append("file", file);
 
         const url =
-          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+          "https://beta.eonlearning.tech/lms-service/update_courses_new";
         axios
           .post(url, formData, {
             headers: {
@@ -259,7 +259,7 @@ const EditcourseForm = (props) => {
         formData.append("file", file);
 
         const url =
-          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+          "https://beta.eonlearning.tech/lms-service/update_courses_new";
         console.log(file, selectedVideo);
         axios
           .post(url, formData, {
@@ -303,7 +303,7 @@ const EditcourseForm = (props) => {
 
         console.log("check", youTubeLink);
         const url =
-          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+          "https://beta.eonlearning.tech/lms-service/update_courses_new";
         axios
           .post(url, formData, {
             headers: {
@@ -365,7 +365,7 @@ const EditcourseForm = (props) => {
 
         console.log("at API call");
         const url =
-          "https://v1.eonlearning.tech/lms-service/update_courses_new";
+          "https://beta.eonlearning.tech/lms-service/update_courses_new";
         const headers = {
           "Content-Type": "multipart/form-data",
           "Auth-Token": token,
@@ -389,7 +389,7 @@ const EditcourseForm = (props) => {
   const getCourseById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/courses_by_onlyid",
+        "https://beta.eonlearning.tech/lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -433,8 +433,8 @@ const EditcourseForm = (props) => {
         setImageUrl(res.file);
         setCourselink(link);
         setVideoUrl(
-          res.coursevideo === "https://v1.eonlearning.tech/null" ||
-            res.coursevideo === "https://v1.eonlearning.tech/"
+          res.coursevideo === "https://beta.eonlearning.tech/null" ||
+            res.coursevideo === "https://beta.eonlearning.tech/"
             ? null
             : res.coursevideo
         );
@@ -472,7 +472,7 @@ const EditcourseForm = (props) => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/categories";
+    const url = "https://beta.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {

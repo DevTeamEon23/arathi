@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
-
+import Bar2 from "./../../components/charts/Chartjs/bar2";
 // sample
 // import { useGetUsersQuery } from "../../../services/testService";
 
@@ -64,7 +64,10 @@ const Home = () => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/lms-service/data_counts_for_admin", config)
+      .get(
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin",
+        config
+      )
       .then((response) => {
         console.log("inside course blog", response.data.data.data_counts_data);
         setDataCounts(response.data.data.data_counts_data);
@@ -83,7 +86,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_userpoints_by_userid_for_admin",
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin",
         config
       )
       .then((response) => {
@@ -104,7 +107,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/department_counts_for_admin",
+        "https://beta.eonlearning.tech/lms-service/department_counts_for_admin",
         config
       )
       .then((response) => {
@@ -125,7 +128,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_user_enrolled_course_data_for_admin",
+        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_admin",
         config
       )
       .then((response) => {
@@ -145,62 +148,76 @@ const Home = () => {
             <div className="col-xl-12 bt-order">
               <CourseBlog data={dataCounts} />
             </div>
+
             <div className="col-xl-12 col-xxl-6">
               <div className="card score-active">
                 <div className="card-header border-0 flex-wrap">
                   <h4>Learning Activity</h4>
-                  {/* <ul className="d-flex">
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--primary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--secondary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                  </ul> */}
                 </div>
-                {/* <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
-                  <LearningActivityChart />
-                </div> */}
+                <div className="card-body pb-1 py-0 ">
+                  <LearningActivityChart data={userActivity} />
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="col-xl-12 col-xxl-6">
+          <div className="card score-active">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Learning Activity</h4>
+            </div>
+
+            <div className="card-body pb-1 py-0 ">
+              <ul className="d-flex ">
+                <li>
+                  <svg
+                    className="me-2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="9"
+                      height="9"
+                      rx="4.5"
+                      fill="white"
+                      stroke="rgba(173,216,230,0.2)"
+                      strokeWidth="3"
+                    />
+                  </svg>
+                  Learner
+                </li>
+                <li>
+                  <svg
+                    className="me-2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="9"
+                      height="9"
+                      rx="4.5"
+                      fill="white"
+                      stroke="rgba(0,0,139,0.2)"
+                      strokeWidth="3"
+                    />
+                  </svg>
+                  Instructor
+                </li>
+              </ul>
+              {/* <Bar2 data={userActivity} /> */}
+            </div>
+          </div>
+        </div>
+
         <div className="col-xl-6 col-xxl-12">
           <div className="row">
             <div className="col-xl-12">

@@ -41,7 +41,7 @@ const GroupCourses = (props) => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/group_tab2/fetch_courses_of_group",
+        "https://beta.eonlearning.tech/group_tab2/fetch_courses_of_group",
         config
       )
       .then((response) => {
@@ -69,7 +69,7 @@ const GroupCourses = (props) => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/lms-service/fetch_courses_group_enrolled_for_inst_learn",
+        "https://beta.eonlearning.tech/lms-service/fetch_courses_group_enrolled_for_inst_learn",
         config
       )
       .then((response) => {
@@ -126,7 +126,7 @@ const GroupCourses = (props) => {
     formData.append("group_id", grpId);
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
-    const url = "https://v1.eonlearning.tech/group_tab2/add_courses_to_group";
+    const url = "https://beta.eonlearning.tech/group_tab2/add_courses_to_group";
     axios
       .post(url, formData, {
         headers: {
@@ -160,7 +160,7 @@ const GroupCourses = (props) => {
     };
     axios
       .delete(
-        `https://v1.eonlearning.tech/group_tab2/remove_courses_from_group`,
+        `https://beta.eonlearning.tech/group_tab2/remove_courses_from_group`,
         {
           ...config,
           data: requestBody,
@@ -186,7 +186,7 @@ const GroupCourses = (props) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  let currentData = coursesAll.slice(startIndex, endIndex);
+  let currentData;
   if (role === "Superadmin") {
     currentData =
       coursesAll === null ? null : coursesAll.slice(startIndex, endIndex);

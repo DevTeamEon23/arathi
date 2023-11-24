@@ -32,7 +32,7 @@ const EditConference = (props) => {
   const getConferencesByID = async (authToken) => {
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/conferences_by_onlyid",
+        "https://beta.eonlearning.tech/lms-service/conferences_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -87,7 +87,7 @@ const EditConference = (props) => {
     formData.append("messg", messg);
     formData.append("duration", selectedDuration);
 
-    const url = "https://v1.eonlearning.tech/lms-service/update_conferences";
+    const url = "https://beta.eonlearning.tech/lms-service/update_conferences";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {

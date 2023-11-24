@@ -40,7 +40,7 @@ const AddVirtualTraining = () => {
     formData.append("duration", selectedDuration);
     formData.append("generate_token", true);
 
-    const url = "https://v1.eonlearning.tech/lms-service/addvirtualtrainings";
+    const url = "https://beta.eonlearning.tech/lms-service/addvirtualtrainings";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {

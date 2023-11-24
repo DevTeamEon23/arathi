@@ -48,7 +48,7 @@ const Info = () => {
   //superadmin course fetch
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/courses";
+    const url = "https://beta.eonlearning.tech/lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -74,7 +74,7 @@ const Info = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -100,7 +100,7 @@ const Info = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -146,7 +146,7 @@ const Info = () => {
       id: courseId,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_course`, {
         ...config,
         data: requestBody,
       })
@@ -178,7 +178,7 @@ const Info = () => {
       id: Id,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_course`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_course`, {
         ...config,
         data: requestBody,
       })
@@ -209,7 +209,7 @@ const Info = () => {
         data_user_course_enrollment_id: courseId,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user"
+        "https://beta.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user"
       );
       url.search = new URLSearchParams(queryParams).toString();
       await axios.delete(url.toString(), {
@@ -241,7 +241,7 @@ const Info = () => {
   const handleCatClone = () => {
     const id = courseCloneId;
     const authToken = token;
-    const url = `https://v1.eonlearning.tech/lms-service/clonecourse/${id}`;
+    const url = `https://beta.eonlearning.tech/lms-service/clonecourse/${id}`;
     axios
       .post(url, null, {
         headers: {

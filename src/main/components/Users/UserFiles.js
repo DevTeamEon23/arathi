@@ -60,7 +60,7 @@ const UserFiles = (props) => {
 
   const getAllFiles = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/fetch_files";
+    const url = "https://beta.eonlearning.tech/lms-service/fetch_files";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -106,7 +106,7 @@ const UserFiles = (props) => {
       formData.append("file", selectedFile);
       const active = activeFile;
       const authToken = accessToken;
-      const uploadUrl = `https://v1.eonlearning.tech/lms-service/upload_file/?user_id=${userID}&active=${active}`;
+      const uploadUrl = `https://beta.eonlearning.tech/lms-service/upload_file/?user_id=${userID}&active=${active}`;
 
       try {
         const response = await axios.post(uploadUrl, formData, {
@@ -138,7 +138,7 @@ const UserFiles = (props) => {
     setShowEditModal(true);
     try {
       const url = new URL(
-        `https://v1.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
+        `https://beta.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -171,7 +171,7 @@ const UserFiles = (props) => {
     };
     try {
       const response = await axios.put(
-        `https://v1.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userID}`,
+        `https://beta.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userID}`,
         formData,
         {
           headers: {
@@ -201,7 +201,7 @@ const UserFiles = (props) => {
     setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
-        `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
+        `https://beta.eonlearning.tech/lms-service/file_download/${files_name}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -257,7 +257,7 @@ const UserFiles = (props) => {
       id: fileId,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/remove_file_byid`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/remove_file_byid`, {
         ...config,
         data: requestBody,
       })

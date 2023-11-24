@@ -47,7 +47,7 @@ const AdmCourseusers = (props) => {
         inst_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
+        "https://beta.eonlearning.tech/lms-service/fetch_users_course_enrolled_for_inst_learn"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -95,7 +95,7 @@ const AdmCourseusers = (props) => {
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
     const url =
-      "https://v1.eonlearning.tech/course_tab1/enroll_users_to_course";
+      "https://beta.eonlearning.tech/course_tab1/enroll_users_to_course";
     const authToken = token;
     axios
       .post(url, formData, {
@@ -126,7 +126,7 @@ const AdmCourseusers = (props) => {
     };
     axios
       .delete(
-        `https://v1.eonlearning.tech/course_tab1/remove_users_from_course`,
+        `https://beta.eonlearning.tech/course_tab1/remove_users_from_course`,
         {
           ...config,
           data: requestBody,

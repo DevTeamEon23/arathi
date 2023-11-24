@@ -73,14 +73,14 @@ const ImportUser = () => {
   const getApiEndpoint = (role) => {
     switch (role) {
       case "Superadmin":
-        return "https://v1.eonlearning.tech/lms-service/addusers_excel_superadmin";
+        return "https://beta.eonlearning.tech/lms-service/addusers_excel_superadmin";
       case "Admin":
-        return "https://v1.eonlearning.tech/lms-service/addusers_excel_admin";
+        return "https://beta.eonlearning.tech/lms-service/addusers_excel_admin";
       case "Instructor":
-        return "https://v1.eonlearning.tech/lms-service/addusers_excel_instructor";
+        return "https://beta.eonlearning.tech/lms-service/addusers_excel_instructor";
       default:
         // Handle the default case or provide a default API endpoint
-        return "https://v1.eonlearning.tech/lms-service/addusers_excel_instructor";
+        return "https://beta.eonlearning.tech/lms-service/addusers_excel_instructor";
     }
   };
 
