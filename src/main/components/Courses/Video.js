@@ -49,7 +49,7 @@ const Video = (props) => {
     formData.append("active", isActive);
     formData.append("deactive", isDeactive);
     formData.append("generate_token", true);
-    const url = "https://v1.eonlearning.tech/lms-service/addcourse_content";
+    const url = "https://beta.eonlearning.tech/lms-service/addcourse_content";
     axios
       .post(url, formData, {
         headers: {

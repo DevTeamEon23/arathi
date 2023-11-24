@@ -18,7 +18,7 @@ const Lconference = () => {
 
   const getAllConferences = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/conferences";
+    const url = "https://beta.eonlearning.tech/lms-service/conferences";
     try {
       const response = await axios.get(url, {
         headers: {

@@ -44,7 +44,7 @@ const UCoursesInfo = (props) => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/user-tab1/fetch_enroll_courses_of_user",
+        "https://beta.eonlearning.tech/user-tab1/fetch_enroll_courses_of_user",
         config
       )
       .then((response) => {
@@ -67,7 +67,7 @@ const UCoursesInfo = (props) => {
         admin_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_for_admin"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -114,7 +114,8 @@ const UCoursesInfo = (props) => {
     formData.append("user_id", userId);
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
-    const url = "https://v1.eonlearning.tech/user-tab1/enroll_courses_to_user";
+    const url =
+      "https://beta.eonlearning.tech/user-tab1/enroll_courses_to_user";
     axios
       .post(url, formData, {
         headers: {
@@ -149,7 +150,7 @@ const UCoursesInfo = (props) => {
     };
     axios
       .delete(
-        `https://v1.eonlearning.tech/user-tab1/unenroll_courses_from_user`,
+        `https://beta.eonlearning.tech/user-tab1/unenroll_courses_from_user`,
         {
           ...config,
           data: requestBody,
@@ -176,7 +177,7 @@ const UCoursesInfo = (props) => {
   const handleUnEnrollAdmin = (e, id) => {
     e.preventDefault();
     const baseUrl =
-      "https://v1.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user";
+      "https://beta.eonlearning.tech/lms-service/unenroll_courses_from_enrolled_user";
     const data_user_course_enrollment_id = id;
 
     const headers = {

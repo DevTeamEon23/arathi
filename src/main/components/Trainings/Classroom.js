@@ -20,7 +20,7 @@ const Classrooms = () => {
 
   const getAllClassrooms = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/classrooms";
+    const url = "https://beta.eonlearning.tech/lms-service/classrooms";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -50,7 +50,7 @@ const Classrooms = () => {
       id: classroomID,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_classroom`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_classroom`, {
         ...config,
         data: requestBody,
       })

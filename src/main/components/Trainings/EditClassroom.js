@@ -31,7 +31,7 @@ const EditClassroom = (props) => {
   const getClassroomsByID = async (authToken) => {
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/classrooms_by_onlyid",
+        "https://beta.eonlearning.tech/lms-service/classrooms_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -108,7 +108,7 @@ const EditClassroom = (props) => {
     formData.append("messg", messg);
     formData.append("duration", selectedDuration);
 
-    const url = "https://v1.eonlearning.tech/lms-service/update_classrooms";
+    const url = "https://beta.eonlearning.tech/lms-service/update_classrooms";
     const authToken = window.localStorage.getItem("jwt_access_token");
 
     axios

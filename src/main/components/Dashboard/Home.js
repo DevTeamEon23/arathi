@@ -64,7 +64,10 @@ const Home = () => {
       },
     };
     axios
-      .get("http://127.0.0.1:8000/lms-service/data_counts_for_admin", config)
+      .get(
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin",
+        config
+      )
       .then((response) => {
         console.log("inside course blog", response.data.data.data_counts_data);
         setDataCounts(response.data.data.data_counts_data);
@@ -83,7 +86,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_userpoints_by_userid_for_admin",
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin",
         config
       )
       .then((response) => {
@@ -104,7 +107,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/department_counts_for_admin",
+        "https://beta.eonlearning.tech/lms-service/department_counts_for_admin",
         config
       )
       .then((response) => {
@@ -125,7 +128,7 @@ const Home = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_user_enrolled_course_data_for_admin",
+        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_admin",
         config
       )
       .then((response) => {
@@ -210,7 +213,7 @@ const Home = () => {
                   Instructor
                 </li>
               </ul>
-              <Bar2 data={userActivity} />
+              {/* <Bar2 data={userActivity} /> */}
             </div>
           </div>
         </div>

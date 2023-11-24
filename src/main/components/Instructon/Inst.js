@@ -87,7 +87,7 @@ const Inst = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/data_counts_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_instructor",
         config
       )
       .then((response) => {
@@ -108,7 +108,7 @@ const Inst = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_userpoints_by_userid_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_instructor",
         config
       )
       .then((response) => {
@@ -129,7 +129,7 @@ const Inst = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/department_counts_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/department_counts_for_instructor",
         config
       )
       .then((response) => {
@@ -150,7 +150,7 @@ const Inst = () => {
     };
     axios
       .get(
-        "http://127.0.0.1:8000/lms-service/fetch_user_enrolled_course_data_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_instructor",
         config
       )
       .then((response) => {

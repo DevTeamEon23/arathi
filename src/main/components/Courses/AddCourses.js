@@ -77,7 +77,7 @@ const AddCourses = () => {
       },
     };
     axios
-      .get("https://v1.eonlearning.tech/lms-service/course_ids", config)
+      .get("https://beta.eonlearning.tech/lms-service/course_ids", config)
       .then((response) => {
         setCourseID(response.data.data.id_data[0].next_id);
       })
@@ -89,7 +89,7 @@ const AddCourses = () => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/categories";
+    const url = "https://beta.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -242,7 +242,7 @@ const AddCourses = () => {
       formData.append("isHide", isHide);
       formData.append("generate_token", true);
 
-      const url = "https://v1.eonlearning.tech/lms-service/addcourses";
+      const url = "https://beta.eonlearning.tech/lms-service/addcourses";
       await axios
         .post(url, formData, {
           headers: {
