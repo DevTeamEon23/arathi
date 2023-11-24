@@ -175,9 +175,7 @@ const Inst = () => {
               <h4>Department wise User Count</h4>{" "}
             </div>
             <div className="card-body pb-1 custome-tooltip style-1 py-0">
-              <div style={{ height: "380px" }}>
-                <BarChart5 dataCount={deptCount} />
-              </div>
+              <BarChart5 dataCount={deptCount} />
             </div>{" "}
           </div>{" "}
         </div>
