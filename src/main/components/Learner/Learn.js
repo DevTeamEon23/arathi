@@ -59,7 +59,6 @@ const Learn = () => {
   const [showAboutPane, setShowAboutPane] = useState(false); // About(Points)
   const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
   const [userData, setUserData] = useState([]); //user list data
-  const [token, setToken] = useState(); //auth token
   const [selectedItem, setSelectedItem] = useState(null);
   const [userImg, setUserImg] = useState(null);
   const [userName, setUserName] = useState(""); //Full name
@@ -70,17 +69,19 @@ const Learn = () => {
   const [userLevels, setUserLevels] = useState(0);
   const [courseCount, setcourseCount] = useState();
   const [courseData, setcourseData] = useState([]);
+  const [userRatings, setuserRatings] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const user_id = localStorage.getItem("id");
+  const token = window.localStorage.getItem("jwt_access_token");
   const history = useHistory();
 
   useEffect(() => {
-    let token = window.localStorage.getItem("jwt_access_token");
-    setToken(token);
     getUsers();
-    fetchLearnerData(token);
+    fetchLearnerData();
+    fetchLearnerRating();
   }, []);
 
-  const fetchLearnerData = async (accessToken) => {
+  const fetchLearnerData = async () => {
     try {
       const queryParams = {
         user_id: user_id,
@@ -91,7 +92,7 @@ const Learn = () => {
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
         headers: {
-          "Auth-Token": accessToken,
+          "Auth-Token": token,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -120,6 +121,28 @@ const Learn = () => {
     }
   };
 
+  const fetchLearnerRating = async () => {
+    try {
+      const queryParams = {
+        user_id: user_id,
+      };
+      const url = new URL(
+        "https://beta.eonlearning.tech/lms-service/learner_ratings"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response.data.user_ratings);
+      setuserRatings(response.data.user_ratings);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  };
+
   const handleExport = () => {
     const headings = [
       [
@@ -144,6 +167,10 @@ const Learn = () => {
     utils.sheet_add_json(ws, movies, { origin: "A2", skipHeader: true });
     utils.book_append_sheet(wb, ws, "Report");
     writeFile(wb, "Export Report.xlsx");
+  };
+
+  const handleSelect = (selectedIndex, e) => {
+    setActiveIndex(selectedIndex);
   };
 
   //User List Api
@@ -297,6 +324,70 @@ const Learn = () => {
                 <h4 className="mb-3">Bio</h4>
                 <div className="bio-content">
                   <p className="mb-0">{bio}</p>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <div
+                    id="carouselExample"
+                    className="carousel slide"
+                    data-ride="carousel">
+                    <div className="carousel-inner">
+                      {userRatings.map((item, index) => (
+                        <div
+                          key={index}
+                          className={`carousel-item ${
+                            index === activeIndex ? "active" : ""
+                          }`}>
+                          <div className="review-box card">
+                            <div className="d-flex align-items-center">
+                              <img
+                                src={item.file}
+                                alt={`Review by ${item.full_name}`}
+                              />
+                              <div className="ms-3">
+                                <h4 className="mb-0 fs-18 font-w500">
+                                  {item.full_name}
+                                </h4>
+                                <ul className="d-flex align-items-center rating my-0">
+                                  {[...Array(item.rating)].map((_, i) => (
+                                    <li key={i}>
+                                      <i className="fas fa-star star-orange me-1"></i>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                            <p>{item.feedback}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <a
+                      className="carousel-control-prev"
+                      href="#carouselExample"
+                      role="button"
+                      data-slide="prev"
+                      onClick={() => handleSelect(activeIndex - 1)}>
+                      <span
+                        className="carousel-control-prev-icon"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">Previous</span>
+                    </a>
+                    <a
+                      className="carousel-control-next"
+                      href="#carouselExample"
+                      role="button"
+                      data-slide="next"
+                      onClick={() => handleSelect(activeIndex + 1)}>
+                      <span
+                        className="carousel-control-next-icon"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">Next</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
