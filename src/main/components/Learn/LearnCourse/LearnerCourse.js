@@ -16,6 +16,7 @@ import {
   Tabs,
 } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 /// imge
 // import avatar1 from "../../../images/avatar/1.jpg";
@@ -33,8 +34,11 @@ const options_1 = [
 
 const LearnerCourse = () => {
   const [courses, setCourses] = useState([]);
+  const [courseID, setcourseID] = useState("");
   const [rating, setRating] = useState(0);
+  const [feedbackMsg, setFeedbackMsg] = useState("");
   const [feedbackModal, setFeedbackModal] = useState(false);
+  const [feedbackRatingError, setFeedbackRatingError] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
   const chackbox = document.querySelectorAll(".bs_exam_topper input");
   const motherChackBox = document.querySelector(".bs_exam_topper_all input");
@@ -43,10 +47,10 @@ const LearnerCourse = () => {
   const [activeTab, setActiveTab] = useState("learn-course");
   const [progress, setProgress] = useState(0);
   const history = useHistory();
+  const ID = window.localStorage.getItem("id");
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
-    let ID = window.localStorage.getItem("id");
     setToken(accessToken);
     fetchCourseData(accessToken, ID);
   }, []);
@@ -85,8 +89,53 @@ const LearnerCourse = () => {
   };
 
   // Catch Rating value
-  const handleRating = ([rate] = 0) => {
-    setRating([rate]);
+  const handleRating = (rate) => {
+    const roundedRating = Math.round(rate);
+    console.log(roundedRating);
+    setRating(roundedRating);
+  };
+
+  const resetRatingForm = () => {
+    setRating(0);
+    setFeedbackMsg("");
+    setFeedbackRatingError("");
+    setcourseID("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(rating, feedbackMsg);
+    if (rating === 0 && !feedbackMsg) {
+      setFeedbackRatingError("Please give a Rating and Feedback.");
+    } else {
+      setFeedbackRatingError("");
+
+      const formData = new FormData();
+      formData.append("user_id", ID);
+      formData.append("course_id", courseID);
+      formData.append("rating", rating);
+      formData.append("feedback", feedbackMsg);
+      console.log(rating, feedbackMsg);
+      const url =
+        "https://beta.eonlearning.tech/lms-service/give_ratings_feedback";
+      await axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Auth-Token": token,
+          },
+        })
+        .then((response) => {
+          setFeedbackModal(false);
+          console.log(response.data);
+          toast.success("Thanks for Giving your valuable feedback 💌😇");
+          resetRatingForm();
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error("Failed !!! Unable to add Rating and Feedback...");
+        });
+    }
   };
 
   const styles = {
@@ -102,6 +151,12 @@ const LearnerCourse = () => {
     off: {
       color: "#ccc",
     },
+  };
+
+  const handleFeedbackRating = (id) => {
+    setFeedbackRatingError("");
+    setFeedbackModal(true);
+    setcourseID(id);
   };
 
   return (
@@ -164,16 +219,11 @@ const LearnerCourse = () => {
                         <th className="text-center">
                           <strong>DURATION</strong>
                         </th>
-                        {/* <th>
-                          <strong>
-                            <center>RATINGS</center>
-                          </strong>
-                        </th>
                         <th>
                           <strong>
-                            <center>FEEDBACK</center>
+                            <center>RATINGS & FEEDBACK</center>
                           </strong>
-                        </th> */}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -216,19 +266,15 @@ const LearnerCourse = () => {
                             <td className="text-center">{formattedDate}</td>
                             <td className="text-center">-</td>
                             <td className="text-center">0</td>
-                            {/* <td className="col-lg-4">
-                              <Rating
-                                onClick={handleRating}
-                                initialValue={rating}
-                              />
-                            </td>
-                            <td>
+                            <td className="text-center">
                               <button
-                                className="btn btn-secondary"
-                                onClick={() => setFeedbackModal(true)}>
-                                <span className="me-2"></span>Feedback
+                                className="btn btn-primary"
+                                onClick={() =>
+                                  handleFeedbackRating(data.course_id)
+                                }>
+                                Rate us
                               </button>
-                            </td> */}
+                            </td>
                           </tr>
                         );
                       })}
@@ -244,7 +290,7 @@ const LearnerCourse = () => {
       <Modal className="modal fade" show={feedbackModal}>
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Send Feedback</h5>
+            <h5 className="modal-title">Rating & Feedback</h5>
             <Button
               variant=""
               type="button"
@@ -253,43 +299,23 @@ const LearnerCourse = () => {
               onClick={() => setFeedbackModal(false)}></Button>
           </div>
           <div className="modal-body">
-            <form
-              className="comment-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setFeedbackModal(false);
-              }}>
+            <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-lg-6">
                   <div className="form-group mb-3">
                     <label htmlFor="author" className="text-black font-w600">
                       {" "}
-                      Name <span className="required">*</span>{" "}
+                      Rating
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      defaultValue="Author"
-                      name="Author"
-                      placeholder="Author"
+                    <Rating
+                      onClick={handleRating}
+                      initialValue={rating}
+                      numberOfStars={5}
+                      step={1}
                     />
                   </div>
                 </div>
-                <div className="col-lg-6">
-                  <div className="form-group mb-3">
-                    <label htmlFor="email" className="text-black font-w600">
-                      {" "}
-                      Email <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      defaultValue="Email"
-                      placeholder="Email"
-                      name="Email"
-                    />
-                  </div>
-                </div>
+
                 <div className="col-lg-12">
                   <div className="form-group mb-3">
                     <label htmlFor="comment" className="text-black font-w600">
@@ -299,21 +325,27 @@ const LearnerCourse = () => {
                       rows={8}
                       className="form-control"
                       name="comment"
-                      placeholder="Thanks for Giving your valuable feedback 💌😇"
-                      defaultValue={""}
+                      placeholder="Please give your valuable feedback 💌😇"
+                      value={feedbackMsg}
+                      onChange={(e) => setFeedbackMsg(e.target.value)}
+                      style={{ resize: "none" }}
                     />
                   </div>
                 </div>
-                <div className="col-lg-12">
+                <div className="col-lg-12 d-flex justify-content-center">
                   <div className="form-group mb-3">
                     <input
                       type="submit"
                       value="Submit"
-                      className="submit btn btn-primary"
-                      name="submit"
+                      className="btn btn-primary"
                     />
                   </div>
                 </div>
+                {feedbackRatingError && (
+                  <p className="error-message text-center">
+                    {feedbackRatingError}
+                  </p>
+                )}
               </div>
             </form>
           </div>

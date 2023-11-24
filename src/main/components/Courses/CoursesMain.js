@@ -16,7 +16,7 @@ const CoursesMain = () => {
   const [currentPage, setCurrentPage] = useState(1); // Current page number
   const itemsPerPage = 6; // Number of items to display per page
   const roleType = useSelector(selectUser).role[0];
-  const backendBaseUrl = "https://v1.eonlearning.tech";
+  const backendBaseUrl = "https://beta.eonlearning.tech";
 
   useEffect(() => {
     let accessToken = window.localStorage.getItem("jwt_access_token");
