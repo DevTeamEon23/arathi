@@ -60,7 +60,7 @@ const Groups = () => {
   // All Groups List
   const getAllGroups = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/groups";
+    const url = "https://beta.eonlearning.tech/lms-service/groups";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -77,7 +77,7 @@ const Groups = () => {
 
   // All Courses List
   const getAllCourses = async () => {
-    const url = "https://v1.eonlearning.tech/lms-service/courses";
+    const url = "https://beta.eonlearning.tech/lms-service/courses";
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     try {
       const response = await axios.get(url, {
@@ -86,14 +86,17 @@ const Groups = () => {
         },
       });
       const data = response?.data?.data;
-      const expectedOutput = data.courses_data.map(({ id, coursename }) => ({
-        value: id,
-        label: coursename,
-      }));
-      setGetAllCourseData(data === null ? data : expectedOutput);
+      if (data === null) {
+        setGetAllCourseData(null); // or set an empty array or any default value as needed
+      } else {
+        const expectedOutput = data.courses_data.map(({ id, coursename }) => ({
+          value: id,
+          label: coursename,
+        }));
+        setGetAllCourseData(expectedOutput);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch Courses !"); // Handle the error
     }
   };
 
@@ -104,7 +107,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -113,15 +116,19 @@ const Groups = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      const list = response.data.data;
-      const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
-        value: id,
-        label: coursename,
-      }));
-      setCourses(list === null ? list : expectedOutput);
+      const list = response?.data?.data;
+
+      if (list === null) {
+        setCourses(null); // or set an empty array or any default value as needed
+      } else {
+        const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
+          value: id,
+          label: coursename,
+        }));
+        setCourses(expectedOutput);
+      }
     } catch (error) {
       console.error("API Error:", error);
-      toast.error("Failed to fetch Courses !");
     }
   };
 
@@ -132,7 +139,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -141,15 +148,19 @@ const Groups = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      const list = response.data.data;
-      const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
-        value: id,
-        label: coursename,
-      }));
-      setCourses(list === null ? list : expectedOutput);
+      const list = response?.data?.data;
+
+      if (list === null) {
+        setCourses(null); // or set an empty array or any default value as needed
+      } else {
+        const expectedOutput = list.course_ids.map(({ id, coursename }) => ({
+          value: id,
+          label: coursename,
+        }));
+        setCourses(expectedOutput);
+      }
     } catch (error) {
       console.error("API Error:", error);
-      toast.error("Failed to fetch Courses !");
     }
   };
 
@@ -170,7 +181,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_and_created_groups_of_admin"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_and_created_groups_of_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -193,7 +204,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -232,7 +243,7 @@ const Groups = () => {
       id: grpId,
     };
     await axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_group`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_group`, {
         ...config,
         data: requestBody,
       })
@@ -262,7 +273,7 @@ const Groups = () => {
       id: grpId,
     };
     await axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_group`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_group`, {
         ...config,
         data: requestBody,
       })
@@ -288,7 +299,7 @@ const Groups = () => {
         data_user_group_enrollment_id: grpId,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/remove_groups_from_enrolled_user"
+        "https://beta.eonlearning.tech/lms-service/remove_groups_from_enrolled_user"
       );
       url.search = new URLSearchParams(queryParams).toString();
       await axios.delete(url.toString(), {
@@ -339,7 +350,7 @@ const Groups = () => {
       formData.append("course_id", selectCourseData.value);
       formData.append("generate_token", true);
       const url =
-        "https://v1.eonlearning.tech/lms-service/mass_enroll_course_group";
+        "https://beta.eonlearning.tech/lms-service/mass_enroll_course_group";
       axios
         .post(url, formData, {
           headers: {
@@ -367,7 +378,7 @@ const Groups = () => {
       setselectCourseError(null);
       setShowMassActionModal(false);
       const url =
-        "https://v1.eonlearning.tech/lms-service/mass_unenroll_course_group";
+        "https://beta.eonlearning.tech/lms-service/mass_unenroll_course_group";
       const formData = new FormData();
       formData.append("course_id", selectCourseData.value);
       await axios

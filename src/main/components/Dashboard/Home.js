@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { Dropdown } from "react-bootstrap";
-
+import axios from "axios";
+import Bar2 from "./../../components/charts/Chartjs/bar2";
 // sample
 // import { useGetUsersQuery } from "../../../services/testService";
 
@@ -32,200 +33,213 @@ const Home = () => {
   // Smaple
   // const { data, isLoading, isError, isFetching, isSuccess } =
   //   useGetUsersQuery();
-
+  const [dropSelect, setDropSelect] = useState("This Month");
   const { changeBackground } = useContext(ThemeContext);
+
+  const [dataCounts, setDataCounts] = useState([]);
+  const [deptCount, setDeptCount] = useState([]);
+  const [userActivity, setuserActivity] = useState("");
+  const [userEnrolledCourses, setUserEnrolledCourses] = useState([]);
+  const Department = window.localStorage.getItem("dept");
+  const role = window.localStorage.getItem("role");
+  const jwtToken = window.localStorage.getItem("jwt_access_token");
+
   useEffect(() => {
     changeBackground({ value: "light", label: "Light" });
+    if (role === "Admin") {
+      getDataCounts();
+      getUserActivity();
+      getDeptCount();
+      getUserEnrolledCourses();
+    } else {
+      // getAllCourses();
+    }
   }, []);
-  const [dropSelect, setDropSelect] = useState("This Month");
+
+  //data counts
+  const getDataCounts = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin",
+        config
+      )
+      .then((response) => {
+        console.log("inside course blog", response.data.data.data_counts_data);
+        setDataCounts(response.data.data.data_counts_data);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //User Login data
+  const getUserActivity = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin",
+        config
+      )
+      .then((response) => {
+        console.log(response.data.data.user_ids);
+        setuserActivity(response.data.data.user_ids);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //User dept count
+  const getDeptCount = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/department_counts_for_admin",
+        config
+      )
+      .then((response) => {
+        console.log("@@", response.data.data.dept_counts_data);
+        setDeptCount(response.data.data.dept_counts_data);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //enrolled courses to user
+  const getUserEnrolledCourses = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_admin",
+        config
+      )
+      .then((response) => {
+        console.log(response.data.data.enrolled_info);
+        setUserEnrolledCourses(response.data.data.enrolled_info);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
   return (
     <>
       <div className="row">
         <div className="col-xl-6 col-xxl-12">
           <div className="row">
-            <div className="col-xl-12 col-xxl-6">
-              <div className="card dlab-join-card h-auto">
-                <div className="card-body" style={{ height: "280px" }}>
-                  <div className="dlab-media d-flex justify-content-between">
-                    <div className="dlab-content">
-                      <h4>Join Now and Get Discount Voucher Up To 20%</h4>
-                      {/* <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. </p> */}
-                    </div>
-                    <div className="dlab-img">
-                      <img src={Educat} alt="" />
-                    </div>
-                    <div className="dlab-icon">
-                      <img src={Calpng} alt="" className="cal-img" />
-                      <img src={Book} alt="" className="book-img" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div className="col-xl-12 bt-order">
-              <CourseBlog />
+              <CourseBlog data={dataCounts} />
             </div>
+
             <div className="col-xl-12 col-xxl-6">
               <div className="card score-active">
                 <div className="card-header border-0 flex-wrap">
                   <h4>Learning Activity</h4>
-                  {/* <ul className="d-flex">
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--primary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--secondary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                  </ul> */}
                 </div>
-                <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
-                  <LearningActivityChart />
+                <div className="card-body pb-1 py-0 ">
+                  <LearningActivityChart data={userActivity} />
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="col-xl-12 col-xxl-6">
+          <div className="card score-active">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Learning Activity</h4>
+            </div>
+
+            <div className="card-body pb-1 py-0 ">
+              <ul className="d-flex ">
+                <li>
+                  <svg
+                    className="me-2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="9"
+                      height="9"
+                      rx="4.5"
+                      fill="white"
+                      stroke="rgba(173,216,230,0.2)"
+                      strokeWidth="3"
+                    />
+                  </svg>
+                  Learner
+                </li>
+                <li>
+                  <svg
+                    className="me-2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <rect
+                      x="1.5"
+                      y="1.5"
+                      width="9"
+                      height="9"
+                      rx="4.5"
+                      fill="white"
+                      stroke="rgba(0,0,139,0.2)"
+                      strokeWidth="3"
+                    />
+                  </svg>
+                  Instructor
+                </li>
+              </ul>
+              {/* <Bar2 data={userActivity} /> */}
+            </div>
+          </div>
+        </div>
+
         <div className="col-xl-6 col-xxl-12">
           <div className="row">
             <div className="col-xl-12">
               <div className="card score-active">
                 <div className="card-header border-0 pb-2 flex-wrap">
-                  <h4>Score Activity</h4>
-                  <ul className="d-flex">
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--primary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                    <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="var(--secondary)"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li>
-                  </ul>
-                  <div className="d-flex align-items-center">
-                    <Dropdown className="select-dropdown me-2">
-                      <Dropdown.Toggle
-                        as="div"
-                        className="i-false dashboard-select  selectBtn btn-dark">
-                        {dropSelect}{" "}
-                        <i className="fa-solid fa-angle-down ms-2" />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Month")}>
-                          This Month
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Weekly")}>
-                          This Weekly
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Day")}>
-                          This Day
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                    <DropDownBlog />
-                  </div>
+                  <h4>Department wise User Count</h4>
                 </div>
-                <div className="card-body pb-1 custome-tooltip pt-0">
-                  <ScoreActivityChart />
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-lg-6">
-              <div className="card">
-                <div className="card-body pt-3">
-                  <ProgressChart />
-                  <div className="redial-content">
-                    <h4>My Progress</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur...</p>
-                    <Link to={"./course-details-2"} className="btn btn-primary">
-                      More Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-8 col-lg-6">
-              <div className="card">
-                <div className="card-body card-calendar home-calendar">
-                  <CalendarBlog />
+                <div className="card-body pb-1 pt-0">
+                  <ScoreActivityChart data={deptCount} />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {/* <div className="col-xl-8 col-lg-6">
+              <div className="card">
+                <div className="card-body card-calendar home-calendar">
+                  <CalendarBlog />
+                </div>
+              </div>
+            </div> */}
     </>
   );
 };

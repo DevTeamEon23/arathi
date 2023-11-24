@@ -42,7 +42,7 @@ const Categories = () => {
   // All Categories List
   const getAllCategories = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/categories";
+    const url = "https://beta.eonlearning.tech/lms-service/categories";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -73,7 +73,7 @@ const Categories = () => {
       id: categoryId,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/lms-service/delete_category`, {
+      .delete(`https://beta.eonlearning.tech/lms-service/delete_category`, {
         ...config,
         data: requestBody,
       })

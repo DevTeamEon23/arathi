@@ -52,7 +52,7 @@ const VideoEdit = (props) => {
     console.log("inside get course by id", id, authToken);
     try {
       const response = await axios.get(
-        "https://v1.eonlearning.tech/lms-service/course_contents_by_onlyid",
+        "https://beta.eonlearning.tech/lms-service/course_contents_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -105,7 +105,7 @@ const VideoEdit = (props) => {
       formData.append("generate_token", true);
 
       const url =
-        "https://v1.eonlearning.tech/lms-service/update_course_contents";
+        "https://beta.eonlearning.tech/lms-service/update_course_contents";
       axios
         .post(url, formData, {
           headers: {
@@ -130,7 +130,7 @@ const VideoEdit = (props) => {
         deactive: isDeactive,
       };
       console.log(vdName, isActive, isDeactive);
-      const url = `https://v1.eonlearning.tech/lms-service/update_course_content/${course_id}`;
+      const url = `https://beta.eonlearning.tech/lms-service/update_course_content/${course_id}`;
       axios
         .put(url, newData, {
           headers: {
@@ -160,7 +160,7 @@ const VideoEdit = (props) => {
     formData.append("active", isActive);
     formData.append("deactive", isDeactive);
     formData.append("generate_token", true);
-    const url = "https://v1.eonlearning.tech/lms-service/addcourse_content";
+    const url = "https://beta.eonlearning.tech/lms-service/addcourse_content";
     axios
       .post(url, formData, {
         headers: {

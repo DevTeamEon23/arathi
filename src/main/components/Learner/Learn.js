@@ -86,7 +86,7 @@ const Learn = () => {
         user_id: user_id,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/learner_overview"
+        "https://beta.eonlearning.tech/lms-service/learner_overview"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -149,7 +149,7 @@ const Learn = () => {
   //User List Api
   const getUsers = () => {
     axios
-      .get("https://v1.eonlearning.tech/auth/fetch_userpoints_by_userid")
+      .get("https://beta.eonlearning.tech/auth/fetch_userpoints_by_userid")
       .then((response) => {
         console.log(response.data.data);
         let allUsers = response.data.data.user_ids;

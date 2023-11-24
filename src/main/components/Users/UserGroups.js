@@ -53,7 +53,10 @@ const UserGroups = (props) => {
       },
     };
     axios
-      .get("https://v1.eonlearning.tech/user-tab2/fetch_groups_of_user", config)
+      .get(
+        "https://beta.eonlearning.tech/user-tab2/fetch_groups_of_user",
+        config
+      )
       .then((response) => {
         const grps = response.data.data;
         setAllGrps(grps === null ? grps : grps.user_ids);
@@ -74,7 +77,7 @@ const UserGroups = (props) => {
         admin_user_id: ID,
       };
       const url = new URL(
-        "https://v1.eonlearning.tech/lms-service/fetch_enrolled_groups_for_admin"
+        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_groups_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -128,7 +131,7 @@ const UserGroups = (props) => {
     formData.append("group_id", group_id);
     formData.append("user_id", userId);
     formData.append("generate_token", true);
-    const url = "https://v1.eonlearning.tech/user-tab2/enroll_groups_to_user";
+    const url = "https://beta.eonlearning.tech/user-tab2/enroll_groups_to_user";
     axios
       .post(url, formData, {
         headers: {
@@ -161,10 +164,13 @@ const UserGroups = (props) => {
       id: id,
     };
     axios
-      .delete(`https://v1.eonlearning.tech/user-tab2/remove_groups_from_user`, {
-        ...config,
-        data: requestBody,
-      })
+      .delete(
+        `https://beta.eonlearning.tech/user-tab2/remove_groups_from_user`,
+        {
+          ...config,
+          data: requestBody,
+        }
+      )
       .then((response) => {
         toast.success("Removed from group successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -182,7 +188,7 @@ const UserGroups = (props) => {
   const handleRemoveGrpAdmin = (e, id) => {
     e.preventDefault();
     const baseUrl =
-      "https://v1.eonlearning.tech/lms-service/remove_groups_from_enrolled_user";
+      "https://beta.eonlearning.tech/lms-service/remove_groups_from_enrolled_user";
     const data_user_group_enrollment_id = id;
 
     const headers = {

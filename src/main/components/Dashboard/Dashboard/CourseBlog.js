@@ -62,21 +62,11 @@ function BulbIcon() {
 }
 
 export default function CourseBlog({ data }) {
-  const [instCourseCount, setInstCourseCount] = useState(null);
+  // Retrieve department from localStorage
   const dept = window.localStorage.getItem("dept");
 
-  useEffect(() => {
-    console.log(data);
-    const dept = window.localStorage.getItem("dept");
-    if (data && data.data_counts_data) {
-      // Assuming you want to filter and save only dept wise data
-      const deptData = data.data_counts_data.find((item) => item.dept === dept);
-      console.log(deptData, deptData.total_courses);
-      if (deptData) {
-        setInstCourseCount(deptData);
-      }
-    }
-  }, []);
+  // Find department-wise data
+  const instCourseCount = data.find((item) => item.dept === dept) || null;
 
   const CourseBlogData = [
     {

@@ -10,6 +10,9 @@ import DropDownBlog from "./../Dashboard/DropDownBlog";
 //import WorkingActivityChart from './Instructor/WorkingActivityChart';
 import CalendarBlog from "./../Dashboard/Dashboard/CalendarBlog";
 import CourseBlog from "./../Dashboard/Dashboard/CourseBlog";
+import BarChart1 from "./../../components/charts/Chartjs/bar1";
+import BarChart5 from "./../../components/charts/Chartjs/bar5";
+import BarChart6 from "./../../components/charts/Chartjs/bar6";
 
 const TotalStudentsChart = loadable(() =>
   pMinDelay(import("../Instructor/Instructor/TotalStudentsChart"), 1000)
@@ -61,14 +64,18 @@ function UpComingEvent() {
 }
 
 const Inst = () => {
-  const [dataCounts, setDataCounts] = useState(0);
+  const [dataCounts, setDataCounts] = useState([]);
   const [userActivity, setuserActivity] = useState("");
+  const [deptCount, setDeptCount] = useState([]);
+  const [userEnrolledCourses, setUserEnrolledCourses] = useState([]);
   const Department = window.localStorage.getItem("dept");
   const jwtToken = window.localStorage.getItem("jwt_access_token");
 
   useEffect(() => {
     getDataCounts();
     getUserActivity();
+    getDeptCount();
+    getUserEnrolledCourses();
   }, []);
 
   //data counts
@@ -80,13 +87,12 @@ const Inst = () => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/lms-service/data_counts_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_instructor",
         config
       )
       .then((response) => {
-        const data = response.data.data;
-        console.log(response.data.data.data_counts_data);
-        setDataCounts(data);
+        console.log("inside course blog", response.data.data.data_counts_data);
+        setDataCounts(response.data.data.data_counts_data);
       })
       .catch((error) => {
         // toast.error("Failed to fetch users!");
@@ -102,13 +108,54 @@ const Inst = () => {
     };
     axios
       .get(
-        "https://v1.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_instructor",
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_instructor",
         config
       )
       .then((response) => {
-        const data = response.data.data;
         console.log(response.data.data.user_ids);
-        setuserActivity(data);
+        setuserActivity(response.data.data.user_ids);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //User dept count
+  const getDeptCount = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/department_counts_for_instructor",
+        config
+      )
+      .then((response) => {
+        console.log("@@", response.data.data.dept_counts_data);
+        setDeptCount(response.data.data.dept_counts_data);
+      })
+      .catch((error) => {
+        // toast.error("Failed to fetch users!");
+      });
+  };
+
+  //enrolled courses to user
+  const getUserEnrolledCourses = () => {
+    const config = {
+      headers: {
+        "Auth-Token": jwtToken,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_instructor",
+        config
+      )
+      .then((response) => {
+        console.log(response.data.data.enrolled_info);
+        setUserEnrolledCourses(response.data.data.enrolled_info);
       })
       .catch((error) => {
         // toast.error("Failed to fetch users!");
@@ -118,26 +165,47 @@ const Inst = () => {
   return (
     <>
       <div className="row">
-        <div className="col-xl-8 col-xxl-7">
-          <div className="row">
-            <div className="col-xl-4 col-xxl-6 col-sm-6">
-              <div className="card">
-                <div className="card-header border-0 pb-0">
-                  <h4>Total Students</h4>
-                </div>
-                <div className="card-body pt-0 px-0 ">
-                  <TotalStudentsChart />
-                  <div className="d-flex justify-content-between align-items-center flex-wrap px-4">
-                    <h4 className="fs-18 font-w600 mb-0">12.345</h4>
-                    <span>
-                      <small className="text-secondary">5.4% </small>than last
-                      year
-                    </span>
-                  </div>
-                </div>
-              </div>
+        <div className="col-xl-12 ">
+          <CourseBlog data={dataCounts} />
+        </div>
+
+        <div className="col-xl-6 col-lg-12">
+          <div className="card">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Department wise User Count</h4>{" "}
             </div>
-            <div className="col-xl-4 col-xxl-6 col-sm-6">
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
+              <div style={{ height: "380px" }}>
+                <BarChart5 dataCount={deptCount} />
+              </div>
+            </div>{" "}
+          </div>{" "}
+        </div>
+
+        <div className="col-xl-6 col-lg-12">
+          <div className="card score-active">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Learning Activity</h4>{" "}
+            </div>
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
+              <LearningActivityChart data={userActivity} />
+            </div>{" "}
+          </div>
+        </div>
+
+        <div className="col-xl-12 col-lg-6">
+          <div className="card score-active">
+            <div className="card-header border-0 flex-wrap">
+              <h4>Enrolled Courses</h4>{" "}
+            </div>
+            <div className="card-body pb-1 custome-tooltip style-1 py-0">
+              <BarChart1 data={userEnrolledCourses} />
+            </div>{" "}
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="col-xl-4 col-xxl-6 col-sm-6">
               <div className="card overflow-hidden">
                 <div className="card-header border-0 pb-0">
                   <h4>Courses</h4>
@@ -178,9 +246,27 @@ const Inst = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {/* Earnings
+      {/* <div className="col-xl-4 col-xxl-6 col-sm-6">
+              <div className="card">
+                <div className="card-header border-0 pb-0">
+                  <h4>Total Students</h4>
+                </div>
+                <div className="card-body pt-0 px-0 ">
+                  <TotalStudentsChart />
+                  <div className="d-flex justify-content-between align-items-center flex-wrap px-4">
+                    <h4 className="fs-18 font-w600 mb-0">12.345</h4>
+                    <span>
+                      <small className="text-secondary">5.4% </small>than last
+                      year
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div> */}
+
+      {/* Earnings
             <div className="col-xl-4 col-xxl-12 col-sm-12">
               <div className="card">
                 <div className="card-header border-0 pb-0">
@@ -210,17 +296,7 @@ const Inst = () => {
                 </div>
               </div>
             </div> */}
-            <div className="col-xl-12 col-xxl-6">
-              <div className="card score-active">
-                <div className="card-header border-0 flex-wrap">
-                  <h4>Learning Activity</h4>{" "}
-                </div>
-                <div className="card-body pb-1 custome-tooltip style-1 py-0 ">
-                  <LearningActivityChart data={userActivity} />
-                </div>{" "}
-              </div>
-            </div>
-            <div className="col-xl-12">
+      {/* <div className="col-xl-12">
               <div className="card">
                 <div className="card-header border-0 flex-wrap">
                   <h4>Working Activity</h4>
@@ -269,13 +345,8 @@ const Inst = () => {
                   <WorkingActivityChart />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-xl-12 bt-order">
-          <CourseBlog data={dataCounts} />
-        </div>
-        {/* Calendar
+            </div> */}
+      {/* Calendar
         <div className="col-xl-4 col-xxl-5">
           <div className="card">
             <div className="card-body">
@@ -295,7 +366,6 @@ const Inst = () => {
             </div>
           </div>
         </div> */}
-      </div>
     </>
   );
 };

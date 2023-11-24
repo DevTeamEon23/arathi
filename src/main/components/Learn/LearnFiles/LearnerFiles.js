@@ -19,6 +19,7 @@ const LearnerFiles = () => {
   const [loadingStates, setLoadingStates] = useState({});
   const [showPreviewModal, setShowPreviewModal] = useState(false); //Preview modal
   const accessToken = window.localStorage.getItem("jwt_access_token");
+  const jwtToken = window.localStorage.getItem("jwt_access_token");
 
   useEffect(() => {
     setToken(accessToken);
@@ -26,8 +27,7 @@ const LearnerFiles = () => {
   }, []);
 
   const getAllFiles = async () => {
-    const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://v1.eonlearning.tech/lms-service/fetch_active_files";
+    const url = "https://beta.eonlearning.tech/lms-service/fetch_active_files";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -35,7 +35,7 @@ const LearnerFiles = () => {
         },
       });
       const courseData = response.data.data;
-      console.log("getAllFiles", response.data);
+      console.log("getAllFiles", response.data.data);
       setAllFileData(courseData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -57,7 +57,7 @@ const LearnerFiles = () => {
     setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
-        `https://v1.eonlearning.tech/lms-service/file_download/${files_name}`
+        `https://beta.eonlearning.tech/lms-service/file_download/${files_name}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
