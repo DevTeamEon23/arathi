@@ -8,22 +8,10 @@ import { toast } from "react-toastify";
 const Video = (props) => {
   const courseId = props.match.params.id;
   const [vdName, setVdName] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [isDeactive, setIsDeactive] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [cancelError, setCancelError] = useState("");
   const [btnLoader, setBtnLoader] = useState(false); //Loader
   const history = useHistory();
-
-  const handleActiveChange = (e) => {
-    setIsActive(e.target.checked);
-    setIsDeactive(false); // Uncheck "Deactive" when "Active" is checked
-  };
-
-  const handleDeactiveChange = (e) => {
-    setIsDeactive(e.target.checked);
-    setIsActive(false); // Uncheck "Active" when "Deactive" is checked
-  };
 
   const handleVideoChange = (e) => {
     setCancelError("");
@@ -46,8 +34,6 @@ const Video = (props) => {
     formData.append("course_id", courseId);
     formData.append("video_unitname", vdName);
     formData.append("video_file", selectedVideo);
-    formData.append("active", isActive);
-    formData.append("deactive", isDeactive);
     formData.append("generate_token", true);
     const url = "https://beta.eonlearning.tech/lms-service/addcourse_content";
     axios
@@ -157,41 +143,6 @@ const Video = (props) => {
                         </div>
                       </div>
 
-                      <div className="form-group mb-3 row ">
-                        <label
-                          className="col-lg-4 col-form-label"
-                          htmlFor="vd"></label>
-                        <div className="col-lg-2 d-flex mt-3">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="isActive"
-                            name="isActive"
-                            checked={isActive}
-                            onChange={handleActiveChange}
-                          />
-                          <label
-                            className="form-check css-control-primary css-checkbox mt-1"
-                            htmlFor="isActive">
-                            Active
-                          </label>
-                        </div>
-                        <div className="col-lg-2 d-flex mt-3">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="isDeactive"
-                            name="isDeactive"
-                            checked={isDeactive}
-                            onChange={handleDeactiveChange}
-                          />
-                          <label
-                            className="form-check css-control-primary css-checkbox mt-1"
-                            htmlFor="isDeactive">
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
                       <div className="form-group mb-3 row mt-5">
                         <div className="col-lg-8 ms-auto d-flex">
                           <Button

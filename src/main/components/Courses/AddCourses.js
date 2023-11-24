@@ -79,6 +79,7 @@ const AddCourses = () => {
     axios
       .get("https://beta.eonlearning.tech/lms-service/course_ids", config)
       .then((response) => {
+        console.log(response.data.data.id_data[0].next_id);
         setCourseID(response.data.data.id_data[0].next_id);
       })
       .catch((error) => {
@@ -219,7 +220,7 @@ const AddCourses = () => {
       // setErrorData("Please fill in all required fields.");
     } else {
       const formData = new FormData();
-      formData.append("id", courseID);
+      formData.append("id", courseID === null ? 0 : courseID);
       formData.append("coursename", coursename);
       formData.append("file", file);
       formData.append("user_id", ID);
@@ -241,6 +242,8 @@ const AddCourses = () => {
       formData.append("isActive", isActive);
       formData.append("isHide", isHide);
       formData.append("generate_token", true);
+
+      console.log(courseID, "courseID");
 
       const url = "https://beta.eonlearning.tech/lms-service/addcourses";
       await axios
