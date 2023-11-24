@@ -41,7 +41,7 @@ import badge1 from "@images/svg/LearningNewbie.svg";
 import badge2 from "@images/svg/LearningGrower.svg";
 import badge3 from "@images/svg/LearningAdventurer.svg";
 
-const backendBaseUrl = "https://v1.eonlearning.tech";
+const backendBaseUrl = "https://beta.eonlearning.tech";
 
 const reviewsData = [
   { image: pic3, title: "Jordan Nico ", commentTime: "2 Month Ago" },
