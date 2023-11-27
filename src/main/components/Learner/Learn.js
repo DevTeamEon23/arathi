@@ -40,6 +40,9 @@ import pic4 from "@images/courses/pic4.jpg";
 import badge1 from "@images/svg/LearningNewbie.svg";
 import badge2 from "@images/svg/LearningGrower.svg";
 import badge3 from "@images/svg/LearningAdventurer.svg";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const backendBaseUrl = "https://beta.eonlearning.tech";
 
@@ -52,7 +55,14 @@ const ProfileActivityChart = loadable(() =>
   pMinDelay(import("../Dashboard/Dashboard/ProfileActivityChart"), 1000)
 );
 
-const Learn = () => {
+const Learn = ({ userRatings, activeIndex, handleSelect }) => {
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
   const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
   const [dropSelect, setDropSelect] = useState("This Month");
@@ -69,8 +79,8 @@ const Learn = () => {
   const [userLevels, setUserLevels] = useState(0);
   const [courseCount, setcourseCount] = useState();
   const [courseData, setcourseData] = useState([]);
-  const [userRatings, setuserRatings] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [userRating, setuserRating] = useState([]);
+  // const [activeIndex, setActiveIndex] = useState(0);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const user_id = localStorage.getItem("id");
   const token = window.localStorage.getItem("jwt_access_token");
@@ -139,7 +149,7 @@ const Learn = () => {
         },
       });
       console.log(response.data.user_ratings);
-      setuserRatings(response.data.user_ratings);
+      setuserRating(response.data.user_ratings);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -193,9 +203,9 @@ const Learn = () => {
     writeFile(wb, "Export Report.xlsx");
   };
 
-  const handleSelect = (selectedIndex, e) => {
-    setActiveIndex(selectedIndex);
-  };
+  // const handleSelect = (selectedIndex, e) => {
+  //   setActiveIndex(selectedIndex);
+  // };
 
   //User List Api
   const getUsers = () => {
@@ -354,12 +364,9 @@ const Learn = () => {
               <div className="bio text-start my-4">
                 <h4 className="mb-3">User Reviews</h4>
                 <div>
-                  <div
-                    id="carouselExample"
-                    className="carousel slide"
-                    data-ride="carousel">
-                    <div className="carousel-inner">
-                      {userRatings.map((item, index) => (
+                  <div>
+                    <Slider {...sliderSettings}>
+                      {userRating.map((item, index) => (
                         <div
                           key={index}
                           className={`carousel-item ${
@@ -375,7 +382,7 @@ const Learn = () => {
                                 <p
                                   className="mb-0 font-w500"
                                   style={{ marginRight: "7rem" }}>
-                                  Review by : {item.full_name}
+                                  Review by: {item.full_name}
                                 </p>
                                 <ul className="d-flex align-items-center rating my-1">
                                   {[...Array(5)].map((_, i) => (
@@ -395,31 +402,7 @@ const Learn = () => {
                           </div>
                         </div>
                       ))}
-                    </div>
-                    <a
-                      className="carousel-control-prev"
-                      href="#carouselExample"
-                      role="button"
-                      data-slide="prev"
-                      onClick={() => handleSelect(activeIndex - 1)}>
-                      <span
-                        className="carousel-control-prev-icon"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">Previous</span>
-                    </a>
-                    <a
-                      className="carousel-control-next"
-                      href="#carouselExample"
-                      role="button"
-                      data-slide="next"
-                      onClick={() => handleSelect(activeIndex + 1)}>
-                      <span
-                        className="carousel-control-next-icon"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">Next</span>
-                    </a>
+                    </Slider>
                   </div>
                 </div>
               </div>
