@@ -44751,9 +44751,11 @@ table.dataTable.display tbody td {
   margin-bottom: 1.875rem;
 }
 .review-box img {
-  height: 56px;
-  width: 56px !important;
+  height: 70px;
+  width: 70px !important;
   border-radius: 0.625rem;
+  border: 1px solid #00000078;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 .review-box p {
   margin: 0;
@@ -44761,6 +44763,10 @@ table.dataTable.display tbody td {
 }
 .review-box .raiting li i {
   font-size: 14px;
+}
+
+.review-details {
+  margin-left: 15px;
 }
 
 .courses-chart {

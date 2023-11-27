@@ -71,6 +71,7 @@ const Learn = () => {
   const [courseData, setcourseData] = useState([]);
   const [userRatings, setuserRatings] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
   const user_id = localStorage.getItem("id");
   const token = window.localStorage.getItem("jwt_access_token");
   const history = useHistory();
@@ -78,6 +79,7 @@ const Learn = () => {
   useEffect(() => {
     getUsers();
     fetchLearnerData();
+    getEnrolledCourses();
     fetchLearnerRating();
   }, []);
 
@@ -143,6 +145,28 @@ const Learn = () => {
     }
   };
 
+  const getEnrolledCourses = () => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+      params: {
+        user_id: user_id,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/fetch_enroll_courses_of_user_by_id",
+        config
+      )
+      .then((response) => {
+        const data = response.data.data;
+        setEnrolledCourses(data.enrolled_info);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!");
+      });
+  };
   const handleExport = () => {
     const headings = [
       [
@@ -326,7 +350,9 @@ const Learn = () => {
                   <p className="mb-0">{bio}</p>
                 </div>
               </div>
-              <div>
+
+              <div className="bio text-start my-4">
+                <h4 className="mb-3">User Reviews</h4>
                 <div>
                   <div
                     id="carouselExample"
@@ -341,24 +367,31 @@ const Learn = () => {
                           }`}>
                           <div className="review-box card">
                             <div className="d-flex align-items-center">
-                              <img
-                                src={item.file}
-                                alt={`Review by ${item.full_name}`}
-                              />
+                              <img src={item.file} alt="course img" />
                               <div className="ms-3">
                                 <h4 className="mb-0 fs-18 font-w500">
-                                  {item.full_name}
+                                  {item.coursename}
                                 </h4>
-                                <ul className="d-flex align-items-center rating my-0">
-                                  {[...Array(item.rating)].map((_, i) => (
+                                <p
+                                  className="mb-0 font-w500"
+                                  style={{ marginRight: "7rem" }}>
+                                  Review by : {item.full_name}
+                                </p>
+                                <ul className="d-flex align-items-center rating my-1">
+                                  {[...Array(5)].map((_, i) => (
                                     <li key={i}>
-                                      <i className="fas fa-star star-orange me-1"></i>
+                                      <i
+                                        className={`fas fa-star ${
+                                          i < item.rating ? "star-orange" : ""
+                                        } me-1`}></i>
                                     </li>
                                   ))}
                                 </ul>
                               </div>
                             </div>
-                            <p>{item.feedback}</p>
+                            <p className="d-flex align-items-center my-1">
+                              {item.feedback}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -452,9 +485,9 @@ const Learn = () => {
             <div className="col-xl-12">
               <div className="card score-active style-1">
                 <div className="card-header border-0 pb-2 flex-wrap">
-                  <h4 className="me-4">Score Activity</h4>
+                  <h4 className="me-4">Enrolled Courses</h4>
                   <ul className="d-flex mb-2">
-                    <li>
+                    {/* <li>
                       <svg
                         className="me-2"
                         width="12"
@@ -474,7 +507,7 @@ const Learn = () => {
                         />
                       </svg>
                       Last Month
-                    </li>
+                    </li> */}
                     <li>
                       <svg
                         className="me-2"
@@ -494,37 +527,12 @@ const Learn = () => {
                           strokeWidth="3"
                         />
                       </svg>
-                      Last Month
+                      Enrollment Date
                     </li>
                   </ul>
-                  <div className="d-flex align-items-center">
-                    <Dropdown className="select-dropdown me-2">
-                      <Dropdown.Toggle
-                        as="div"
-                        className="i-false dashboard-select  selectBtn btn-dark">
-                        {dropSelect}{" "}
-                        <i className="fa-solid fa-angle-down ms-2" />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Month")}>
-                          This Month
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Weekly")}>
-                          This Weekly
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Day")}>
-                          This Day
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                    <DropDownBlog />
-                  </div>
                 </div>
-                <div className="card-body pb-1 custome-tooltip pt-0">
-                  <ProfileActivityChart />
+                <div className="card-body">
+                  <ProfileActivityChart courseData={enrolledCourses} />
                 </div>
               </div>
               <Modal
