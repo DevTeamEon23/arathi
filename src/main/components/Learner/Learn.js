@@ -40,6 +40,9 @@ import pic4 from "@images/courses/pic4.jpg";
 import badge1 from "@images/svg/LearningNewbie.svg";
 import badge2 from "@images/svg/LearningGrower.svg";
 import badge3 from "@images/svg/LearningAdventurer.svg";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const backendBaseUrl = "https://beta.eonlearning.tech";
 
@@ -52,7 +55,14 @@ const ProfileActivityChart = loadable(() =>
   pMinDelay(import("../Dashboard/Dashboard/ProfileActivityChart"), 1000)
 );
 
-const Learn = () => {
+const Learn = ({ userRatings, activeIndex, handleSelect }) => {
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
   const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
   const [dropSelect, setDropSelect] = useState("This Month");
@@ -69,8 +79,9 @@ const Learn = () => {
   const [userLevels, setUserLevels] = useState(0);
   const [courseCount, setcourseCount] = useState();
   const [courseData, setcourseData] = useState([]);
-  const [userRatings, setuserRatings] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [userRating, setuserRating] = useState([]);
+  // const [activeIndex, setActiveIndex] = useState(0);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
   const user_id = localStorage.getItem("id");
   const token = window.localStorage.getItem("jwt_access_token");
   const history = useHistory();
@@ -78,6 +89,7 @@ const Learn = () => {
   useEffect(() => {
     getUsers();
     fetchLearnerData();
+    getEnrolledCourses();
     fetchLearnerRating();
   }, []);
 
@@ -137,12 +149,34 @@ const Learn = () => {
         },
       });
       console.log(response.data.user_ratings);
-      setuserRatings(response.data.user_ratings);
+      setuserRating(response.data.user_ratings);
     } catch (error) {
       console.error("API Error:", error);
     }
   };
 
+  const getEnrolledCourses = () => {
+    const config = {
+      headers: {
+        "Auth-Token": token,
+      },
+      params: {
+        user_id: user_id,
+      },
+    };
+    axios
+      .get(
+        "https://beta.eonlearning.tech/lms-service/fetch_enroll_courses_of_user_by_id",
+        config
+      )
+      .then((response) => {
+        const data = response.data.data;
+        setEnrolledCourses(data.enrolled_info);
+      })
+      .catch((error) => {
+        toast.error("Failed to fetch users!");
+      });
+  };
   const handleExport = () => {
     const headings = [
       [
@@ -169,9 +203,9 @@ const Learn = () => {
     writeFile(wb, "Export Report.xlsx");
   };
 
-  const handleSelect = (selectedIndex, e) => {
-    setActiveIndex(selectedIndex);
-  };
+  // const handleSelect = (selectedIndex, e) => {
+  //   setActiveIndex(selectedIndex);
+  // };
 
   //User List Api
   const getUsers = () => {
@@ -326,14 +360,13 @@ const Learn = () => {
                   <p className="mb-0">{bio}</p>
                 </div>
               </div>
-              <div>
+
+              <div className="bio text-start my-4">
+                <h4 className="mb-3">User Reviews</h4>
                 <div>
-                  <div
-                    id="carouselExample"
-                    className="carousel slide"
-                    data-ride="carousel">
-                    <div className="carousel-inner">
-                      {userRatings.map((item, index) => (
+                  <div>
+                    <Slider {...sliderSettings}>
+                      {userRating.map((item, index) => (
                         <div
                           key={index}
                           className={`carousel-item ${
@@ -341,52 +374,35 @@ const Learn = () => {
                           }`}>
                           <div className="review-box card">
                             <div className="d-flex align-items-center">
-                              <img
-                                src={item.file}
-                                alt={`Review by ${item.full_name}`}
-                              />
+                              <img src={item.file} alt="course img" />
                               <div className="ms-3">
                                 <h4 className="mb-0 fs-18 font-w500">
-                                  {item.full_name}
+                                  {item.coursename}
                                 </h4>
-                                <ul className="d-flex align-items-center rating my-0">
-                                  {[...Array(item.rating)].map((_, i) => (
+                                <p
+                                  className="mb-0 font-w500"
+                                  style={{ marginRight: "7rem" }}>
+                                  Review by: {item.full_name}
+                                </p>
+                                <ul className="d-flex align-items-center rating my-1">
+                                  {[...Array(5)].map((_, i) => (
                                     <li key={i}>
-                                      <i className="fas fa-star star-orange me-1"></i>
+                                      <i
+                                        className={`fas fa-star ${
+                                          i < item.rating ? "star-orange" : ""
+                                        } me-1`}></i>
                                     </li>
                                   ))}
                                 </ul>
                               </div>
                             </div>
-                            <p>{item.feedback}</p>
+                            <p className="d-flex align-items-center my-1">
+                              {item.feedback}
+                            </p>
                           </div>
                         </div>
                       ))}
-                    </div>
-                    <a
-                      className="carousel-control-prev"
-                      href="#carouselExample"
-                      role="button"
-                      data-slide="prev"
-                      onClick={() => handleSelect(activeIndex - 1)}>
-                      <span
-                        className="carousel-control-prev-icon"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">Previous</span>
-                    </a>
-                    <a
-                      className="carousel-control-next"
-                      href="#carouselExample"
-                      role="button"
-                      data-slide="next"
-                      onClick={() => handleSelect(activeIndex + 1)}>
-                      <span
-                        className="carousel-control-next-icon"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">Next</span>
-                    </a>
+                    </Slider>
                   </div>
                 </div>
               </div>
@@ -452,9 +468,9 @@ const Learn = () => {
             <div className="col-xl-12">
               <div className="card score-active style-1">
                 <div className="card-header border-0 pb-2 flex-wrap">
-                  <h4 className="me-4">Score Activity</h4>
+                  <h4 className="me-4">Enrolled Courses</h4>
                   <ul className="d-flex mb-2">
-                    <li>
+                    {/* <li>
                       <svg
                         className="me-2"
                         width="12"
@@ -474,7 +490,7 @@ const Learn = () => {
                         />
                       </svg>
                       Last Month
-                    </li>
+                    </li> */}
                     <li>
                       <svg
                         className="me-2"
@@ -494,37 +510,12 @@ const Learn = () => {
                           strokeWidth="3"
                         />
                       </svg>
-                      Last Month
+                      Enrollment Date
                     </li>
                   </ul>
-                  <div className="d-flex align-items-center">
-                    <Dropdown className="select-dropdown me-2">
-                      <Dropdown.Toggle
-                        as="div"
-                        className="i-false dashboard-select  selectBtn btn-dark">
-                        {dropSelect}{" "}
-                        <i className="fa-solid fa-angle-down ms-2" />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Month")}>
-                          This Month
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Weekly")}>
-                          This Weekly
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setDropSelect("This Day")}>
-                          This Day
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                    <DropDownBlog />
-                  </div>
                 </div>
-                <div className="card-body pb-1 custome-tooltip pt-0">
-                  <ProfileActivityChart />
+                <div className="card-body">
+                  <ProfileActivityChart courseData={enrolledCourses} />
                 </div>
               </div>
               <Modal
