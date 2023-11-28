@@ -37,9 +37,10 @@ import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
-import badge1 from "@images/svg/LearningNewbie.svg";
-import badge2 from "@images/svg/LearningGrower.svg";
-import badge3 from "@images/svg/LearningAdventurer.svg";
+import badge1 from "@images/svg/Learner.svg";
+import badge2 from "@images/svg/Activity.svg";
+import badge3 from "@images/svg/Test.svg";
+import badge4 from "@images/svg/Certificate.svg";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -70,6 +71,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
   const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
   const [userData, setUserData] = useState([]); //user list data
   const [selectedItem, setSelectedItem] = useState(null);
+  const [badges, setBadges] = useState(null);
   const [userImg, setUserImg] = useState(null);
   const [userName, setUserName] = useState(""); //Full name
   const [registerDate, setRegisterDate] = useState("");
@@ -182,7 +184,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     axios
       .get("https://beta.eonlearning.tech/auth/fetch_userpoints_by_userid")
       .then((response) => {
-        console.log(response.data.data);
+        console.log("fetch_userpoints_by_userid", response.data.data);
         let allUsers = response.data.data.user_ids;
         const learnerUsers = allUsers.filter((user) => user.role === "Learner");
         setUserData(learnerUsers);
@@ -232,9 +234,10 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     setSelectedItem(null);
   };
 
-  const handleBadges = (name, img) => {
+  const handleBadges = (name, img, badge) => {
     console.log(name, img);
     setSelectedItem(name);
+    setBadges(badge);
     setUserImg(img);
   };
 
@@ -289,6 +292,26 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
   const getRandomNumber2 = () => {
     return Math.floor(Math.random() * 101); // Generate a random number for numb2
   };
+
+  let BadgeCount = 0;
+
+  if (badges === "Activity Newbie") {
+    BadgeCount = 1;
+  } else if (badges === "Activity Grower") {
+    BadgeCount = 2;
+  } else if (badges === "Activity Adventurer") {
+    BadgeCount = 3;
+  } else if (badges === "Activity Explorer") {
+    BadgeCount = 4;
+  } else if (badges === "Activity Star") {
+    BadgeCount = 5;
+  } else if (badges === "Activity Superstar") {
+    BadgeCount = 6;
+  } else if (badges === "Activity Master") {
+    BadgeCount = 7;
+  } else if (badges === "Activity Grandmaster") {
+    BadgeCount = 8;
+  }
 
   return (
     <>
@@ -558,6 +581,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                         const img = item.file
                                           ? `${backendBaseUrl}/${item.file}`
                                           : "";
+                                        console.log(item.cdn_file_link);
                                         let medalIcon = null;
                                         if (index === 0) {
                                           medalIcon = (
@@ -750,7 +774,30 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                         <tr key={index}>
                                           <td>
                                             <center>
-                                              <SlBadge style={medalStyle} />
+                                              {item.user_level === 0 && (
+                                                <img
+                                                  src={level1}
+                                                  alt="Level 1"
+                                                />
+                                              )}
+                                              {item.user_level === 1 && (
+                                                <img
+                                                  src={level2}
+                                                  alt="Level 2"
+                                                />
+                                              )}
+                                              {item.user_level === 2 && (
+                                                <img
+                                                  src={level3}
+                                                  alt="Level 3"
+                                                />
+                                              )}
+                                              {item.user_level === 3 && (
+                                                <img
+                                                  src={level4}
+                                                  alt="Level 4"
+                                                />
+                                              )}
                                             </center>
                                           </td>
                                           <td style={{ width: "20%" }}>
@@ -877,7 +924,49 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                               />
                                             );
                                           }
-
+                                          let BadgeCount = null;
+                                          if (
+                                            item.badge_name ===
+                                            "Activity Newbie"
+                                          ) {
+                                            BadgeCount = 1;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Grower"
+                                          ) {
+                                            BadgeCount = 2;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Adventurer"
+                                          ) {
+                                            BadgeCount = 3;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Explorer"
+                                          ) {
+                                            BadgeCount = 4;
+                                          } else if (
+                                            item.badge_name === "Activity Star"
+                                          ) {
+                                            BadgeCount = 5;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Superstar"
+                                          ) {
+                                            BadgeCount = 6;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Master"
+                                          ) {
+                                            BadgeCount = 7;
+                                          } else if (
+                                            item.badge_name ===
+                                            "Activity Grandmaster"
+                                          ) {
+                                            BadgeCount = 8;
+                                          } else {
+                                            BadgeCount = 0;
+                                          }
                                           return (
                                             <tr key={index}>
                                               <td>
@@ -922,7 +1011,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                                 </center>
                                               </td>
                                               <td>
-                                                <center> 3</center>
+                                                <center> {BadgeCount}</center>
                                               </td>
                                               <td>
                                                 <center>
@@ -934,7 +1023,8 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                                     onClick={() =>
                                                       handleBadges(
                                                         item.full_name,
-                                                        item.file
+                                                        item.file,
+                                                        item.badge_name
                                                       )
                                                     }
                                                   />
@@ -952,6 +1042,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                             <div className="about-content">
                               {" "}
                               {/* const img = `${backendBaseUrl}/${img}`; */}
+                              {/* on hover >> badge name */}
                               <Table responsive>
                                 <tbody>
                                   <tr>
@@ -959,7 +1050,13 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                       <strong>{selectedItem}</strong>
                                     </td>
                                     <td>
-                                      <center> 3</center>
+                                      <center>
+                                        {badges !== null && (
+                                          <span style={{ fontWeight: "bold" }}>
+                                            Badge Count: {BadgeCount}
+                                          </span>
+                                        )}
+                                      </center>
                                     </td>
                                   </tr>
                                   <tr>
@@ -982,6 +1079,98 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                       width="100"
                                       height="100"
                                     />
+                                    <img
+                                      src={badge4}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                  </tr>
+                                  <tr>
+                                    {badges === "Activity Newbie" && (
+                                      <>
+                                        <td>
+                                          <img
+                                            src={badge2}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                        </td>
+                                      </>
+                                    )}
+                                    {badges === "Activity Grower" && (
+                                      <>
+                                        <td>
+                                          <img
+                                            src={badge1}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge2}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                        </td>
+                                      </>
+                                    )}
+                                    {badges === "Activity Adventurer" && (
+                                      <>
+                                        <td>
+                                          <img
+                                            src={badge1}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge2}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge3}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                        </td>
+                                      </>
+                                    )}
+                                    {badges === "Activity Explorer" && (
+                                      <>
+                                        <td>
+                                          <img
+                                            src={badge1}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge2}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge3}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                          <img
+                                            src={badge4}
+                                            alt=""
+                                            width="100"
+                                            height="100"
+                                          />
+                                        </td>
+                                      </>
+                                    )}
                                   </tr>
                                 </tbody>
                               </Table>
