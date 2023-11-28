@@ -117,8 +117,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
       const formattedDate = `${day < 10 ? "0" + day : day}-${
         month < 10 ? "0" + month : month
       }-${year}`;
-
-      console.log(data.course_names);
       setUserName(data.user_infographics.full_name);
       setRegisterDate(formattedDate);
       setProfileImg(data.user_infographics.file);
@@ -148,8 +146,9 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data.user_ratings);
-      setuserRating(response.data.user_ratings);
+      console.log(response.data);
+      const data = response.data;
+      setuserRating(data === null ? null : response.data.user_ratings);
     } catch (error) {
       console.error("API Error:", error);
     }
@@ -171,41 +170,12 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
       )
       .then((response) => {
         const data = response.data.data;
-        setEnrolledCourses(data.enrolled_info);
+        setEnrolledCourses(data === null ? [] : data.enrolled_info);
       })
       .catch((error) => {
-        toast.error("Failed to fetch users!");
+        console.error("Error fetching enrolled courses:", error);
       });
   };
-  const handleExport = () => {
-    const headings = [
-      [
-        "id",
-        "FullName",
-        "Email_Address",
-        "Employee_id",
-        "Department",
-        "Aadhar_Card_No",
-        "Username",
-        "Password",
-        "Bio",
-        "Photo",
-        "User_Type",
-        "TimeZone",
-        "Language",
-      ],
-    ];
-    const wb = utils.book_new();
-    const ws = utils.json_to_sheet([]);
-    utils.sheet_add_aoa(ws, headings);
-    utils.sheet_add_json(ws, movies, { origin: "A2", skipHeader: true });
-    utils.book_append_sheet(wb, ws, "Report");
-    writeFile(wb, "Export Report.xlsx");
-  };
-
-  // const handleSelect = (selectedIndex, e) => {
-  //   setActiveIndex(selectedIndex);
-  // };
 
   //User List Api
   const getUsers = () => {
@@ -217,9 +187,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
         const learnerUsers = allUsers.filter((user) => user.role === "Learner");
         setUserData(learnerUsers);
       })
-      .catch((error) => {
-        toast.error("Failed to fetch users!"); // Handle the error
-      });
+      .catch((error) => {});
   };
 
   const WidgetBlog = ({ changeImage, title }) => {
@@ -365,44 +333,48 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                 <h4 className="mb-3">User Reviews</h4>
                 <div>
                   <div>
-                    <Slider {...sliderSettings}>
-                      {userRating.map((item, index) => (
-                        <div
-                          key={index}
-                          className={`carousel-item ${
-                            index === activeIndex ? "active" : ""
-                          }`}>
-                          <div className="review-box card">
-                            <div className="d-flex align-items-center">
-                              <img src={item.file} alt="course img" />
-                              <div className="ms-3">
-                                <h4 className="mb-0 fs-18 font-w500">
-                                  {item.coursename}
-                                </h4>
-                                <p
-                                  className="mb-0 font-w500"
-                                  style={{ marginRight: "7rem" }}>
-                                  Review by: {item.full_name}
-                                </p>
-                                <ul className="d-flex align-items-center rating my-1">
-                                  {[...Array(5)].map((_, i) => (
-                                    <li key={i}>
-                                      <i
-                                        className={`fas fa-star ${
-                                          i < item.rating ? "star-orange" : ""
-                                        } me-1`}></i>
-                                    </li>
-                                  ))}
-                                </ul>
+                    {userRating ? (
+                      <Slider {...sliderSettings}>
+                        {userRating.map((item, index) => (
+                          <div
+                            key={index}
+                            className={`carousel-item ${
+                              index === activeIndex ? "active" : ""
+                            }`}>
+                            <div className="review-box card">
+                              <div className="d-flex align-items-center">
+                                <img src={item.file} alt="course img" />
+                                <div className="ms-3">
+                                  <h4 className="mb-0 fs-18 font-w500">
+                                    {item.coursename}
+                                  </h4>
+                                  <p
+                                    className="mb-0 font-w500"
+                                    style={{ marginRight: "7rem" }}>
+                                    Review by: {item.full_name}
+                                  </p>
+                                  <ul className="d-flex align-items-center rating my-1">
+                                    {[...Array(5)].map((_, i) => (
+                                      <li key={i}>
+                                        <i
+                                          className={`fas fa-star ${
+                                            i < item.rating ? "star-orange" : ""
+                                          } me-1`}></i>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
                               </div>
+                              <p className="d-flex align-items-center my-1">
+                                {item.feedback}
+                              </p>
                             </div>
-                            <p className="d-flex align-items-center my-1">
-                              {item.feedback}
-                            </p>
                           </div>
-                        </div>
-                      ))}
-                    </Slider>
+                        ))}
+                      </Slider>
+                    ) : (
+                      <p className="mt-3 fw-Mid-bold">No Reviews</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -470,27 +442,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                 <div className="card-header border-0 pb-2 flex-wrap">
                   <h4 className="me-4">Enrolled Courses</h4>
                   <ul className="d-flex mb-2">
-                    {/* <li>
-                      <svg
-                        className="me-2"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect
-                          x="1.5"
-                          y="1.5"
-                          width="9"
-                          height="9"
-                          rx="4.5"
-                          fill="white"
-                          stroke="#FEC64F"
-                          strokeWidth="3"
-                        />
-                      </svg>
-                      Last Month
-                    </li> */}
                     <li>
                       <svg
                         className="me-2"
@@ -511,6 +462,27 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                         />
                       </svg>
                       Enrollment Date
+                    </li>
+                    <li>
+                      <svg
+                        className="me-2"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect
+                          x="1.5"
+                          y="1.5"
+                          width="9"
+                          height="9"
+                          rx="4.5"
+                          fill="white"
+                          stroke="#FF6A59"
+                          strokeWidth="3"
+                        />
+                      </svg>
+                      Completion Date
                     </li>
                   </ul>
                 </div>
