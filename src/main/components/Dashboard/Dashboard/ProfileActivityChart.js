@@ -2,6 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LearningActivityChart = ({ courseData }) => {
+  console.log(courseData, "courseData");
   // Define the months you want to display on the y-axis
   const displayMonths = [
     "January",
