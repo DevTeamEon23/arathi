@@ -91,7 +91,6 @@ const Inst = () => {
         config
       )
       .then((response) => {
-        console.log("inside course blog", response.data.data.data_counts_data);
         setDataCounts(response.data.data.data_counts_data);
       })
       .catch((error) => {
