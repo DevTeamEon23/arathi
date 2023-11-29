@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LearningActivityChart = ({ data }) => {
-  console.log(data);
+  console.log("data", data);
   const [chartData, setChartData] = useState({
     series: [],
     options: {
