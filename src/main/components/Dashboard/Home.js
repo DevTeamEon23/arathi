@@ -43,6 +43,7 @@ const Home = () => {
   const Department = window.localStorage.getItem("dept");
   const role = window.localStorage.getItem("role");
   const jwtToken = window.localStorage.getItem("jwt_access_token");
+  const ID = window.localStorage.getItem("id");
 
   useEffect(() => {
     changeBackground({ value: "light", label: "Light" });
@@ -57,45 +58,49 @@ const Home = () => {
   }, []);
 
   //data counts
-  const getDataCounts = () => {
-    const config = {
-      headers: {
-        "Auth-Token": jwtToken,
-      },
-    };
-    axios
-      .get(
-        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin",
-        config
-      )
-      .then((response) => {
-        console.log("inside course blog", response.data.data.data_counts_data);
-        setDataCounts(response.data.data.data_counts_data);
-      })
-      .catch((error) => {
-        // toast.error("Failed to fetch users!");
+  const getDataCounts = async () => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
       });
+      console.log("inside course blog", response.data.data.data_counts_data);
+      setDataCounts(response.data.data.data_counts_data);
+    } catch (error) {
+      // toast.error("Failed to fetch users!");
+    }
   };
 
   //User Login data
-  const getUserActivity = () => {
-    const config = {
-      headers: {
-        "Auth-Token": jwtToken,
-      },
-    };
-    axios
-      .get(
-        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin",
-        config
-      )
-      .then((response) => {
-        console.log(response.data.data.user_ids);
-        setuserActivity(response.data.data.user_ids);
-      })
-      .catch((error) => {
-        // toast.error("Failed to fetch users!");
+  const getUserActivity = async () => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
       });
+      console.log(response.data.data.user_ids);
+      setuserActivity(response.data.data.user_ids);
+    } catch (error) {
+      // toast.error("Failed to fetch users!");
+    }
   };
 
   //User dept count
@@ -111,7 +116,6 @@ const Home = () => {
         config
       )
       .then((response) => {
-        console.log("@@", response.data.data.dept_counts_data);
         setDeptCount(response.data.data.dept_counts_data);
       })
       .catch((error) => {
@@ -120,24 +124,26 @@ const Home = () => {
   };
 
   //enrolled courses to user
-  const getUserEnrolledCourses = () => {
-    const config = {
-      headers: {
-        "Auth-Token": jwtToken,
-      },
-    };
-    axios
-      .get(
-        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_admin",
-        config
-      )
-      .then((response) => {
-        console.log(response.data.data.enrolled_info);
-        setUserEnrolledCourses(response.data.data.enrolled_info);
-      })
-      .catch((error) => {
-        // toast.error("Failed to fetch users!");
+  const getUserEnrolledCourses = async () => {
+    try {
+      const queryParams = {
+        user_id: ID,
+      };
+      const url = new URL(
+        "https://beta.eonlearning.tech/lms-service/data_counts_for_instructor"
+      );
+      url.search = new URLSearchParams(queryParams).toString();
+      const response = await axios.get(url.toString(), {
+        headers: {
+          "Auth-Token": jwtToken,
+          "Content-Type": "multipart/form-data",
+        },
       });
+      console.log(response.data.data.enrolled_info);
+      setUserEnrolledCourses(response.data.data.enrolled_info);
+    } catch (error) {
+      // toast.error("Failed to fetch users!");
+    }
   };
 
   return (
