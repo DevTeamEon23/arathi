@@ -68,8 +68,8 @@ import TestRed from "@images/svg/TestRed.svg";
 import certificateBlue from "@images/svg/certificateBlue.svg";
 import certificateGreen from "@images/svg/certificateGreen.svg";
 import certificateGrassGreen from "@images/svg/certificateGrassGreen.svg";
-import certificatePink from "@images/svg/certificateBlue.svg";
-import certificatePurple from "@images/svg/certificateBlue.svg";
+import certificatePink from "@images/svg/certificatePink.svg";
+import certificatePurple from "@images/svg/certificatePurple.svg";
 
 const backendBaseUrl = "https://beta.eonlearning.tech";
 
