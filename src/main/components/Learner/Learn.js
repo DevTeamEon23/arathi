@@ -22,22 +22,20 @@ import dummy from "@images/profile/dummy.jpg";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { RotatingLines } from "react-loader-spinner";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+//images
 import level1 from "@images/svg/Level1.svg";
 import level2 from "@images/svg/Level2.svg";
 import level3 from "@images/svg/Level3.svg";
 import level4 from "@images/svg/Level4.svg";
-//images
-import pic2 from "@images/courses/pic2.jpg";
-import cup from "@images/svg/cup.svg";
-import puzzle from "@images/svg/puzzle.svg";
-import planet from "@images/svg/planet.svg";
-import skill from "@images/svg/skill.svg";
-import readingtime from "@images/svg/readingtime.svg";
 import certificate from "@images/svg/degree-certificate.svg";
 import clock from "@images/svg/clock-1.svg";
 import pic3 from "@images/courses/pic3.jpg";
 import pic4 from "@images/courses/pic4.jpg";
-import badge1 from "@images/svg/Learner.svg";
+
 import badge2 from "@images/svg/Activity.svg";
 import ActivityGreen from "@images/svg/ActivityGreen.svg";
 import ActivityGrassGreen from "@images/svg/ActivityGrassGreen.svg";
@@ -47,9 +45,31 @@ import ActivityOrange from "@images/svg/ActivityOrange.svg";
 import ActivityYellow from "@images/svg/ActivityYellow.svg";
 import ActivityBlue from "@images/svg/ActivityBlue.svg";
 import ActivityRed from "@images/svg/ActivityRed.svg";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
+import badge1 from "@images/svg/Learner.svg";
+import LearnerGreen from "@images/svg/LearnerGreen.svg";
+import LearnerGrassGreen from "@images/svg/LearnerGrassGreen.svg";
+import LearnerPink from "@images/svg/LearnerPink.svg";
+import LearnerPurple from "@images/svg/LearnerPurple.svg";
+import LearnerOrange from "@images/svg/LearnerOrange.svg";
+import LearnerYellow from "@images/svg/LearnerYellow.svg";
+import LearnerRed from "@images/svg/LearnerRed.svg";
+import LearnerBlue from "@images/svg/LearnerBlue.svg";
+
+import TestBlue from "@images/svg/TestBlue.svg";
+import TestGreen from "@images/svg/TestGreen.svg";
+import TestGrassGreen from "@images/svg/TestGrassGreen.svg";
+import TestPink from "@images/svg/TestPink.svg";
+import TestPurple from "@images/svg/TestPurple.svg";
+import TestOrange from "@images/svg/TestOrange.svg";
+import TestYellow from "@images/svg/TestYellow.svg";
+import TestRed from "@images/svg/TestRed.svg";
+
+import certificateBlue from "@images/svg/certificateBlue.svg";
+import certificateGreen from "@images/svg/certificateGreen.svg";
+import certificateGrassGreen from "@images/svg/certificateGrassGreen.svg";
+import certificatePink from "@images/svg/certificateBlue.svg";
+import certificatePurple from "@images/svg/certificateBlue.svg";
 
 const backendBaseUrl = "https://beta.eonlearning.tech";
 
@@ -1729,6 +1749,58 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                       </div>
                                     )}
                                   </tr>
+                                  {/* <tr>
+                                    kjhbjufckjuyghoilj <br />
+                                    <img
+                                      src={certificateBlue}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={certificateGrassGreen}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={certificateGreen}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={LearnerPink}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={LearnerPurple}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={LearnerYellow}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={LearnerOrange}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <img
+                                      src={LearnerRed}
+                                      alt=""
+                                      width="100"
+                                      height="100"
+                                    />
+                                    <br />
+                                  </tr> */}
                                 </tbody>
                               </Table>
                               <Container className="d-flex justify-content-center align-items-center mt-3">
