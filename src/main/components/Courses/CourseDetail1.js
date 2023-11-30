@@ -34,7 +34,7 @@ const CourseDetail1 = (props) => {
   const [courseData, setCourseData] = useState();
   const [coursename, setCoursename] = useState(""); //course name
   const [description, setDescription] = useState(""); //Description
-  const [videoUrl, setVideoUrl] = useState(""); //video
+  const [videoUrl, setVideoUrl] = useState(null); //video
   const [courselink, setCourselink] = useState(""); //to save youtube link
   const [imgFile, setImgFile] = useState(null);
   const history = useHistory();
@@ -65,9 +65,13 @@ const CourseDetail1 = (props) => {
       const res = response.data.data;
       setCourseData(response.data.data);
       if (response.data.status === "success") {
+        const handleVideoURL =
+          res.coursevideo === "https://beta.eonlearning.tech/"
+            ? null
+            : res.coursevideo;
         setCoursename(res.coursename);
         setDescription(res.description);
-        setVideoUrl(res.coursevideo);
+        setVideoUrl(handleVideoURL);
         setCourselink(res.courselink);
         setImgFile(res.file);
       }
@@ -207,9 +211,8 @@ const CourseDetail1 = (props) => {
                   </div>
                 </div>
                 <div className="col-xl-6">
-                  <div className="card">
-                    <div className="video-img">
-                      {videoUrl && (
+                  <div className="">
+                    {/* {videoUrl !== null && (
                         <div className="video-container mt-3">
                           <video
                             controls
@@ -239,8 +242,31 @@ const CourseDetail1 = (props) => {
                             </Link>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      )} */}
+
+                    {videoUrl !== null ? (
+                      <video
+                        controls
+                        src={videoUrl}
+                        type={
+                          videoUrl.endsWith(".mp4")
+                            ? "video/mp4"
+                            : "video/x-matroska"
+                        }
+                        alt="video"
+                        className="video-preview"
+                        style={{ height: "600px" }}></video>
+                    ) : (
+                      <iframe
+                        title="YouTube Video"
+                        // width="475"
+                        // height="300"
+                        style={{ height: "600px" }}
+                        className="video-preview"
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        frameBorder="0"
+                        allowFullScreen></iframe>
+                    )}
 
                     {/* <div className="course-prise d-flex justify-content-between align-items-center flex-wrap">
                         <div className="d-flex align-items-center">
