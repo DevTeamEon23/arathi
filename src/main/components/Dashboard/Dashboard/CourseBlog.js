@@ -64,10 +64,18 @@ function BulbIcon() {
 export default function CourseBlog({ data }) {
   // Retrieve department from localStorage
   const dept = window.localStorage.getItem("dept");
+  const roleType = window.localStorage.getItem("role");
 
+  let role;
+  if (window.localStorage.getItem("role") === "Instructor") {
+    role = "Learner";
+  } else {
+    role = "Instructor";
+  }
   // Find department-wise data
-  const instCourseCount = data.find((item) => item.dept === dept) || null;
-
+  const instCourseCount =
+    data.find((item) => item.dept === dept && item.role === role) || null;
+  console.log(instCourseCount);
   const CourseBlogData = [
     {
       coloumClass: "col-sm-6",

@@ -2,7 +2,73 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LearningActivityChart = ({ courseData }) => {
-  console.log(courseData, "courseData");
+  // const dataTemp = [
+  //   {
+  //     course_id: 1,
+  //     coursename:
+  //       "Accounting & Financial Statement Analysis: Complete Training",
+  //     enrollment_date: "28 Jan 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 2,
+  //     coursename: "Financial Training",
+  //     enrollment_date: "28 Feb 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 3,
+  //     coursename: "Analysis Training",
+  //     enrollment_date: "28 April 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 4,
+  //     coursename: "Bank Training",
+  //     enrollment_date: "28 June 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 5,
+  //     coursename: "Management Training",
+  //     enrollment_date: "28 Aug 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 6,
+  //     coursename: "Advance Training",
+  //     enrollment_date: "28 Sept 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 7,
+  //     coursename: "Computer Training",
+  //     enrollment_date: "28 Nov 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  //   {
+  //     course_id: 8,
+  //     coursename: "Software Training",
+  //     enrollment_date: "28 Dec 2023",
+  //     full_name: "Test 18",
+  //     user_id: 4,
+  //     user_role: "Learner",
+  //   },
+  // ];
   // Define the months you want to display on the y-axis
   const displayMonths = [
     "January",
@@ -63,20 +129,34 @@ const LearningActivityChart = ({ courseData }) => {
       xaxis: {
         categories: categories,
         labels: {
+          formatter: function (value) {
+            const maxLength = 11;
+            if (value?.length > maxLength) {
+              return value?.substring(0, maxLength) + "...";
+            }
+            return value;
+          },
           style: {
             colors: "#3E4954",
             fontSize: "14px",
             fontFamily: "Poppins",
-            fontWeight: 100,
+            fontWeight: 500,
           },
-          offsetX: 2,
-          maxHeight: 80, // Adjust the maxHeight as needed
-          multiline: true,
+        },
+        title: {
+          text: "Course Name",
+          style: {
+            color: "#3E4954",
+            fontSize: "16px",
+            fontFamily: "Poppins",
+            fontWeight: 200,
+          },
         },
         axisBorder: {
           show: true,
         },
       },
+
       yaxis: {
         title: {
           text: "Months",
@@ -156,8 +236,14 @@ const LearningActivityChart = ({ courseData }) => {
       ],
       tooltip: {
         custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          const fullCourseName = courseData[dataPointIndex].coursename;
           const enrollmentDate = courseData[dataPointIndex].enrollment_date;
-          return `<div class="tooltip-custom">Enrollment Date: ${enrollmentDate}</div>`;
+
+          return `
+            <div class="tooltip-custom">
+              Course: ${fullCourseName}<br>
+              Enrollment Date: ${enrollmentDate}
+            </div>`;
         },
       },
     },

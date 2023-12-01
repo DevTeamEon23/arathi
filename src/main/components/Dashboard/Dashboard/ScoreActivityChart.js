@@ -2,8 +2,9 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const ScoreActivityChart = ({ data }) => {
-  const categories = data.map((item) => item.dept);
-
+  const categories = data
+    .map((item) => item.dept)
+    .filter((category) => category !== null);
   const instructorCountData = data.map((item) => item.instructor_count);
   const learnerCountData = data.map((item) => item.learner_count);
 
