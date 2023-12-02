@@ -9,11 +9,27 @@ const LearningActivityChart = ({ data }) => {
       // ... existing options
       xaxis: {
         categories: [], // Will be filled with login dates
+        title: {
+          text: "User's Name",
+          style: {
+            fontSize: "16px",
+            fontWeight: 400,
+          },
+        },
         labels: {
           // ... existing labels style
         },
         axisBorder: {
           show: false,
+        },
+      },
+      yaxis: {
+        title: {
+          text: "Points",
+          style: {
+            fontSize: "14px",
+            fontWeight: 400,
+          },
         },
       },
     },

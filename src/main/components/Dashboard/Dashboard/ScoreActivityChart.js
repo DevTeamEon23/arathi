@@ -39,7 +39,7 @@ const ScoreActivityChart = ({ data }) => {
           filter: "none",
         },
       },
-      colors: ["var(--primary)", "var(--secondary)"],
+      colors: ["var(--secondary)", "var(--primary)"],
       dataLabels: {
         enabled: false,
       },
@@ -73,6 +73,16 @@ const ScoreActivityChart = ({ data }) => {
         borderColor: "#eee",
       },
       xaxis: {
+        title: {
+          text: "Departments",
+          style: {
+            color: "#999999",
+            fontSize: "16px",
+            fontFamily: "poppins",
+            fontWeight: 600,
+            cssClass: "apexcharts-xaxis-label",
+          },
+        },
         categories: categories,
         labels: {
           show: true,
@@ -92,6 +102,16 @@ const ScoreActivityChart = ({ data }) => {
         },
       },
       yaxis: {
+        title: {
+          text: "User Counts",
+          style: {
+            color: "#999999",
+            fontSize: "18px",
+            fontFamily: "poppins",
+            fontWeight: 600,
+            cssClass: "apexcharts-xaxis-label",
+          },
+        },
         labels: {
           offsetX: -16,
           style: {
@@ -136,7 +156,7 @@ const ScoreActivityChart = ({ data }) => {
       options={chartData.options}
       series={chartData.series}
       type="bar"
-      height={285}
+      height={350}
     />
   );
 };
