@@ -69,6 +69,8 @@ export default function CourseBlog({ data }) {
   let role;
   if (window.localStorage.getItem("role") === "Instructor") {
     role = "Learner";
+  } else if (window.localStorage.getItem("role") === "Superadmin") {
+    role = "Admin";
   } else {
     role = "Instructor";
   }
@@ -76,36 +78,75 @@ export default function CourseBlog({ data }) {
   const instCourseCount =
     data.find((item) => item.dept === dept && item.role === role) || null;
   console.log(instCourseCount);
-  const CourseBlogData = [
-    {
-      coloumClass: "col-sm-6",
-      classChange: "bg-secondary",
-      image: Check,
-      imgClass: "",
-      title: "Total Courses",
-      number: instCourseCount ? instCourseCount.total_courses : "Loading...",
-      svgicon: <RightIcon />,
-    },
-    {
-      coloumClass: "col-sm-6",
-      image: Bookmarks,
-      imgClass: "bookmarks",
-      title: "Upcoming Courses",
-      number: instCourseCount ? instCourseCount.upcoming_courses : "Loading...",
-      svgicon: <BookIcon />,
-    },
-    {
-      coloumClass: "col-sm-12",
-      classChange: "bg-primary",
-      image: Bulb,
-      imgClass: "bulb",
-      title: "Progress Courses",
-      number: instCourseCount
-        ? instCourseCount.total_enrolled_course_count.toString()
-        : "Loading...",
-      svgicon: <BulbIcon />,
-    },
-  ];
+  const CourseBlogData = instCourseCount
+    ? [
+        {
+          coloumClass: "col-sm-6",
+          classChange: "bg-secondary",
+          image: Check,
+          imgClass: "",
+          title: "Total Courses",
+          number: instCourseCount
+            ? instCourseCount.total_courses
+            : "Loading...",
+          svgicon: <RightIcon />,
+        },
+        {
+          coloumClass: "col-sm-6",
+          image: Bookmarks,
+          imgClass: "bookmarks",
+          title: "Upcoming Courses",
+          number: instCourseCount
+            ? instCourseCount.upcoming_courses
+            : "Loading...",
+          svgicon: <BookIcon />,
+        },
+        {
+          coloumClass: "col-sm-12",
+          classChange: "bg-primary",
+          image: Bulb,
+          imgClass: "bulb",
+          title: "Progress Courses",
+          number:
+            instCourseCount && roleType === "Superadmin"
+              ? instCourseCount.overall_enrolled_courses.toString()
+              : instCourseCount
+              ? instCourseCount.total_enrolled_course_count.toString()
+              : "Loading...",
+          svgicon: <BulbIcon />,
+        },
+      ]
+    : [
+        {
+          coloumClass: "col-sm-6",
+          classChange: "bg-secondary",
+          image: Check,
+          imgClass: "",
+          title: "Total Courses",
+          number: "No data",
+          svgicon: <RightIcon />,
+        },
+        {
+          coloumClass: "col-sm-6",
+          image: Bookmarks,
+          imgClass: "bookmarks",
+          title: "Upcoming Courses",
+          number: "No data",
+          svgicon: <BookIcon />,
+        },
+        {
+          coloumClass: "col-sm-12",
+          classChange: "bg-primary",
+          image: Bulb,
+          imgClass: "bulb",
+          title: "Progress Courses",
+          number: "No data",
+          svgicon: <BulbIcon />,
+        },
+      ];
+
+  // Now you can use CourseBlogData as needed
+  console.log(CourseBlogData);
 
   if (!instCourseCount) {
     return (

@@ -96,9 +96,8 @@ const Inst = () => {
         },
       });
 
-      setDataCounts(response.data.data.data_counts_data); // Move this line outside the .then block
+      setDataCounts(response.data.data.data_counts_data);
     } catch (error) {
-      // Handle the error, you can use toast.error here if needed
       console.error("Failed to fetch data counts:", error);
     }
   };
@@ -193,10 +192,10 @@ const Inst = () => {
         <div className="col-xl-6 col-lg-12">
           <div className="card score-active">
             <div className="card-header border-0 flex-wrap">
-              <h4>Learning Activity</h4>{" "}
+              <h4>Enrolled Courses</h4>{" "}
             </div>
             <div className="card-body pb-1 custome-tooltip style-1 py-0">
-              <LearningActivityChart data={userActivity} />
+              <BarChart1 data={userEnrolledCourses} />
             </div>{" "}
           </div>
         </div>
@@ -204,10 +203,10 @@ const Inst = () => {
         <div className="col-xl-12 col-lg-6">
           <div className="card score-active">
             <div className="card-header border-0 flex-wrap">
-              <h4>Enrolled Courses</h4>{" "}
+              <h4>Learning Activity</h4>{" "}
             </div>
-            <div className="card-body pb-1 custome-tooltip style-1 py-0">
-              <BarChart1 data={userEnrolledCourses} />
+            <div className="card-body pb-1 style-1 py-0">
+              <LearningActivityChart data={userActivity} />
             </div>{" "}
           </div>
         </div>

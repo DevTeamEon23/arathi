@@ -52,7 +52,29 @@ const BarChart1 = ({ data }) => {
 
   const options = {
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Courses Name",
+          font: {
+            color: "#3E4954",
+            size: 16,
+            family: "Poppins",
+            weight: 400,
+          },
+        },
+      },
       y: {
+        title: {
+          display: true,
+          text: "User Count",
+          font: {
+            color: "#3E4954",
+            size: 16,
+            family: "Poppins",
+            weight: 200,
+          },
+        },
         beginAtZero: true,
         stepSize: 1,
       },
@@ -61,7 +83,7 @@ const BarChart1 = ({ data }) => {
       tooltip: {
         callbacks: {
           label: function (context) {
-            const label = context.label || ""; // Use context.label to get the actual label
+            const label = context.label || "";
             const fullNameArray = data
               .filter((entry) => entry.coursename === label)
               .map((entry) => entry.full_name);
