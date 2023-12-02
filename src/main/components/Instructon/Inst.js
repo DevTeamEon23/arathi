@@ -96,9 +96,8 @@ const Inst = () => {
         },
       });
 
-      setDataCounts(response.data.data.data_counts_data); // Move this line outside the .then block
+      setDataCounts(response.data.data.data_counts_data);
     } catch (error) {
-      // Handle the error, you can use toast.error here if needed
       console.error("Failed to fetch data counts:", error);
     }
   };
