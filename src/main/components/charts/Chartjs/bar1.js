@@ -35,7 +35,7 @@ const BarChart1 = ({ data }) => {
 
   // Truncate course names for the chart labels
   const truncatedCourseNames = courseNames.map((courseName) =>
-    courseName.length > 20 ? courseName.substring(0, 20) + "..." : courseName
+    courseName.length > 15 ? courseName.substring(0, 15) + "..." : courseName
   );
 
   // Prepare data for the chart
@@ -47,15 +47,15 @@ const BarChart1 = ({ data }) => {
         data: enrollmentsByCourse,
         backgroundColor: "rgba(63, 140, 255, 0.8)",
         borderColor: "rgba(63, 140, 255, 1)",
-        borderWidth: 1,
-        barThickness: 50,
+        borderWidth: 0.5,
+        barThickness: 40,
       },
     ],
   };
 
   const options = {
     maintainAspectRatio: false, // Set to false to explicitly set height
-    responsive: true, // Allow chart to be responsive to container changes
+    responsive: true,
     scales: {
       x: {
         title: {
@@ -63,7 +63,7 @@ const BarChart1 = ({ data }) => {
           text: "Courses Name",
           font: {
             color: "#3E4954",
-            size: 16,
+            size: 14,
             family: "Poppins",
             weight: 400,
           },

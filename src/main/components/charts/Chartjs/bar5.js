@@ -21,7 +21,7 @@ ChartJS.register(
   ArcElement
 );
 
-const BarChart1 = ({ dataCount }) => {
+const Bar5 = ({ dataCount }) => {
   console.log(dataCount);
 
   // Extract data for the chart
@@ -44,15 +44,36 @@ const BarChart1 = ({ dataCount }) => {
   };
 
   const options = {
+    responsive: true,
     scales: {
       x: {
+        title: {
+          display: true,
+          text: "Departments",
+          font: {
+            color: "#999999",
+            size: 16,
+            family: "Poppins",
+            weight: 400,
+          },
+        },
         beginAtZero: true,
         stepSize: 1,
       },
       y: {
+        title: {
+          display: true,
+          text: "User Count",
+          font: {
+            color: "#3E4954",
+            size: 14,
+            family: "Poppins",
+            weight: 200,
+          },
+        },
         beginAtZero: true,
         stepSize: 1,
-        max: 10,
+        max: 5,
         ticks: {
           precision: 0, // Set precision to 0 to ensure integer values
         },
@@ -79,4 +100,4 @@ const BarChart1 = ({ dataCount }) => {
   );
 };
 
-export default BarChart1;
+export default Bar5;
