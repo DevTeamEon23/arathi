@@ -17,6 +17,13 @@ const LearningActivityChart = ({ data }) => {
           },
         },
         labels: {
+          formatter: function (value) {
+            const maxLength = 10;
+            if (value?.length > maxLength) {
+              return value?.substring(0, maxLength) + "...";
+            }
+            return value;
+          },
           // ... existing labels style
         },
         axisBorder: {
@@ -35,6 +42,34 @@ const LearningActivityChart = ({ data }) => {
       legend: {
         position: "top", // Set the legend position to top
         offsetY: 5, // Adjust the offset as needed
+      },
+      tooltip: {
+        theme: "light",
+        style: {
+          background: "var(--primary)",
+          color: "#fff",
+          width: "200px",
+        },
+        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          const userName = data[dataPointIndex]?.full_name || "";
+          const userData = data[dataPointIndex] || {};
+          const points = userData.points || "";
+          const userLevel =
+            userData.user_level !== undefined ? userData.user_level : "";
+
+          return (
+            '<div class="apexcharts-tooltip-custom">' +
+            '<span class="apexcharts-tooltip-title fw-bold">' +
+            userName +
+            "</span>" +
+            '<span class="apexcharts-tooltip-series">Points - ' +
+            points +
+            ", Level - " +
+            userLevel +
+            "</span>" +
+            "</div>"
+          );
+        },
       },
     },
   });

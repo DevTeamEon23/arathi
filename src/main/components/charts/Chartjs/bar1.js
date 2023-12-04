@@ -85,25 +85,29 @@ const BarChart1 = ({ data }) => {
     },
     plugins: {
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            // Get the original full course name from the courseNames array
-            const label = courseNames[context.dataIndex] || "";
-
-            // Filter data for the specific course name
-            const filteredData = data.filter(
-              (entry) => entry.coursename === label
-            );
-
-            // Extract user_ids from the filtered data
-            const userIdArray = filteredData.map((entry) => entry.user_id);
-
-            // Create the tooltip label
-            const userIds =
-              userIdArray.length > 0 ? userIdArray.join(", ") : "N/A";
-
-            return `${label}: ${context.parsed.y} (User ID: ${userIds})`;
-          },
+        theme: "light",
+        style: {
+          background: "var(--primary)",
+          color: "#fff",
+          width: "200px",
+        },
+        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          const userName = w.globals.labels[dataPointIndex] || "";
+          const userData = data[dataPointIndex] || {};
+          const points = userData.points || "";
+          const userLevel = userData.user_level || "";
+          return (
+            '<div class="apexcharts-tooltip-custom">' +
+            '<span class="apexcharts-tooltip-title">' +
+            userName +
+            "</span>" +
+            '<span class="apexcharts-tooltip-series">Points - ' +
+            points +
+            ", Level - " +
+            userLevel +
+            "</span>" +
+            "</div>"
+          );
         },
       },
     },
