@@ -54,6 +54,8 @@ const BarChart1 = ({ data }) => {
   };
 
   const options = {
+    maintainAspectRatio: false, // Set to false to explicitly set height
+    responsive: true, // Allow chart to be responsive to container changes
     scales: {
       x: {
         title: {
@@ -78,8 +80,7 @@ const BarChart1 = ({ data }) => {
             weight: 200,
           },
         },
-        beginAtZero: true,
-        stepSize: 1,
+        ticks: { beginAtZero: true, stepSize: 1 },
       },
     },
     plugins: {
@@ -89,22 +90,13 @@ const BarChart1 = ({ data }) => {
             // Get the original full course name from the courseNames array
             const label = courseNames[context.dataIndex] || "";
 
-            // Log raw data for debugging
-            console.log("Raw Data:", data);
-
             // Filter data for the specific course name
             const filteredData = data.filter(
               (entry) => entry.coursename === label
             );
 
-            // Log filtered data for debugging
-            console.log("Filtered Data:", filteredData);
-
             // Extract user_ids from the filtered data
             const userIdArray = filteredData.map((entry) => entry.user_id);
-
-            // Log user_ids for debugging
-            console.log("User IDs:", userIdArray);
 
             // Create the tooltip label
             const userIds =
