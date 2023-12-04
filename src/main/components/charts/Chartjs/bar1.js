@@ -22,8 +22,6 @@ ChartJS.register(
 );
 
 const BarChart1 = ({ data }) => {
-  console.log(data);
-
   // Extract unique course names
   const courseNames = Array.from(
     new Set(data.map((entry) => entry.coursename))
@@ -35,9 +33,14 @@ const BarChart1 = ({ data }) => {
     return enrollments.length;
   });
 
+  // Truncate course names for the chart labels
+  const truncatedCourseNames = courseNames.map((courseName) =>
+    courseName.length > 20 ? courseName.substring(0, 20) + "..." : courseName
+  );
+
   // Prepare data for the chart
   const chartData = {
-    labels: courseNames,
+    labels: truncatedCourseNames,
     datasets: [
       {
         label: "Enrollments",
@@ -83,13 +86,31 @@ const BarChart1 = ({ data }) => {
       tooltip: {
         callbacks: {
           label: function (context) {
-            const label = context.label || "";
-            const fullNameArray = data
-              .filter((entry) => entry.coursename === label)
-              .map((entry) => entry.full_name);
+            // Get the original full course name from the courseNames array
+            const label = courseNames[context.dataIndex] || "";
 
-            const fullName = fullNameArray.join(", ");
-            return `${label}: ${context.parsed.y} (User: ${fullName || "N/A"})`;
+            // Log raw data for debugging
+            console.log("Raw Data:", data);
+
+            // Filter data for the specific course name
+            const filteredData = data.filter(
+              (entry) => entry.coursename === label
+            );
+
+            // Log filtered data for debugging
+            console.log("Filtered Data:", filteredData);
+
+            // Extract user_ids from the filtered data
+            const userIdArray = filteredData.map((entry) => entry.user_id);
+
+            // Log user_ids for debugging
+            console.log("User IDs:", userIdArray);
+
+            // Create the tooltip label
+            const userIds =
+              userIdArray.length > 0 ? userIdArray.join(", ") : "N/A";
+
+            return `${label}: ${context.parsed.y} (User ID: ${userIds})`;
           },
         },
       },
