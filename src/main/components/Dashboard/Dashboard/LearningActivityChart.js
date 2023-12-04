@@ -25,19 +25,28 @@ const LearningActivityChart = ({ data }) => {
       },
       yaxis: {
         title: {
-          text: "Points",
+          text: "Points/ Levels",
           style: {
             fontSize: "14px",
             fontWeight: 400,
           },
         },
       },
+      legend: {
+        position: "top", // Set the legend position to top
+        offsetY: 5, // Adjust the offset as needed
+      },
     },
   });
 
   useEffect(() => {
     if (data) {
-      const userPointsData = data.map((user) => user.points);
+      const userPointsData = data.map((user) => ({
+        name: user.full_name,
+        points: user.points,
+        userLevel: user.user_level, // Add user_level as a separate property
+      }));
+
       const loginDates = data.map((user) => user.full_name);
 
       setChartData((prevChartData) => ({
@@ -45,7 +54,11 @@ const LearningActivityChart = ({ data }) => {
         series: [
           {
             name: "Points",
-            data: userPointsData,
+            data: userPointsData.map((user) => user.points),
+          },
+          {
+            name: "User Level",
+            data: userPointsData.map((user) => user.userLevel),
           },
         ],
         options: {
@@ -54,6 +67,7 @@ const LearningActivityChart = ({ data }) => {
             ...prevChartData.options.xaxis,
             categories: loginDates,
           },
+          // colors: ["var(--primary)", "#3a9b7e"],
         },
       }));
     }
