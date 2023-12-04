@@ -35,7 +35,7 @@ const BarChart1 = ({ data }) => {
 
   // Truncate course names for the chart labels
   const truncatedCourseNames = courseNames.map((courseName) =>
-    courseName.length > 20 ? courseName.substring(0, 20) + "..." : courseName
+    courseName.length > 15 ? courseName.substring(0, 15) + "..." : courseName
   );
 
   // Prepare data for the chart
@@ -47,13 +47,15 @@ const BarChart1 = ({ data }) => {
         data: enrollmentsByCourse,
         backgroundColor: "rgba(63, 140, 255, 0.8)",
         borderColor: "rgba(63, 140, 255, 1)",
-        borderWidth: 1,
-        barThickness: 50,
+        borderWidth: 0.5,
+        barThickness: 40,
       },
     ],
   };
 
   const options = {
+    maintainAspectRatio: false, // Set to false to explicitly set height
+    responsive: true,
     scales: {
       x: {
         title: {
@@ -61,7 +63,7 @@ const BarChart1 = ({ data }) => {
           text: "Courses Name",
           font: {
             color: "#3E4954",
-            size: 16,
+            size: 14,
             family: "Poppins",
             weight: 400,
           },
@@ -78,40 +80,34 @@ const BarChart1 = ({ data }) => {
             weight: 200,
           },
         },
-        beginAtZero: true,
-        stepSize: 1,
+        ticks: { beginAtZero: true, stepSize: 1 },
       },
     },
     plugins: {
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            // Get the original full course name from the courseNames array
-            const label = courseNames[context.dataIndex] || "";
-
-            // Log raw data for debugging
-            console.log("Raw Data:", data);
-
-            // Filter data for the specific course name
-            const filteredData = data.filter(
-              (entry) => entry.coursename === label
-            );
-
-            // Log filtered data for debugging
-            console.log("Filtered Data:", filteredData);
-
-            // Extract user_ids from the filtered data
-            const userIdArray = filteredData.map((entry) => entry.user_id);
-
-            // Log user_ids for debugging
-            console.log("User IDs:", userIdArray);
-
-            // Create the tooltip label
-            const userIds =
-              userIdArray.length > 0 ? userIdArray.join(", ") : "N/A";
-
-            return `${label}: ${context.parsed.y} (User ID: ${userIds})`;
-          },
+        theme: "light",
+        style: {
+          background: "var(--primary)",
+          color: "#fff",
+          width: "200px",
+        },
+        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          const userName = w.globals.labels[dataPointIndex] || "";
+          const userData = data[dataPointIndex] || {};
+          const points = userData.points || "";
+          const userLevel = userData.user_level || "";
+          return (
+            '<div class="apexcharts-tooltip-custom">' +
+            '<span class="apexcharts-tooltip-title">' +
+            userName +
+            "</span>" +
+            '<span class="apexcharts-tooltip-series">Points - ' +
+            points +
+            ", Level - " +
+            userLevel +
+            "</span>" +
+            "</div>"
+          );
         },
       },
     },

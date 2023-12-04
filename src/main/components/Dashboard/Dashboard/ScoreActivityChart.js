@@ -5,18 +5,32 @@ const ScoreActivityChart = ({ data }) => {
   const categories = data
     .map((item) => item.dept)
     .filter((category) => category !== null);
+  const superadminCountData = data.map((item) => item.superadmin_count);
+  const adminCountData = data.map((item) => item.admin_count);
   const instructorCountData = data.map((item) => item.instructor_count);
   const learnerCountData = data.map((item) => item.learner_count);
 
   const chartData = {
     series: [
       {
+        name: "Superadmin Count",
+        data: superadminCountData,
+        color: "var(--primary-dark)",
+      },
+      {
+        name: "Admin Count",
+        data: adminCountData,
+        color: "var(--primary)",
+      },
+      {
         name: "Instructor Count",
         data: instructorCountData,
+        color: "var(--secondary-dark)",
       },
       {
         name: "Learner Count",
         data: learnerCountData,
+        color: "var(--secondary)",
       },
     ],
 
@@ -29,7 +43,7 @@ const ScoreActivityChart = ({ data }) => {
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: "35%",
+          columnWidth: "40%",
           endingShape: "rounded",
           borderRadius: 2,
         },
@@ -39,7 +53,7 @@ const ScoreActivityChart = ({ data }) => {
           filter: "none",
         },
       },
-      colors: ["var(--secondary)", "var(--primary)"],
+      // colors: ["var(--secondary)", "var(--primary)"],
       dataLabels: {
         enabled: false,
       },
@@ -125,10 +139,10 @@ const ScoreActivityChart = ({ data }) => {
             return parseInt(value);
           },
         },
+        max: 5,
       },
       fill: {
         opacity: 1,
-        colors: ["var(--secondary)", "var(--primary)"],
       },
       tooltip: {
         theme: "light",

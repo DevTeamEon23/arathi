@@ -41,7 +41,6 @@ const Home = () => {
   const [deptCount, setDeptCount] = useState([]);
   const [userActivity, setuserActivity] = useState("");
   const [userEnrolledCourses, setUserEnrolledCourses] = useState([]);
-  const Department = window.localStorage.getItem("dept");
   const role = window.localStorage.getItem("role");
   const jwtToken = window.localStorage.getItem("jwt_access_token");
   const ID = window.localStorage.getItem("id");
