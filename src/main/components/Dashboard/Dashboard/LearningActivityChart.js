@@ -60,9 +60,9 @@ const LearningActivityChart = ({ data }) => {
 
           return (
             '<div class="apexcharts-tooltip-custom">' +
-            '<span class="apexcharts-tooltip-title fw-bold">' +
+            '<div class="apexcharts-tooltip-title fw-bold">' +
             userName +
-            "</span>" +
+            "</div>" +
             '<div class="mt-2 apexcharts-tooltip-series">Last Login Date - ' +
             loginDate +
             "</div>" +

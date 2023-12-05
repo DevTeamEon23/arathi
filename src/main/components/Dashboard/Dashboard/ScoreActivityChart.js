@@ -131,7 +131,6 @@ const ScoreActivityChart = ({ data, chartType }) => {
             return parseInt(value);
           },
         },
-        max: 4,
       },
       fill: {
         opacity: 1,
