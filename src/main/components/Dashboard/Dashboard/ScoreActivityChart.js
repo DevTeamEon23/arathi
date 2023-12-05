@@ -1,39 +1,51 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const ScoreActivityChart = ({ data }) => {
+const ScoreActivityChart = ({ data, chartType }) => {
   const categories = data
     .map((item) => item.dept)
     .filter((category) => category !== null);
-  const superadminCountData = data.map((item) => item.superadmin_count);
-  const adminCountData = data.map((item) => item.admin_count);
-  const instructorCountData = data.map((item) => item.instructor_count);
-  const learnerCountData = data.map((item) => item.learner_count);
+
+  const countDataKeys =
+    chartType === "superadmin"
+      ? ["superadmin_count", "admin_count", "instructor_count", "learner_count"]
+      : ["instructor_count", "learner_count"];
+
+  const seriesData = countDataKeys.map((key, index) => ({
+    name:
+      chartType === "superadmin"
+        ? key.replace("_count", "")
+        : key.replace("_count", " Count"),
+    data: data.map((item) => item[key]),
+    color: `var(--${index % 2 === 0 ? "primary" : "secondary"}${
+      index < 2 ? "-dark" : ""
+    })`,
+  }));
 
   const chartData = {
-    series: [
-      {
-        name: "Superadmin Count",
-        data: superadminCountData,
-        color: "var(--primary-dark)",
-      },
-      {
-        name: "Admin Count",
-        data: adminCountData,
-        color: "var(--primary)",
-      },
-      {
-        name: "Instructor Count",
-        data: instructorCountData,
-        color: "var(--secondary-dark)",
-      },
-      {
-        name: "Learner Count",
-        data: learnerCountData,
-        color: "var(--secondary)",
-      },
-    ],
-
+    // series: [
+    //   {
+    //     name: "Superadmin Count",
+    //     data: superadminCountData,
+    //     color: "var(--primary-dark)",
+    //   },
+    //   {
+    //     name: "Admin Count",
+    //     data: adminCountData,
+    //     color: "var(--primary)",
+    //   },
+    //   {
+    //     name: "Instructor Count",
+    //     data: instructorCountData,
+    //     color: "var(--secondary-dark)",
+    //   },
+    //   {
+    //     name: "Learner Count",
+    //     data: learnerCountData,
+    //     color: "var(--secondary)",
+    //   },
+    // ],
+    series: seriesData,
     options: {
       chart: {
         toolbar: {
@@ -139,7 +151,7 @@ const ScoreActivityChart = ({ data }) => {
             return parseInt(value);
           },
         },
-        max: 5,
+        max: 4,
       },
       fill: {
         opacity: 1,
