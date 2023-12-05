@@ -35,7 +35,7 @@ const BarChart1 = ({ data }) => {
 
   // Truncate course names for the chart labels
   const truncatedCourseNames = courseNames.map((courseName) =>
-    courseName.length > 15 ? courseName.substring(0, 15) + "..." : courseName
+    courseName.length > 12 ? courseName.substring(0, 12) + "..." : courseName
   );
 
   // Prepare data for the chart
