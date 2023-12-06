@@ -186,8 +186,7 @@ const CoursesMain = () => {
                                   justifyContent: "space-between",
                                 }}>
                                 <h4>
-                                  <Link
-                                    to={`/course-details-1/${item.course_id}`}>
+                                  <Link to={`/course-details-1/${item.id}`}>
                                     {item.coursename}
                                   </Link>
                                 </h4>
@@ -205,7 +204,7 @@ const CoursesMain = () => {
                               style={{ alignItems: "center" }}>
                               {/* Your other content here */}
                               <Link
-                                to={`/course-details-1/${item.course_id}`}
+                                to={`/course-details-1/${item.id}`}
                                 className="btn btn-primary btn-sm">
                                 View all
                               </Link>

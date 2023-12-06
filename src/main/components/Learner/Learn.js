@@ -73,6 +73,18 @@ import certificateGreen from "@images/svg/certificateGreen.svg";
 import certificateGrassGreen from "@images/svg/certificateGrassGreen.svg";
 import certificatePink from "@images/svg/certificatePink.svg";
 import certificatePurple from "@images/svg/certificatePurple.svg";
+import certificateYellow from "@images/svg/certificateYellow.svg";
+import certificateOrange from "@images/svg/certificateOrange.svg";
+import certificateRed from "@images/svg/certificateRed.svg";
+
+import assignmentBlue from "@images/svg/assignmentBlue.svg";
+import assignmentGrassGreen from "@images/svg/assignmentGrassGreen.svg";
+import assignmentGreen from "@images/svg/assignmentGreen.svg";
+import assignmentPurple from "@images/svg/assignmentPurple.svg";
+import assignmentPink from "@images/svg/assignmentPink.svg";
+import assignmentYellow from "@images/svg/assignmentYellow.svg";
+import assignmentOrange from "@images/svg/assignmentOrange.svg";
+import assignmentRed from "@images/svg/assignmentRed.svg";
 
 const backendBaseUrl = "https://beta.eonlearning.tech";
 
@@ -93,9 +105,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  const [movies, setMovies] = useState([]);
   const [largeModal, setLargeModal] = useState(false);
-  const [dropSelect, setDropSelect] = useState("This Month");
   const [showAboutPane, setShowAboutPane] = useState(false); // About(Points)
   const [showReviewPane, setShowReviewPane] = useState(false); // Review(Levels)
   const [userData, setUserData] = useState([]); //user list data
@@ -111,8 +121,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
   const [courseCount, setcourseCount] = useState();
   const [courseData, setcourseData] = useState([]);
   const [userRating, setuserRating] = useState([]);
-  const [isHovered, setIsHovered] = useState(false);
-  // const [activeIndex, setActiveIndex] = useState(0);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const user_id = localStorage.getItem("id");
   const token = window.localStorage.getItem("jwt_access_token");
