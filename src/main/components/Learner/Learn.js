@@ -25,8 +25,10 @@ import { RotatingLines } from "react-loader-spinner";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import styled from "styled-components";
 
 //images
+import level0 from "@images/svg/Level0.svg";
 import level1 from "@images/svg/Level1.svg";
 import level2 from "@images/svg/Level2.svg";
 import level3 from "@images/svg/Level3.svg";
@@ -122,6 +124,85 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     fetchLearnerRating();
   }, []);
 
+  const badgesData = [
+    {
+      name: "Activity Newbie",
+      image: ActivityPink,
+      logins: 4,
+    },
+    {
+      name: "Activity Grower",
+      image: ActivityPurple,
+      logins: 8,
+    },
+    {
+      name: "Activity Adventurer",
+      image: ActivityBlue,
+      logins: 16,
+    },
+    {
+      name: "Activity Explorer",
+      image: ActivityGrassGreen,
+      logins: 32,
+    },
+    {
+      name: "Activity Star",
+      image: ActivityYellow,
+      logins: 64,
+    },
+    {
+      name: "Activity Superstar",
+      image: ActivityOrange,
+      logins: 128,
+    },
+    {
+      name: "Activity Master",
+      image: ActivityGreen,
+      logins: 256,
+    },
+    {
+      name: "Activity Grandmaster",
+      image: ActivityRed,
+      logins: 512,
+    },
+  ];
+
+  const getCurrentBadgeIndex = () =>
+    badgesData.findIndex((badge) => badge.name === badges);
+
+  const getStarRatingBadges = () => {
+    const currentIndex = getCurrentBadgeIndex();
+    const startIndex = Math.max(0, currentIndex - 7); // Show up to 8 badges
+
+    return badgesData.slice(startIndex, currentIndex + 1);
+  };
+
+  const BadgesContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  `;
+
+  const BadgeContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-right: 22px;
+  `;
+
+  const BadgeImage = styled.img`
+    width: 100px;
+    height: 100px;
+  `;
+
+  const Badge = ({ badge }) => (
+    <BadgeContainer>
+      <BadgeImage src={badge.image} alt="" title={badge.name} />
+      <p className="fw-bold" style={{ margin: "16px" }}>
+        {badge.logins} Logins
+      </p>
+    </BadgeContainer>
+  );
+
   const fetchLearnerData = async () => {
     try {
       const queryParams = {
@@ -175,7 +256,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data);
       const data = response.data;
       setuserRating(data === null ? null : response.data.user_ratings);
     } catch (error) {
@@ -211,7 +291,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     axios
       .get("https://beta.eonlearning.tech/auth/fetch_userpoints_by_userid")
       .then((response) => {
-        console.log("fetch_userpoints_by_userid", response.data.data);
         let allUsers = response.data.data.user_ids;
         const learnerUsers = allUsers.filter((user) => user.role === "Learner");
         setUserData(learnerUsers);
@@ -618,7 +697,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                         const img = item.file
                                           ? `${backendBaseUrl}/${item.file}`
                                           : "";
-                                        console.log(item.cdn_file_link);
                                         let medalIcon = null;
                                         if (index === 0) {
                                           medalIcon = (
@@ -1079,7 +1157,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                             <div className="about-content">
                               {" "}
                               {/* const img = `${backendBaseUrl}/${img}`; */}
-                              {/* on hover >> badge name */}
                               <Table responsive>
                                 <tbody>
                                   <tr>
@@ -1096,64 +1173,6 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                       </center>
                                     </td>
                                   </tr>
-                                  {/* <tr>
-                                    {" "}
-                                    <img
-                                      src={badge2}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityBlue}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityGreen}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityGrassGreen}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityPink}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityPurple}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityYellow}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityOrange}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={ActivityRed}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                  </tr> */}
-
                                   <tr>
                                     <th
                                       style={{
@@ -1165,642 +1184,34 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                       Activity
                                     </th>
                                   </tr>
-
                                   <tr>
-                                    {badges === "Activity Newbie" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}>
-                                        <img
-                                          src={ActivityPink}
-                                          alt=""
-                                          width="100"
-                                          height="100"
-                                          title={badges}
-                                        />
-                                        <p
-                                          className="fw-bold"
-                                          style={{ margin: "18px" }}>
-                                          4 Logins
-                                        </p>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Grower" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
+                                    <BadgesContainer>
+                                      {badges &&
+                                        getStarRatingBadges().map(
+                                          (badgeData) => (
+                                            <Badge
+                                              key={badgeData.name}
+                                              badge={badgeData}
+                                            />
+                                          )
+                                        )}
+                                      {badges === null && (
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}>
                                           <img
-                                            src={ActivityPurple}
+                                            src={badge2}
                                             alt=""
                                             width="100"
                                             height="100"
-                                            title={badges}
+                                            title="No Badge"
                                           />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
                                         </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Adventurer" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Explorer" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGrassGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            32 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Adventurer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Star" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityYellow}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            64 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGrassGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Explorer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            32 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Adventurer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Superstar" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityOrange}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            128 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityYellow}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Star"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            64 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGrassGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Explorer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            32 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Adventurer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Master" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            256 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityOrange}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Superstar"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            128 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityYellow}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Star"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            64 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGrassGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Explorer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            32 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Adventurer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === "Activity Grandmaster" && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityRed}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title={badges}
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            512 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Master"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            256 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityOrange}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Superstar"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            128 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityYellow}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Star"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            64 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityGrassGreen}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Explorer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            32 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityBlue}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Adventurer"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            16 Logins
-                                          </p>
-                                        </div>
-                                        <div style={{ marginRight: "20px" }}>
-                                          <img
-                                            src={ActivityPurple}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Grower"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            8 Logins
-                                          </p>
-                                        </div>
-                                        <div>
-                                          <img
-                                            src={ActivityPink}
-                                            alt=""
-                                            width="100"
-                                            height="100"
-                                            title="Activity Newbie"
-                                          />
-                                          <p
-                                            className="fw-bold"
-                                            style={{ margin: "18px" }}>
-                                            4 Logins
-                                          </p>
-                                        </div>
-                                      </div>
-                                    )}
-                                    {badges === null && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}>
-                                        <img
-                                          src={badge2}
-                                          alt=""
-                                          width="100"
-                                          height="100"
-                                          title="No Badge"
-                                        />
-                                      </div>
-                                    )}
+                                      )}
+                                    </BadgesContainer>
                                   </tr>
-                                  {/* <tr>
-                                    kjhbjufckjuyghoilj <br />
-                                    <img
-                                      src={certificateBlue}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={certificateGrassGreen}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={certificateGreen}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={LearnerPink}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={LearnerPurple}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={LearnerYellow}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={LearnerOrange}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <img
-                                      src={LearnerRed}
-                                      alt=""
-                                      width="100"
-                                      height="100"
-                                    />
-                                    <br />
-                                  </tr> */}
                                 </tbody>
                               </Table>
                               <Container className="d-flex justify-content-center align-items-center mt-3">
