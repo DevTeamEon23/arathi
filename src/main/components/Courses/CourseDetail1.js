@@ -203,7 +203,7 @@ const CourseDetail1 = (props) => {
                       </div>
                       <Link
                         to={"./ecom-checkout"}
-                        className="btn btn-primary w-25"
+                        className="btn btn-primary w-25 mt-4"
                         style={{ cursor: "not-allowed" }}>
                         Buy Now
                       </Link>
@@ -248,14 +248,10 @@ const CourseDetail1 = (props) => {
                       <video
                         controls
                         src={videoUrl}
-                        type={
-                          videoUrl.endsWith(".mp4")
-                            ? "video/mp4"
-                            : "video/x-matroska"
-                        }
+                        type={videoUrl ? "video/mp4" : "video/x-matroska"}
                         alt="video"
                         className="video-preview"
-                        style={{ height: "600px" }}></video>
+                        style={{ height: "400px" }}></video>
                     ) : (
                       <iframe
                         title="YouTube Video"

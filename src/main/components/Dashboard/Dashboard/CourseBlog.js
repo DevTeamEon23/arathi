@@ -62,9 +62,12 @@ function BulbIcon() {
 }
 
 export default function CourseBlog({ data }) {
+  const [selectedDept, setSelectedDept] = useState(null);
   // Retrieve department from localStorage
   const dept = window.localStorage.getItem("dept");
   const roleType = window.localStorage.getItem("role");
+
+  const deptOptions = [...new Set(data.map((item) => item.dept))];
 
   let role;
   if (window.localStorage.getItem("role") === "Instructor") {
@@ -74,83 +77,131 @@ export default function CourseBlog({ data }) {
   } else {
     role = "Instructor";
   }
+
   // Find department-wise data
   const instCourseCount =
-    data.find((item) => item.dept === dept && item.role === role) || null;
+    roleType === "Superadmin"
+      ? data.find((item) => item.dept === selectedDept && item.role === role)
+      : data.find((item) => item.dept === dept && item.role === role);
+
   console.log(instCourseCount);
-  const CourseBlogData = instCourseCount
-    ? [
-        {
-          coloumClass: "col-sm-6",
-          classChange: "bg-secondary",
-          image: Check,
-          imgClass: "",
-          title: "Total Courses",
-          number: instCourseCount
-            ? instCourseCount.total_courses
-            : "Loading...",
-          svgicon: <RightIcon />,
-        },
-        {
-          coloumClass: "col-sm-6",
-          image: Bookmarks,
-          imgClass: "bookmarks",
-          title: "Upcoming Courses",
-          number: instCourseCount
-            ? instCourseCount.upcoming_courses
-            : "Loading...",
-          svgicon: <BookIcon />,
-        },
-        {
-          coloumClass: "col-sm-12",
-          classChange: "bg-primary",
-          image: Bulb,
-          imgClass: "bulb",
-          title: "Progress Courses",
-          number:
-            instCourseCount && roleType === "Superadmin"
-              ? instCourseCount.overall_enrolled_courses.toString()
-              : instCourseCount
-              ? instCourseCount.total_enrolled_course_count.toString()
-              : "Loading...",
-          svgicon: <BulbIcon />,
-        },
-      ]
-    : [
-        {
-          coloumClass: "col-sm-6",
-          classChange: "bg-secondary",
-          image: Check,
-          imgClass: "",
-          title: "Total Courses",
-          number: "No data",
-          svgicon: <RightIcon />,
-        },
-        {
-          coloumClass: "col-sm-6",
-          image: Bookmarks,
-          imgClass: "bookmarks",
-          title: "Upcoming Courses",
-          number: "No data",
-          svgicon: <BookIcon />,
-        },
-        {
-          coloumClass: "col-sm-12",
-          classChange: "bg-primary",
-          image: Bulb,
-          imgClass: "bulb",
-          title: "Progress Courses",
-          number: "No data",
-          svgicon: <BulbIcon />,
-        },
-      ];
 
-  // Now you can use CourseBlogData as needed
-  console.log(CourseBlogData);
+  let CourseBlogData;
 
-  if (!instCourseCount) {
+  if (instCourseCount) {
+    CourseBlogData = [
+      {
+        coloumClass: "col-sm-6",
+        classChange: "bg-secondary",
+        image: Check,
+        imgClass: "",
+        title: "Total Courses",
+        number: instCourseCount.total_courses?.toString() || "Loading...",
+        svgicon: <RightIcon />,
+      },
+      {
+        coloumClass: "col-sm-6",
+        image: Bookmarks,
+        imgClass: "bookmarks",
+        title: "Upcoming Courses",
+        number:
+          roleType === "Superadmin"
+            ? instCourseCount.upcoming_courses?.toString() || "Loading..."
+            : instCourseCount.upcoming_courses?.toString() || "Loading...",
+        svgicon: <BookIcon />,
+      },
+      {
+        coloumClass: "col-sm-12",
+        classChange: "bg-primary",
+        image: Bulb,
+        imgClass: "bulb",
+        title: "Progress Courses",
+        number:
+          roleType === "Superadmin"
+            ? instCourseCount.overall_enrolled_courses?.toString() ||
+              "Loading..."
+            : instCourseCount.total_enrolled_course_count?.toString() ||
+              "Loading...",
+        svgicon: <BulbIcon />,
+      },
+    ];
+  } else {
+    CourseBlogData = [
+      {
+        coloumClass: "col-sm-6",
+        classChange: "bg-secondary",
+        image: Check,
+        imgClass: "",
+        title: "Total Courses",
+        number: "No data",
+        svgicon: <RightIcon />,
+      },
+      {
+        coloumClass: "col-sm-6",
+        image: Bookmarks,
+        imgClass: "bookmarks",
+        title: "Upcoming Courses",
+        number: "No data",
+        svgicon: <BookIcon />,
+      },
+      {
+        coloumClass: "col-sm-12",
+        classChange: "bg-primary",
+        image: Bulb,
+        imgClass: "bulb",
+        title: "Progress Courses",
+        number: "No data",
+        svgicon: <BulbIcon />,
+      },
+    ];
+  }
+
+  // Handle department change
+  const handleDeptChange = (event) => {
+    setSelectedDept(event.target.value);
+  };
+
+  if (roleType === "Superadmin") {
     return (
       <>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            alignItems: "center",
+          }}>
+          <label
+            style={{
+              marginRight: "10px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginTop: "5px",
+            }}>
+            Select Department:
+          </label>
+          <select
+            value={selectedDept}
+            onChange={handleDeptChange}
+            style={{
+              padding: "8px",
+              fontSize: "14px",
+              borderRadius: "4px",
+              border: "1px solid #ddd",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              cursor: "pointer",
+              minWidth: "150px", // Set a minimum width
+              background: "#fff", // Background color
+              color: "#333", // Text color
+            }}>
+            {deptOptions.map((deptOption) => (
+              <option key={deptOption} value={deptOption}>
+                {deptOption}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Render the actual values once the data is available */}
         <div className="row">
           {CourseBlogData.map((item, ind) => (
             <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
@@ -170,26 +221,22 @@ export default function CourseBlog({ data }) {
       </>
     );
   }
-
-  // Render the actual values once the data is available
   return (
-    <>
-      <div className="row">
-        {CourseBlogData.map((item, ind) => (
-          <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
-            <div className={`dlab-cource ${item.classChange}`}>
-              <div className="d-flex align-items-center">
-                <span className="course-icon">{item.svgicon}</span>
-                <div className="ms-2">
-                  <h4 className="mb-0">{item.number}</h4>
-                  <span>{item.title}</span>
-                </div>
+    <div className="row">
+      {CourseBlogData.map((item, ind) => (
+        <div className={`col-xl-4 ${item.coloumClass}`} key={ind}>
+          <div className={`dlab-cource ${item.classChange}`}>
+            <div className="d-flex align-items-center">
+              <span className="course-icon">{item.svgicon}</span>
+              <div className="ms-2">
+                <h4 className="mb-0">{item.number}</h4>
+                <span>{item.title}</span>
               </div>
-              <img src={item.image} alt="" className={item.imgClass} />
             </div>
+            <img src={item.image} alt="" className={item.imgClass} />
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
 }

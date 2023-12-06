@@ -252,7 +252,11 @@ const Home = () => {
             <div
               className="card-body pb-1 pt-0"
               style={{ overflow: "visible" }}>
-              <ScoreActivityChart data={deptCount} />
+              {role === "Admin" ? (
+                <ScoreActivityChart data={deptCount} chartType="admin" />
+              ) : (
+                <ScoreActivityChart data={deptCount} chartType="superadmin" />
+              )}
             </div>
           </div>
         </div>

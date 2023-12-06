@@ -22,15 +22,18 @@ ChartJS.register(
 );
 
 const Bar5 = ({ dataCount }) => {
-  console.log(dataCount);
-
   // Extract data for the chart
   const labels = dataCount.map((entry) => entry.dept);
   const dataValues = dataCount.map((entry) => entry.learner_count);
 
+  // Trim labels for x-axis
+  const truncatedLabels = labels.map((value) =>
+    value.length > 5 ? value.substring(0, 5) + "..." : value
+  );
+
   // Prepare data for the chart
   const chartData = {
-    labels: labels,
+    labels: truncatedLabels,
     datasets: [
       {
         label: "Learner Count",
@@ -38,7 +41,7 @@ const Bar5 = ({ dataCount }) => {
         backgroundColor: "rgba(63, 140, 255, 0.8)",
         borderColor: "rgba(63, 140, 255, 1)",
         borderWidth: 1,
-        barThickness: 50,
+        barThickness: 45,
       },
     ],
   };
@@ -73,9 +76,8 @@ const Bar5 = ({ dataCount }) => {
         },
         beginAtZero: true,
         stepSize: 1,
-        max: 5,
         ticks: {
-          precision: 0, // Set precision to 0 to ensure integer values
+          precision: 0,
         },
       },
     },
@@ -83,21 +85,17 @@ const Bar5 = ({ dataCount }) => {
       tooltip: {
         callbacks: {
           label: function (context) {
-            const label = context.label || ""; // Use context.label to get the actual label
-            const learnerCount =
-              dataCount[context.dataIndex]?.learner_count || "N/A";
-            return `${label}: ${learnerCount}`;
+            const dataIndex = context.dataIndex;
+            const originalLabel = labels[dataIndex] || "N/A";
+            const learnerCount = dataCount[dataIndex]?.learner_count || "N/A";
+            return `${originalLabel}: ${learnerCount}`;
           },
         },
       },
     },
   };
 
-  return (
-    <>
-      <Bar data={chartData} options={options} />
-    </>
-  );
+  return <Bar data={chartData} options={options} />;
 };
 
 export default Bar5;

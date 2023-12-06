@@ -1,39 +1,27 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const ScoreActivityChart = ({ data }) => {
-  const categories = data
-    .map((item) => item.dept)
-    .filter((category) => category !== null);
-  const superadminCountData = data.map((item) => item.superadmin_count);
-  const adminCountData = data.map((item) => item.admin_count);
-  const instructorCountData = data.map((item) => item.instructor_count);
-  const learnerCountData = data.map((item) => item.learner_count);
+const ScoreActivityChart = ({ data, chartType }) => {
+  const categories = data.map((item) => item.dept);
+
+  const countDataKeys =
+    chartType === "superadmin"
+      ? ["superadmin_count", "admin_count", "instructor_count", "learner_count"]
+      : ["instructor_count", "learner_count"];
+
+  const seriesData = countDataKeys.map((key, index) => ({
+    name:
+      chartType === "superadmin"
+        ? key.replace("_count", "")
+        : key.replace("_count", " Count"),
+    data: data.map((item) => item[key]),
+    color: `var(--${index % 2 === 0 ? "primary" : "secondary"}${
+      index < 2 ? "-dark" : ""
+    })`,
+  }));
 
   const chartData = {
-    series: [
-      {
-        name: "Superadmin Count",
-        data: superadminCountData,
-        color: "var(--primary-dark)",
-      },
-      {
-        name: "Admin Count",
-        data: adminCountData,
-        color: "var(--primary)",
-      },
-      {
-        name: "Instructor Count",
-        data: instructorCountData,
-        color: "var(--secondary-dark)",
-      },
-      {
-        name: "Learner Count",
-        data: learnerCountData,
-        color: "var(--secondary)",
-      },
-    ],
-
+    series: seriesData,
     options: {
       chart: {
         toolbar: {
@@ -53,7 +41,6 @@ const ScoreActivityChart = ({ data }) => {
           filter: "none",
         },
       },
-      // colors: ["var(--secondary)", "var(--primary)"],
       dataLabels: {
         enabled: false,
       },
@@ -97,7 +84,9 @@ const ScoreActivityChart = ({ data }) => {
             cssClass: "apexcharts-xaxis-label",
           },
         },
-        categories: categories,
+        categories: categories.map((value) =>
+          value.length > 5 ? value.substring(0, 5) + "..." : value
+        ),
         labels: {
           show: true,
           style: {
@@ -106,6 +95,9 @@ const ScoreActivityChart = ({ data }) => {
             fontFamily: "poppins",
             fontWeight: 600,
             cssClass: "apexcharts-xaxis-label",
+          },
+          formatter: function (value, timestamp, index) {
+            return value;
           },
         },
         axisBorder: {
@@ -139,7 +131,6 @@ const ScoreActivityChart = ({ data }) => {
             return parseInt(value);
           },
         },
-        max: 5,
       },
       fill: {
         opacity: 1,
@@ -151,15 +142,21 @@ const ScoreActivityChart = ({ data }) => {
           color: "#fff",
           width: "200px",
         },
-        formatter: function (val) {
-          return parseInt(val);
-        },
-        callbacks: {
-          label: function (context) {
-            const label = context.label || "";
-            const countType = context.seriesName || "";
-            return `${label}: ${parseInt(context.parsed.y)} (${countType})`;
-          },
+        custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+          const deptName = data[dataPointIndex].dept || "";
+          const countType = chartData.series[seriesIndex].name || "";
+          const countValue = series[seriesIndex][dataPointIndex];
+
+          return (
+            '<div class="apexcharts-tooltip-custom">' +
+            '<div class="apexcharts-tooltip-title fw-bold">' +
+            deptName +
+            "</div>" +
+            '<div class="mt-2 apexcharts-tooltip-series">' +
+            `${countValue} (${countType})` +
+            "</div>" +
+            "</div>"
+          );
         },
       },
     },

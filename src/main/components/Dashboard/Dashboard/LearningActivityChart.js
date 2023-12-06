@@ -40,8 +40,8 @@ const LearningActivityChart = ({ data }) => {
         },
       },
       legend: {
-        position: "top", // Set the legend position to top
-        offsetY: 5, // Adjust the offset as needed
+        position: "top",
+        offsetY: 5,
       },
       tooltip: {
         theme: "light",
@@ -51,22 +51,26 @@ const LearningActivityChart = ({ data }) => {
           width: "200px",
         },
         custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-          const userName = data[dataPointIndex]?.full_name || "";
           const userData = data[dataPointIndex] || {};
+          const userName = userData.full_name || "";
           const points = userData.points || "";
           const userLevel =
             userData.user_level !== undefined ? userData.user_level : "";
+          const loginDate = userData.login_date || "";
 
           return (
             '<div class="apexcharts-tooltip-custom">' +
-            '<span class="apexcharts-tooltip-title fw-bold">' +
+            '<div class="apexcharts-tooltip-title fw-bold">' +
             userName +
-            "</span>" +
-            '<span class="apexcharts-tooltip-series">Points - ' +
+            "</div>" +
+            '<div class="mt-2 apexcharts-tooltip-series">Last Login Date - ' +
+            loginDate +
+            "</div>" +
+            '<div class="mt-1 apexcharts-tooltip-series">User Points - ' +
             points +
             ", Level - " +
             userLevel +
-            "</span>" +
+            "</div>" +
             "</div>"
           );
         },
