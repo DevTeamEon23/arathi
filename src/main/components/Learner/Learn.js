@@ -29,6 +29,7 @@ import styled from "styled-components";
 
 //images
 import level0 from "@images/svg/Level0.svg";
+import Level0 from "@images/level0.png";
 import level1 from "@images/svg/Level1.svg";
 import level2 from "@images/svg/Level2.svg";
 import level3 from "@images/svg/Level3.svg";
@@ -891,26 +892,36 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
                                             <center>
                                               {item.user_level === 0 && (
                                                 <img
-                                                  src={level1}
+                                                  src={Level0}
                                                   alt="Level 1"
                                                 />
                                               )}
                                               {item.user_level === 1 && (
                                                 <img
-                                                  src={level2}
+                                                  src={level1}
                                                   alt="Level 2"
+                                                  width={50}
                                                 />
                                               )}
                                               {item.user_level === 2 && (
                                                 <img
-                                                  src={level3}
+                                                  src={level2}
                                                   alt="Level 3"
+                                                  width={50}
                                                 />
                                               )}
                                               {item.user_level === 3 && (
                                                 <img
+                                                  src={level3}
+                                                  alt="Level 4"
+                                                  width={50}
+                                                />
+                                              )}
+                                              {item.user_level === 4 && (
+                                                <img
                                                   src={level4}
                                                   alt="Level 4"
+                                                  width={50}
                                                 />
                                               )}
                                             </center>
