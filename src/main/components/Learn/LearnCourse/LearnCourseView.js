@@ -20,7 +20,12 @@ const LearnCourseView = (props) => {
   const [isActive, setIsActive] = useState(false);
   const [isDeactive, setIsDeactive] = useState(false);
   const [videoContentUrl, setVideoContentUrl] = useState();
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const [isVideoComplete, setIsVideoComplete] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const history = useHistory();
+  const videoRef = useRef(null);
 
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
@@ -93,13 +98,49 @@ const LearnCourseView = (props) => {
         setIsActive(res.active);
         setIsDeactive(res.deactive);
         setVideoContentUrl(res.video_file);
+        const duration = parseFloat(res.video_duration);
+
+        if (!isNaN(duration) && duration > 0) {
+          setVideoDuration(duration);
+        } else {
+          console.error("Invalid or missing video duration");
+        }
+      } else {
+        console.error("Failed to fetch course content");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to fetch course!"); // Handle the error
+      console.error("Error fetching course content:", error);
+    }
+  };
+  const handlePlay = () => {
+    setIsVideoPlaying(true);
+  };
+
+  const handlePause = () => {
+    setIsVideoPlaying(false);
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+  
+      // Update progress when the video is playing or paused
+      const calculatedProgress = (currentTime / duration) * 100;
+      setVideoProgress(calculatedProgress);
     }
   };
 
+  const handleVideoComplete = () => {
+    setIsVideoComplete(true);
+  
+    // Update progress when the video is complete
+    const calculatedProgress = !isNaN(videoDuration) && videoDuration > 0
+      ? 100
+      : 0;
+  
+    setVideoProgress(calculatedProgress);
+  };
   const videoId = courselink && courselink.split("youtu.be/")[1];
   // const isYouTubeURL = courselink.includes("youtu.be/");
 
@@ -179,23 +220,32 @@ const LearnCourseView = (props) => {
               <div className="row">
                 <div className="col-xl-12">
                   <div className="col-xl-4 my-3">
-                    {videoContentUrl && (
+                  {videoContentUrl && (
                       <p>
                         Name : <b>{vdName}</b>
                       </p>
                     )}
                     <div className="col-xl-12 ">
-                      {videoContentUrl ? (
+                  {videoContentUrl && (
+                      <>
                         <video
+                          ref={videoRef}
                           controls
                           src={videoContentUrl}
                           alt="video"
-                          width="800"></video>
-                      ) : (
-                        <p className="fs-16 fc-black">
-                          No Video content Found !!
+                          width="800"
+                          onTimeUpdate={handleTimeUpdate}
+                          onPlay={handlePlay}
+                          onPause={handlePause}
+                          onEnded={handleVideoComplete}
+                        ></video>
+                        <p>
+                          {`Progress: ${videoProgress.toFixed(2)}% - ${
+                            isVideoPlaying ? "Playing" : "Paused"
+                          }`}
                         </p>
-                      )}
+                      </>
+                    )}
                     </div>
                   </div>
                 </div>
@@ -210,7 +260,7 @@ const LearnCourseView = (props) => {
       </div>
       <br />
       <br />
-    </>
+      </>
   );
 };
 
