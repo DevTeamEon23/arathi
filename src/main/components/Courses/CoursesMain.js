@@ -33,7 +33,7 @@ const CoursesMain = () => {
 
   const getAllCourses = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://beta.eonlearning.tech/lms-service/courses";
+    const url = "lms-service/courses";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -62,7 +62,7 @@ const CoursesMain = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+        "lms-service/fetch_enrolled_courses_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -92,7 +92,7 @@ const CoursesMain = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_learners"
+        "lms-service/fetch_enrolled_courses_of_learners"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {

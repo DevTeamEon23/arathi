@@ -35,7 +35,7 @@ const Video = (props) => {
     formData.append("video_unitname", vdName);
     formData.append("video_file", selectedVideo);
     formData.append("generate_token", true);
-    const url = "https://beta.eonlearning.tech/lms-service/addcourse_content";
+    const url = "lms-service/addcourse_content";
     axios
       .post(url, formData, {
         headers: {

@@ -60,7 +60,7 @@ const Groups = () => {
   // All Groups List
   const getAllGroups = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://beta.eonlearning.tech/lms-service/groups";
+    const url = "lms-service/groups";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -77,7 +77,7 @@ const Groups = () => {
 
   // All Courses List
   const getAllCourses = async () => {
-    const url = "https://beta.eonlearning.tech/lms-service/courses";
+    const url = "lms-service/courses";
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     try {
       const response = await axios.get(url, {
@@ -107,7 +107,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_users"
+        "lms-service/fetch_enrolled_courses_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -139,7 +139,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
+        "lms-service/fetch_enrolled_and_admin_inst_created_course_data_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -181,7 +181,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_and_created_groups_of_admin"
+        "lms-service/fetch_enrolled_and_created_groups_of_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -204,7 +204,7 @@ const Groups = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_groups_of_users"
+        "lms-service/fetch_enrolled_groups_of_users"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -243,7 +243,7 @@ const Groups = () => {
       id: grpId,
     };
     await axios
-      .delete(`https://beta.eonlearning.tech/lms-service/delete_group`, {
+      .delete(`lms-service/delete_group`, {
         ...config,
         data: requestBody,
       })
@@ -273,7 +273,7 @@ const Groups = () => {
       id: grpId,
     };
     await axios
-      .delete(`https://beta.eonlearning.tech/lms-service/delete_group`, {
+      .delete(`lms-service/delete_group`, {
         ...config,
         data: requestBody,
       })
@@ -299,7 +299,7 @@ const Groups = () => {
         data_user_group_enrollment_id: grpId,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/remove_groups_from_enrolled_user"
+        "lms-service/remove_groups_from_enrolled_user"
       );
       url.search = new URLSearchParams(queryParams).toString();
       await axios.delete(url.toString(), {
@@ -350,7 +350,7 @@ const Groups = () => {
       formData.append("course_id", selectCourseData.value);
       formData.append("generate_token", true);
       const url =
-        "https://beta.eonlearning.tech/lms-service/mass_enroll_course_group";
+        "lms-service/mass_enroll_course_group";
       axios
         .post(url, formData, {
           headers: {
@@ -378,7 +378,7 @@ const Groups = () => {
       setselectCourseError(null);
       setShowMassActionModal(false);
       const url =
-        "https://beta.eonlearning.tech/lms-service/mass_unenroll_course_group";
+        "lms-service/mass_unenroll_course_group";
       const formData = new FormData();
       formData.append("course_id", selectCourseData.value);
       await axios

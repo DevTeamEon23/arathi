@@ -67,7 +67,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/data_counts_for_admin"
+        "lms-service/data_counts_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -90,7 +90,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_admin"
+        "lms-service/fetch_userpoints_by_userid_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -115,7 +115,7 @@ const Home = () => {
     };
     axios
       .get(
-        "https://beta.eonlearning.tech/lms-service/department_counts_for_admin",
+        "lms-service/department_counts_for_admin",
         config
       )
       .then((response) => {
@@ -133,7 +133,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_admin"
+        "lms-service/fetch_user_enrolled_course_data_for_admin"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -156,7 +156,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/data_counts"
+        "lms-service/data_counts"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -179,7 +179,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_superadmin_by_id"
+        "lms-service/fetch_userpoints_superadmin_by_id"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -204,7 +204,7 @@ const Home = () => {
     };
     axios
       .get(
-        "https://beta.eonlearning.tech/lms-service/department_counts",
+        "lms-service/department_counts",
         config
       )
       .then((response) => {
@@ -222,7 +222,7 @@ const Home = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data"
+        "lms-service/fetch_user_enrolled_course_data"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {

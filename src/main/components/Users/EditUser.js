@@ -77,7 +77,7 @@ const EditUser = (props) => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/eids", config)
+      .get("lms-service/eids", config)
       .then((response) => {
         setEid(response.data.data.eid_data[0].next_eid);
       })
@@ -90,7 +90,7 @@ const EditUser = (props) => {
   const getUsersById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/users_by_onlyid",
+        "lms-service/users_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -170,7 +170,7 @@ const EditUser = (props) => {
       formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
       formData.append("file", file);
       formData.append("cdn_file_link", imgCdnUrl);
-      const url = "https://beta.eonlearning.tech/lms-service/update_users";
+      const url = "lms-service/update_users";
 
       axios
         .post(url, formData, {
@@ -218,7 +218,7 @@ const EditUser = (props) => {
       formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
       formData.append("file", file);
       formData.append("cdn_file_link", imgCdnUrl);
-      const url = "https://beta.eonlearning.tech/lms-service/update_users";
+      const url = "lms-service/update_users";
       axios
         .post(url, formData, {
           headers: {
@@ -251,7 +251,7 @@ const EditUser = (props) => {
         exclude_from_email: excludeFromEmail === false ? 0 : 1,
       };
 
-      const url = `https://beta.eonlearning.tech/lms-service/update_user/${id}`;
+      const url = `lms-service/update_user/${id}`;
       axios
         .put(url, newData, {
           headers: {
@@ -291,7 +291,7 @@ const EditUser = (props) => {
       formData.append("exclude_from_email", excludeFromEmail === false ? 0 : 1);
       formData.append("file", file);
       formData.append("cdn_file_link", imgCdnUrl);
-      const url = "https://beta.eonlearning.tech/lms-service/update_users";
+      const url = "lms-service/update_users";
       axios
         .post(url, formData, {
           headers: {
@@ -323,7 +323,7 @@ const EditUser = (props) => {
         exclude_from_email: excludeFromEmail === false ? 0 : 1,
       };
 
-      const url = `https://beta.eonlearning.tech/lms-service/update_user/${id}`;
+      const url = `lms-service/update_user/${id}`;
       axios
         .put(url, newData, {
           headers: {

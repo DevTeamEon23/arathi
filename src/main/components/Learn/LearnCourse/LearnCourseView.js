@@ -41,7 +41,7 @@ const LearnCourseView = (props) => {
   const getCourseById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/courses_by_onlyid",
+        "lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -56,7 +56,7 @@ const LearnCourseView = (props) => {
 
       if (response.data.status === "success") {
         const handleVideoURL =
-          res.coursevideo === "https://beta.eonlearning.tech/"
+          res.coursevideo === ""
             ? null
             : res.coursevideo;
         console.log(handleVideoURL);
@@ -75,7 +75,7 @@ const LearnCourseView = (props) => {
   const getCourseContentById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/course_contents_by_onlyid",
+        "lms-service/course_contents_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,

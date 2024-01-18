@@ -56,7 +56,7 @@ const AdmGroupFiles = (props) => {
   }, [history.location.pathname]);
 
   const getAllFiles = async () => {
-    const url = "https://beta.eonlearning.tech/lms-service/fetch_files";
+    const url = "lms-service/fetch_files";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -116,7 +116,7 @@ const AdmGroupFiles = (props) => {
       const user_id = grpId;
       const active = activeFile;
       const authToken = accessToken;
-      const uploadUrl = `https://beta.eonlearning.tech/lms-service/upload_file/?user_id=${userID}&active=${active}`;
+      const uploadUrl = `lms-service/upload_file/?user_id=${userID}&active=${active}`;
 
       try {
         const response = await axios.post(uploadUrl, formData, {
@@ -146,7 +146,7 @@ const AdmGroupFiles = (props) => {
     setFileName(name);
     try {
       const url = new URL(
-        `https://beta.eonlearning.tech/lms-service/fetch_files_byId/${file_id}`
+        `lms-service/fetch_files_byId/${file_id}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -175,7 +175,7 @@ const AdmGroupFiles = (props) => {
     };
     try {
       const response = await axios.put(
-        `https://beta.eonlearning.tech/lms-service/update_file_new/${fileId}/?user_id=${userID}`,
+        `lms-service/update_file_new/${fileId}/?user_id=${userID}`,
         formData,
         {
           headers: {
@@ -203,7 +203,7 @@ const AdmGroupFiles = (props) => {
     setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
-        `https://beta.eonlearning.tech/lms-service/file_download/${files_name}`
+        `lms-service/file_download/${files_name}`
       );
       const response = await axios.get(url.toString(), {
         headers: {
@@ -259,7 +259,7 @@ const AdmGroupFiles = (props) => {
       id: fileId,
     };
     axios
-      .delete(`https://beta.eonlearning.tech/lms-service/remove_file_byid`, {
+      .delete(`lms-service/remove_file_byid`, {
         ...config,
         data: requestBody,
       })

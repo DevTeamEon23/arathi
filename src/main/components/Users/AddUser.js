@@ -81,7 +81,7 @@ const AddUser = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/eids", config)
+      .get("lms-service/eids", config)
       .then((response) => {
         setEid(response.data.data.eid_data[0].next_eid);
       })
@@ -97,7 +97,7 @@ const AddUser = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/dept", config)
+      .get("lms-service/dept", config)
       .then((response) => {
         console.log(response.data.data, response.data.data.dept_data);
         const departmentData = response.data.data.dept_data;
@@ -243,7 +243,7 @@ const AddUser = () => {
       formData.append("generate_token", true);
       formData.append("file", file);
 
-      const url = "https://beta.eonlearning.tech/lms-service/addusers";
+      const url = "lms-service/addusers";
 
       axios
         .post(url, formData, {

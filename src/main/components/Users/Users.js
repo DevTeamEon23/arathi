@@ -54,7 +54,7 @@ const Users = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/users", config)
+      .get("lms-service/users", config)
       .then((response) => {
         const allUsers = response.data.data;
         setUserAllData(allUsers === null ? allUsers : allUsers.users_data);
@@ -106,7 +106,7 @@ const Users = () => {
       id: uid,
     };
     axios
-      .delete(`https://beta.eonlearning.tech/lms-service/delete_user`, {
+      .delete(`lms-service/delete_user`, {
         ...config,
         data: requestBody,
       })

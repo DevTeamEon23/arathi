@@ -40,7 +40,7 @@ const EditCategory = (props) => {
     console.log("inside get cat by id", id, authToken);
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/categories_by_onlyid",
+        "lms-service/categories_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -69,7 +69,7 @@ const EditCategory = (props) => {
     formData.append("id", categoryId);
     formData.append("name", name);
     formData.append("price", price);
-    const url = "https://beta.eonlearning.tech/lms-service/update_categories";
+    const url = "lms-service/update_categories";
     const authToken = token;
     axios
       .post(url, formData, {

@@ -67,7 +67,7 @@ const LearnerCourse = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_of_learners"
+        "lms-service/fetch_enrolled_courses_of_learners"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -117,7 +117,7 @@ const LearnerCourse = () => {
       formData.append("feedback", feedbackMsg);
       console.log(rating, feedbackMsg);
       const url =
-        "https://beta.eonlearning.tech/lms-service/give_ratings_feedback";
+        "lms-service/give_ratings_feedback";
       await axios
         .post(url, formData, {
           headers: {

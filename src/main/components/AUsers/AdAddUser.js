@@ -79,7 +79,7 @@ const AddUser = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/eids", config)
+      .get("lms-service/eids", config)
       .then((response) => {
         setEid(response.data.data.eid_data[0].next_eid);
       })
@@ -183,7 +183,7 @@ const AddUser = () => {
       formData.append("generate_token", true);
       formData.append("file", file);
 
-      const url = "https://beta.eonlearning.tech/lms-service/addusers";
+      const url = "lms-service/addusers";
       const authToken = window.localStorage.getItem("jwt_access_token");
       axios
         .post(url, formData, {

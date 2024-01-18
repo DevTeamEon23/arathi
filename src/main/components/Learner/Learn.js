@@ -218,7 +218,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
         user_id: user_id,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/learner_overview"
+        "lms-service/learner_overview"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -256,7 +256,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
         user_id: user_id,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/learner_ratings"
+        "lms-service/learner_ratings"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -283,7 +283,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
     };
     axios
       .get(
-        "https://beta.eonlearning.tech/lms-service/fetch_enroll_courses_of_user_by_id",
+        "lms-service/fetch_enroll_courses_of_user_by_id",
         config
       )
       .then((response) => {
@@ -298,7 +298,7 @@ const Learn = ({ userRatings, activeIndex, handleSelect }) => {
   //User List Api
   const getUsers = () => {
     axios
-      .get("https://beta.eonlearning.tech/auth/fetch_userpoints_by_userid")
+      .get("auth/fetch_userpoints_by_userid")
       .then((response) => {
         let allUsers = response.data.data.user_ids;
         const learnerUsers = allUsers.filter((user) => user.role === "Learner");

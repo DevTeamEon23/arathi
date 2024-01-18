@@ -20,7 +20,7 @@ const VirtualTraining = () => {
 
   const getAllVirtualTrainings = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://beta.eonlearning.tech/lms-service/virtualtrainings";
+    const url = "lms-service/virtualtrainings";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -51,7 +51,7 @@ const VirtualTraining = () => {
     };
     axios
       .delete(
-        `https://beta.eonlearning.tech/lms-service/delete_virtualtraining`,
+        `lms-service/delete_virtualtraining`,
         {
           ...config,
           data: requestBody,

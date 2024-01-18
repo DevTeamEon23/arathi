@@ -40,7 +40,7 @@ const AppProfile = () => {
   const getUsersById = async (authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/users_by_onlyid",
+        "lms-service/users_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,

@@ -36,7 +36,7 @@ const Events = () => {
 
   const getAllEvents = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
-    const url = "https://beta.eonlearning.tech/lms-service/events";
+    const url = "lms-service/events";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -82,7 +82,7 @@ const Events = () => {
       id: eventId,
     };
     await axios
-      .delete(`https://beta.eonlearning.tech/lms-service/delete_event`, {
+      .delete(`lms-service/delete_event`, {
         ...config,
         data: requestBody,
       })

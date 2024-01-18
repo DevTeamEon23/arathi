@@ -52,7 +52,7 @@ const CourseDetail1 = (props) => {
   const getCourseById = async (id, authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/courses_by_onlyid",
+        "lms-service/courses_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -66,7 +66,7 @@ const CourseDetail1 = (props) => {
       setCourseData(response.data.data);
       if (response.data.status === "success") {
         const handleVideoURL =
-          res.coursevideo === "https://beta.eonlearning.tech/"
+          res.coursevideo === ""
             ? null
             : res.coursevideo;
         setCoursename(res.coursename);

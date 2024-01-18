@@ -31,7 +31,7 @@ const EditVirtual = (props) => {
   const getVirtualTByID = async (authToken) => {
     try {
       const response = await axios.get(
-        "https://beta.eonlearning.tech/lms-service/virtualtrainings_by_onlyid",
+        "lms-service/virtualtrainings_by_onlyid",
         {
           headers: {
             "Auth-Token": authToken,
@@ -89,7 +89,7 @@ const EditVirtual = (props) => {
     formData.append("duration", selectedDuration);
 
     const url =
-      "https://beta.eonlearning.tech/lms-service/update_virtualtrainings";
+      "lms-service/update_virtualtrainings";
     const authToken = window.localStorage.getItem("jwt_access_token");
     axios
       .post(url, formData, {

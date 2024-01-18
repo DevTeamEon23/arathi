@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import loginbg from "@images/bg-1.jpg";
-import logo from "@images/log.png";
-import logofull from "@images/Asset.png";
+import loginbg from "@images/bg-2.jpg";
+import logo from "@images/log-1.jpg";
+import logofull from "@images/Asset-1.png";
 import jwtService from "src/auth/authService/jwtService";
 import showPwdImg from "@images/eye.svg";
 import hidePwdImg from "@images/eye-slash.svg";
@@ -66,13 +66,15 @@ const Login = () => {
                           <div>
                             <img
                               width="300"
-                              height="50"
+                              height="70"
                               src={logofull}
                               alt=""
                             />
                           </div>
                         </div>
                         <img
+                          width="40"
+                          height="360"
                           src={logo}
                           alt="Logo"
                           className="education-img"></img>

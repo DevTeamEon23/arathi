@@ -27,7 +27,7 @@ const LearnerFiles = () => {
   }, []);
 
   const getAllFiles = async () => {
-    const url = "https://beta.eonlearning.tech/lms-service/fetch_active_files";
+    const url = "lms-service/fetch_active_files";
     try {
       const response = await axios.get(url, {
         headers: {
@@ -57,7 +57,7 @@ const LearnerFiles = () => {
     setLoadingStates((prevState) => ({ ...prevState, [files_name]: true }));
     try {
       const url = new URL(
-        `https://beta.eonlearning.tech/lms-service/file_download/${files_name}`
+        `lms-service/file_download/${files_name}`
       );
       const response = await axios.get(url.toString(), {
         headers: {

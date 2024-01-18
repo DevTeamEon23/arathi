@@ -42,7 +42,7 @@ const AdmGroupCourses = (props) => {
     };
     axios
       .get(
-        "https://beta.eonlearning.tech/lms-service/fetch_courses_group_enrolled_for_inst_learn",
+        "lms-service/fetch_courses_group_enrolled_for_inst_learn",
         config
       )
       .then((response) => {
@@ -81,7 +81,7 @@ const AdmGroupCourses = (props) => {
     formData.append("group_id", grpId);
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
-    const url = "https://beta.eonlearning.tech/group_tab2/add_courses_to_group";
+    const url = "group_tab2/add_courses_to_group";
     axios
       .post(url, formData, {
         headers: {
@@ -111,7 +111,7 @@ const AdmGroupCourses = (props) => {
     };
     axios
       .delete(
-        `https://beta.eonlearning.tech/group_tab2/remove_courses_from_group`,
+        `group_tab2/remove_courses_from_group`,
         {
           ...config,
           data: requestBody,

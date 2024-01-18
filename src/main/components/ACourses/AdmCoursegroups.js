@@ -36,7 +36,7 @@ const AdmCoursegroups = (props) => {
         course_id: courseID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_groups_course_enrolled_for_inst_learn"
+        "lms-service/fetch_groups_course_enrolled_for_inst_learn"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -85,7 +85,7 @@ const AdmCoursegroups = (props) => {
     formData.append("course_id", courseID);
     formData.append("generate_token", true);
     const url =
-      "https://beta.eonlearning.tech/course_tab2/enroll_group_to_course";
+      "course_tab2/enroll_group_to_course";
     const authToken = jwtToken;
     axios
       .post(url, formData, {
@@ -116,7 +116,7 @@ const AdmCoursegroups = (props) => {
     };
     axios
       .delete(
-        `https://beta.eonlearning.tech/course_tab2/remove_groups_from_course
+        `course_tab2/remove_groups_from_course
       `,
         {
           ...config,

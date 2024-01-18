@@ -14,7 +14,7 @@ const ExportUser = () => {
   const handleExport = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const url =
-      "https://beta.eonlearning.tech/lms-service/download/exported_data.xlsx"; // Update the URL as needed
+      "lms-service/download/exported_data.xlsx"; // Update the URL as needed
 
     try {
       const response = await fetch(url, {
@@ -55,7 +55,7 @@ const ExportUser = () => {
   const handleExportCSV = async () => {
     const jwtToken = window.localStorage.getItem("jwt_access_token");
     const url =
-      "https://beta.eonlearning.tech/lms-service/download/exported_data.csv"; // Update the URL for the CSV file
+      "lms-service/download/exported_data.csv"; // Update the URL for the CSV file
 
     try {
       const response = await fetch(url, {
@@ -129,7 +129,7 @@ const ExportUser = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/export_to_excel", config)
+      .get("lms-service/export_to_excel", config)
       .then((response) => {
         const data = response.data.data;
       })
@@ -146,7 +146,7 @@ const ExportUser = () => {
       },
     };
     axios
-      .get("https://beta.eonlearning.tech/lms-service/export_to_csv", config)
+      .get("lms-service/export_to_csv", config)
       .then((response) => {
         const data = response.data.data;
       })

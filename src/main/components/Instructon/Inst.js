@@ -86,7 +86,7 @@ const Inst = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/data_counts_for_instructor"
+        "lms-service/data_counts_for_instructor"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -109,7 +109,7 @@ const Inst = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_userpoints_by_userid_for_instructor"
+        "lms-service/fetch_userpoints_by_userid_for_instructor"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -135,7 +135,7 @@ const Inst = () => {
     };
     axios
       .get(
-        "https://beta.eonlearning.tech/lms-service/department_counts_for_instructor",
+        "lms-service/department_counts_for_instructor",
         config
       )
       .then((response) => {
@@ -154,7 +154,7 @@ const Inst = () => {
         user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_user_enrolled_course_data_for_instructor"
+        "lms-service/fetch_user_enrolled_course_data_for_instructor"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {

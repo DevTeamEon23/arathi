@@ -61,7 +61,7 @@ const AdUserCourse = (props) => {
         inst_user_id: ID,
       };
       const url = new URL(
-        "https://beta.eonlearning.tech/lms-service/fetch_enrolled_courses_for_inst_learn"
+        "lms-service/fetch_enrolled_courses_for_inst_learn"
       );
       url.search = new URLSearchParams(queryParams).toString();
       const response = await axios.get(url.toString(), {
@@ -106,7 +106,7 @@ const AdUserCourse = (props) => {
     formData.append("course_id", course_id);
     formData.append("generate_token", true);
     const url =
-      "https://beta.eonlearning.tech/user-tab1/enroll_courses_to_user";
+      "user-tab1/enroll_courses_to_user";
     axios
       .post(url, formData, {
         headers: {
@@ -137,7 +137,7 @@ const AdUserCourse = (props) => {
     };
     axios
       .delete(
-        `https://beta.eonlearning.tech/user-tab1/unenroll_courses_from_user`,
+        `user-tab1/unenroll_courses_from_user`,
         {
           ...config,
           data: requestBody,

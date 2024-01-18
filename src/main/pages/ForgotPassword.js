@@ -38,7 +38,7 @@ function ForgotPassword() {
       console.log(OTP);
       setOTPinput(OTP);
       axios
-        .post("https://beta.eonlearning.tech/auth/send_mail", {
+        .post("auth/send_mail", {
           email: [email],
           // OTP,
         })
