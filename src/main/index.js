@@ -330,6 +330,12 @@ import { ThemeContext } from "@context/ThemeContext";
 import PrivateAddress from "./components/Calender/PrivateAddress";
 import Reset from "./pages/Reset";
 
+
+
+
+import Strategies from "./components/Strategy/Strategies";
+
+
 const Markup = () => {
   const { menuToggle } = useContext(ThemeContext);
   const routes = [
@@ -656,6 +662,9 @@ const Markup = () => {
     { url: "page-error-404", component: Error404 },
     { url: "page-error-500", component: Error500 },
     { url: "page-error-503", component: Error503 },
+
+
+    { url: "page-strategy", component: Strategies },
   ];
   let path = window.location.pathname;
   path = path.split("/");

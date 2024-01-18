@@ -43,6 +43,7 @@ class JwtService extends Utils.EventEmitter {
 
   handleAuthentication = () => {
     const access_token = this.getAccessToken();
+    const xts_access_token = this.getXTSAccessToken();
 
     if (!access_token) {
       this.emit("onNoAccessToken");
@@ -56,6 +57,13 @@ class JwtService extends Utils.EventEmitter {
     } else {
       this.setSession(null);
       this.emit("onAutoLogout", "access_token expired");
+    }
+    if (xts_access_token) {
+      this.emit("onAutoLogin", true);
+      this.setSession(xts_access_token);
+    } else {
+      this.setSession(null);
+      this.emit("onAutoLogout", "jwt_access_token expired");
     }
   };
 
@@ -277,12 +285,19 @@ signInWithEmailAndPassword = (data) => {
     });
   };
 
-  setSession = (access_token) => {
+  setSession = (access_token, xts_access_token) => {
     if (access_token) {
       localStorage.setItem("jwt_access_token", access_token);
       axiosInstance.defaults.headers.common.Authorization = `Bearer ${access_token}`;
     } else {
       localStorage.removeItem("jwt_access_token");
+      delete axiosInstance.defaults.headers.common.Authorization;
+    }
+    if (xts_access_token) {
+      localStorage.setItem("xts_access_token", xts_access_token);
+      axiosInstance.defaults.headers.common.Authorization = `Bearer ${xts_access_token}`;
+    } else {
+      localStorage.removeItem("xts_access_token");
       delete axiosInstance.defaults.headers.common.Authorization;
     }
   };
@@ -303,6 +318,9 @@ signInWithEmailAndPassword = (data) => {
 
   getAccessToken = () => {
     return window.localStorage.getItem("jwt_access_token");
+  };
+  getXTSAccessToken = () => {
+    return window.localStorage.getItem("xts_access_token");
   };
 }
 

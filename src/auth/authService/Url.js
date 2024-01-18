@@ -3,10 +3,10 @@ export default function Url() {
   if (
     // put your domain
     window.location.hostname ===
-    "https://harshalatemp.d2caovb1o430k8.amplifyapp.com/"
+    "https://frontend-ani.deajn483gzo3k.amplifyapp.com/login"
     // window.location.hostname === "http://localhost:3000/"
   ) {
-    liveUrl = "";
+    liveUrl = "http://127.0.0.1:8081/";
     // liveUrl = "http://127.0.0.1:8000/";
   } else {
     // Hear put your local address for local devlopment

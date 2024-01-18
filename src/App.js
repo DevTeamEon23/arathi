@@ -36,12 +36,13 @@ function App(props) {
   // }, [dispatch, props.history, isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated && roleType === 'Learner') {
-      props.history.replace('/learn-dash')
-    } else if (isAuthenticated && roleType === 'Instructor') {
-      props.history.replace('/inst-dash')
-    } else if (isAuthenticated) {
-      props.history.replace('/dashboard')
+    // if (isAuthenticated && roleType === 'Learner') {
+    //   props.history.replace('/learn-dash')
+    // } else if (isAuthenticated && roleType === 'Instructor') {
+    //   props.history.replace('/inst-dash')
+    // } else 
+    if (isAuthenticated) {
+      props.history.replace('/page-strategy')
     } else {
       props.history.replace('/login')
     }
