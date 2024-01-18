@@ -21,6 +21,7 @@ const lots = Array.from({ length: 15 }, (_, index) => ({
 const Strategies = () => {
   const [selectedOptionSymbol, setSelectedOptionSymbol] = useState(null);
   const [getAllExpiryData, setGetAllExpiryData] = useState([]);
+  const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
   const [legs, setLegs] = useState([]);
 
@@ -67,7 +68,11 @@ const Strategies = () => {
     updatedLegs[index].selectedStrike = selectedStrike;
     setLegs(updatedLegs);
   };
-
+  const handleTypeChange = (index, selectedType) => {
+    const updatedLegs = [...legs];
+    updatedLegs[index].selectedType = selectedType;
+    setLegs(updatedLegs);
+  };
   const calculatePremium = (lots, price) => {
     const lotSize = 50; // 1 lot = 50 shares
     const premium = lots * lotSize * price;
@@ -87,52 +92,7 @@ const Strategies = () => {
     updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, event.target.value);
     setLegs(updatedLegs);
   };
-  // const handleSymbolChange = async (index, selectedOption) => {
-  //   try {
-  //     const jwtAccessToken = localStorage.getItem('jwt_access_token');
-  //     const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
 
-  //     const expiryResponse = await axios.get(`http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}`, {
-  //       params: {
-  //         exchangeSegment: 2,
-  //         series: 'OPTIDX',
-  //       },
-  //       headers: {
-  //         "Auth-Token": jwtAccessToken,
-  //       },
-  //     });
-
-  //     const instrumentsResponse = await axios.get(
-  //       `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}`,
-  //       {
-  //         params: {
-  //           access_token: jwtXtsAccessToken, // Use xtsAccessToken as a query parameter
-  //           source: 'WEB',
-  //         },
-  //         headers: {
-  //           Authorization: jwtAccessToken,
-  //         },
-  //       }
-  //     );
-
-  //     const expiryDates = expiryResponse.data.result || [];
-  //     const strikes = instrumentsResponse.data || [];
-  
-  //     const updatedLegs = [...legs];
-  //     updatedLegs[index].symbol = selectedOption;
-  //     updatedLegs[index].expiryDates = expiryDates;
-  //     updatedLegs[index].strikes = strikes;
-  
-  //     setLegs(updatedLegs);
-  //     setGetAllExpiryData(expiryDates);
-  //     setGetAllStrikesData(strikes);
-  
-  //     // ... (rest of your code)
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //     toast.error("Failed to fetch Expiry!");
-  //   }
-  // };
   const handleSymbolChange = async (index, selectedOption) => {
     try {
       const jwtAccessToken = localStorage.getItem('jwt_access_token');
@@ -151,7 +111,7 @@ const Strategies = () => {
           },
         }
       );
-  
+
       const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
       const queryParams = new URLSearchParams({
         access_token: jwtXtsAccessToken,
@@ -167,19 +127,26 @@ const Strategies = () => {
           "Content-Type": "application/json", // Set the content type if needed
         },
       });
-      // const instrumentsResponse = await fetch(
-      //   `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}`,
-      //   {
-      //     method: 'GET',
-      //     queryParams: {
-      //       access_token: jwtXtsAccessToken,
-      //       source: 'WEB',
-      //     },
-      //     headers: {
-      //       "Auth-Token": jwtAccessToken, // Set the content type if needed
-      //     },
-      //   }
-      // );
+
+      const ltpResponse = await axios.get(
+        `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOptionSymbol.value}?${queryParams}`,
+        {
+          params: {
+            symbol: selectedOptionSymbol.value,
+            expiry: legs.selectedExpiry?.value || "25JAN2024",
+            // expiry: "25JAN2024", // Assuming you have selectedExpiry in leg
+            strike: legs.selectedStrike?.value || "21500", 
+            // strike: "21500", // Assuming you have selectedStrike in leg
+            type: legs.selectedType?.value || "PE", // Assuming you have a static type or it is dynamic
+            // access_token: jwtAccessToken,
+            // source: "WEB",
+          },
+          headers: {
+            "Auth-Token": jwtAccessToken,
+            "Content-Type": "application/json", // Set the content type if needed
+          },
+        }
+      );
   
       if (expiryResponse.ok && instrumentsResponse.ok) {
         const expiryData = await expiryResponse.json();
@@ -191,7 +158,11 @@ const Strategies = () => {
         updatedLegs[index].symbol = selectedOption;
         updatedLegs[index].expiryDates = expiryData.result || [];
         updatedLegs[index].strikes = instrumentsData || [];
-  
+        updatedLegs[index].price = ltpResponse.data.LastTradedPrice;
+        updatedLegs[index].premium = calculatePremium(
+          updatedLegs[index].lot.value,
+          ltpResponse.data.LastTradedPrice
+        );
 
         setLegs(updatedLegs);
         setGetAllExpiryData(expiryData?.result || []);
@@ -238,39 +209,41 @@ const Strategies = () => {
         </div>
 
         {/* Legs */}
-        {legs?.map((leg, index) => (
+        {legs?.map((legItem, index) => (
           <div className="row mt-5 mb-4" key={index}>
             <div className="col-md-1 mb-3">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B/S </label>
               <br />
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Badge href="" bg={leg.type === "BUY" ? "secondary" : "danger"} onClick={() => toggleLegType(index)}>
-                {leg.type}
+              <Badge href="" bg={legItem.type === "BUY" ? "secondary" : "danger"} onClick={() => toggleLegType(index)}>
+                {legItem.type}
               </Badge>
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Expiry</label>
               <Select
-                value={leg.selectedExpiry}
-                options={(getAllExpiryData.result) ? (
-                  getAllExpiryData.result.map(date => ({
+                // value={legItem.selectedExpiry}
+                value = {"25JAN2024"}
+                options={(legItem.expiryDates?.length) ? (
+                legItem.expiryDates.map(date => ({
                     value: date,
                     label: new Date(date).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
                     })
-                  }))
+                }))
                 ) : []}
                 id="expiry"
                 name="expiry"
                 onChange={(selectedExpiry) => handleExpiryChange(index, selectedExpiry)}
-              />
+            />
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="zip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Strike</label>
               <Select
-            value={leg.selectedStrike}
+            // value={legItem.selectedStrike}
+            value={"21500"}
             options={getAllStrikesData}
             id="strike"
             name="strike"
@@ -279,35 +252,42 @@ const Strategies = () => {
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type</label>
-              <Form.Control as="select">
-                <option>CE</option>
-                <option>PE</option>
-              </Form.Control>
+              <Select
+                // value={legItem.selectedType}
+                value={"CE"}
+                options={[
+                  { value: "CE", label: "CE" },
+                  { value: "PE", label: "PE" },
+                ]}
+                id="type"
+                name="type"
+                onChange={(selectedType) => handleTypeChange(index, selectedType)}
+              />
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="lot">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lots</label>
-              <div className="form-control custom-dropdown-container">
-                <button className="minus" onClick={() => handleDecrement(index)}>
+              {/* <div className="form-control custom-dropdown-container"> */}
+                {/* <button className="minus" onClick={() => handleDecrement(index)}>
                   -
-                </button>
+                </button> */}
                 <Select
-                  value={leg.lot}
+                  value={legItem.lot}
                   onChange={(option) => handleLotsChange(index, option)}
                   options={lots}
                   name="lots"
                 />
-                <button className="plus" onClick={() => handleIncrement(index)}>
+                {/* <button className="plus" onClick={() => handleIncrement(index)}>
                   +
-                </button>
+                </button> */}
               </div>
-            </div>
+            {/* </div> */}
             <div className="col-md-1 mb-3">
               <label htmlFor="price">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price per share</label>
               <input
                 type="text"
                 className="form-control"
                 placeholder=""
-                value={leg.price}
+                value={legItem.price}
                 onChange={(e) => handlePriceChange(index, e)}
               />
             </div>
@@ -323,13 +303,13 @@ const Strategies = () => {
             <div className="col-md-4 mb-3">
       <label htmlFor="state">Price per lot</label>
       <br />
-      {leg.price * 50} {/* Assuming 1 lot = 50 shares */}
+      {legItem.price * 50} {/* Assuming 1 lot = 50 shares */}
     </div>
 
     <div className="col-md-2 mb-3">
       <label htmlFor="state">Net Premium</label>
       <br />
-      {leg.premium}
+      {legItem.premium}
     </div>
           </div>
           
