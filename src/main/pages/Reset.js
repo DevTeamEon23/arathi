@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 // image
-import logo from "@images/Asset.png";
+import logo from "@images/Asset-1.png";
 import jwtService from "src/auth/authService/jwtService";
 import Swal from "sweetalert2";
 

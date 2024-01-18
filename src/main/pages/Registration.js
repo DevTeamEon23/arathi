@@ -4,7 +4,7 @@ import showPwdImg from "@images/eye.svg";
 import hidePwdImg from "@images/eye-slash.svg";
 
 // image
-import logo from "@images/Asset.png";
+import logo from "@images/Asset-1.png";
 import jwtService from "src/auth/authService/jwtService";
 
 // Add sweet alert
@@ -80,7 +80,7 @@ const Register =() =>{
                   <div className="auth-form">
                     <div className="text-center mb-3">
                       <Link to="/login">
-                        <img width="300" height="50" src={logo} alt="" />
+                        <img width="300" height="80" src={logo} alt="" />
                       </Link>
                     </div>
                     <h4 className="text-center mb-4 ">Sign up your account</h4>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { CircularProgress } from "@material-ui/core";
 // image
-import logo from "@images/Asset.png";
+import logo from "@images/Asset-1.png";
 // import Reset from "./Reset";
 import axios from "axios";
 // import Reset from "./Reset";
@@ -173,7 +173,7 @@ function ForgotPassword() {
                   <div className="auth-form">
                     <div className="text-center mb-3">
                       <Link to="/login">
-                        <img src={logo} height="40" alt="" />
+                        <img src={logo} height="80" alt="" />
                       </Link>
                     </div>
                     <h4 className="text-center mb-4 ">Forgot Password</h4>
