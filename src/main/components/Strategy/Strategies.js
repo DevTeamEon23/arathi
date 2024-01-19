@@ -60,19 +60,56 @@ const Strategies = () => {
   const handleExpiryChange = (index, selectedExpiry) => {
     const updatedLegs = [...legs];
     updatedLegs[index].selectedExpiry = selectedExpiry;
+    updatedLegs[index].expiryDates.sort((a, b) => new Date(a) - new Date(b));
     setLegs(updatedLegs);
   };
-
+  
   const handleStrikeChange = (index, selectedStrike) => {
     const updatedLegs = [...legs];
     updatedLegs[index].selectedStrike = selectedStrike;
+    updatedLegs[index].strikes.sort((a, b) => a.StrikePrice - b.StrikePrice);
     setLegs(updatedLegs);
   };
-  const handleTypeChange = (index, selectedType) => {
+  
+  const handleTypeChange = async (index, selectedType) => {
     const updatedLegs = [...legs];
     updatedLegs[index].selectedType = selectedType;
+
+    if (selectedType.value === "CE" || selectedType.value === "PE") {
+      try {
+        const jwtAccessToken = localStorage.getItem('jwt_access_token');
+        const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
+
+        const ltpUrl = `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+
+        const ltpResponse = await axios.get(ltpUrl, {
+          params: {
+            symbol: selectedOptionSymbol.value,
+            expiry: legs[index]?.selectedExpiry?.value,
+            strike: legs[index]?.selectedStrike?.value,
+            type: selectedType.value,
+          },
+          headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
+        });
+
+        if (ltpResponse.status === 200) {
+          const ltpPrice = ltpResponse.data?.LastTradedPrice;
+          updatedLegs[index].price = ltpPrice;
+          updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, ltpPrice);
+          setLegs(updatedLegs);
+        } else {
+          console.error('Error fetching LTP data:', ltpResponse.statusText);
+          toast.error('Failed to fetch LTP!');
+        }
+      } catch (error) {
+        console.error('Error processing LTP response:', error);
+        toast.error('Failed to fetch LTP!');
+      }
+    }
+
     setLegs(updatedLegs);
   };
+
   const calculatePremium = (lots, price) => {
     const lotSize = 50; // 1 lot = 50 shares
     const premium = lots * lotSize * price;
@@ -92,90 +129,195 @@ const Strategies = () => {
     updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, event.target.value);
     setLegs(updatedLegs);
   };
-
   const handleSymbolChange = async (index, selectedOption) => {
     try {
       const jwtAccessToken = localStorage.getItem('jwt_access_token');
-      // const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-  
-      const expiryResponse = await fetch(
-        `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}`,
-        {
-          method: 'GET',
-          params: {
-            exchangeSegment: 2,
-            series: 'OPTIDX',
-          },
-          headers: {
-            "Auth-Token": jwtAccessToken,
-          },
-        }
-      );
-
       const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-      const queryParams = new URLSearchParams({
-        access_token: jwtXtsAccessToken,
-        source: 'WEB',
-      });
-      
-      const url = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?${queryParams}`;
-      
-      const instrumentsResponse = await fetch(url, {
-        method: 'GET',
-        headers: {
-          "Auth-Token": jwtAccessToken,
-          "Content-Type": "application/json", // Set the content type if needed
-        },
-      });
 
-      const ltpResponse = await axios.get(
-        `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOptionSymbol.value}?${queryParams}`,
-        {
-          params: {
-            symbol: selectedOptionSymbol.value,
-            expiry: legs.selectedExpiry?.value || "25JAN2024",
-            // expiry: "25JAN2024", // Assuming you have selectedExpiry in leg
-            strike: legs.selectedStrike?.value || "21500", 
-            // strike: "21500", // Assuming you have selectedStrike in leg
-            type: legs.selectedType?.value || "PE", // Assuming you have a static type or it is dynamic
-            // access_token: jwtAccessToken,
-            // source: "WEB",
-          },
-          headers: {
-            "Auth-Token": jwtAccessToken,
-            "Content-Type": "application/json", // Set the content type if needed
-          },
-        }
-      );
-  
-      if (expiryResponse.ok && instrumentsResponse.ok) {
-        const expiryData = await expiryResponse.json();
-        const instrumentsData = await instrumentsResponse.json();
-        console.log("expiryData:", expiryData);
-        console.log("instrumentsData:", instrumentsData);
-  
+      const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
+      const instrumentsUrl = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+
+      const [expiryResponse, instrumentsResponse] = await Promise.all([
+        axios.get(expiryUrl, { headers: { "Auth-Token": jwtAccessToken } }),
+        axios.get(instrumentsUrl, { headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" } }),
+      ]);
+
+      if (expiryResponse.status === 200 && instrumentsResponse.status === 200) {
+        const expiryData = expiryResponse.data;
+        const instrumentsData = instrumentsResponse.data;
+
         const updatedLegs = [...legs];
         updatedLegs[index].symbol = selectedOption;
-        updatedLegs[index].expiryDates = expiryData.result || [];
-        updatedLegs[index].strikes = instrumentsData || [];
-        updatedLegs[index].price = ltpResponse.data.LastTradedPrice;
-        updatedLegs[index].premium = calculatePremium(
-          updatedLegs[index].lot.value,
-          ltpResponse.data.LastTradedPrice
-        );
+        updatedLegs[index].expiryDates = expiryData?.data?.result || [];
+        updatedLegs[index].strikes = getAllStrikesData?.result || [];
 
         setLegs(updatedLegs);
-        setGetAllExpiryData(expiryData?.result || []);
+        setGetAllExpiryData(expiryData?.data?.result || []);
+        setGetAllStrikesData(instrumentsData?.data || []);
       } else {
-        console.error('Error fetching data:', expiryResponse.statusText, instrumentsResponse.statusText);
-        toast.error('Failed to fetch Expiry!');
+        console.error(
+          'Error fetching data:',
+          expiryResponse.statusText,
+          instrumentsResponse.statusText
+        );
+        toast.error('Failed to fetch Expiry or Instruments!');
       }
     } catch (error) {
       console.error('Error processing response:', error);
-      toast.error('Failed to fetch Expiry!');
+      toast.error('Failed to fetch Expiry or Instruments!');
     }
   };
+  // const handleSymbolChange = async (index, selectedOption) => {
+  //   try {
+  //     const jwtAccessToken = localStorage.getItem('jwt_access_token');
+  //     const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
   
+  //     const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
+  //     const instrumentsUrl = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+  
+  //     const [expiryResponse, instrumentsResponse, ltpResponse] = await Promise.all([
+  //       axios.get(expiryUrl, { headers: { "Auth-Token": jwtAccessToken } }),
+  //       axios.get(instrumentsUrl, { headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" } }),
+  //       axios.get(ltpUrl, {
+  //         params: {
+  //           symbol: selectedOption.value,
+  //           expiry: legs[index]?.selectedExpiry?.value || "25JAN2024",
+  //           strike: legs[index]?.selectedStrike?.value || "21500",
+  //           type: legs[index]?.selectedType?.value || "PE",
+  //         },
+  //         headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
+  //       }),
+  //     ]);
+  
+  //     if (expiryResponse.status === 200 && instrumentsResponse.status === 200 && ltpResponse.status === 200) {
+  //       const expiryData = expiryResponse.data;
+  //       const instrumentsData = instrumentsResponse.data;
+  //       const ltpPrice = ltpResponse.data?.LastTradedPrice;
+  
+  //       const updatedLegs = [...legs];
+  //       updatedLegs[index].symbol = selectedOption;
+  //       updatedLegs[index].expiryDates = expiryData?.data?.result || [];
+  //       updatedLegs[index].strikes = getAllStrikesData?.result || [];
+  //       updatedLegs[index].price = ltpPrice;
+  //       updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, ltpPrice);
+  
+  //       setLegs(updatedLegs);
+  //       setGetAllExpiryData(expiryData?.data?.result || []);
+  //       setGetAllStrikesData(instrumentsData?.data || []);
+  //     } else {
+  //       console.error(
+  //         'Error fetching data:',
+  //         expiryResponse.statusText,
+  //         instrumentsResponse.statusText,
+  //         ltpResponse.statusText
+  //       );
+  //       toast.error('Failed to fetch Expiry or Instruments or LTP!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error processing response:', error);
+  //     toast.error('Failed to fetch Expiry or Instruments or LTP!');
+  //   }
+  // };
+  // const handleSymbolChange = async (index, selectedOption) => {
+  //   try {
+  //     const jwtAccessToken = localStorage.getItem('jwt_access_token');
+  //     // const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
+  
+  //     const expiryResponsePromise = await fetch(
+  //       `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}`,
+  //       {
+  //         method: 'GET',
+  //         params: {
+  //           exchangeSegment: 2,
+  //           series: 'OPTIDX',
+  //         },
+  //         headers: {
+  //           "Auth-Token": jwtAccessToken,
+  //         },
+  //       }
+  //     );
+
+  //     const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
+  //     const queryParams = new URLSearchParams({
+  //       access_token: jwtXtsAccessToken,
+  //       source: 'WEB',
+  //     });
+      
+  //     const url = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?${queryParams}`;
+      
+  //     const instrumentsResponsePromise = await fetch(url, {
+  //       method: 'GET',
+  //       headers: {
+  //         "Auth-Token": jwtAccessToken,
+  //         "Content-Type": "application/json", // Set the content type if needed
+  //       },
+  //     });
+
+  //     const ltpResponsePromise = await axios.get(
+  //       `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOption.value}?${queryParams}`,
+  //       {
+  //         params: {
+  //           symbol: selectedOption.value,
+  //           expiry: legs[index]?.selectedExpiry?.value || "25JAN2024",
+  //           // expiry: "25JAN2024", // Assuming you have selectedExpiry in leg
+  //           strike: legs[index]?.selectedStrike?.value || "21500", 
+  //           // strike: "21500", // Assuming you have selectedStrike in leg
+  //           type: legs[index]?.selectedType?.value || "PE", // Assuming you have a static type or it is dynamic
+  //           // access_token: jwtAccessToken,
+  //           // source: "WEB",
+  //         },
+  //         headers: {
+  //           "Auth-Token": jwtAccessToken,
+  //           "Content-Type": "application/json", // Set the content type if needed
+  //         },
+  //       }
+  //     );
+  //     const [expiryResponse, instrumentsResponse, ltpResponse] = await Promise.all([
+  //       expiryResponsePromise,
+  //       instrumentsResponsePromise,
+  //       ltpResponsePromise,
+  //     ]);
+
+  //     if (expiryResponse.ok && instrumentsResponse.ok && ltpResponse.ok) {
+  //       const expiryData = await expiryResponse.json();
+  //       const instrumentsData = await instrumentsResponse.json();
+  //       console.log("expiryData:", expiryData);
+  //       console.log("instrumentsData:", instrumentsData); 
+  
+  //       const updatedLegs = [...legs];
+  //       updatedLegs[index].symbol = selectedOption;
+  //       updatedLegs[index].expiryDates = expiryData?.data?.result || [];
+  //       updatedLegs[index].strikes = getAllStrikesData?.result || [];
+
+  //       const ltpPrice = ltpResponse.data?.LastTradedPrice;
+  //       updatedLegs[index].price = ltpPrice;
+  //       updatedLegs[index].premium = calculatePremium(
+  //         updatedLegs[index].lot.value,
+  //         ltpPrice
+  //       );
+  //       // updatedLegs[index].price = ltpResponse.data?.LastTradedPrice;
+  //       // updatedLegs[index].premium = calculatePremium(
+  //       //   updatedLegs[index].lot.value,
+  //       //   ltpResponse.data.LastTradedPrice
+  //       // );
+
+  //       setLegs(updatedLegs);
+  //       setGetAllExpiryData(expiryData?.data?.result || []);
+  //       setGetAllStrikesData(instrumentsData?.data || []); // Update the state here
+  //     } else {
+  //       console.error(
+  //         'Error fetching data:',
+  //         expiryResponse.statusText,
+  //         instrumentsResponse.statusText,
+  //         ltpResponse.statusText
+  //       );
+  //       toast.error('Failed to fetch Expiry or Instruments or LTP!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error processing response:', error);
+  //     toast.error('Failed to fetch Expiry or Instruments or LTP!');
+  //   }
+  // };
 
   return (
     <div className="container mw-100 mt-5">
@@ -222,39 +364,41 @@ const Strategies = () => {
             <div className="col-md-2 mb-3">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Expiry</label>
               <Select
-                // value={legItem.selectedExpiry}
-                value = {"25JAN2024"}
+                value={legItem.selectedExpiry}
                 options={(legItem.expiryDates?.length) ? (
-                legItem.expiryDates.map(date => ({
+                  legItem.expiryDates.map(date => ({
                     value: date,
                     label: new Date(date).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
                     })
-                }))
+                  }))
                 ) : []}
                 id="expiry"
                 name="expiry"
                 onChange={(selectedExpiry) => handleExpiryChange(index, selectedExpiry)}
-            />
+              />
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="zip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Strike</label>
               <Select
-            // value={legItem.selectedStrike}
-            value={"21500"}
-            options={getAllStrikesData}
-            id="strike"
-            name="strike"
-            onChange={(selectedStrike) => handleStrikeChange(index, selectedStrike)}
-          />
+                value={legItem.selectedStrike}
+                options={(legItem.strikes?.length) ? (
+                  legItem.strikes.map(strike => ({
+                    value: strike?.StrikePrice?.toString(),
+                    label: strike?.StrikePrice?.toString() || 'N/A',
+                  }))
+                ) : []}
+                id="strike"
+                name="strike"
+                onChange={(selectedStrike) => handleStrikeChange(index, selectedStrike)}
+              />
             </div>
             <div className="col-md-2 mb-3">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type</label>
               <Select
-                // value={legItem.selectedType}
-                value={"CE"}
+                value={legItem.selectedType} // Use the value from the state
                 options={[
                   { value: "CE", label: "CE" },
                   { value: "PE", label: "PE" },
