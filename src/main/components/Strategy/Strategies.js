@@ -447,13 +447,13 @@ const Strategies = () => {
             <div className="col-md-4 mb-3">
       <label htmlFor="state">Price per lot</label>
       <br />
-      {legItem.price * 50} {/* Assuming 1 lot = 50 shares */}
+      {typeof legItem.price === 'number' ? (legItem.price * 50).toFixed(2) : 'Invalid Price'} {/* Assuming 1 lot = 50 shares */}
     </div>
 
     <div className="col-md-2 mb-3">
       <label htmlFor="state">Net Premium</label>
       <br />
-      {legItem.premium}
+  {typeof legItem.premium === 'number' ? legItem.premium.toFixed(2) : 'Invalid Premium'}
     </div>
           </div>
           
