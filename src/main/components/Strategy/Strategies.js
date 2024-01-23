@@ -23,12 +23,62 @@ const Strategies = () => {
   const [getAllExpiryData, setGetAllExpiryData] = useState([]);
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
-  const [legs, setLegs] = useState([]);
+  const [selectedType, setSelectedType] = useState(null);
+  // const [legs, setLegs] = useState([]);
+  const [legs, setLegs] = useState([
+    {
+      selectedOptionSymbol: null,
+      expiryOptions: [],
+      selectedExpiry: null,
+      selectedStrike: null,
+      type: "BUY",
+      lot: { value: "1", label: "1" },
+      price: "",
+      // other properties for the leg
+    },
+  ]);
 
+  const getUniqueSelectedTypes = () => {
+    const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
+    return [...new Set(selectedTypes)];
+  };
+  const refreshLegTypes = () => {
+    const uniqueSelectedTypes = getUniqueSelectedTypes();
+    const updatedLegs = legs.map((leg) => ({
+      ...leg,
+      selectedType: uniqueSelectedTypes.includes(leg.selectedType?.value)
+        ? leg.selectedType
+        : null,
+    }));
+    setLegs(updatedLegs);
+  };
+  // const refreshLegTypes = () => {
+  //   const updatedLegs = [...legs];
+  //   updatedLegs.forEach((leg, index) => {
+  //     updatedLegs[index].selectedType = selectedType;
+  //   });
+  //   setLegs(updatedLegs);
+  // };
+
+  // const addLeg = () => {
+  //   setLegs(prevLegs => [...prevLegs, { type: "BUY", symbol: "nifty", lot: { value: "1", label: "1" }, price: "" }], () => {
+  //     console.log('After adding leg:', legs);
+  //   });
+  // };
   const addLeg = () => {
-    setLegs(prevLegs => [...prevLegs, { type: "BUY", symbol: "nifty", lot: { value: "1", label: "1" }, price: "" }], () => {
-      console.log('After adding leg:', legs);
-    });
+    setLegs((prevLegs) => [
+      ...prevLegs,
+      {
+        selectedOptionSymbol: null,
+        expiryOptions: [],
+        selectedExpiry: null,
+        selectedStrike: null,
+        type: "BUY",
+        lot: { value: "1", label: "1" },
+        price: "",
+        // other properties for the leg
+      },
+    ]);
   };
 
   const removeLeg = (index) => {
@@ -97,6 +147,7 @@ const Strategies = () => {
           updatedLegs[index].price = ltpPrice;
           updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, ltpPrice);
           setLegs(updatedLegs);
+          setSelectedType(selectedType);
         } else {
           console.error('Error fetching LTP data:', ltpResponse.statusText);
           toast.error('Failed to fetch LTP!');
@@ -134,8 +185,8 @@ const Strategies = () => {
       const jwtAccessToken = localStorage.getItem('jwt_access_token');
       const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
 
-      const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
       const instrumentsUrl = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+      const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
 
       const [expiryResponse, instrumentsResponse] = await Promise.all([
         axios.get(expiryUrl, { headers: { "Auth-Token": jwtAccessToken } }),
@@ -150,10 +201,14 @@ const Strategies = () => {
         updatedLegs[index].symbol = selectedOption;
         updatedLegs[index].expiryDates = expiryData?.data?.result || [];
         updatedLegs[index].strikes = getAllStrikesData?.result || [];
+        // Sort expiryDates array in ascending order
+        updatedLegs[index].expiryDates.sort((a, b) => new Date(a) - new Date(b));
 
+        // Sort strikes array in ascending order
+        updatedLegs[index].strikes.sort((a, b) => a.StrikePrice - b.StrikePrice);
         setLegs(updatedLegs);
-        setGetAllExpiryData(expiryData?.data?.result || []);
         setGetAllStrikesData(instrumentsData?.data || []);
+        setGetAllExpiryData(expiryData?.data?.result || []);
       } else {
         console.error(
           'Error fetching data:',
@@ -167,173 +222,62 @@ const Strategies = () => {
       toast.error('Failed to fetch Expiry or Instruments!');
     }
   };
-  // const handleSymbolChange = async (index, selectedOption) => {
-  //   try {
-  //     const jwtAccessToken = localStorage.getItem('jwt_access_token');
-  //     const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-  
-  //     const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
-  //     const instrumentsUrl = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
-  
-  //     const [expiryResponse, instrumentsResponse, ltpResponse] = await Promise.all([
-  //       axios.get(expiryUrl, { headers: { "Auth-Token": jwtAccessToken } }),
-  //       axios.get(instrumentsUrl, { headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" } }),
-  //       axios.get(ltpUrl, {
-  //         params: {
-  //           symbol: selectedOption.value,
-  //           expiry: legs[index]?.selectedExpiry?.value || "25JAN2024",
-  //           strike: legs[index]?.selectedStrike?.value || "21500",
-  //           type: legs[index]?.selectedType?.value || "PE",
-  //         },
-  //         headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
-  //       }),
-  //     ]);
-  
-  //     if (expiryResponse.status === 200 && instrumentsResponse.status === 200 && ltpResponse.status === 200) {
-  //       const expiryData = expiryResponse.data;
-  //       const instrumentsData = instrumentsResponse.data;
-  //       const ltpPrice = ltpResponse.data?.LastTradedPrice;
-  
-  //       const updatedLegs = [...legs];
-  //       updatedLegs[index].symbol = selectedOption;
-  //       updatedLegs[index].expiryDates = expiryData?.data?.result || [];
-  //       updatedLegs[index].strikes = getAllStrikesData?.result || [];
-  //       updatedLegs[index].price = ltpPrice;
-  //       updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, ltpPrice);
-  
-  //       setLegs(updatedLegs);
-  //       setGetAllExpiryData(expiryData?.data?.result || []);
-  //       setGetAllStrikesData(instrumentsData?.data || []);
-  //     } else {
-  //       console.error(
-  //         'Error fetching data:',
-  //         expiryResponse.statusText,
-  //         instrumentsResponse.statusText,
-  //         ltpResponse.statusText
-  //       );
-  //       toast.error('Failed to fetch Expiry or Instruments or LTP!');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error processing response:', error);
-  //     toast.error('Failed to fetch Expiry or Instruments or LTP!');
-  //   }
-  // };
-  // const handleSymbolChange = async (index, selectedOption) => {
-  //   try {
-  //     const jwtAccessToken = localStorage.getItem('jwt_access_token');
-  //     // const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-  
-  //     const expiryResponsePromise = await fetch(
-  //       `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}`,
-  //       {
-  //         method: 'GET',
-  //         params: {
-  //           exchangeSegment: 2,
-  //           series: 'OPTIDX',
-  //         },
-  //         headers: {
-  //           "Auth-Token": jwtAccessToken,
-  //         },
-  //       }
-  //     );
 
-  //     const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-  //     const queryParams = new URLSearchParams({
-  //       access_token: jwtXtsAccessToken,
-  //       source: 'WEB',
-  //     });
-      
-  //     const url = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?${queryParams}`;
-      
-  //     const instrumentsResponsePromise = await fetch(url, {
-  //       method: 'GET',
-  //       headers: {
-  //         "Auth-Token": jwtAccessToken,
-  //         "Content-Type": "application/json", // Set the content type if needed
-  //       },
-  //     });
 
-  //     const ltpResponsePromise = await axios.get(
-  //       `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOption.value}?${queryParams}`,
-  //       {
-  //         params: {
-  //           symbol: selectedOption.value,
-  //           expiry: legs[index]?.selectedExpiry?.value || "25JAN2024",
-  //           // expiry: "25JAN2024", // Assuming you have selectedExpiry in leg
-  //           strike: legs[index]?.selectedStrike?.value || "21500", 
-  //           // strike: "21500", // Assuming you have selectedStrike in leg
-  //           type: legs[index]?.selectedType?.value || "PE", // Assuming you have a static type or it is dynamic
-  //           // access_token: jwtAccessToken,
-  //           // source: "WEB",
-  //         },
-  //         headers: {
-  //           "Auth-Token": jwtAccessToken,
-  //           "Content-Type": "application/json", // Set the content type if needed
-  //         },
-  //       }
-  //     );
-  //     const [expiryResponse, instrumentsResponse, ltpResponse] = await Promise.all([
-  //       expiryResponsePromise,
-  //       instrumentsResponsePromise,
-  //       ltpResponsePromise,
-  //     ]);
 
-  //     if (expiryResponse.ok && instrumentsResponse.ok && ltpResponse.ok) {
-  //       const expiryData = await expiryResponse.json();
-  //       const instrumentsData = await instrumentsResponse.json();
-  //       console.log("expiryData:", expiryData);
-  //       console.log("instrumentsData:", instrumentsData); 
+    // // Function to calculate the final net premium
+    // const calculateFinalNetPremium = () => {
+    //   // Separate Buy and Sell legs
+    //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
-  //       const updatedLegs = [...legs];
-  //       updatedLegs[index].symbol = selectedOption;
-  //       updatedLegs[index].expiryDates = expiryData?.data?.result || [];
-  //       updatedLegs[index].strikes = getAllStrikesData?.result || [];
+    //   // Calculate net premium for each leg
+    //   const buyNetPremium = buyLegs.reduce((total, leg) => total + leg.premium, 0);
+    //   const sellNetPremium = sellLegs.reduce((total, leg) => total + leg.premium, 0);
+  
+    //   // Calculate the final net premium
+    //   return sellNetPremium - buyNetPremium;
+    // };
+  // Function to calculate the final net premium
+  const calculateFinalNetPremium = () => {
+    // Separate Buy and Sell legs
+    const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    const sellLegs = legs.filter((leg) => leg.type === "SELL");
 
-  //       const ltpPrice = ltpResponse.data?.LastTradedPrice;
-  //       updatedLegs[index].price = ltpPrice;
-  //       updatedLegs[index].premium = calculatePremium(
-  //         updatedLegs[index].lot.value,
-  //         ltpPrice
-  //       );
-  //       // updatedLegs[index].price = ltpResponse.data?.LastTradedPrice;
-  //       // updatedLegs[index].premium = calculatePremium(
-  //       //   updatedLegs[index].lot.value,
-  //       //   ltpResponse.data.LastTradedPrice
-  //       // );
+    // Calculate net premium for each leg
+    const buyNetPremium = buyLegs.reduce((total, leg) => total + leg.premium, 0);
+    const sellNetPremium = sellLegs.reduce((total, leg) => total + leg.premium, 0);
 
-  //       setLegs(updatedLegs);
-  //       setGetAllExpiryData(expiryData?.data?.result || []);
-  //       setGetAllStrikesData(instrumentsData?.data || []); // Update the state here
-  //     } else {
-  //       console.error(
-  //         'Error fetching data:',
-  //         expiryResponse.statusText,
-  //         instrumentsResponse.statusText,
-  //         ltpResponse.statusText
-  //       );
-  //       toast.error('Failed to fetch Expiry or Instruments or LTP!');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error processing response:', error);
-  //     toast.error('Failed to fetch Expiry or Instruments or LTP!');
-  //   }
-  // };
+    // Calculate the final net premium
+    const finalNetPremium = sellNetPremium - buyNetPremium;
 
+    // Determine the display text based on the condition
+    const displayText = finalNetPremium > 0 ? "GET" : "PAY";
+
+    return { finalNetPremium, displayText };
+  };
+
+  const { finalNetPremium, displayText } = calculateFinalNetPremium();
+
+  
   return (
     <div className="container mw-100 mt-5">
       <div className="card">
         <div className="card-header">
           <div className="col-lg-4">
             <h3>Symbol</h3>
-            <Select
-              value={selectedOptionSymbol}
-              onChange={(selectedOption) => {
-                setSelectedOptionSymbol(selectedOption);
-                handleSymbolChange(0, selectedOption); // Assuming 0 is the index, adjust accordingly
-              }}
-              options={symbols}
-              name="symbols"
-            />
+            {legs.map((legItem, index) => (
+              <Select
+                key={index}
+                value={legItem.selectedOptionSymbol}
+                onChange={(selectedOption) => {
+                  setSelectedOptionSymbol(selectedOption);
+                  handleSymbolChange(index, selectedOption);
+                }}
+                options={symbols}
+                name={`symbols-${index}`}
+              />
+            ))}
           </div>
           <div className="col-lg-8">
             <button className="btn btn-primary me-2" onClick={addLeg}>
@@ -459,7 +403,22 @@ const Strategies = () => {
           
         ))}
       </div>
-      
+      {/* Display the final net premium */}
+      <div className="row mt-5">
+        <div className="col-md-12 text-center">
+          {/* <h4>Final Net Premium: {calculateFinalNetPremium().toFixed(2)}</h4> */}
+          <h2 style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
+            Final Net Premium: {displayText} {Math.abs(finalNetPremium).toFixed(2)}
+          </h2>
+        </div>
+      </div>
+      <div className="row mt-3">
+        <div className="col-md-12 text-center">
+          <button className="btn btn-info" onClick={refreshLegTypes}>
+            Refresh
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
