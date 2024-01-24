@@ -42,16 +42,7 @@ const Strategies = () => {
     const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
     return [...new Set(selectedTypes)];
   };
-  const refreshLegTypes = () => {
-    const uniqueSelectedTypes = getUniqueSelectedTypes();
-    const updatedLegs = legs.map((leg) => ({
-      ...leg,
-      selectedType: uniqueSelectedTypes.includes(leg.selectedType?.value)
-        ? leg.selectedType
-        : null,
-    }));
-    setLegs(updatedLegs);
-  };
+
   // const refreshLegTypes = () => {
   //   const updatedLegs = [...legs];
   //   updatedLegs.forEach((leg, index) => {
@@ -60,11 +51,6 @@ const Strategies = () => {
   //   setLegs(updatedLegs);
   // };
 
-  // const addLeg = () => {
-  //   setLegs(prevLegs => [...prevLegs, { type: "BUY", symbol: "nifty", lot: { value: "1", label: "1" }, price: "" }], () => {
-  //     console.log('After adding leg:', legs);
-  //   });
-  // };
   const addLeg = () => {
     setLegs((prevLegs) => [
       ...prevLegs,
@@ -76,6 +62,8 @@ const Strategies = () => {
         type: "BUY",
         lot: { value: "1", label: "1" },
         price: "",
+        bidInfo: "",  // Add bidInfo property
+        askInfo: "",
         // other properties for the leg
       },
     ]);
@@ -100,6 +88,7 @@ const Strategies = () => {
       lots.find((lot) => lot.value === updatedLegs[index].lot.value + 1) || lots[lots.length - 1];
     setLegs(updatedLegs);
   };
+
 
   const toggleLegType = (index) => {
     const updatedLegs = [...legs];
@@ -144,7 +133,12 @@ const Strategies = () => {
 
         if (ltpResponse.status === 200) {
           const ltpPrice = ltpResponse.data?.LastTradedPrice;
+          // const bidinfo = ltpResponse.data?.BidInfo?.Price || ""; // Set to empty string if Bid Info is undefined
+          // const askinfo = ltpResponse.data?.AskInfo?.Price || "";
+
           updatedLegs[index].price = ltpPrice;
+          updatedLegs[index].bidInfo = ltpResponse.data.BidInfo || "";
+          updatedLegs[index].askInfo = ltpResponse.data.AskInfo || "";
           updatedLegs[index].premium = calculatePremium(updatedLegs[index].lot.value, ltpPrice);
           setLegs(updatedLegs);
           setSelectedType(selectedType);
@@ -160,6 +154,58 @@ const Strategies = () => {
 
     setLegs(updatedLegs);
   };
+  const handleBidInfoChange = (index, e) => {
+    console.log('Bid Info changed:', e.target.value);
+    const updatedLegs = [...legs];
+    updatedLegs[index].bidInfo = e.target.value;
+    setLegs(updatedLegs);
+  };
+  const handleAskInfoChange = (index, e) => {
+    const updatedLegs = [...legs];
+    updatedLegs[index].askInfo = e.target.value;
+    setLegs(updatedLegs);
+  };
+  const refreshLegTypes = async () => {
+    try {
+      const jwtAccessToken = localStorage.getItem('jwt_access_token');
+      const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
+  
+      const refreshPromises = legs.map(async (leg, index) => {
+        if (leg.selectedType?.value === "CE" || leg.selectedType?.value === "PE") {
+          if (leg.selectedOptionSymbol) {
+            const ltpUrl = `http://127.0.0.1:8081/lms-service/get_ltp_price/${leg.selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+  
+            const ltpResponse = await axios.get(ltpUrl, {
+              params: {
+                symbol: leg.selectedOptionSymbol.value,
+                expiry: leg.selectedExpiry?.value,
+                strike: leg.selectedStrike?.value,
+                type: leg.selectedType.value,
+              },
+              headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
+            });
+  
+            if (ltpResponse.status === 200) {
+              const ltpPrice = ltpResponse.data?.LastTradedPrice;
+              const updatedLegs = [...legs];
+              updatedLegs[index].price = ltpPrice;
+              updatedLegs[index].premium = calculatePremium(leg.lot.value, ltpPrice);
+              setLegs(updatedLegs);
+            } else {
+              console.error('Error fetching LTP data:', ltpResponse.statusText);
+              toast.error('Failed to fetch LTP!');
+            }
+          }
+        }
+      });
+  
+      await Promise.all(refreshPromises);
+    } catch (error) {
+      console.error('Error processing LTP response:', error);
+      toast.error('Failed to fetch LTP!');
+    }
+  };
+  
 
   const calculatePremium = (lots, price) => {
     const lotSize = 50; // 1 lot = 50 shares
@@ -259,7 +305,182 @@ const Strategies = () => {
 
   const { finalNetPremium, displayText } = calculateFinalNetPremium();
 
+
+  const calculateSpread = () => {
+    // Separate Buy and Sell legs
+    const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
+    // If there is only one leg, return its bid and ask prices directly
+    if (legs.length === 1) {
+      const singleLeg = legs[0];
+      return {
+        bidSpread: singleLeg.bidInfo,
+        askSpread: singleLeg.askInfo,
+      };
+    }
+  
+    // Initialize bid and ask spread variables
+    let bidSpread = 0;
+    let askSpread = 0;
+  
+    // Function to calculate spread for a pair of legs (buy and sell)
+    const calculateSpreadForPair = (buyLeg, sellLeg) => {
+      const bidSpreadForPair = buyLeg.bidInfo - sellLeg.askInfo;
+      const askSpreadForPair = buyLeg.askInfo - sellLeg.bidInfo;
+  
+      // Update overall bid and ask spread
+      bidSpread += bidSpreadForPair;
+      askSpread += askSpreadForPair;
+    };
+
+    // Function to calculate spread for legs of the same type
+    const calculateSpreadForSameType = (legsOfType) => {
+      const bidSpreadForSameType = legsOfType.reduce((total, leg) => total + leg.bidInfo, 0);
+      const askSpreadForSameType = legsOfType.reduce((total, leg) => total + leg.askInfo, 0);
+  
+      // Update overall bid and ask spread
+      bidSpread += bidSpreadForSameType;
+      askSpread += askSpreadForSameType;
+    };
+
+    // Calculate bid and ask spread for all possible combinations
+    buyLegs.forEach((buyLeg) => {
+      sellLegs.forEach((sellLeg) => {
+        calculateSpreadForPair(buyLeg, sellLeg);
+      });
+    });
+    // Calculate bid and ask spread for legs of the same type
+    if (buyLegs.length > 1) {
+      calculateSpreadForSameType(buyLegs);
+    }
+  
+    if (sellLegs.length > 1) {
+      calculateSpreadForSameType(sellLegs);
+    }
+  
+    return { bidSpread, askSpread };
+  };
+
+  // // Function to calculate bid spread and ask spread
+  // const calculateSpread = () => {
+  //   // Separate Buy and Sell legs
+  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
+  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
+
+  //   // Calculate bid spread for each leg
+  //   const bidSpread = buyLegs.reduce((total, buyLeg) => {
+  //     const sellLegsForBuy = sellLegs.map((sellLeg) => sellLeg.bidInfo || 0);
+  //     return total + buyLeg.bidInfo - Math.max(...sellLegsForBuy);
+  //   }, 0);
+
+  //   // Calculate ask spread for each leg
+  //   const askSpread = sellLegs.reduce((total, sellLeg) => {
+  //     const buyLegsForSell = buyLegs.map((buyLeg) => buyLeg.askInfo || 0);
+  //     return total + Math.max(...buyLegsForSell) - sellLeg.askInfo;
+  //   }, 0);
+
+  //   return { bidSpread, askSpread };
+  // };
+
+  // Use the calculateSpread function to get bidSpread and askSpread
+  const { bidSpread, askSpread } = calculateSpread();
+
+  // Display bidSpread and askSpread in your component
+  console.log("Bid Spread:", bidSpread);
+  console.log("Ask Spread:", askSpread);
+
+  // const calculateMarketSpread = () => {
+  //   // Separate Buy and Sell legs
+  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
+  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+  //   // Initialize market spread variable
+  //   let marketSpread = 0;
+  
+  //   // Function to calculate market spread for a pair of legs (BUY and SELL)
+  //   const calculateMarketSpreadForPair = (buyLeg, sellLeg) => {
+  //     const spreadForPair = buyLeg.askInfo - sellLeg.bidInfo;
+  //     // Update overall market spread
+  //     marketSpread += spreadForPair;
+  //   };
+  
+  //   // Calculate market spread for all possible combinations of BUY and SELL legs
+  //   buyLegs.forEach((buyLeg) => {
+  //     sellLegs.forEach((sellLeg) => {
+  //       calculateMarketSpreadForPair(buyLeg, sellLeg);
+  //     });
+  //   });
+  
+  //   return marketSpread;
+  // };
+  // const marketSpread = calculateMarketSpread();
+
+
+  const calculateMarketSpread = () => {
+    // Separate Buy and Sell legs
+    const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+    // Check if there are exactly two legs, one of each type
+    if (legs.length === 2 && buyLegs.length === 1 && sellLegs.length === 1) {
+      // Case: First leg is Buy and second leg is Sell
+      const marketSpreadCase1 = buyLegs[0].askInfo - sellLegs[0].bidInfo;
+  
+      // Case: Both legs are Buy
+      const marketSpreadCase2 = buyLegs.reduce((total, buyLeg) => total + buyLeg.askInfo, 0);
+  
+      // Case: Both legs are Sell
+      const marketSpreadCase3 = sellLegs.reduce((total, sellLeg) => total + sellLeg.bidInfo, 0);
+  
+      // Determine which case to use based on the legs' types
+      const marketSpread = marketSpreadCase1 >= 0 ? marketSpreadCase1 :
+        marketSpreadCase2 >= 0 ? marketSpreadCase2 :
+        marketSpreadCase3;
+  
+      return marketSpread;
+    } else {
+      // Default calculation when not meeting the specified criteria
+      // Check if there are exactly two legs and both are Buy
+      if (legs.length === 2 && buyLegs.length === 2 && sellLegs.length === 0) {
+        // Case: Both legs are Buy
+        const marketSpreadCase2 = buyLegs.reduce((total, buyLeg) => total + buyLeg.askInfo, 0);
+        return marketSpreadCase2;
+      }
+  
+      // Check if there are exactly two legs and both are Sell
+      if (legs.length === 2 && buyLegs.length === 0 && sellLegs.length === 2) {
+        // Case: Both legs are Sell
+        const marketSpreadCase3 = sellLegs.reduce((total, sellLeg) => total + sellLeg.bidInfo, 0);
+        return marketSpreadCase3;
+      }
+  
+      // Default calculation when not meeting the specified criteria
+      // Initialize market spread variable
+      let marketSpread = 0;
+  
+      // Function to calculate market spread for a pair of legs (BUY and SELL)
+      const calculateMarketSpreadForPair = (buyLeg, sellLeg) => {
+        const spreadForPair = buyLeg.askInfo - sellLeg.bidInfo;
+        // Update overall market spread
+        marketSpread += spreadForPair;
+      };
+  
+      // Calculate market spread for all possible combinations of BUY and SELL legs
+      buyLegs.forEach((buyLeg) => {
+        sellLegs.forEach((sellLeg) => {
+          calculateMarketSpreadForPair(buyLeg, sellLeg);
+        });
+      });
+  
+      return marketSpread;
+    }
+  };
+  
+  const marketSpread = calculateMarketSpread();
+  
+  
+
   return (
     <div className="container mw-100 mt-5">
       <div className="card">
@@ -379,6 +600,26 @@ const Strategies = () => {
                 onChange={(e) => handlePriceChange(index, e)}
               />
             </div>
+            <div className="col-md-1 mb-3">
+              <label htmlFor="bidInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bid Info</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder=""
+                value={legItem.bidInfo}
+                onChange={(e) => handleBidInfoChange(index, e)}
+              />
+            </div>
+          <div className="col-md-1 mb-3">
+            <label htmlFor="askInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ask Info</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder=""
+              value={legItem.askInfo}
+              onChange={(e) => handleAskInfoChange(index, e)}
+            />
+          </div>
             <div className="col-md-1 mt-5 mb-3">
               <div
                 className="btn btn-danger shadow btn-xs sharp"
@@ -409,6 +650,21 @@ const Strategies = () => {
           {/* <h4>Final Net Premium: {calculateFinalNetPremium().toFixed(2)}</h4> */}
           <h2 style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
             Final Net Premium: {displayText} {Math.abs(finalNetPremium).toFixed(2)}
+          </h2>
+        </div>
+        <div className="col-md-12 text-center">
+          <h2>
+            Final Bid Spread: {Math.abs(bidSpread).toFixed(2)}
+          </h2>
+        </div>
+        <div className="col-md-12 text-center">
+          <h2>
+            Final Ask Spread: {Math.abs(askSpread).toFixed(2)}
+          </h2>
+        </div>
+        <div className="col-md-12 text-center">
+          <h2 style={{ color: marketSpread >= 0 ? "green" : "red" }}>
+            Market Spread: {Math.abs(marketSpread).toFixed(2)}
           </h2>
         </div>
       </div>
