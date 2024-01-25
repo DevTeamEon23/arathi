@@ -4,6 +4,7 @@ import json
 import time
 import os
 import logging
+import asyncio
 from typing import Optional
 import base64
 import pandas as pd
@@ -24,6 +25,7 @@ import routers.lms_service.lms_service_ops as model
 from fastapi.responses import JSONResponse,HTMLResponse,FileResponse
 from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
 from fastapi import APIRouter, Depends, UploadFile, File,Form, Query,HTTPException, Response,Header
+from fastapi import WebSocket as websocket
 from starlette import status
 from sqlalchemy.orm import Session
 from starlette.requests import Request
@@ -243,7 +245,12 @@ def get_ltp_price(
                     # Check if 'Touchline' and 'LastTradedPrice' are present in the list quotes JSON
                     if 'Touchline' in list_quotes_json and 'LastTradedPrice' in list_quotes_json['Touchline']:
                         ltp = list_quotes_json['Touchline']['LastTradedPrice']
-                        return {'LastTradedPrice': ltp}
+                        bid_info = list_quotes_json['Touchline']['BidInfo']
+                        ask_info = list_quotes_json['Touchline']['AskInfo']
+
+                        bid_price = bid_info['Price']
+                        ask_price = ask_info['Price']
+                        return {'LastTradedPrice': ltp, 'BidInfo': bid_price, 'AskInfo': ask_price}
                     else:
                         raise HTTPException(status_code=500, detail="Error in extracting LastTradedPrice from quote.")
                 else:
@@ -257,3 +264,67 @@ def get_ltp_price(
 
     except HTTPException as e:
         return e
+    
+
+@service.websocket("/get_realtime_data/{symbol}")
+async def websocket_endpoint(symbol: str, expiry: str, strike: str, option_type: str, access_token: str, source: str = 'WEB'):
+    try:
+        # Step 1: Get instrument data
+        instrument_data = get_inst_str(symbol, access_token, source)
+
+        # Assuming instrument_data contains the necessary information, extract the relevant part
+        strike_api_response = instrument_data['data']['result']
+
+        # Define the target display name
+        target_display_name = f"{symbol} {expiry} {option_type} {strike}"
+
+        # Step 2: Filter the response based on the target display name
+        matching_instrument = next(
+            (instrument for instrument in strike_api_response if instrument.get("DisplayName") == target_display_name), None
+        )
+
+        if matching_instrument:
+            exchange_instrument_id = matching_instrument.get("ExchangeInstrumentID")
+
+            while True:
+                try:
+                    # Step 3: Get real-time data using the exchange_instrument_id
+                    q_url = f'https://algozy.rathi.com:3000/apimarketdata/instruments/quotes'
+                    q_payload = {
+                        'instruments': [{'exchangeSegment': 2, 'exchangeInstrumentID': exchange_instrument_id}],
+                        'xtsMessageCode': 1502,
+                        'publishFormat': 'JSON'
+                    }
+                    q_header = {'authorization': access_token}
+                    q_response = requests.post(url=q_url, headers=q_header, json=q_payload)
+
+                    if q_response.status_code == 200:
+                        q_data = q_response.json()
+                        # Check if 'result', 'listQuotes', and the list itself are present in the response
+                        if 'result' in q_data and 'listQuotes' in q_data['result'] and q_data['result']['listQuotes']:
+                            list_quotes_json = json.loads(q_data['result']['listQuotes'][0])
+
+                            # Check if 'Touchline' is present in the list quotes JSON
+                            if 'Touchline' in list_quotes_json:
+                                touchline_data = list_quotes_json['Touchline']
+
+                                ltp = touchline_data.get('LastTradedPrice')
+                                bid_info = touchline_data.get('BidInfo')
+                                ask_info = touchline_data.get('AskInfo')
+
+                                # Send real-time data to the WebSocket client
+                                await websocket.send_json({
+                                    'LastTradedPrice': ltp,
+                                    'BidInfo': bid_info,
+                                    'AskInfo': ask_info
+                                })
+
+                    await asyncio.sleep(1)  # Wait for 1 second before fetching the next update
+                except Exception as e:
+                    logging.error(f"Error in WebSocket loop: {e}")
+
+        else:
+            raise HTTPException(status_code=404, detail="Instrument not found for the given criteria.")
+
+    except HTTPException as e:
+        await websocket.send_json({'error': str(e)})
