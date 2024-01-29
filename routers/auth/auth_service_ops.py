@@ -445,28 +445,28 @@ async def send_welcome_email(user: User):
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>Welcome to EonLearning</title>
+            <title>Welcome to AnandRathi Shares & Stock Brokers LTD.</title>
         </head>
         <body>
             <div style="font-family: Helvetica, Arial, sans-serif; min-width: 1000px; overflow: auto; line-height: 2">
                 <div style="margin: 50px auto; width: 70%; padding: 20px 0">
                     <div style="border-bottom: 1px solid #eee">
-                        <a href="" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600">Welcome to EonLearning</a>
+                        <a href="" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600">Welcome to AnandRathi Shares & Stock Brokers LTD.</a>
                     </div>
                     <p style="font-size: 1.1em">Hi {fullname},</p>
-                    <p>Your EonLearning account has been successfully created.</p>
-                    <p>Get started with basic videos of EonLearning: <a href="https://www.youtube.com/watch?v=AD7oxMS0nEc">https://www.youtube.com/watch?v=AD7oxMS0nEc</a></p>
+                    <p>Your AnandRathi account has been successfully created.</p>
+                    <p>Get started with basic videos of AnandRathi: <a href="https://youtu.be/ZPs3URGs0KQ?si=ebVSN9zGEkTIAhvC">https://youtu.be/ZPs3URGs0KQ?si=ebVSN9zGEkTIAhvC</a></p>
                     <p>Feel free to contact our support team @ Aniruddha Durgule : +91 7021592861</p>
-                    <p>Or eonlearning123@gmail.com</p>
+                    <p>Or anirudhadurgule@rathi.com</p>
                     <p>Make sure you are part of our Whatsapp group for all the updates, alerts, and instant support.</p>
-                    <p>WhatsApp Group Link: <a href="https://chat.whatsapp.com/JpUjNz2mZ0BCSHmBy1OmhJ">https://chat.whatsapp.com/JpUjNz2mZ0BCSHmBy1OmhJ</a></p>
-                    <p>This email was sent to {email} because you are using eonlearning.tech.</p>
-                    <p style="font-size: 0.9em;">Thanks & Regards,<br />The EonLearning Team</p>
+                    <p>WhatsApp Group Link: <a href="https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E">https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E</a></p>
+                    <p>This email was sent to {email} because you are using AnandRathi Strategy Maker</p>
+                    <p style="font-size: 0.9em;">Thanks & Regards,<br />The AnandRathi Team</p>
                     <hr style="border: none; border-top: 1px solid #eee" />
                     <div style="float: right; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300">
-                        <p>EonLearnings Inc</p>
-                        <p>Dalal Street, CharniRoad(E)</p>
-                        <p>Mumbai - 400001</p>
+                        <p>Anand Rathi Share And Stock Brokers LTD</p>
+                        <p>Floor No. 2 & 3, Kamala Mill Compound, Trade Link B&C Block, E' Wing, Senapati Bapat Marg, Lower Parel West, Lower Parel,</p>
+                        <p>Mumbai, Maharashtra - 400013</p>
                     </div>
                 </div>
             </div>

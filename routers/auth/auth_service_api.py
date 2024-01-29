@@ -233,16 +233,16 @@ async def send_welcome_email(user: User):
                     <p>Your AnandRathi account has been successfully created.</p>
                     <p>Get started with basic videos of AnandRathi: <a href="https://youtu.be/ZPs3URGs0KQ?si=ebVSN9zGEkTIAhvC">https://youtu.be/ZPs3URGs0KQ?si=ebVSN9zGEkTIAhvC</a></p>
                     <p>Feel free to contact our support team @ Aniruddha Durgule : +91 7021592861</p>
-                    <p>Or eonlearning123@gmail.com</p>
+                    <p>Or anirudhadurgule@rathi.com</p>
                     <p>Make sure you are part of our Whatsapp group for all the updates, alerts, and instant support.</p>
                     <p>WhatsApp Group Link: <a href="https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E">https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E</a></p>
-                    <p>This email was sent to {email} because you are using eonlearning.tech.</p>
-                    <p style="font-size: 0.9em;">Thanks & Regards,<br />The EonLearning Team</p>
+                    <p>This email was sent to {email} because you are using AnandRathi Strategy Maker</p>
+                    <p style="font-size: 0.9em;">Thanks & Regards,<br />The AnandRathi Team</p>
                     <hr style="border: none; border-top: 1px solid #eee" />
                     <div style="float: right; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300">
-                        <p>EonLearnings Inc</p>
-                        <p>Dalal Street, CharniRoad(E)</p>
-                        <p>Mumbai - 400001</p>
+                        <p>Anand Rathi Share And Stock Brokers LTD</p>
+                        <p>Floor No. 2 & 3, Kamala Mill Compound, Trade Link B&C Block, E' Wing, Senapati Bapat Marg, Lower Parel West, Lower Parel,</p>
+                        <p>Mumbai, Maharashtra - 400013</p>
                     </div>
                 </div>
             </div>
@@ -253,7 +253,7 @@ async def send_welcome_email(user: User):
         template = template.replace("{email}", user.email)
 
         message = MessageSchema(
-            subject="Welcome to EonLearning App",
+            subject="Welcome to AnandRathi Strategy Trading App",
             recipients=[user.email],
             body=template,
             subtype="html"
