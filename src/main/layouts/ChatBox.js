@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
 
 /// Components
-import Notes from "../components/chatBox/Notes";
-import Alerts from "../components/chatBox/Alerts";
-import Chat from "../components/chatBox/Chat";
+// import Notes from "../components/chatBox/Notes";
+// import Alerts from "../components/chatBox/Alerts";
+// import Chat from "../components/chatBox/Chat";
 import { Link } from "react-router-dom";
 
 const ChatBox = ({ onClick, toggle }) => {
@@ -46,7 +46,7 @@ const ChatBox = ({ onClick, toggle }) => {
                ))}
             </ul>
             <div className="tab-content">
-               <Chat
+               {/* <Chat
                   PerfectScrollbar={PerfectScrollbar}
                   toggle={toggle}
                   toggleTab={toggleTab}
@@ -60,7 +60,7 @@ const ChatBox = ({ onClick, toggle }) => {
                   PerfectScrollbar={PerfectScrollbar}
                   toggle={toggle}
                   toggleTab={toggleTab}
-               />
+               /> */}
             </div>
          </div>
       </div>

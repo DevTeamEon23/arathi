@@ -4,8 +4,8 @@ import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
-import Bar2 from "./../../components/charts/Chartjs/bar2";
-import BarChart1 from "./../../components/charts/Chartjs/bar1";
+// import Bar2 from "./../../components/charts/Chartjs/bar2";
+// import BarChart1 from "./../../components/charts/Chartjs/bar1";
 // sample
 // import { useGetUsersQuery } from "../../../services/testService";
 
@@ -267,7 +267,7 @@ const Home = () => {
               <h4>Enrolled Courses</h4>{" "}
             </div>
             <div className="card-body pb-1 custome-tooltip style-1 py-0">
-              <BarChart1 data={userEnrolledCourses} />
+              {/* <BarChart1 data={userEnrolledCourses} /> */}
             </div>{" "}
           </div>
         </div>

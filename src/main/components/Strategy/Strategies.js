@@ -24,6 +24,8 @@ const Strategies = () => {
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
+
+  const [ltpSpread, setLtpSpread] = useState(0);
   // const [legs, setLegs] = useState([]);
   const [legs, setLegs] = useState([
     {
@@ -479,7 +481,126 @@ const Strategies = () => {
   
   const marketSpread = calculateMarketSpread();
   
+  const calculateLtpSpread = () => {
+    // Calculate LTP Spread based on finalNetPremium and update the state
+    const calculatedLtpSpread = finalNetPremium / 50;
+    setLtpSpread(calculatedLtpSpread);
+  };
+  const calculateMarketBuy = (legs) => {
+    let marketBuy = 0;
   
+    // Separate Buy and Sell legs
+    const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+    // Calculate market buy for legs of the same type (BUY & BUY)
+    if (buyLegs.length > 1) {
+      marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
+    }
+  
+    // Calculate market buy for legs of the same type (SELL & SELL)
+    if (sellLegs.length > 1) {
+      marketBuy += sellLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
+    }
+  
+    // Calculate market buy for pair type (BUY & SELL)
+    if (buyLegs.length > 0 && sellLegs.length > 0) {
+      marketBuy +=
+        buyLegs[0].askInfo * buyLegs[0].lot.value -
+        sellLegs[0].bidInfo * sellLegs[0].lot.value +
+        (buyLegs.length === 3 ? buyLegs[2].askInfo * buyLegs[2].lot.value : 0) +
+        (buyLegs.length === 4 ? -sellLegs[2].bidInfo * sellLegs[2].lot.value : 0);
+    }
+  
+    return marketBuy;
+  };
+  
+  const calculateMarketSell = (legs) => {
+    let marketSell = 0;
+  
+    // Separate Buy and Sell legs
+    const buyLegs = legs.filter((leg) => leg.type === "BUY");
+    const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+    // Calculate market sell for legs of the same type (BUY & BUY)
+    if (buyLegs.length > 1) {
+      marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
+    }
+  
+    // Calculate market sell for legs of the same type (SELL & SELL)
+    if (sellLegs.length > 1) {
+      marketSell += sellLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
+    }
+  
+    // Calculate market sell for pair type (BUY & SELL)
+    if (buyLegs.length > 0 && sellLegs.length > 0) {
+      marketSell +=
+        buyLegs[0].bidInfo * buyLegs[0].lot.value -
+        sellLegs[0].askInfo * sellLegs[0].lot.value +
+        (buyLegs.length === 3 ? buyLegs[2].bidInfo * buyLegs[2].lot.value : 0) +
+        (buyLegs.length === 4 ? -sellLegs[2].askInfo * sellLegs[2].lot.value : 0);
+    }
+  
+    return marketSell;
+  };
+  // const calculateMarketBuy = (legs) => {
+  //   let marketBuy = 0;
+  
+  //   // Separate Buy and Sell legs
+  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
+  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+  //   // Calculate market buy for legs of the same type (BUY & BUY)
+  //   if (buyLegs.length > 1) {
+  //     marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
+  //   }
+  
+  //   // Calculate market buy for legs of the same type (SELL & SELL)
+  //   if (sellLegs.length > 1) {
+  //     marketBuy += sellLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
+  //   }
+  
+  //   // Calculate market buy for pair type (BUY & SELL)
+  //   if (buyLegs.length > 0 && sellLegs.length > 0) {
+  //     marketBuy += buyLegs[0].askInfo * buyLegs[0].lot.value - sellLegs[0].bidInfo * sellLegs[0].lot.value;
+  //   }
+  
+  //   return marketBuy;
+  // };
+  
+  // const calculateMarketSell = (legs) => {
+  //   let marketSell = 0;
+  
+  //   // Separate Buy and Sell legs
+  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
+  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
+  
+  //   // Calculate market sell for legs of the same type (BUY & BUY)
+  //   if (buyLegs.length > 1) {
+  //     marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
+  //   }
+  
+  //   // Calculate market sell for legs of the same type (SELL & SELL)
+  //   if (sellLegs.length > 1) {
+  //     marketSell += sellLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
+  //   }
+  
+  //   // Calculate market sell for pair type (BUY & SELL)
+  //   if (buyLegs.length > 0 && sellLegs.length > 0) {
+  //     marketSell += buyLegs[0].bidInfo * buyLegs[0].lot.value - sellLegs[0].askInfo * sellLegs[0].lot.value;
+  //   }
+  
+  //   return marketSell;
+  // };
+  
+  
+  const marketBuy = calculateMarketBuy(legs);
+  const marketSell = calculateMarketSell(legs);
+
+  
+  useEffect(() => {
+    calculateLtpSpread();
+  }, [finalNetPremium]);
 
   return (
     <div className="container mw-100 mt-5">
@@ -646,28 +767,47 @@ const Strategies = () => {
       </div>
       {/* Display the final net premium */}
       <div className="row mt-5">
-        <div className="col-md-12 text-center">
-          {/* <h4>Final Net Premium: {calculateFinalNetPremium().toFixed(2)}</h4> */}
-          <h2 style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
-            Final Net Premium: {displayText} {Math.abs(finalNetPremium).toFixed(2)}
-          </h2>
-        </div>
-        <div className="col-md-12 text-center">
-          <h2>
-            Final Bid Spread: {Math.abs(bidSpread).toFixed(2)}
-          </h2>
-        </div>
-        <div className="col-md-12 text-center">
-          <h2>
-            Final Ask Spread: {Math.abs(askSpread).toFixed(2)}
-          </h2>
-        </div>
-        <div className="col-md-12 text-center">
-          <h2 style={{ color: marketSpread >= 0 ? "green" : "red" }}>
-            Market Spread: {Math.abs(marketSpread).toFixed(2)}
-          </h2>
-        </div>
-      </div>
+  <div className="col-md-6">
+    <table className="table table-bordered">
+      <tbody>
+        <tr>
+          <td>Final Net Premium</td>
+          <td style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
+            {displayText} {Math.abs(finalNetPremium).toFixed(2)}
+          </td>
+        </tr>
+        <tr>
+          <td>Final Bid Spread</td>
+          <td>{Math.abs(bidSpread).toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td>Final Ask Spread</td>
+          <td>{Math.abs(askSpread).toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td>Market Spread</td>
+          <td style={{ color: marketSpread >= 0 ? "green" : "red" }}>
+            {Math.abs(marketSpread).toFixed(2)}
+          </td>
+        </tr>
+        <tr>
+          <td>LTP Spread</td>
+          <td style={{ color: ltpSpread > 0 ? "green" : "red" }}>
+            {ltpSpread.toFixed(2)}
+          </td>
+        </tr>
+        <tr>
+          <td>Market Buy</td>
+          <td>{marketBuy.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td>Market Sell</td>
+          <td>{marketSell.toFixed(2)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
       <div className="row mt-3">
         <div className="col-md-12 text-center">
           <button className="btn btn-info" onClick={refreshLegTypes}>

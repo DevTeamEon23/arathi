@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import loadable from "@loadable/component";
 import pMinDelay from "p-min-delay";
 
-import InstructorCalendar from './../Instructor/Instructor/InstructorCalendar';
+// import InstructorCalendar from './../Instructor/Instructor/InstructorCalendar';
 //import ScheduleRadilChart from './Dashboard/ScheduleRadilChart';
 import CalendarBlog from './Dashboard/CalendarBlog';
 //Images
@@ -71,7 +71,7 @@ const Schedule = () =>{
 							</div>
 							<div className="card">
 								<div className="card-body">									
-									<div id="calendar" className="app-fullcalendar1"><InstructorCalendar /></div> 
+									{/* <div id="calendar" className="app-fullcalendar1"><InstructorCalendar /></div>  */}
 								</div>
 							</div>
 						</div>
