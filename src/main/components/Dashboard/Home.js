@@ -12,23 +12,23 @@ import axios from "axios";
 //Import Components
 import { ThemeContext } from "@context/ThemeContext";
 import DropDownBlog from "./DropDownBlog";
-import CourseBlog from "./Dashboard/CourseBlog";
-import CalendarBlog from "./Dashboard/CalendarBlog";
+// import CourseBlog from "./Dashboard/CourseBlog";
+// import CalendarBlog from "./Dashboard/CalendarBlog";
 
 //images
 import Educat from "@images/egucation-girl.png";
 import Calpng from "@images/vector/calpng.png";
 import Book from "@images/vector/book.png";
 
-const LearningActivityChart = loadable(() =>
-  pMinDelay(import("./Dashboard/LearningActivityChart"), 1000)
-);
-const ScoreActivityChart = loadable(() =>
-  pMinDelay(import("./Dashboard/ScoreActivityChart"), 1000)
-);
-const ProgressChart = loadable(() =>
-  pMinDelay(import("./Dashboard/ProgressChart"), 1000)
-);
+// const LearningActivityChart = loadable(() =>
+//   pMinDelay(import("./Dashboard/LearningActivityChart"), 1000)
+// );
+// const ScoreActivityChart = loadable(() =>
+//   pMinDelay(import("./Dashboard/ScoreActivityChart"), 1000)
+// );
+// const ProgressChart = loadable(() =>
+//   pMinDelay(import("./Dashboard/ProgressChart"), 1000)
+// );
 
 const Home = () => {
   // Smaple
@@ -241,7 +241,7 @@ const Home = () => {
     <>
       <div className="row">
         <div className="col-xl-12">
-          <CourseBlog data={dataCounts} />
+          {/* <CourseBlog data={dataCounts} /> */}
         </div>
 
         <div className="col-xl-6 col-lg-12">
@@ -252,11 +252,11 @@ const Home = () => {
             <div
               className="card-body pb-1 pt-0"
               style={{ overflow: "visible" }}>
-              {role === "Admin" ? (
+              {/* {role === "Admin" ? (
                 <ScoreActivityChart data={deptCount} chartType="admin" />
               ) : (
                 <ScoreActivityChart data={deptCount} chartType="superadmin" />
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -278,7 +278,7 @@ const Home = () => {
               <h4>Learning Activity</h4>
             </div>
             <div className="card-body pb-1 py-0 ">
-              <LearningActivityChart data={userActivity} />
+              {/* <LearningActivityChart data={userActivity} /> */}
             </div>
           </div>
         </div>

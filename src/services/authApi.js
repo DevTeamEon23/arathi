@@ -7,7 +7,7 @@ const jwtToken = window.localStorage.getItem("jwt_access_token");
 
 const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000" }), //url
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8081" }), //url
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => {

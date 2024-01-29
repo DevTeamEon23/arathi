@@ -5,15 +5,15 @@ import pMinDelay from "p-min-delay";
 
 // import InstructorCalendar from './../Instructor/Instructor/InstructorCalendar';
 //import ScheduleRadilChart from './Dashboard/ScheduleRadilChart';
-import CalendarBlog from './Dashboard/CalendarBlog';
+// import CalendarBlog from './Dashboard/CalendarBlog';
 //Images
 import small6 from '@images/profile/small/pic6.jpg';
 import small7 from '@images/profile/small/pic7.jpg';
 import small8 from '@images/profile/small/pic8.jpg';
 
-const ScheduleRadilChart = loadable(() =>
-	pMinDelay(import("./Dashboard/ScheduleRadilChart"), 1000)
-);
+// const ScheduleRadilChart = loadable(() =>
+// 	pMinDelay(import("./Dashboard/ScheduleRadilChart"), 1000)
+// );
 
 const cardBlog = [
 	{title: 'UI Design Basic', value:'75', barPercent:'75%', changeClass2:'bgl-secondary',changeClass:'bg-secondary'},
@@ -88,13 +88,13 @@ const Schedule = () =>{
 									<div className="row">
 										<div className="col-xl-6 col-xxl-12">
 											<div className="card-calendar style-1 process-calendar">
-												<CalendarBlog />
+												{/* <CalendarBlog /> */}
 												{/* <input type='text' className="form-control d-none" id='datetimepicker' /> */}
 											</div>
 										</div>
 										<div className="col-xl-6 redial col-xxl-12">
 											<p className="text-center">Your Progress this Month</p>
-												<ScheduleRadilChart />
+												{/* <ScheduleRadilChart /> */}
 											<p className="my-4 text-center">Lorem ipsum dolor sit amet, adipiscing elit, sed do eiusmod tempor</p>
 											<ul className="skil-list">
 												{contentBlog.map((item, ind)=>(

@@ -55,28 +55,28 @@ function ForgotPassword() {
           setBtnLoader(false);
         });
 
-      // jwtService
-      //   .forgotPassword({ email: [email] })
-      //   .then((res) => {
-      //     console.log(res, "on forgotpwd page");
-      //     // Handle the success response here
-      //     Swal.fire({
-      //       title: "Success!",
-      //       text: "Password reset email sent",
-      //       icon: "success",
-      //       confirmButtonText: "OK",
-      //     });
-      //   })
-      //   .catch((error) => {
-      //     // Handle errors that occur during the password reset process
-      //     console.error("Password reset failed:", error);
-      //     Swal.fire({
-      //       title: "Error!",
-      //       text: "Password reset email could not be sent",
-      //       icon: "error",
-      //       confirmButtonText: "OK",
-      //     });
-      //   });
+      jwtService
+        .forgotPassword({ email: [email] })
+        .then((res) => {
+          console.log(res, "on forgotpwd page");
+          // Handle the success response here
+          Swal.fire({
+            title: "Success!",
+            text: "Password reset email sent",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+        })
+        .catch((error) => {
+          // Handle errors that occur during the password reset process
+          console.error("Password reset failed:", error);
+          Swal.fire({
+            title: "Error!",
+            text: "Password reset email could not be sent",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        });
     }
   };
 
@@ -108,7 +108,7 @@ function ForgotPassword() {
     startResendTimer(); // Start the resend OTP timer
     // Make the API call to resend the OTP
     axios
-      .post("http://localhost:8000/auth/send_mail", {
+      .post("http://localhost:8081/auth/send_mail", {
         email: [email],
       })
       .then((res) => {

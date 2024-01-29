@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { Form, Badge } from "react-bootstrap";
+import { Form, Badge, Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logout from "src/main/layouts/nav/Logout";
@@ -24,34 +24,66 @@ const Strategies = () => {
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
+  const [legPrices, setLegPrices] = useState([]);
+  const [addCard, setAddCard] = useState(false);
+  const [formData, setFormData] = useState({
+    TarBuy: '',
+    TarSell: '',
+    NetLot: '',
+    JumpDiff: '',
+    LotJump: '',
+  });
 
+  const handleAddFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   const [ltpSpread, setLtpSpread] = useState(0);
   // const [legs, setLegs] = useState([]);
-  const [legs, setLegs] = useState([
-    {
-      selectedOptionSymbol: null,
-      expiryOptions: [],
-      selectedExpiry: null,
-      selectedStrike: null,
-      type: "BUY",
-      lot: { value: "1", label: "1" },
-      price: "",
-      // other properties for the leg
-    },
-  ]);
+  const [legs, setLegs] = useState([]);
+  const [inputValues, setInputValues] = useState({
+    TarBuy: 0,
+    TarSell: 0,
+    NetLot: 0,
+    JumpDiff: 0,
+    LotPerJump: 0,
+  });
+
+  const [selectedLeg, setSelectedLeg] = useState('');
+  const [outputValue, setOutputValue] = useState(null);
+  // const [outputValues, setOutputValues] = useState({
+  //   TradedLots: 0,
+  //   // Add more output values as needed
+  // });
+
+  const handleSelectChange = (e) => {
+    setSelectedLeg(e.target.value);
+  };
+
+  const calculateOutput = (leg) => {
+    // Example calculations:
+    let legOutput = 0;
+    if (leg === 'Leg1') {
+      legOutput = inputValues.TarSell - inputValues.TarBuy;
+    } else if (leg === 'Leg2') {
+      legOutput = inputValues.TarBuy - inputValues.TarSell;
+    }
+
+    return {
+      TradedLots: legOutput,
+      // Add more output values as needed
+    };
+  };
+
 
   const getUniqueSelectedTypes = () => {
     const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
     return [...new Set(selectedTypes)];
   };
 
-  // const refreshLegTypes = () => {
-  //   const updatedLegs = [...legs];
-  //   updatedLegs.forEach((leg, index) => {
-  //     updatedLegs[index].selectedType = selectedType;
-  //   });
-  //   setLegs(updatedLegs);
-  // };
 
   const addLeg = () => {
     setLegs((prevLegs) => [
@@ -126,7 +158,7 @@ const Strategies = () => {
         const ltpResponse = await axios.get(ltpUrl, {
           params: {
             symbol: selectedOptionSymbol.value,
-            expiry: legs[index]?.selectedExpiry?.value,
+            expiry: legs[index]?.selectedExpiry?.value, 
             strike: legs[index]?.selectedStrike?.value,
             type: selectedType.value,
           },
@@ -271,21 +303,6 @@ const Strategies = () => {
     }
   };
 
-
-
-    // // Function to calculate the final net premium
-    // const calculateFinalNetPremium = () => {
-    //   // Separate Buy and Sell legs
-    //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
-    //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
-  
-    //   // Calculate net premium for each leg
-    //   const buyNetPremium = buyLegs.reduce((total, leg) => total + leg.premium, 0);
-    //   const sellNetPremium = sellLegs.reduce((total, leg) => total + leg.premium, 0);
-  
-    //   // Calculate the final net premium
-    //   return sellNetPremium - buyNetPremium;
-    // };
   // Function to calculate the final net premium
   const calculateFinalNetPremium = () => {
     // Separate Buy and Sell legs
@@ -364,60 +381,12 @@ const Strategies = () => {
     return { bidSpread, askSpread };
   };
 
-  // // Function to calculate bid spread and ask spread
-  // const calculateSpread = () => {
-  //   // Separate Buy and Sell legs
-  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
-  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
-
-  //   // Calculate bid spread for each leg
-  //   const bidSpread = buyLegs.reduce((total, buyLeg) => {
-  //     const sellLegsForBuy = sellLegs.map((sellLeg) => sellLeg.bidInfo || 0);
-  //     return total + buyLeg.bidInfo - Math.max(...sellLegsForBuy);
-  //   }, 0);
-
-  //   // Calculate ask spread for each leg
-  //   const askSpread = sellLegs.reduce((total, sellLeg) => {
-  //     const buyLegsForSell = buyLegs.map((buyLeg) => buyLeg.askInfo || 0);
-  //     return total + Math.max(...buyLegsForSell) - sellLeg.askInfo;
-  //   }, 0);
-
-  //   return { bidSpread, askSpread };
-  // };
-
   // Use the calculateSpread function to get bidSpread and askSpread
   const { bidSpread, askSpread } = calculateSpread();
 
   // Display bidSpread and askSpread in your component
   console.log("Bid Spread:", bidSpread);
   console.log("Ask Spread:", askSpread);
-
-  // const calculateMarketSpread = () => {
-  //   // Separate Buy and Sell legs
-  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
-  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
-  
-  //   // Initialize market spread variable
-  //   let marketSpread = 0;
-  
-  //   // Function to calculate market spread for a pair of legs (BUY and SELL)
-  //   const calculateMarketSpreadForPair = (buyLeg, sellLeg) => {
-  //     const spreadForPair = buyLeg.askInfo - sellLeg.bidInfo;
-  //     // Update overall market spread
-  //     marketSpread += spreadForPair;
-  //   };
-  
-  //   // Calculate market spread for all possible combinations of BUY and SELL legs
-  //   buyLegs.forEach((buyLeg) => {
-  //     sellLegs.forEach((sellLeg) => {
-  //       calculateMarketSpreadForPair(buyLeg, sellLeg);
-  //     });
-  //   });
-  
-  //   return marketSpread;
-  // };
-  // const marketSpread = calculateMarketSpread();
-
 
   const calculateMarketSpread = () => {
     // Separate Buy and Sell legs
@@ -602,7 +571,31 @@ const Strategies = () => {
     calculateLtpSpread();
   }, [finalNetPremium]);
 
-  return (
+
+  const handleAddFormSubmit = (e) => {
+    e.preventDefault();
+    // Calculate TarBuy based on the selected leg
+    if (selectedLeg === 'Leg1') {
+      const calculatedValue = parseFloat(formData.NetLot) - parseFloat(formData.LotJump);
+      setOutputValue(calculatedValue);
+    } else if (selectedLeg === 'Leg2') {
+      const calculatedValue = parseFloat(formData.NetLot) + parseFloat(formData.LotJump);
+      setOutputValue(calculatedValue);
+    }
+
+    // Automatically add the leg to the main page
+    setLegs([...legs, { ...formData, selectedLeg }]);
+    setFormData({
+      TarBuy: '',
+      TarSell: '',
+      NetLot: '',
+      JumpDiff: '',
+      LotJump: '',
+    });
+    setSelectedLeg('');
+  };
+
+ return (
     <div className="container mw-100 mt-5">
       <div className="card">
         <div className="card-header">
@@ -808,13 +801,103 @@ const Strategies = () => {
     </table>
   </div>
 </div>
-      <div className="row mt-3">
-        <div className="col-md-12 text-center">
-          <button className="btn btn-info" onClick={refreshLegTypes}>
-            Refresh
-          </button>
-        </div>
-      </div>
+
+<Button variant="primary" onClick={() => setAddCard(true)}>
+        Limit Order Price
+      </Button>
+
+      {/* Modal */}
+      <Modal show={addCard} onHide={() => setAddCard(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Limit Order</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleAddFormSubmit}>
+            <Form.Group controlId="formTarBuy">
+              <Form.Label>Tar Buy</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Tar Buy"
+                value={formData.TarBuy}
+                onChange={(e) =>
+                  setFormData({ ...formData, TarBuy: e.target.value })
+                }
+              />
+            </Form.Group>
+            {/* Add other form fields as needed */}
+            <Form.Group controlId="formTarSell">
+              <Form.Label>Tar Sell</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Tar Sell"
+                value={formData.TarSell}
+                onChange={(e) =>
+                  setFormData({ ...formData, TarSell: e.target.value })
+                }
+              />
+            </Form.Group>
+            {/* Add other form fields as needed */}
+            <Form.Group controlId="formNetLot">
+              <Form.Label>Net Lot</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Net Lot"
+                value={formData.NetLot}
+                onChange={(e) =>
+                  setFormData({ ...formData, NetLot: e.target.value })
+                }
+              />
+            </Form.Group>
+            {/* Add other form fields as needed */}
+            <Form.Group controlId="formJumpDiff">
+              <Form.Label>Jump Diff</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Jump Diff"
+                value={formData.JumpDiff}
+                onChange={(e) =>
+                  setFormData({ ...formData, JumpDiff: e.target.value })
+                }
+              />
+            </Form.Group>
+            {/* Add other form fields as needed */}
+            <Form.Group controlId="formLotJump">
+              <Form.Label>Lot Jump</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Lot Jump"
+                value={formData.LotJump}
+                onChange={(e) =>
+                  setFormData({ ...formData, LotJump: e.target.value })
+                }
+              />
+            </Form.Group>
+            {/* Add other form fields as needed */}
+
+            {/* Leg selection */}
+            <Form.Group controlId="formLegSelect">
+              <Form.Label>Select Leg:</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedLeg}
+                onChange={handleSelectChange}
+              >
+                <option value="">Select</option>
+                <option value="Leg1">Leg 1</option>
+                <option value="Leg2">Leg 2</option>
+                {/* Add other legs as needed */}
+              </Form.Control>
+            </Form.Group>
+
+            {/* Output display */}
+            {outputValue !== null && (
+              <div className="mt-3">
+                <strong>Output Value:</strong> {outputValue}
+              </div>
+            )}
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import pMinDelay from "p-min-delay";
 import {Dropdown} from 'react-bootstrap';
 import DropDownBlog  from './DropDownBlog';
 
-import DonutChart from './Dashboard/DonutChart';
+// import DonutChart from './Dashboard/DonutChart';
 //import ProfileActivityChart from './Dashboard/ProfileActivityChart';
 
 //images
@@ -18,9 +18,9 @@ import readingtime from '@images/svg/readingtime.svg';
 import certificate from '@images/svg/degree-certificate.svg';
 import clock from '@images/svg/clock-1.svg';
 
-const ProfileActivityChart = loadable(() =>
-	pMinDelay(import("./Dashboard/ProfileActivityChart"), 1000)
-);
+// const ProfileActivityChart = loadable(() =>
+// 	pMinDelay(import("./Dashboard/ProfileActivityChart"), 1000)
+// );
 
 const WidgetBlog = ({changeImage, title}) =>{
 	return(
@@ -53,9 +53,9 @@ const CurrentCourse = ({bg1, changeClass, title, percent, numb1, numb2}) => {
 					<div className="card-body">	
 						<div className="students1">
 							<div className="d-inline-block position-relative donut-chart-sale me-4">
-								<DonutChart className="donut1" value={percent} backgroundColor={bg1}
+								{/* <DonutChart className="donut1" value={percent} backgroundColor={bg1}
 									backgroundColor2= "rgba(245, 245, 245, 1)"
-								/>
+								/> */}
 								<small className={changeClass} >{percent}%</small>
 							</div>
 							<div className="">
@@ -166,7 +166,7 @@ const Profile = () =>{
 									</div>
 								</div>
 								<div className="card-body pb-1 custome-tooltip pt-0">
-									<ProfileActivityChart />
+									{/* <ProfileActivityChart /> */}
 								</div>
 							</div>
 						</div>

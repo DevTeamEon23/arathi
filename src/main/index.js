@@ -276,7 +276,7 @@ import Profile from "./components/Dashboard/Profile";
 // import AddCEvents from "./components/Calender/AddCEvent";
 
 //Learner Calenders----
-import LearnCalender from "./components/LCalender/LearnCalender";
+// import LearnCalender from "./components/LCalender/LearnCalender";
 
 //Discussions-----
 // import Discussions from "./components/Discussion/Discussion";

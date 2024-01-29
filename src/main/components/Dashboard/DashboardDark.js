@@ -7,8 +7,8 @@ import {Dropdown} from 'react-bootstrap';
 //Components
 import { ThemeContext } from "@context/ThemeContext";
 import DropDownBlog from './DropDownBlog';
-import CourseBlog from './Dashboard/CourseBlog';
-import CalendarBlog from './Dashboard/CalendarBlog';
+// import CourseBlog from './Dashboard/CourseBlog';
+// import CalendarBlog from './Dashboard/CalendarBlog';
 
 //images
 import Educat from '@images/egucation-girl.png';
@@ -16,15 +16,15 @@ import Calpng from '@images/vector/calpng.png';
 import Book from '@images/vector/book.png';
 
 
-const LearningActivityChart = loadable(() =>
-	pMinDelay(import("./Dashboard/LearningActivityChart"), 1000)
-);
-const ScoreActivityChart = loadable(() =>
-	pMinDelay(import("./Dashboard/ScoreActivityChart"), 1000)
-);
-const ProgressChart = loadable(() =>
-	pMinDelay(import("./Dashboard/ProgressChart"), 1000)
-);
+// const LearningActivityChart = loadable(() =>
+// 	pMinDelay(import("./Dashboard/LearningActivityChart"), 1000)
+// );
+// const ScoreActivityChart = loadable(() =>
+// 	pMinDelay(import("./Dashboard/ScoreActivityChart"), 1000)
+// );
+// const ProgressChart = loadable(() =>
+// 	pMinDelay(import("./Dashboard/ProgressChart"), 1000)
+// );
 
 const DashboardDark = () => {
 	const { changeBackground } = useContext(ThemeContext);
@@ -57,7 +57,7 @@ const DashboardDark = () => {
 							</div>
 						</div>
 						<div className="col-xl-12 bt-order">
-							<CourseBlog /> 
+							{/* <CourseBlog />  */}
 						</div>
 						<div className="col-xl-12 col-xxl-6">
 							<div className="card score-active">
@@ -80,7 +80,7 @@ const DashboardDark = () => {
 								</div>
 								<div className="card-body pb-1 custome-tooltip style-1 py-0 ">
 								{/* <div id="activity"></div> */}
-									<LearningActivityChart />
+									{/* <LearningActivityChart /> */}
 								</div>
 							</div>
 						</div>
@@ -124,14 +124,14 @@ const DashboardDark = () => {
 									</div>
 								</div>
 								<div className="card-body pb-1 custome-tooltip pt-0">
-									<ScoreActivityChart />									
+									{/* <ScoreActivityChart />									 */}
 								</div>
 							</div>
 						</div>
 						<div className="col-xl-4 col-lg-6">
 							<div className="card">
 								<div className="card-body pt-3">									
-									<ProgressChart />
+									{/* <ProgressChart /> */}
 									<div className="redial-content">
 										<h4>My Progress</h4>
 										<p>Lorem ipsum dolor sit amet, consectetur</p>
@@ -143,7 +143,7 @@ const DashboardDark = () => {
 						<div className="col-xl-8 col-lg-6">
 							<div className="card">
 								<div className="card-body card-calendar home-calendar">								
-									<CalendarBlog />
+									{/* <CalendarBlog /> */}
 								</div>
 							</div>
 						</div>
