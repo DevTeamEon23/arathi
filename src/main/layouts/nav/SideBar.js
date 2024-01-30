@@ -1024,7 +1024,7 @@ const SideBar = () => {
         {/* <div className="copyright">
           
           <p className="fs-14">
-            Made with <span className="heart"></span> by EonLearning
+            Made with <span className="heart"></span> by AnandRathi
           </p>
         </div> */}
       </PerfectScrollbar>

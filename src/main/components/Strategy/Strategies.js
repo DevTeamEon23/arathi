@@ -574,15 +574,16 @@ const Strategies = () => {
 
   const handleAddFormSubmit = (e) => {
     e.preventDefault();
+  
     // Calculate TarBuy based on the selected leg
+    let calculatedValue = 0;
+  
     if (selectedLeg === 'Leg1') {
-      const calculatedValue = parseFloat(formData.NetLot) - parseFloat(formData.LotJump);
-      setOutputValue(calculatedValue);
+      calculatedValue = parseFloat(formData.NetLot) - parseFloat(formData.LotJump);
     } else if (selectedLeg === 'Leg2') {
-      const calculatedValue = parseFloat(formData.NetLot) + parseFloat(formData.LotJump);
-      setOutputValue(calculatedValue);
+      calculatedValue = parseFloat(formData.NetLot) + parseFloat(formData.LotJump);
     }
-
+  
     // Automatically add the leg to the main page
     setLegs([...legs, { ...formData, selectedLeg }]);
     setFormData({
@@ -593,6 +594,9 @@ const Strategies = () => {
       LotJump: '',
     });
     setSelectedLeg('');
+  
+    // Set the outputValue based on the selected leg
+    setOutputValue(calculatedValue);
   };
 
  return (

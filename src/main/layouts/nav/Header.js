@@ -137,7 +137,7 @@ const Header = ({ onNote }) => {
               <div
                 className="dashboard_bar"
                 style={{ textTransform: "capitalize" }}>
-                LMS Dashboard
+                ALGO Dashboard
               </div>
             </div>
             <div className="navbar-nav ">

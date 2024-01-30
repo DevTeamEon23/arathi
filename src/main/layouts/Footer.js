@@ -6,7 +6,7 @@ const Footer = () => {
     <div className="footer">
       <div className="copyright">
         <p>
-          Copyright © Designed &amp; Developed by EonLearning&nbsp;
+          Copyright © Designed &amp; Developed by AnandRathi&nbsp;
           {/* <a href="http://dexignzone.com/" target="_blank"  rel="noreferrer">
 						DexignZone
 					</a>{" "} */}
