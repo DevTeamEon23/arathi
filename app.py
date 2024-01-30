@@ -17,7 +17,7 @@ from routers.auth.auth_service_api import auth
 from routers.lms_service.lms_service_api import service
 # , user_tab1,user_tab2, course_tab1,course_tab2, group_tab1,group_tab2
 
-app = FastAPI(title="EonLearnings", debug=settings.DEBUG, docs_url=settings.DOCS_URL, redoc_url=settings.REDOC_URL,
+app = FastAPI(title="AnandRathi Algo", debug=settings.DEBUG, docs_url=settings.DOCS_URL, redoc_url=settings.REDOC_URL,
               openapi_url=settings.OPENAPI_URL)
 
 # Set up Pre-configured Routes
@@ -78,7 +78,7 @@ app.include_router(service, prefix="/lms-service")
 
 @app.get('/')
 def root_message():
-    return{"Welcome To EonLearning LMS Application Have a Great Day! 🌻👨‍💻🌹"}
+    return{"Welcome To AnandRathi Algo Application Have a Great Day! 🌻👨‍💻🌹"}
 
 @app.on_event('startup')
 def startup_function():

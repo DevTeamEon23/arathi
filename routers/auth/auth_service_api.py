@@ -30,7 +30,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-# Actual Login for LMS
+# Actual Login for ALGO
 def create_login_response(message, active, is_mfa_enabled, request_token, token, details, user_id, user_dept, xts_access_token, user_points=0):
     if token is None and request_token is None:
         return {"status": "failure", "message": message}
@@ -66,7 +66,7 @@ def create_login_response(message, active, is_mfa_enabled, request_token, token,
             "error": None
         }
     
-# Actual Login for LMS
+# Actual Login for ALGO
 # @auth.post('/login')
 # def login(user: User):
 #     email = user.email
@@ -236,7 +236,7 @@ async def send_welcome_email(user: User):
                     <p>Or anirudhadurgule@rathi.com</p>
                     <p>Make sure you are part of our Whatsapp group for all the updates, alerts, and instant support.</p>
                     <p>WhatsApp Group Link: <a href="https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E">https://chat.whatsapp.com/Js8BpIMlhEg0BA47tcjf3E</a></p>
-                    <p>This email was sent to {email} because you are using AnandRathi Strategy Maker</p>
+                    <p>This email was sent to {email} because you are using AnandRathi Algo App</p>
                     <p style="font-size: 0.9em;">Thanks & Regards,<br />The AnandRathi Team</p>
                     <hr style="border: none; border-top: 1px solid #eee" />
                     <div style="float: right; padding: 8px 0; color: #aaa; font-size: 0.8em; line-height: 1; font-weight: 300">
@@ -373,24 +373,24 @@ async def send_mail(email: EmailSchema):
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>EonLearning LMS</title>
+            <title>AnandRathi Algo App</title>
         </head>
         <body>
             <!-- partial:index.partial.html -->
             <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
                 <div style="margin:50px auto;width:70%;padding:20px 0">
                     <div style="border-bottom:1px solid #eee">
-                        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Reset your EonLearning LMS password</a>
+                        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Reset your AnandRathi Algo App password</a>
                     </div>
                     <p style="font-size:1.1em">Hi,</p>
-                    <p>Thank you for choosing EonLearning LMS. Use the following OTP to complete your Password Recovery Procedure. OTP is valid for 5 minutes</p>
+                    <p>Thank you for choosing AnandRathi Algo. Use the following OTP to complete your Password Recovery Procedure. OTP is valid for 5 minutes</p>
                     <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">{otp}</h2>
-                    <p style="font-size:0.9em;">Thanks & Regards,<br />The EonLearning Team</p>
+                    <p style="font-size:0.9em;">Thanks & Regards,<br />The AnandRathi Team</p>
                     <hr style="border:none;border-top:1px solid #eee" />
                     <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
-                        <p>EonLearning LMS Inc</p>
-                        <p>Dalal Street</p>
-                        <p>Mumbai-400001</p>
+                        <p>Anand Rathi Share And Stock Brokers LTD</p>
+                        <p>Floor No. 2 & 3, Kamala Mill Compound, Trade Link B&C Block, E' Wing, Senapati Bapat Marg, Lower Parel West, Lower Parel,</p>
+                        <p>Mumbai, Maharashtra - 400013</p>
                     </div>
                 </div>
             </div>
@@ -403,7 +403,7 @@ async def send_mail(email: EmailSchema):
     template = template.replace("{otp}", otp)
 
     message = MessageSchema(
-        subject="[EonLearning] OTP For Reset Password",
+        subject="[AnandRathi] OTP For Reset Password",
         recipients=email.email,
         body=template,
         subtype="html"

@@ -477,7 +477,7 @@ async def send_welcome_email(user: User):
         template = template.replace("{email}", user.email)
 
         message = MessageSchema(
-            subject="Welcome to EonLearning App",
+            subject="Welcome to AnandRathi Algo App",
             recipients=[user.email],
             body=template,
             subtype="html"

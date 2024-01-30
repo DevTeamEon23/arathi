@@ -70,20 +70,20 @@ async def send_welcome_email(user: User):
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <title>Welcome to EonLearning App</title>
+            <title>Welcome to AnandRathi Algo App</title>
         </head>
         <body>
             <div style="font-family: Helvetica, Arial, sans-serif; min-width: 1000px; overflow: auto; line-height: 2">
                 <div style="margin: 50px auto; width: 70%; padding: 20px 0">
                     <div style="border-bottom: 1px solid #eee">
-                        <a href="" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600">Welcome to EonLearning App</a>
+                        <a href="" style="font-size: 1.4em; color: #00466a; text-decoration: none; font-weight: 600">Welcome to AnandRathi Algo App</a>
                     </div>
                     <p style="font-size: 1.1em">Hi {fullname},</p>
                     <p>Your account has been successfully created.</p>
                     <p>Here are your login details:</p>
                     <p>Username: {email}</p>
                     <p>Password: {password}</p>
-                    <p>Enjoy using our app!</p>
+                    <p>Enjoy using our algo app!</p>
                 </div>
             </div>
         </body>
@@ -94,7 +94,7 @@ async def send_welcome_email(user: User):
         template = template.replace("{password}", user.password)
 
         message = MessageSchema(
-            subject="Welcome to EonLearning App",
+            subject="Welcome to AnandRathi Algo App",
             recipients=[user.email],
             body=template,
             subtype="html"
