@@ -4,6 +4,7 @@ import { Form, Badge, Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logout from "src/main/layouts/nav/Logout";
+import { Checkbox } from "@material-ui/core";
 
 const symbols = [
   { value: "BANKNIFTY", label: "BANKNIFTY" },
@@ -24,60 +25,17 @@ const Strategies = () => {
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
-  const [legPrices, setLegPrices] = useState([]);
-  const [addCard, setAddCard] = useState(false);
-  const [formData, setFormData] = useState({
-    TarBuy: '',
-    TarSell: '',
-    NetLot: '',
-    JumpDiff: '',
-    LotJump: '',
-  });
-
-  const handleAddFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
   const [ltpSpread, setLtpSpread] = useState(0);
   // const [legs, setLegs] = useState([]);
   const [legs, setLegs] = useState([]);
-  const [inputValues, setInputValues] = useState({
-    TarBuy: 0,
-    TarSell: 0,
-    NetLot: 0,
-    JumpDiff: 0,
-    LotPerJump: 0,
-  });
 
-  const [selectedLeg, setSelectedLeg] = useState('');
-  const [outputValue, setOutputValue] = useState(null);
-  // const [outputValues, setOutputValues] = useState({
-  //   TradedLots: 0,
-  //   // Add more output values as needed
-  // });
 
-  const handleSelectChange = (e) => {
-    setSelectedLeg(e.target.value);
-  };
 
-  const calculateOutput = (leg) => {
-    // Example calculations:
-    let legOutput = 0;
-    if (leg === 'Leg1') {
-      legOutput = inputValues.TarSell - inputValues.TarBuy;
-    } else if (leg === 'Leg2') {
-      legOutput = inputValues.TarBuy - inputValues.TarSell;
-    }
+  const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState("leg1");
+  const [tarBuy, setTarBuy] = useState(0); 
 
-    return {
-      TradedLots: legOutput,
-      // Add more output values as needed
-    };
-  };
-
+  const [selectedLegForTarSell, setSelectedLegForTarSell] = useState("leg1");
+  const [tarSell, setTarSell] = useState(0); 
 
   const getUniqueSelectedTypes = () => {
     const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
@@ -108,21 +66,6 @@ const Strategies = () => {
     updatedLegs.splice(index, 1);
     setLegs(updatedLegs);
   };
-
-  const handleDecrement = (index) => {
-    const updatedLegs = [...legs];
-    updatedLegs[index].lot =
-      lots.find((lot) => lot.value === updatedLegs[index].lot.value - 1) || lots[0];
-    setLegs(updatedLegs);
-  };
-
-  const handleIncrement = (index) => {
-    const updatedLegs = [...legs];
-    updatedLegs[index].lot =
-      lots.find((lot) => lot.value === updatedLegs[index].lot.value + 1) || lots[lots.length - 1];
-    setLegs(updatedLegs);
-  };
-
 
   const toggleLegType = (index) => {
     const updatedLegs = [...legs];
@@ -385,8 +328,8 @@ const Strategies = () => {
   const { bidSpread, askSpread } = calculateSpread();
 
   // Display bidSpread and askSpread in your component
-  console.log("Bid Spread:", bidSpread);
-  console.log("Ask Spread:", askSpread);
+  // console.log("Bid Spread:", bidSpread);
+  // console.log("Ask Spread:", askSpread);
 
   const calculateMarketSpread = () => {
     // Separate Buy and Sell legs
@@ -512,55 +455,6 @@ const Strategies = () => {
   
     return marketSell;
   };
-  // const calculateMarketBuy = (legs) => {
-  //   let marketBuy = 0;
-  
-  //   // Separate Buy and Sell legs
-  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
-  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
-  
-  //   // Calculate market buy for legs of the same type (BUY & BUY)
-  //   if (buyLegs.length > 1) {
-  //     marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
-  //   }
-  
-  //   // Calculate market buy for legs of the same type (SELL & SELL)
-  //   if (sellLegs.length > 1) {
-  //     marketBuy += sellLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
-  //   }
-  
-  //   // Calculate market buy for pair type (BUY & SELL)
-  //   if (buyLegs.length > 0 && sellLegs.length > 0) {
-  //     marketBuy += buyLegs[0].askInfo * buyLegs[0].lot.value - sellLegs[0].bidInfo * sellLegs[0].lot.value;
-  //   }
-  
-  //   return marketBuy;
-  // };
-  
-  // const calculateMarketSell = (legs) => {
-  //   let marketSell = 0;
-  
-  //   // Separate Buy and Sell legs
-  //   const buyLegs = legs.filter((leg) => leg.type === "BUY");
-  //   const sellLegs = legs.filter((leg) => leg.type === "SELL");
-  
-  //   // Calculate market sell for legs of the same type (BUY & BUY)
-  //   if (buyLegs.length > 1) {
-  //     marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
-  //   }
-  
-  //   // Calculate market sell for legs of the same type (SELL & SELL)
-  //   if (sellLegs.length > 1) {
-  //     marketSell += sellLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
-  //   }
-  
-  //   // Calculate market sell for pair type (BUY & SELL)
-  //   if (buyLegs.length > 0 && sellLegs.length > 0) {
-  //     marketSell += buyLegs[0].bidInfo * buyLegs[0].lot.value - sellLegs[0].askInfo * sellLegs[0].lot.value;
-  //   }
-  
-  //   return marketSell;
-  // };
   
   
   const marketBuy = calculateMarketBuy(legs);
@@ -571,32 +465,62 @@ const Strategies = () => {
     calculateLtpSpread();
   }, [finalNetPremium]);
 
+  const calculateLimitOrderLegPrice = (tarBuyValue) => {
+    const selectedLegIndex = parseInt(selectedLegForTarBuy.replace("leg", "")) - 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
 
-  const handleAddFormSubmit = (e) => {
-    e.preventDefault();
-  
-    // Calculate TarBuy based on the selected leg
-    let calculatedValue = 0;
-  
-    if (selectedLeg === 'Leg1') {
-      calculatedValue = parseFloat(formData.NetLot) - parseFloat(formData.LotJump);
-    } else if (selectedLeg === 'Leg2') {
-      calculatedValue = parseFloat(formData.NetLot) + parseFloat(formData.LotJump);
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const tarBuy = parseFloat(tarBuyValue);
+
+    let leg1, leg2;
+
+    if (selectedLegIndex === 0) {
+        leg1 = tarBuy + parseFloat(otherLegPrice);
+        // leg2 = parseFloat(selectedLegPrice) - tarBuy;
+        return `Leg 1: ${leg1.toFixed(2)}`
+    } else {
+        leg2 = parseFloat(otherLegPrice) + tarBuy * -1;
+        // leg1 = parseFloat(selectedLegPrice) - tarBuy;
+        return `Leg 2: ${leg2.toFixed(2)}`
     }
-  
-    // Automatically add the leg to the main page
-    setLegs([...legs, { ...formData, selectedLeg }]);
-    setFormData({
-      TarBuy: '',
-      TarSell: '',
-      NetLot: '',
-      JumpDiff: '',
-      LotJump: '',
-    });
-    setSelectedLeg('');
-  
-    // Set the outputValue based on the selected leg
-    setOutputValue(calculatedValue);
+};
+
+const calculateLimitOrderLegPriceforSell = (tarSellValue) => {
+  const selectedLegIndex = parseInt(selectedLegForTarSell.replace("leg", "")) - 1;
+  const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+
+  const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+  const otherLegPrice = legs[otherLegIndex]?.price || 0;
+  const tarSell = parseFloat(tarSellValue);
+
+  let leg1, leg2;
+
+  if (selectedLegIndex === 0) {
+      leg1 = tarSell + parseFloat(otherLegPrice);
+      // leg2 = parseFloat(selectedLegPrice) - tarBuy;
+      return `Leg 1: ${leg1.toFixed(2)}`
+  } else {
+      leg2 = parseFloat(otherLegPrice) + tarSell;
+      // leg1 = parseFloat(selectedLegPrice) - tarBuy;
+      return `Leg 2: ${leg2.toFixed(2)}`
+  }
+};
+
+  const handleTarBuyChange = (e) => {
+    setTarBuy(parseFloat(e.target.value) || 0);
+  };
+
+  const handleTarSellChange = (e) => {
+    setTarSell(parseFloat(e.target.value) || 0);
+  };
+
+  const handleSelectedLegForTarBuyChange = (e) => {
+    setSelectedLegForTarBuy(e.target.value);
+  };
+
+  const handleSelectedLegForTarSellChange = (e) => {
+    setSelectedLegForTarSell(e.target.value);
   };
 
  return (
@@ -764,144 +688,121 @@ const Strategies = () => {
       </div>
       {/* Display the final net premium */}
       <div className="row mt-5">
-  <div className="col-md-6">
-    <table className="table table-bordered">
-      <tbody>
-        <tr>
-          <td>Final Net Premium</td>
-          <td style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
-            {displayText} {Math.abs(finalNetPremium).toFixed(2)}
-          </td>
-        </tr>
-        <tr>
-          <td>Final Bid Spread</td>
-          <td>{Math.abs(bidSpread).toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>Final Ask Spread</td>
-          <td>{Math.abs(askSpread).toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>Market Spread</td>
-          <td style={{ color: marketSpread >= 0 ? "green" : "red" }}>
-            {Math.abs(marketSpread).toFixed(2)}
-          </td>
-        </tr>
-        <tr>
-          <td>LTP Spread</td>
-          <td style={{ color: ltpSpread > 0 ? "green" : "red" }}>
-            {ltpSpread.toFixed(2)}
-          </td>
-        </tr>
-        <tr>
-          <td>Market Buy</td>
-          <td>{marketBuy.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>Market Sell</td>
-          <td>{marketSell.toFixed(2)}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+        <div className="col-md-6">
+          <table className="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Final Net Premium</td>
+                <td style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
+                  {displayText} {Math.abs(finalNetPremium).toFixed(2)}
+                </td>
+              </tr>
+              <tr>
+                <td>Final Bid Spread</td>
+                <td>{Math.abs(bidSpread).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td>Final Ask Spread</td>
+                <td>{Math.abs(askSpread).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td>Market Spread</td>
+                <td style={{ color: marketSpread >= 0 ? "green" : "red" }}>
+                  {Math.abs(marketSpread).toFixed(2)}
+                </td>
+              </tr>
+              <tr>
+                <td>LTP Spread</td>
+                <td style={{ color: ltpSpread > 0 ? "green" : "red" }}>
+                  {ltpSpread.toFixed(2)}
+                </td>
+              </tr>
+              <tr>
+                <td>Market Buy</td>
+                <td>{marketBuy.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td>Market Sell</td>
+                <td>{marketSell.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="row mt-3">
+        <div className="col-md-2">
+          <label htmlFor="tarBuy">TarBuy</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder=""
+            value={tarBuy}
+            onChange={handleTarBuyChange}
+          />
+        </div>
+        <div className="col-md-2">
+          <label htmlFor="tarSell">TarSell</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder=""
+            value={tarSell}
+            onChange={handleTarSellChange}
+          />
+        </div>
+        <div className="col-md-2">
+          <label htmlFor="selectedLegForTarBuy">Select Leg</label>
+          <select
+            className="form-select"
+            value={selectedLegForTarBuy}
+            onChange={handleSelectedLegForTarBuyChange}
+          >
+            {legs.map((leg, index) => (
+              <option key={index} value={`leg${index + 1}`}>
+                Leg {index + 1}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-2">
+          <label htmlFor="selectedLegForTarSell">Select Leg</label>
+          <select
+            className="form-select"
+            value={selectedLegForTarSell}
+            onChange={handleSelectedLegForTarSellChange}
+          >
+            {legs.map((leg, index) => (
+              <option key={index} value={`leg${index + 1}`}>
+                Leg {index + 1}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-<Button variant="primary" onClick={() => setAddCard(true)}>
-        Limit Order Price
-      </Button>
-
-      {/* Modal */}
-      <Modal show={addCard} onHide={() => setAddCard(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Limit Order</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleAddFormSubmit}>
-            <Form.Group controlId="formTarBuy">
-              <Form.Label>Tar Buy</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Tar Buy"
-                value={formData.TarBuy}
-                onChange={(e) =>
-                  setFormData({ ...formData, TarBuy: e.target.value })
-                }
-              />
-            </Form.Group>
-            {/* Add other form fields as needed */}
-            <Form.Group controlId="formTarSell">
-              <Form.Label>Tar Sell</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Tar Sell"
-                value={formData.TarSell}
-                onChange={(e) =>
-                  setFormData({ ...formData, TarSell: e.target.value })
-                }
-              />
-            </Form.Group>
-            {/* Add other form fields as needed */}
-            <Form.Group controlId="formNetLot">
-              <Form.Label>Net Lot</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Net Lot"
-                value={formData.NetLot}
-                onChange={(e) =>
-                  setFormData({ ...formData, NetLot: e.target.value })
-                }
-              />
-            </Form.Group>
-            {/* Add other form fields as needed */}
-            <Form.Group controlId="formJumpDiff">
-              <Form.Label>Jump Diff</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Jump Diff"
-                value={formData.JumpDiff}
-                onChange={(e) =>
-                  setFormData({ ...formData, JumpDiff: e.target.value })
-                }
-              />
-            </Form.Group>
-            {/* Add other form fields as needed */}
-            <Form.Group controlId="formLotJump">
-              <Form.Label>Lot Jump</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Lot Jump"
-                value={formData.LotJump}
-                onChange={(e) =>
-                  setFormData({ ...formData, LotJump: e.target.value })
-                }
-              />
-            </Form.Group>
-            {/* Add other form fields as needed */}
-
-            {/* Leg selection */}
-            <Form.Group controlId="formLegSelect">
-              <Form.Label>Select Leg:</Form.Label>
-              <Form.Control
-                as="select"
-                value={selectedLeg}
-                onChange={handleSelectChange}
-              >
-                <option value="">Select</option>
-                <option value="Leg1">Leg 1</option>
-                <option value="Leg2">Leg 2</option>
-                {/* Add other legs as needed */}
-              </Form.Control>
-            </Form.Group>
-
-            {/* Output display */}
-            {outputValue !== null && (
-              <div className="mt-3">
-                <strong>Output Value:</strong> {outputValue}
-              </div>
-            )}
-          </Form>
-        </Modal.Body>
-      </Modal>
+      {/* Display calculated limit order leg price */}
+      <div className="row mt-3">
+        <div className="col-md-6">
+          <label htmlFor="limitOrderLegPrice">Limit Order Leg Price Buy</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder=""
+            value={calculateLimitOrderLegPrice(tarBuy)}
+            readOnly
+          />
+        </div>
+        <div className="col-md-6">
+          <label htmlFor="limitOrderLegPrices">Limit Order Leg Price Sell</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder=""
+            value={calculateLimitOrderLegPriceforSell(tarSell)}
+            readOnly
+          />
+        </div>
+      </div>
     </div>
   );
 };
