@@ -29,13 +29,93 @@ const Strategies = () => {
   // const [legs, setLegs] = useState([]);
   const [legs, setLegs] = useState([]);
 
+  const [tradeOption, setTradeOption] = useState('buy');
+  const [tarBuyChecked, setTarBuyChecked] = useState(false);
+  const [tarSellChecked, setTarSellChecked] = useState(false);
+  const [tarBuyValue, setTarBuyValue] = useState('');
+  const [tarSellValue, setTarSellValue] = useState('');
+  // const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState('');
+  // const [selectedLegForTarSell, setSelectedLegForTarSell] = useState('');
+  const [leg1, setLeg1] = useState(0);
+  const [leg2, setLeg2] = useState(0);
 
+  const toggleCheckbox = (checkbox) => {
+    if (checkbox === 'tarBuy') {
+      setTarBuyChecked(!tarBuyChecked);
+    } else if (checkbox === 'tarSell') {
+      setTarSellChecked(!tarSellChecked);
+    }
+  };
 
-  const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState("leg1");
-  const [tarBuy, setTarBuy] = useState(0); 
+  const handleTarBuyChange = (e) => {
+    setTarBuyValue(e.target.value);
+    const { leg1Value, leg2Value } = calculateLimitOrderLegPrice(e.target.value);
+    setLeg1(leg1Value);
+    setLeg2(leg2Value);
+  };
 
-  const [selectedLegForTarSell, setSelectedLegForTarSell] = useState("leg1");
-  const [tarSell, setTarSell] = useState(0); 
+  const handleTarSellChange = (e) => {
+    setTarSellValue(e.target.value);
+    const { leg1Value, leg2Value } = calculateLimitOrderLegPriceforSell(e.target.value);
+    setLeg1(leg1Value);
+    setLeg2(leg2Value);
+  };
+
+  const calculateLimitOrderLegPrice = (tarBuyValue) => {
+    const selectedLegIndex = tarBuyChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const selectedLegLot = legs[selectedLegIndex]?.lots || 0; // Assuming you have a lot property
+    const otherLegLot = legs[otherLegIndex]?.lots || 0; // Assuming you have a lot property
+    const tarBuy = parseFloat(tarBuyValue);
+    console.log("Debug - Selected Leg Lot:", selectedLegLot);
+    console.log("Debug - Other Leg Lot:", otherLegLot);
+  
+    let leg1, leg2;
+  
+    if (tarBuyChecked) {
+      const multiplier = -1; // For buy leg
+      leg1 = tarBuy + (parseFloat(otherLegPrice) + otherLegLot);
+      leg2 = (tarBuy - (parseFloat(selectedLegPrice) + otherLegLot)) * multiplier;
+    }
+  
+    return {
+      leg1Value: `Buy Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+      leg2Value: `Buy Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+    };
+  };
+  
+  const calculateLimitOrderLegPriceforSell = (tarSellValue) => {
+    const selectedLegIndex = tarSellChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const selectedLegLot = legs[selectedLegIndex]?.lots || 0; // Assuming you have a lot property
+    const otherLegLot = legs[otherLegIndex]?.lots || 0; // Assuming you have a lot property
+    const tarSell = parseFloat(tarSellValue);
+    console.log("Debug - Selected Leg Lot:", selectedLegLot);
+    console.log("Debug - Other Leg Lot:", otherLegLot);
+  
+    let leg1, leg2;
+  
+    if (tarSellChecked) {
+      const multiplier = -1; // For sell leg
+      leg1 = tarSell + (parseFloat(otherLegPrice) + otherLegLot);
+      leg2 = (tarSell - (parseFloat(selectedLegPrice) + otherLegLot)) * multiplier;
+    }
+  
+    return {
+      leg1Value: `Sell Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+      leg2Value: `Sell Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+    };
+  };
+
+  // const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState("leg1");
+  // const [tarBuy, setTarBuy] = useState(0); 
+
+  // const [selectedLegForTarSell, setSelectedLegForTarSell] = useState("leg1");
+  // const [tarSell, setTarSell] = useState(0); 
 
   const getUniqueSelectedTypes = () => {
     const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
@@ -131,6 +211,7 @@ const Strategies = () => {
 
     setLegs(updatedLegs);
   };
+
   const handleBidInfoChange = (index, e) => {
     console.log('Bid Info changed:', e.target.value);
     const updatedLegs = [...legs];
@@ -257,7 +338,7 @@ const Strategies = () => {
     const sellNetPremium = sellLegs.reduce((total, leg) => total + leg.premium, 0);
 
     // Calculate the final net premium
-    const finalNetPremium = sellNetPremium - buyNetPremium;
+    const finalNetPremium = buyNetPremium - sellNetPremium;
 
     // Determine the display text based on the condition
     const displayText = finalNetPremium > 0 ? "GET" : "PAY";
@@ -398,6 +479,7 @@ const Strategies = () => {
     const calculatedLtpSpread = finalNetPremium / 50;
     setLtpSpread(calculatedLtpSpread);
   };
+
   const calculateMarketBuy = (legs) => {
     let marketBuy = 0;
   
@@ -405,14 +487,12 @@ const Strategies = () => {
     const buyLegs = legs.filter((leg) => leg.type === "BUY");
     const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
+    const buyMultiplier = 1;
+    const sellMultiplier = -1;
+  
     // Calculate market buy for legs of the same type (BUY & BUY)
     if (buyLegs.length > 1) {
-      marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
-    }
-  
-    // Calculate market buy for legs of the same type (SELL & SELL)
-    if (sellLegs.length > 1) {
-      marketBuy += sellLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value, 0);
+      marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value * buyMultiplier, 0);
     }
   
     // Calculate market buy for pair type (BUY & SELL)
@@ -434,14 +514,12 @@ const Strategies = () => {
     const buyLegs = legs.filter((leg) => leg.type === "BUY");
     const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
+    const buyMultiplier = 1;
+    const sellMultiplier = -1;
+  
     // Calculate market sell for legs of the same type (BUY & BUY)
     if (buyLegs.length > 1) {
-      marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
-    }
-  
-    // Calculate market sell for legs of the same type (SELL & SELL)
-    if (sellLegs.length > 1) {
-      marketSell += sellLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value, 0);
+      marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value * sellMultiplier, 0);
     }
   
     // Calculate market sell for pair type (BUY & SELL)
@@ -457,6 +535,7 @@ const Strategies = () => {
   };
   
   
+  
   const marketBuy = calculateMarketBuy(legs);
   const marketSell = calculateMarketSell(legs);
 
@@ -464,64 +543,6 @@ const Strategies = () => {
   useEffect(() => {
     calculateLtpSpread();
   }, [finalNetPremium]);
-
-  const calculateLimitOrderLegPrice = (tarBuyValue) => {
-    const selectedLegIndex = parseInt(selectedLegForTarBuy.replace("leg", "")) - 1;
-    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
-
-    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
-    const otherLegPrice = legs[otherLegIndex]?.price || 0;
-    const tarBuy = parseFloat(tarBuyValue);
-
-    let leg1, leg2;
-
-    if (selectedLegIndex === 0) {
-        leg1 = tarBuy + parseFloat(otherLegPrice);
-        // leg2 = parseFloat(selectedLegPrice) - tarBuy;
-        return `Leg 1: ${leg1.toFixed(2)}`
-    } else {
-        leg2 = parseFloat(otherLegPrice) + tarBuy * -1;
-        // leg1 = parseFloat(selectedLegPrice) - tarBuy;
-        return `Leg 2: ${leg2.toFixed(2)}`
-    }
-};
-
-const calculateLimitOrderLegPriceforSell = (tarSellValue) => {
-  const selectedLegIndex = parseInt(selectedLegForTarSell.replace("leg", "")) - 1;
-  const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
-
-  const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
-  const otherLegPrice = legs[otherLegIndex]?.price || 0;
-  const tarSell = parseFloat(tarSellValue);
-
-  let leg1, leg2;
-
-  if (selectedLegIndex === 0) {
-      leg1 = tarSell + parseFloat(otherLegPrice);
-      // leg2 = parseFloat(selectedLegPrice) - tarBuy;
-      return `Leg 1: ${leg1.toFixed(2)}`
-  } else {
-      leg2 = parseFloat(otherLegPrice) + tarSell;
-      // leg1 = parseFloat(selectedLegPrice) - tarBuy;
-      return `Leg 2: ${leg2.toFixed(2)}`
-  }
-};
-
-  const handleTarBuyChange = (e) => {
-    setTarBuy(parseFloat(e.target.value) || 0);
-  };
-
-  const handleTarSellChange = (e) => {
-    setTarSell(parseFloat(e.target.value) || 0);
-  };
-
-  const handleSelectedLegForTarBuyChange = (e) => {
-    setSelectedLegForTarBuy(e.target.value);
-  };
-
-  const handleSelectedLegForTarSellChange = (e) => {
-    setSelectedLegForTarSell(e.target.value);
-  };
 
  return (
     <div className="container mw-100 mt-5">
@@ -730,78 +751,99 @@ const calculateLimitOrderLegPriceforSell = (tarSellValue) => {
         </div>
       </div>
       <div className="row mt-3">
-        <div className="col-md-2">
-          <label htmlFor="tarBuy">TarBuy</label>
+      <div className="col-md-2">
+        </div>
+      <div className="col-md-2">
+        </div>
+      <div className="col-md-2">
+        <label>
           <input
-            type="text"
-            className="form-control"
-            placeholder=""
-            value={tarBuy}
-            onChange={handleTarBuyChange}
+            type="radio"
+            name="tradeOption"
+            checked={tradeOption === 'buy'}
+            onChange={() => setTradeOption('buy')}
           />
+          Buy
+        </label>
         </div>
         <div className="col-md-2">
-          <label htmlFor="tarSell">TarSell</label>
+        <label>
           <input
-            type="text"
-            className="form-control"
-            placeholder=""
-            value={tarSell}
-            onChange={handleTarSellChange}
+            type="radio"
+            name="tradeOption"
+            checked={tradeOption === 'sell'}
+            onChange={() => setTradeOption('sell')}
           />
+          Sell
+        </label>
         </div>
-        <div className="col-md-2">
-          <label htmlFor="selectedLegForTarBuy">Select Leg</label>
-          <select
-            className="form-select"
-            value={selectedLegForTarBuy}
-            onChange={handleSelectedLegForTarBuyChange}
-          >
-            {legs.map((leg, index) => (
-              <option key={index} value={`leg${index + 1}`}>
-                Leg {index + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-2">
-          <label htmlFor="selectedLegForTarSell">Select Leg</label>
-          <select
-            className="form-select"
-            value={selectedLegForTarSell}
-            onChange={handleSelectedLegForTarSellChange}
-          >
-            {legs.map((leg, index) => (
-              <option key={index} value={`leg${index + 1}`}>
-                Leg {index + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Display calculated limit order leg price */}
       <div className="row mt-3">
-        <div className="col-md-6">
-          <label htmlFor="limitOrderLegPrice">Limit Order Leg Price Buy</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder=""
-            value={calculateLimitOrderLegPrice(tarBuy)}
-            readOnly
-          />
+      <div className="col-md-2">
         </div>
-        <div className="col-md-6">
-          <label htmlFor="limitOrderLegPrices">Limit Order Leg Price Sell</label>
-          <input
-            type="text"
-            className="form-control"
-            placeholder=""
-            value={calculateLimitOrderLegPriceforSell(tarSell)}
-            readOnly
-          />
+      <div className="col-md-2">
         </div>
+        <div className="col-md-2">
+          <label>
+            <Checkbox
+              type="checkbox"
+              checked={tradeOption === 'buy' && tarBuyChecked}
+              onChange={() => toggleCheckbox('tarBuy')}
+              disabled={tradeOption === 'sell'}
+            />
+            TarBuy
+          </label>
+          </div>
+        <div className="col-md-2">
+
+        <label>
+          <Checkbox
+            type="checkbox"
+            checked={tradeOption === 'sell' && tarSellChecked}
+            onChange={() => toggleCheckbox('tarSell')}
+            disabled={tradeOption === 'buy'}
+          />
+          TarSell
+        </label>
+          </div>
+      <div className="row mt-3">
+        <div className="col-lg-2">
+          </div>
+      <div className="col-md-2">
+        </div>
+      <div className="col-md-1">
+        </div>
+        <div className="col-lg-2">
+        {tradeOption === 'buy' && tarBuyChecked && (
+          <div>
+            <label>TarBuy Input:</label>
+            <input
+              type="text"
+              className="form-control"
+              value={tarBuyValue}
+              onChange={handleTarBuyChange}
+            />
+          </div>
+        )}
+        {tradeOption === 'sell' && tarSellChecked && (
+          <div>
+            <label>TarSell Input:</label>
+            <input
+              type="text"
+              className="form-control"
+              value={tarSellValue}
+              onChange={handleTarSellChange}
+            />
+          </div>
+        )}
+        <br/>
+        <br/>
+          <div>
+            <p>{leg1}</p>
+            <p>{leg2}</p>
+          </div>
+        </div>
+          </div>
+      </div>
       </div>
     </div>
   );
