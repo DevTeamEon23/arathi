@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Logout from "src/main/layouts/nav/Logout";
 import { Checkbox } from "@material-ui/core";
+import { FaPlus, FaMinus } from 'react-icons/fa';
 
 const symbols = [
   { value: "BANKNIFTY", label: "BANKNIFTY" },
@@ -38,6 +39,8 @@ const Strategies = () => {
   // const [selectedLegForTarSell, setSelectedLegForTarSell] = useState('');
   const [leg1, setLeg1] = useState(0);
   const [leg2, setLeg2] = useState(0);
+  const [leg3, setLeg3] = useState(0);
+  const [leg4, setLeg4] = useState(0);
 
   const toggleCheckbox = (checkbox) => {
     if (checkbox === 'tarBuy') {
@@ -47,18 +50,53 @@ const Strategies = () => {
     }
   };
 
+  // const handleTarBuyChange = (e) => {
+  //   setTarBuyValue(e.target.value);
+  //   const { leg1Value, leg2Value } = calculateLimitOrderLegPrice(e.target.value);
+  //   setLeg1(leg1Value);
+  //   setLeg2(leg2Value);
+  // };
+
+  // const handleTarSellChange = (e) => {
+  //   setTarSellValue(e.target.value);
+  //   const { leg1Value, leg2Value } = calculateLimitOrderLegPriceforSell(e.target.value);
+  //   setLeg1(leg1Value);
+  //   setLeg2(leg2Value);
+  // };
   const handleTarBuyChange = (e) => {
     setTarBuyValue(e.target.value);
-    const { leg1Value, leg2Value } = calculateLimitOrderLegPrice(e.target.value);
-    setLeg1(leg1Value);
-    setLeg2(leg2Value);
+    let legValues;
+  
+    if (legs.length === 3) {
+      legValues = calculateLimitOrderLegPriceForThreeLegs(e.target.value);
+    } else if (legs.length === 4) {
+      legValues = calculateLimitOrderLegPriceForFourLegs(e.target.value);
+    } else {
+      legValues = calculateLimitOrderLegPrice(e.target.value);
+    }
+  
+    setLeg1(legValues.leg1Value);
+    setLeg2(legValues.leg2Value);
+    setLeg3(legValues.leg3Value); // Include this line for 3 legs
+    setLeg4(legValues.leg4Value); // Include this line for 4 legs
   };
 
   const handleTarSellChange = (e) => {
     setTarSellValue(e.target.value);
-    const { leg1Value, leg2Value } = calculateLimitOrderLegPriceforSell(e.target.value);
-    setLeg1(leg1Value);
-    setLeg2(leg2Value);
+    let legValues;
+  
+    if (legs.length === 3) {
+      legValues = calculateLimitOrderLegPriceForThreeLegs(e.target.value);
+    } else if (legs.length === 4) {
+      legValues = calculateLimitOrderLegPriceForFourLegs(e.target.value);
+    } else {
+      legValues = calculateLimitOrderLegPriceforSell(e.target.value);
+    }
+  
+    setLeg1(legValues.leg1Value);
+    setLeg2(legValues.leg2Value);
+    setLeg3(legValues.leg3Value); // Include this line for 3 legs
+    setLeg4(legValues.leg4Value); // Include this line for 4 legs
   };
 
   const calculateLimitOrderLegPrice = (tarBuyValue) => {
@@ -66,18 +104,22 @@ const Strategies = () => {
     const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
     const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
     const otherLegPrice = legs[otherLegIndex]?.price || 0;
-    const selectedLegLot = legs[selectedLegIndex]?.lots || 0; // Assuming you have a lot property
-    const otherLegLot = legs[otherLegIndex]?.lots || 0; // Assuming you have a lot property
+    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
+    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
     const tarBuy = parseFloat(tarBuyValue);
-    console.log("Debug - Selected Leg Lot:", selectedLegLot);
-    console.log("Debug - Other Leg Lot:", otherLegLot);
   
     let leg1, leg2;
   
     if (tarBuyChecked) {
-      const multiplier = -1; // For buy leg
-      leg1 = tarBuy + (parseFloat(otherLegPrice) + otherLegLot);
-      leg2 = (tarBuy - (parseFloat(selectedLegPrice) + otherLegLot)) * multiplier;
+      if (selectedLegType === otherLegType) {
+        // Same leg types (Buy + Buy or Sell + Sell)
+        leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
+      } else {
+        // Different leg types (Buy - Sell or Sell - Buy)
+        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
+        leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
+      }
     }
   
     return {
@@ -91,18 +133,22 @@ const Strategies = () => {
     const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
     const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
     const otherLegPrice = legs[otherLegIndex]?.price || 0;
-    const selectedLegLot = legs[selectedLegIndex]?.lots || 0; // Assuming you have a lot property
-    const otherLegLot = legs[otherLegIndex]?.lots || 0; // Assuming you have a lot property
+    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
+    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
     const tarSell = parseFloat(tarSellValue);
-    console.log("Debug - Selected Leg Lot:", selectedLegLot);
-    console.log("Debug - Other Leg Lot:", otherLegLot);
   
     let leg1, leg2;
   
     if (tarSellChecked) {
-      const multiplier = -1; // For sell leg
-      leg1 = tarSell + (parseFloat(otherLegPrice) + otherLegLot);
-      leg2 = (tarSell - (parseFloat(selectedLegPrice) + otherLegLot)) * multiplier;
+      if (selectedLegType === otherLegType) {
+        // Same leg types (Buy + Buy or Sell + Sell)
+        leg1 = tarSell - (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) - tarSell || 0)) * -1;
+      } else {
+        // Different leg types (Buy - Sell or Sell - Buy)
+        leg1 = tarSell + (parseFloat(otherLegPrice) || 0);
+        leg2 = (tarSell - (parseFloat(selectedLegPrice) || 0)) * -1;
+      }
     }
   
     return {
@@ -110,7 +156,74 @@ const Strategies = () => {
       leg2Value: `Sell Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
     };
   };
-
+  
+  
+  const calculateLimitOrderLegPriceForThreeLegs = (tarBuyValue) => {
+    const selectedLegIndex = tarBuyChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
+    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
+    const tarBuy = parseFloat(tarBuyValue);
+  
+    let leg1, leg2, leg3;
+  
+    if (tarBuyChecked) {
+      if (selectedLegType === otherLegType) {
+        // Same leg types (Buy + Buy or Sell + Sell)
+        leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
+        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
+      } else {
+        // Different leg types (Buy - Sell or Sell - Buy)
+        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
+        leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
+        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
+      }
+  
+      return {
+        leg1Value: `Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Leg 3 Price: ${leg3.toFixed(2)}`,
+      };
+    }
+  };
+  
+  const calculateLimitOrderLegPriceForFourLegs = (tarBuyValue) => {
+    const selectedLegIndex = tarBuyChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
+    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
+    const tarBuy = parseFloat(tarBuyValue);
+  
+    let leg1, leg2, leg3, leg4;
+  
+    if (tarBuyChecked) {
+      if (selectedLegType === otherLegType) {
+        // Same leg types (Buy + Buy or Sell + Sell)
+        leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
+        leg3 = tarBuy + (parseFloat(otherLegPrice) || 0);
+        leg4 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
+      } else {
+        // Different leg types (Buy - Sell or Sell - Buy)
+        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
+        leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
+        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
+        leg4 = (tarBuy + (parseFloat(selectedLegPrice) || 0)) * -1;
+      }
+  
+      return {
+        leg1Value: `Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Leg 3 Price: ${leg3.toFixed(2)}`,
+        leg4Value: `Leg 4 Price: ${leg4.toFixed(2)}`,
+      };
+    }
+  };
   // const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState("leg1");
   // const [tarBuy, setTarBuy] = useState(0); 
 
@@ -127,7 +240,7 @@ const Strategies = () => {
     setLegs((prevLegs) => [
       ...prevLegs,
       {
-        selectedOptionSymbol: null,
+        // selectedOptionSymbol: null,
         expiryOptions: [],
         selectedExpiry: null,
         selectedStrike: null,
@@ -562,17 +675,17 @@ const Strategies = () => {
                 name={`symbols-${index}`}
               />
             ))}
-          </div>
-          <div className="col-lg-8">
+          </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div className="col-md-6">
             <button className="btn btn-primary me-2" onClick={addLeg}>
-              Add Leg
+              <FaPlus /> Add Leg
             </button>
             <button
               className="btn btn-danger"
               onClick={() => removeLeg(legs.length - 1)}
               disabled={legs.length === 0}
             >
-              Remove Leg
+              <FaMinus /> Remove Leg
             </button>
           </div>
           <Logout/>
@@ -581,7 +694,7 @@ const Strategies = () => {
         {/* Legs */}
         {legs?.map((legItem, index) => (
           <div className="row mt-5 mb-4" key={index}>
-            <div className="col-md-1 mb-3">
+            <div className="col-md-1">
               <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B/S </label>
               <br />
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -608,8 +721,8 @@ const Strategies = () => {
                 onChange={(selectedExpiry) => handleExpiryChange(index, selectedExpiry)}
               />
             </div>
-            <div className="col-md-2 mb-3">
-              <label htmlFor="zip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Strike</label>
+            <div className="col-md-1 mb-3">
+              <label htmlFor="zip">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Strike</label>
               <Select
                 value={legItem.selectedStrike}
                 options={(legItem.strikes?.length) ? (
@@ -623,8 +736,8 @@ const Strategies = () => {
                 onChange={(selectedStrike) => handleStrikeChange(index, selectedStrike)}
               />
             </div>
-            <div className="col-md-2 mb-3">
-              <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type</label>
+            <div className="col-md-1 mb-3">
+              <label htmlFor="state">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Type</label>
               <Select
                 value={legItem.selectedType} // Use the value from the state
                 options={[
@@ -636,8 +749,8 @@ const Strategies = () => {
                 onChange={(selectedType) => handleTypeChange(index, selectedType)}
               />
             </div>
-            <div className="col-md-2 mb-3">
-              <label htmlFor="lot">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lots</label>
+            <div className="col-md-1 mb-3">
+              <label htmlFor="lot">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lots</label>
               {/* <div className="form-control custom-dropdown-container"> */}
                 {/* <button className="minus" onClick={() => handleDecrement(index)}>
                   -
@@ -654,7 +767,7 @@ const Strategies = () => {
               </div>
             {/* </div> */}
             <div className="col-md-1 mb-3">
-              <label htmlFor="price">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price per share</label>
+              <label htmlFor="price">&nbsp;&nbsp;Price per share</label>
               <input
                 type="text"
                 className="form-control"
@@ -664,7 +777,7 @@ const Strategies = () => {
               />
             </div>
             <div className="col-md-1 mb-3">
-              <label htmlFor="bidInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bid Info</label>
+              <label htmlFor="bidInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bid Info</label>
               <input
                 type="text"
                 className="form-control"
@@ -674,7 +787,7 @@ const Strategies = () => {
               />
             </div>
           <div className="col-md-1 mb-3">
-            <label htmlFor="askInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ask Info</label>
+            <label htmlFor="askInfo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ask Info</label>
             <input
               type="text"
               className="form-control"
@@ -683,7 +796,7 @@ const Strategies = () => {
               onChange={(e) => handleAskInfoChange(index, e)}
             />
           </div>
-            <div className="col-md-1 mt-5 mb-3">
+            <div className="col-md-1 mt-5">
               <div
                 className="btn btn-danger shadow btn-xs sharp"
                 title="Delete"
@@ -692,13 +805,13 @@ const Strategies = () => {
                 <i className="fa fa-trash"></i>
               </div>
             </div>
-            <div className="col-md-4 mb-3">
+            <div className="col-md-1 mb-3">
       <label htmlFor="state">Price per lot</label>
       <br />
       {typeof legItem.price === 'number' ? (legItem.price * 50).toFixed(2) : 'Invalid Price'} {/* Assuming 1 lot = 50 shares */}
     </div>
 
-    <div className="col-md-2 mb-3">
+    <div className="col-md-1 mb-3">
       <label htmlFor="state">Net Premium</label>
       <br />
   {typeof legItem.premium === 'number' ? legItem.premium.toFixed(2) : 'Invalid Premium'}
@@ -709,9 +822,14 @@ const Strategies = () => {
       </div>
       {/* Display the final net premium */}
       <div className="row mt-5">
-        <div className="col-md-6">
-          <table className="table table-bordered">
+        <div className="col-md-4">
+          <table className="table responsive striped bordered">
             <tbody>
+            <tr>
+          <th colSpan="2" className="text-center font-weight-bold">
+            Result
+          </th>
+        </tr>
               <tr>
                 <td>Final Net Premium</td>
                 <td style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
@@ -840,6 +958,8 @@ const Strategies = () => {
           <div>
             <p>{leg1}</p>
             <p>{leg2}</p>
+            <p>{leg3}</p>
+            <p>{leg4}</p>
           </div>
         </div>
           </div>
