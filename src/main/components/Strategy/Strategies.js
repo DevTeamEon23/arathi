@@ -463,18 +463,13 @@ const Strategies = () => {
 
 
   const calculateSpread = () => {
+    // Define multipliers
+    const buyMultiplier = 1;
+    const sellMultiplier = -1;
+  
     // Separate Buy and Sell legs
     const buyLegs = legs.filter((leg) => leg.type === "BUY");
     const sellLegs = legs.filter((leg) => leg.type === "SELL");
-  
-    // If there is only one leg, return its bid and ask prices directly
-    if (legs.length === 1) {
-      const singleLeg = legs[0];
-      return {
-        bidSpread: singleLeg.bidInfo,
-        askSpread: singleLeg.askInfo,
-      };
-    }
   
     // Initialize bid and ask spread variables
     let bidSpread = 0;
@@ -482,42 +477,55 @@ const Strategies = () => {
   
     // Function to calculate spread for a pair of legs (buy and sell)
     const calculateSpreadForPair = (buyLeg, sellLeg) => {
-      const bidSpreadForPair = buyLeg.bidInfo - sellLeg.askInfo;
-      const askSpreadForPair = buyLeg.askInfo - sellLeg.bidInfo;
+      const bidSpreadForPair = buyLeg.bidInfo * buyMultiplier + sellLeg.askInfo * sellMultiplier;
+      const askSpreadForPair = buyLeg.askInfo * buyMultiplier + sellLeg.bidInfo * sellMultiplier;
   
       // Update overall bid and ask spread
       bidSpread += bidSpreadForPair;
       askSpread += askSpreadForPair;
     };
-
-    // Function to calculate spread for legs of the same type
-    const calculateSpreadForSameType = (legsOfType) => {
-      const bidSpreadForSameType = legsOfType.reduce((total, leg) => total + leg.bidInfo, 0);
-      const askSpreadForSameType = legsOfType.reduce((total, leg) => total + leg.askInfo, 0);
   
-      // Update overall bid and ask spread
-      bidSpread += bidSpreadForSameType;
-      askSpread += askSpreadForSameType;
-    };
-
     // Calculate bid and ask spread for all possible combinations
-    buyLegs.forEach((buyLeg) => {
-      sellLegs.forEach((sellLeg) => {
-        calculateSpreadForPair(buyLeg, sellLeg);
-      });
-    });
-    // Calculate bid and ask spread for legs of the same type
-    if (buyLegs.length > 1) {
-      calculateSpreadForSameType(buyLegs);
+    for (let i = 0; i < buyLegs.length; i++) {
+      for (let j = 0; j < sellLegs.length; j++) {
+        calculateSpreadForPair(buyLegs[i], sellLegs[j]);
+      }
     }
   
-    if (sellLegs.length > 1) {
-      calculateSpreadForSameType(sellLegs);
+    // If there are additional legs, calculate spread accordingly
+    for (let i = 0; i < legs.length; i++) {
+      if (legs[i].type === "BUY" && legs.length % 2 === 0) {
+        bidSpread += legs[i].bidInfo * buyMultiplier;
+        askSpread += legs[i].askInfo * buyMultiplier;
+      } else if (legs[i].type === "SELL" && legs.length % 2 === 0) {
+        bidSpread += legs[i].askInfo * sellMultiplier;
+        askSpread += legs[i].bidInfo * sellMultiplier;
+      }
     }
+    // for (let i = 0; i < legs.length; i++) {
+    //   if (legs[i].type === "BUY" && legs.length % 2 === 0) {
+    //     const buyLeg = legs[i];
+    //     const sellLeg = legs[(i + 1) % legs.length]; // Pair with the next leg in the sequence
+    //     const bidSpreadForPair = buyLeg.bidInfo * buyMultiplier + sellLeg.askInfo * sellMultiplier;
+    //     const askSpreadForPair = buyLeg.askInfo * buyMultiplier + sellLeg.bidInfo * sellMultiplier;
   
+    //     // Update overall bid and ask spread
+    //     bidSpread += bidSpreadForPair;
+    //     askSpread += askSpreadForPair;
+    //   } else if (legs[i].type === "SELL" && legs.length % 2 === 0) {
+    //     const buyLeg = legs[(i + 1) % legs.length]; // Pair with the next leg in the sequence
+    //     const sellLeg = legs[i];
+    //     const bidSpreadForPair = buyLeg.bidInfo * buyMultiplier + sellLeg.askInfo * sellMultiplier;
+    //     const askSpreadForPair = buyLeg.askInfo * buyMultiplier + sellLeg.bidInfo * sellMultiplier;
+  
+    //     // Update overall bid and ask spread
+    //     bidSpread += bidSpreadForPair;
+    //     askSpread += askSpreadForPair;
+    //   }
+    // }
     return { bidSpread, askSpread };
   };
-
+  
   // Use the calculateSpread function to get bidSpread and askSpread
   const { bidSpread, askSpread } = calculateSpread();
 
