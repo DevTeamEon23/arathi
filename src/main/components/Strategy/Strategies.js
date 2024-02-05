@@ -4,7 +4,8 @@ import { Form, Badge, Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logout from "src/main/layouts/nav/Logout";
-import { Checkbox } from "@material-ui/core";
+import { Checkbox} from "@material-ui/core";
+import { RadioButton, RadioButtonGroup , Radio} from '@material-ui/core';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 
 const symbols = [
@@ -27,16 +28,12 @@ const Strategies = () => {
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
   const [ltpSpread, setLtpSpread] = useState(0);
-  // const [legs, setLegs] = useState([]);
   const [legs, setLegs] = useState([]);
-
   const [tradeOption, setTradeOption] = useState('buy');
   const [tarBuyChecked, setTarBuyChecked] = useState(false);
   const [tarSellChecked, setTarSellChecked] = useState(false);
   const [tarBuyValue, setTarBuyValue] = useState('');
   const [tarSellValue, setTarSellValue] = useState('');
-  // const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState('');
-  // const [selectedLegForTarSell, setSelectedLegForTarSell] = useState('');
   const [leg1, setLeg1] = useState(0);
   const [leg2, setLeg2] = useState(0);
   const [leg3, setLeg3] = useState(0);
@@ -50,53 +47,41 @@ const Strategies = () => {
     }
   };
 
-  // const handleTarBuyChange = (e) => {
-  //   setTarBuyValue(e.target.value);
-  //   const { leg1Value, leg2Value } = calculateLimitOrderLegPrice(e.target.value);
-  //   setLeg1(leg1Value);
-  //   setLeg2(leg2Value);
-  // };
 
-  // const handleTarSellChange = (e) => {
-  //   setTarSellValue(e.target.value);
-  //   const { leg1Value, leg2Value } = calculateLimitOrderLegPriceforSell(e.target.value);
-  //   setLeg1(leg1Value);
-  //   setLeg2(leg2Value);
-  // };
   const handleTarBuyChange = (e) => {
     setTarBuyValue(e.target.value);
     let legValues;
-  
-    if (legs.length === 3) {
-      legValues = calculateLimitOrderLegPriceForThreeLegs(e.target.value);
-    } else if (legs.length === 4) {
-      legValues = calculateLimitOrderLegPriceForFourLegs(e.target.value);
+
+    if (legs && legs.length === 3) {
+        legValues = calculateLimitOrderLegPriceForThreeLegsTarBuy(e.target.value, legs);
+    } else if (legs && legs.length === 4) {
+        legValues = calculateLimitOrderLegPriceForFourLegsTarBuy(e.target.value, legs);
     } else {
-      legValues = calculateLimitOrderLegPrice(e.target.value);
+        legValues = calculateLimitOrderLegPrice(e.target.value);
     }
-  
+
     setLeg1(legValues.leg1Value);
     setLeg2(legValues.leg2Value);
-    setLeg3(legValues.leg3Value); // Include this line for 3 legs
-    setLeg4(legValues.leg4Value); // Include this line for 4 legs
+    setLeg3(legValues.leg3Value);
+    setLeg4(legValues.leg4Value);
   };
 
   const handleTarSellChange = (e) => {
-    setTarSellValue(e.target.value);
-    let legValues;
-  
-    if (legs.length === 3) {
-      legValues = calculateLimitOrderLegPriceForThreeLegs(e.target.value);
-    } else if (legs.length === 4) {
-      legValues = calculateLimitOrderLegPriceForFourLegs(e.target.value);
-    } else {
-      legValues = calculateLimitOrderLegPriceforSell(e.target.value);
-    }
-  
-    setLeg1(legValues.leg1Value);
-    setLeg2(legValues.leg2Value);
-    setLeg3(legValues.leg3Value); // Include this line for 3 legs
-    setLeg4(legValues.leg4Value); // Include this line for 4 legs
+      setTarSellValue(e.target.value);
+      let legValues;
+
+      if (legs && legs.length === 3) {
+          legValues = calculateLimitOrderLegPriceForThreeLegsTarSell(e.target.value, legs);
+      } else if (legs && legs.length === 4) {
+          legValues = calculateLimitOrderLegPriceForFourLegsTarSell(e.target.value, legs);
+      } else {
+          legValues = calculateLimitOrderLegPriceforSell(e.target.value);
+      }
+
+      setLeg1(legValues.leg1Value);
+      setLeg2(legValues.leg2Value);
+      setLeg3(legValues.leg3Value);
+      setLeg4(legValues.leg4Value);
   };
 
   const calculateLimitOrderLegPrice = (tarBuyValue) => {
@@ -111,12 +96,16 @@ const Strategies = () => {
     let leg1, leg2;
   
     if (tarBuyChecked) {
-      if (selectedLegType === otherLegType) {
-        // Same leg types (Buy + Buy or Sell + Sell)
+      if (selectedLegType === otherLegType && selectedLegType === 'BUY') {
+        // Buy + Buy
         leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
-        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
+        leg2 = ((parseFloat(selectedLegPrice) - tarBuy) || 0) * -1;
+      } else if (selectedLegType === otherLegType && selectedLegType === 'SELL') {
+        // Sell + Sell
+        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) + tarBuy) || 0);
       } else {
-        // Different leg types (Buy - Sell or Sell - Buy)
+        // Buy - Sell or Sell - Buy
         leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
         leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
       }
@@ -140,12 +129,16 @@ const Strategies = () => {
     let leg1, leg2;
   
     if (tarSellChecked) {
-      if (selectedLegType === otherLegType) {
-        // Same leg types (Buy + Buy or Sell + Sell)
+      if (selectedLegType === otherLegType && selectedLegType === 'BUY') {
+        // Buy + Buy
         leg1 = tarSell - (parseFloat(otherLegPrice) || 0);
-        leg2 = ((parseFloat(selectedLegPrice) - tarSell || 0)) * -1;
+        leg2 = ((parseFloat(selectedLegPrice) - tarSell) || 0) * -1;
+      } else if (selectedLegType === otherLegType && selectedLegType === 'SELL') {
+        // Sell + Sell
+        leg1 = tarSell + (parseFloat(otherLegPrice) || 0);
+        leg2 = ((parseFloat(selectedLegPrice) + tarSell) || 0);
       } else {
-        // Different leg types (Buy - Sell or Sell - Buy)
+        // Buy - Sell or Sell - Buy
         leg1 = tarSell + (parseFloat(otherLegPrice) || 0);
         leg2 = (tarSell - (parseFloat(selectedLegPrice) || 0)) * -1;
       }
@@ -156,85 +149,135 @@ const Strategies = () => {
       leg2Value: `Sell Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
     };
   };
-  
-  
-  const calculateLimitOrderLegPriceForThreeLegs = (tarBuyValue) => {
+
+  const calculateLimitOrderLegPriceForThreeLegsTarBuy = (tarBuyValue, legs) => {
     const selectedLegIndex = tarBuyChecked ? 0 : 1;
     const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const thirdLegIndex = 2; // the third leg index is always 2
     const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
     const otherLegPrice = legs[otherLegIndex]?.price || 0;
-    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
-    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
+    const thirdLegPrice = legs[thirdLegIndex]?.price || 0;
+
+    const selectedLegLots = legs[selectedLegIndex]?.lot?.value || 1;
+    const otherLegLots = legs[otherLegIndex]?.lot?.value || 1;
+    const thirdLegLots = legs[thirdLegIndex]?.lot?.value || 1;
+
+    const selectedLegMultiplier = legs[selectedLegIndex]?.type === 'BUY' ? 1 : -1;
+    const otherLegMultiplier = legs[otherLegIndex]?.type === 'BUY' ? 1 : -1;
+    const thirdLegMultiplier = legs[thirdLegIndex]?.type === 'BUY' ? 1 : -1;
+
     const tarBuy = parseFloat(tarBuyValue);
-  
-    let leg1, leg2, leg3;
-  
-    if (tarBuyChecked) {
-      if (selectedLegType === otherLegType) {
-        // Same leg types (Buy + Buy or Sell + Sell)
-        leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
-        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
-        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
-      } else {
-        // Different leg types (Buy - Sell or Sell - Buy)
-        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
-        leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
-        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
-      }
-  
-      return {
-        leg1Value: `Leg 1 Price: ${leg1.toFixed(2)}`,
-        leg2Value: `Leg 2 Price: ${leg2.toFixed(2)}`,
-        leg3Value: `Leg 3 Price: ${leg3.toFixed(2)}`,
-      };
-    }
+
+    const leg1 = tarBuy - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier;
+    const leg2 = (tarBuy - selectedLegPrice * selectedLegLots * selectedLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier) / 2;
+    const leg3 = tarBuy - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier;
+
+    return {
+        leg1Value: `Buy Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Buy Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Buy Limit Order Leg 3 Price: ${leg3.toFixed(2)}`,
+    };
   };
-  
-  const calculateLimitOrderLegPriceForFourLegs = (tarBuyValue) => {
+
+  const calculateLimitOrderLegPriceForThreeLegsTarSell = (tarSellValue, legs) => {
+    const selectedLegIndex = tarSellChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const thirdLegIndex = 2; // the third leg index is always 2
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const thirdLegPrice = legs[thirdLegIndex]?.price || 0;
+
+    const selectedLegLots = legs[selectedLegIndex]?.lot?.value || 1;
+    const otherLegLots = legs[otherLegIndex]?.lot?.value || 1;
+    const thirdLegLots = legs[thirdLegIndex]?.lot?.value || 1;
+
+    const selectedLegMultiplier = legs[selectedLegIndex]?.type === 'BUY' ? 1 : -1;
+    const otherLegMultiplier = legs[otherLegIndex]?.type === 'BUY' ? 1 : -1;
+    const thirdLegMultiplier = legs[thirdLegIndex]?.type === 'BUY' ? 1 : -1;
+
+    const tarSell = parseFloat(tarSellValue);
+
+    const leg1 = tarSell - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier;
+    const leg2 = (tarSell - selectedLegPrice * selectedLegLots * selectedLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier) / 2;
+    const leg3 = tarSell - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier;
+
+    return {
+        leg1Value: `Sell Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Sell Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Sell Limit Order Leg 3 Price: ${leg3.toFixed(2)}`,
+    };
+  };
+
+  const calculateLimitOrderLegPriceForFourLegsTarBuy = (tarBuyValue, legs) => {
     const selectedLegIndex = tarBuyChecked ? 0 : 1;
     const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const thirdLegIndex = 2; // the third leg index is always 2
+    const fourthLegIndex = 3; // the fourth leg index is always 3
     const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
     const otherLegPrice = legs[otherLegIndex]?.price || 0;
-    const selectedLegType = legs[selectedLegIndex]?.type || 'BUY';
-    const otherLegType = legs[otherLegIndex]?.type || 'BUY';
+    const thirdLegPrice = legs[thirdLegIndex]?.price || 0;
+    const fourthLegPrice = legs[fourthLegIndex]?.price || 0;
+
+    const selectedLegLots = legs[selectedLegIndex]?.lot?.value || 1;
+    const otherLegLots = legs[otherLegIndex]?.lot?.value || 1;
+    const thirdLegLots = legs[thirdLegIndex]?.lot?.value || 1;
+    const fourthLegLots = legs[fourthLegIndex]?.lot?.value || 1;
+
+    const selectedLegMultiplier = legs[selectedLegIndex]?.type === 'BUY' ? 1 : -1;
+    const otherLegMultiplier = legs[otherLegIndex]?.type === 'BUY' ? 1 : -1;
+    const thirdLegMultiplier = legs[thirdLegIndex]?.type === 'BUY' ? 1 : -1;
+    const fourthLegMultiplier = legs[fourthLegIndex]?.type === 'BUY' ? 1 : -1;
+
     const tarBuy = parseFloat(tarBuyValue);
-  
-    let leg1, leg2, leg3, leg4;
-  
-    if (tarBuyChecked) {
-      if (selectedLegType === otherLegType) {
-        // Same leg types (Buy + Buy or Sell + Sell)
-        leg1 = tarBuy - (parseFloat(otherLegPrice) || 0);
-        leg2 = ((parseFloat(selectedLegPrice) - tarBuy || 0)) * -1;
-        leg3 = tarBuy + (parseFloat(otherLegPrice) || 0);
-        leg4 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
-      } else {
-        // Different leg types (Buy - Sell or Sell - Buy)
-        leg1 = tarBuy + (parseFloat(otherLegPrice) || 0);
-        leg2 = (tarBuy - (parseFloat(selectedLegPrice) || 0)) * -1;
-        leg3 = tarBuy - (parseFloat(otherLegPrice) || 0);
-        leg4 = (tarBuy + (parseFloat(selectedLegPrice) || 0)) * -1;
-      }
-  
-      return {
-        leg1Value: `Leg 1 Price: ${leg1.toFixed(2)}`,
-        leg2Value: `Leg 2 Price: ${leg2.toFixed(2)}`,
-        leg3Value: `Leg 3 Price: ${leg3.toFixed(2)}`,
-        leg4Value: `Leg 4 Price: ${leg4.toFixed(2)}`,
-      };
-    }
-  };
-  // const [selectedLegForTarBuy, setSelectedLegForTarBuy] = useState("leg1");
-  // const [tarBuy, setTarBuy] = useState(0); 
 
-  // const [selectedLegForTarSell, setSelectedLegForTarSell] = useState("leg1");
-  // const [tarSell, setTarSell] = useState(0); 
+    const leg1 = tarBuy - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg2 = tarBuy - selectedLegPrice * selectedLegLots * selectedLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg3 = tarBuy - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg4 = tarBuy - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier;
 
-  const getUniqueSelectedTypes = () => {
-    const selectedTypes = legs.map((leg) => leg.selectedType?.value).filter(Boolean);
-    return [...new Set(selectedTypes)];
+    return {
+        leg1Value: `Buy Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Buy Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Buy Limit Order Leg 3 Price: ${leg3.toFixed(2)}`,
+        leg4Value: `Buy Limit Order Leg 4 Price: ${leg4.toFixed(2)}`,
+    };
   };
 
+
+  const calculateLimitOrderLegPriceForFourLegsTarSell = (tarSellValue, legs) => {
+    const selectedLegIndex = tarSellChecked ? 0 : 1;
+    const otherLegIndex = selectedLegIndex === 0 ? 1 : 0;
+    const thirdLegIndex = 2; // Assuming the third leg index is always 2
+    const fourthLegIndex = 3; // Assuming the fourth leg index is always 3
+    const selectedLegPrice = legs[selectedLegIndex]?.price || 0;
+    const otherLegPrice = legs[otherLegIndex]?.price || 0;
+    const thirdLegPrice = legs[thirdLegIndex]?.price || 0;
+    const fourthLegPrice = legs[fourthLegIndex]?.price || 0;
+
+    const selectedLegLots = legs[selectedLegIndex]?.lot?.value || 1;
+    const otherLegLots = legs[otherLegIndex]?.lot?.value || 1;
+    const thirdLegLots = legs[thirdLegIndex]?.lot?.value || 1;
+    const fourthLegLots = legs[fourthLegIndex]?.lot?.value || 1;
+
+    const selectedLegMultiplier = legs[selectedLegIndex]?.type === 'BUY' ? 1 : -1;
+    const otherLegMultiplier = legs[otherLegIndex]?.type === 'BUY' ? 1 : -1;
+    const thirdLegMultiplier = legs[thirdLegIndex]?.type === 'BUY' ? 1 : -1;
+    const fourthLegMultiplier = legs[fourthLegIndex]?.type === 'BUY' ? 1 : -1;
+
+    const tarSell = parseFloat(tarSellValue);
+
+    const leg1 = tarSell - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg2 = tarSell - selectedLegPrice * selectedLegLots * selectedLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg3 = tarSell - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier - fourthLegPrice * fourthLegLots * fourthLegMultiplier;
+    const leg4 = tarSell - selectedLegPrice * selectedLegLots * selectedLegMultiplier - otherLegPrice * otherLegLots * otherLegMultiplier - thirdLegPrice * thirdLegLots * thirdLegMultiplier;
+
+    return {
+        leg1Value: `Sell Limit Order Leg 1 Price: ${leg1.toFixed(2)}`,
+        leg2Value: `Sell Limit Order Leg 2 Price: ${leg2.toFixed(2)}`,
+        leg3Value: `Sell Limit Order Leg 3 Price: ${leg3.toFixed(2)}`,
+        leg4Value: `Sell Limit Order Leg 4 Price: ${leg4.toFixed(2)}`,
+    };
+  };
 
   const addLeg = () => {
     setLegs((prevLegs) => [
@@ -247,9 +290,8 @@ const Strategies = () => {
         type: "BUY",
         lot: { value: "1", label: "1" },
         price: "",
-        bidInfo: "",  // Add bidInfo property
+        bidInfo: "",
         askInfo: "",
-        // other properties for the leg
       },
     ]);
   };
@@ -303,9 +345,6 @@ const Strategies = () => {
 
         if (ltpResponse.status === 200) {
           const ltpPrice = ltpResponse.data?.LastTradedPrice;
-          // const bidinfo = ltpResponse.data?.BidInfo?.Price || ""; // Set to empty string if Bid Info is undefined
-          // const askinfo = ltpResponse.data?.AskInfo?.Price || "";
-
           updatedLegs[index].price = ltpPrice;
           updatedLegs[index].bidInfo = ltpResponse.data.BidInfo || "";
           updatedLegs[index].askInfo = ltpResponse.data.AskInfo || "";
@@ -502,36 +541,11 @@ const Strategies = () => {
         askSpread += legs[i].bidInfo * sellMultiplier;
       }
     }
-    // for (let i = 0; i < legs.length; i++) {
-    //   if (legs[i].type === "BUY" && legs.length % 2 === 0) {
-    //     const buyLeg = legs[i];
-    //     const sellLeg = legs[(i + 1) % legs.length]; // Pair with the next leg in the sequence
-    //     const bidSpreadForPair = buyLeg.bidInfo * buyMultiplier + sellLeg.askInfo * sellMultiplier;
-    //     const askSpreadForPair = buyLeg.askInfo * buyMultiplier + sellLeg.bidInfo * sellMultiplier;
-  
-    //     // Update overall bid and ask spread
-    //     bidSpread += bidSpreadForPair;
-    //     askSpread += askSpreadForPair;
-    //   } else if (legs[i].type === "SELL" && legs.length % 2 === 0) {
-    //     const buyLeg = legs[(i + 1) % legs.length]; // Pair with the next leg in the sequence
-    //     const sellLeg = legs[i];
-    //     const bidSpreadForPair = buyLeg.bidInfo * buyMultiplier + sellLeg.askInfo * sellMultiplier;
-    //     const askSpreadForPair = buyLeg.askInfo * buyMultiplier + sellLeg.bidInfo * sellMultiplier;
-  
-    //     // Update overall bid and ask spread
-    //     bidSpread += bidSpreadForPair;
-    //     askSpread += askSpreadForPair;
-    //   }
-    // }
     return { bidSpread, askSpread };
   };
   
   // Use the calculateSpread function to get bidSpread and askSpread
   const { bidSpread, askSpread } = calculateSpread();
-
-  // Display bidSpread and askSpread in your component
-  // console.log("Bid Spread:", bidSpread);
-  // console.log("Ask Spread:", askSpread);
 
   const calculateMarketSpread = () => {
     // Separate Buy and Sell legs
@@ -549,7 +563,7 @@ const Strategies = () => {
       // Case: Both legs are Sell
       const marketSpreadCase3 = sellLegs.reduce((total, sellLeg) => total + sellLeg.bidInfo, 0);
   
-      // Determine which case to use based on the legs' types
+      // Determine which case to use based on the overall legs types
       const marketSpread = marketSpreadCase1 >= 0 ? marketSpreadCase1 :
         marketSpreadCase2 >= 0 ? marketSpreadCase2 :
         marketSpreadCase3;
@@ -570,8 +584,6 @@ const Strategies = () => {
         const marketSpreadCase3 = sellLegs.reduce((total, sellLeg) => total + sellLeg.bidInfo, 0);
         return marketSpreadCase3;
       }
-  
-      // Default calculation when not meeting the specified criteria
       // Initialize market spread variable
       let marketSpread = 0;
   
@@ -602,60 +614,36 @@ const Strategies = () => {
   };
 
   const calculateMarketBuy = (legs) => {
-    let marketBuy = 0;
-  
-    // Separate Buy and Sell legs
     const buyLegs = legs.filter((leg) => leg.type === "BUY");
     const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
     const buyMultiplier = 1;
     const sellMultiplier = -1;
   
-    // Calculate market buy for legs of the same type (BUY & BUY)
-    if (buyLegs.length > 1) {
-      marketBuy += buyLegs.reduce((total, leg) => total + leg.askInfo * leg.lot.value * buyMultiplier, 0);
-    }
-  
-    // Calculate market buy for pair type (BUY & SELL)
-    if (buyLegs.length > 0 && sellLegs.length > 0) {
-      marketBuy +=
-        buyLegs[0].askInfo * buyLegs[0].lot.value -
-        sellLegs[0].bidInfo * sellLegs[0].lot.value +
-        (buyLegs.length === 3 ? buyLegs[2].askInfo * buyLegs[2].lot.value : 0) +
-        (buyLegs.length === 4 ? -sellLegs[2].bidInfo * sellLegs[2].lot.value : 0);
-    }
+    const marketBuy = legs.reduce((total, leg) => {
+      const legValue = leg.type === "BUY" ? leg.askInfo : leg.bidInfo;
+      const legMultiplier = leg.type === "BUY" ? buyMultiplier : sellMultiplier;
+      return total + legValue * leg.lot.value * legMultiplier;
+    }, 0);
   
     return marketBuy;
   };
   
   const calculateMarketSell = (legs) => {
-    let marketSell = 0;
-  
-    // Separate Buy and Sell legs
     const buyLegs = legs.filter((leg) => leg.type === "BUY");
     const sellLegs = legs.filter((leg) => leg.type === "SELL");
   
     const buyMultiplier = 1;
     const sellMultiplier = -1;
   
-    // Calculate market sell for legs of the same type (BUY & BUY)
-    if (buyLegs.length > 1) {
-      marketSell += buyLegs.reduce((total, leg) => total + leg.bidInfo * leg.lot.value * sellMultiplier, 0);
-    }
-  
-    // Calculate market sell for pair type (BUY & SELL)
-    if (buyLegs.length > 0 && sellLegs.length > 0) {
-      marketSell +=
-        buyLegs[0].bidInfo * buyLegs[0].lot.value -
-        sellLegs[0].askInfo * sellLegs[0].lot.value +
-        (buyLegs.length === 3 ? buyLegs[2].bidInfo * buyLegs[2].lot.value : 0) +
-        (buyLegs.length === 4 ? -sellLegs[2].askInfo * sellLegs[2].lot.value : 0);
-    }
+    const marketSell = legs.reduce((total, leg) => {
+      const legValue = leg.type === "BUY" ? leg.bidInfo : leg.askInfo;
+      const legMultiplier = leg.type === "BUY" ? buyMultiplier : sellMultiplier;
+      return total + legValue * leg.lot.value * legMultiplier;
+    }, 0);
   
     return marketSell;
   };
-  
-  
   
   const marketBuy = calculateMarketBuy(legs);
   const marketSell = calculateMarketSell(legs);
@@ -759,21 +747,13 @@ const Strategies = () => {
             </div>
             <div className="col-md-1 mb-3">
               <label htmlFor="lot">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lots</label>
-              {/* <div className="form-control custom-dropdown-container"> */}
-                {/* <button className="minus" onClick={() => handleDecrement(index)}>
-                  -
-                </button> */}
                 <Select
                   value={legItem.lot}
                   onChange={(option) => handleLotsChange(index, option)}
                   options={lots}
                   name="lots"
                 />
-                {/* <button className="plus" onClick={() => handleIncrement(index)}>
-                  +
-                </button> */}
               </div>
-            {/* </div> */}
             <div className="col-md-1 mb-3">
               <label htmlFor="price">&nbsp;&nbsp;Price per share</label>
               <input
@@ -814,30 +794,29 @@ const Strategies = () => {
               </div>
             </div>
             <div className="col-md-1 mb-3">
-      <label htmlFor="state">Price per lot</label>
-      <br />
-      {typeof legItem.price === 'number' ? (legItem.price * 50).toFixed(2) : 'Invalid Price'} {/* Assuming 1 lot = 50 shares */}
-    </div>
-
-    <div className="col-md-1 mb-3">
-      <label htmlFor="state">Net Premium</label>
-      <br />
-  {typeof legItem.premium === 'number' ? legItem.premium.toFixed(2) : 'Invalid Premium'}
-    </div>
-          </div>
-          
-        ))}
+        <label htmlFor="state">Price per lot</label>
+        <br />
+        {typeof legItem.price === 'number' ? (legItem.price * 50).toFixed(2) : 'Invalid Price'} {/* Assuming 1 lot = 50 shares */}
       </div>
-      {/* Display the final net premium */}
-      <div className="row mt-5">
-        <div className="col-md-4">
-          <table className="table responsive striped bordered">
-            <tbody>
-            <tr>
-          <th colSpan="2" className="text-center font-weight-bold">
-            Result
-          </th>
-        </tr>
+      <div className="col-md-1 mb-3">
+        <label htmlFor="state">Net Premium</label>
+        <br />
+        {typeof legItem.premium === 'number' ? legItem.premium.toFixed(2) : 'Invalid Premium'}
+      </div>
+            </div>
+            
+          ))}
+        </div>
+        {/* Display the final net premium */}
+        <div className="row mt-5">
+          <div className="col-md-4">
+            <table className="table responsive striped bordered">
+              <tbody>
+              <tr>
+            <th colSpan="2" className="text-center font-weight-bold">
+              Result
+            </th>
+          </tr>
               <tr>
                 <td>Final Net Premium</td>
                 <td style={{ color: finalNetPremium > 0 ? "green" : "red" }}>
@@ -876,31 +855,43 @@ const Strategies = () => {
           </table>
         </div>
       </div>
-      <div className="row mt-3">
-      <div className="col-md-2">
+      <div className="container mt-3">
+        <div className="card">
+        <div className="card-body">
+          <h5 className="card-title">Limit Order Calculations</h5>
+          <p className="card-text">Give the Proper Input to get correct TarBuy AND TarSell</p>
         </div>
-      <div className="col-md-2">
+      <div className="row mt-3">
+        <div className="col-md-2">
+        </div>
+        <div className="col-md-2">
         </div>
       <div className="col-md-2">
         <label>
-          <input
+          <Radio
             type="radio"
             name="tradeOption"
             checked={tradeOption === 'buy'}
             onChange={() => setTradeOption('buy')}
           />
-          Buy
+          &nbsp;Buy&nbsp;
+        <span style={{ fontSize: '1.1em' }}>
+            <i className="fas fa-arrow-alt-circle-up text-success"></i> 
+        </span>
         </label>
         </div>
         <div className="col-md-2">
         <label>
-          <input
+          <Radio
             type="radio"
             name="tradeOption"
             checked={tradeOption === 'sell'}
             onChange={() => setTradeOption('sell')}
           />
-          Sell
+          &nbsp;
+        <span>Sell&nbsp;
+            <i className="fas fa-arrow-alt-circle-down text-danger"></i> 
+        </span>
         </label>
         </div>
       <div className="row mt-3">
@@ -909,6 +900,7 @@ const Strategies = () => {
       <div className="col-md-2">
         </div>
         <div className="col-md-2">
+        &nbsp;&nbsp;&nbsp;
           <label>
             <Checkbox
               type="checkbox"
@@ -920,7 +912,7 @@ const Strategies = () => {
           </label>
           </div>
         <div className="col-md-2">
-
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <label>
           <Checkbox
             type="checkbox"
@@ -930,49 +922,54 @@ const Strategies = () => {
           />
           TarSell
         </label>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
           </div>
-      <div className="row mt-3">
-        <div className="col-lg-2">
+            <div className="row">
+              <div className="col-lg-3"></div>
+              <div className="col-md-1">
+            </div>
+              <div className="col-lg-4">
+                {tradeOption === 'buy' && tarBuyChecked && (
+                  <div className="mb-4">
+                    <label htmlFor="tarBuyInput">TarBuy Input:</label>
+                    <input
+                      type="text"
+                      id="tarBuyInput"
+                      className="form-control"
+                      value={tarBuyValue}
+                      onChange={handleTarBuyChange}
+                    />
+                  </div>
+                )}
+                {tradeOption === 'sell' && tarSellChecked && (
+                  <div className="mb-4">
+                    <label htmlFor="tarSellInput">TarSell Input:</label>
+                    <input
+                      type="text"
+                      id="tarSellInput"
+                      className="form-control"
+                      value={tarSellValue}
+                      onChange={handleTarSellChange}
+                    />
+                  </div>
+                )}
+                <div>
+                  <p className="fs-5">{leg1}</p>
+                  <p className="fs-5">{leg2}</p>
+                  <p className="fs-5">{leg3}</p>
+                  <p className="fs-5">{leg4}</p>
+                  <br/>
+                  <br/>
+                </div>
+              </div>
+            </div>
           </div>
-      <div className="col-md-2">
         </div>
-      <div className="col-md-1">
-        </div>
-        <div className="col-lg-2">
-        {tradeOption === 'buy' && tarBuyChecked && (
-          <div>
-            <label>TarBuy Input:</label>
-            <input
-              type="text"
-              className="form-control"
-              value={tarBuyValue}
-              onChange={handleTarBuyChange}
-            />
-          </div>
-        )}
-        {tradeOption === 'sell' && tarSellChecked && (
-          <div>
-            <label>TarSell Input:</label>
-            <input
-              type="text"
-              className="form-control"
-              value={tarSellValue}
-              onChange={handleTarSellChange}
-            />
-          </div>
-        )}
-        <br/>
-        <br/>
-          <div>
-            <p>{leg1}</p>
-            <p>{leg2}</p>
-            <p>{leg3}</p>
-            <p>{leg4}</p>
-          </div>
-        </div>
-          </div>
       </div>
-      </div>
+    </div>
     </div>
   );
 };
