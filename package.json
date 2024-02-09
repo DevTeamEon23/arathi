@@ -115,6 +115,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "react-app-rewire-alias": "^1.1.7",
     "react-app-rewired": "^2.2.1"
   }

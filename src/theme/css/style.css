@@ -11424,6 +11424,15 @@ label {
 .footer .copyright a {
   color: var(--primary);
 }
+.footer-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f8f9fa; /* Adjust the background color as needed */
+  border-top: 1px solid #dee2e6; /* Add a border if needed */
+  padding: 10px; /* Adjust padding as needed */
+}
 
 [data-sidebar-style="mini"] .nav-control,
 [data-layout="horizontal"] .nav-control {
@@ -41941,9 +41950,10 @@ table.dataTable.display tbody td {
   flex: 1;
 }
 
-.heart-blast {
+/* .heart-blast {
   background-position: -1680px 0 !important;
   transition: background 1s steps(28);
+  background: url("/src/theme/images/like.png");
 }
 
 .heart {
@@ -41953,6 +41963,20 @@ table.dataTable.display tbody td {
   background: url("/src/theme/images/like.png");
   cursor: pointer;
   margin: -25px -15px;
+} */
+
+.heart {
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  background: url("/src/theme/images/like.png") no-repeat;
+  cursor: pointer;
+  margin: -25px -15px;
+  transition: background 1s steps(28);
+}
+
+.heart.blast {
+  background-position: -1680px 0;
 }
 
 .plus-box {

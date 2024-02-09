@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import "../../theme/css/style.css"
+import Indian from "@images/Indian-flag.png";
 
 const Footer = () => {
+  const [isBlasted, setBlasted] = useState(false);
+
+  const handleClick = () => {
+    // Toggle the blast effect
+    setBlasted(!isBlasted);
+  };
+
   return (
-    <div className="footer">
+    <div className={`footer-container ${isBlasted ? 'blast' : ''}`}>
       <div className="copyright">
-        <p>
-          Copyright © Designed &amp; Developed by AnandRathi&nbsp;
-          {/* <a href="http://dexignzone.com/" target="_blank"  rel="noreferrer">
-						DexignZone
-					</a>{" "} */}
-          2023
+        <p className="fs-14">
+          Copyright © 2024 AnandRathi, Made with
+          <span className={`heart ${isBlasted ? 'blast' : ''}`} onClick={handleClick}></span>
+          in India&nbsp;
+          <img src={Indian} alt="Indian Flag" className={`flag ${isBlasted ? 'blast' : ''}`} />
         </p>
       </div>
     </div>

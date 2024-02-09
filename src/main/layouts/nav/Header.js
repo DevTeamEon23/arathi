@@ -68,38 +68,38 @@ const Header = ({ onNote }) => {
   useEffect(() => {
     let token = window.localStorage.getItem("jwt_access_token");
     setToken(token);
-    getUsersById(token);
+    // getUsersById(token);
   }, []);
 
   // User details by ID
-  const getUsersById = async (authToken) => {
-    try {
-      const response = await axios.get(
-        "lms-service/users_by_onlyid",
-        {
-          headers: {
-            "Auth-Token": authToken,
-          },
-          params: {
-            id: user_id,
-          },
-        }
-      );
-      //   setUserData(response.data.data);
-      if (response.data.status === "success") {
-        console.log(response.data.data);
-        const res = response.data.data;
-        setProfileImg(res.cdn_file_link);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("scroll", () => {
-      setheaderFix(window.scrollY > 50);
-    });
-  }, []);
+  // const getUsersById = async (authToken) => {
+  //   try {
+  //     const response = await axios.get(
+  //       "lms-service/users_by_onlyid",
+  //       {
+  //         headers: {
+  //           "Auth-Token": authToken,
+  //         },
+  //         params: {
+  //           id: user_id,
+  //         },
+  //       }
+  //     );
+  //     //   setUserData(response.data.data);
+  //     if (response.data.status === "success") {
+  //       console.log(response.data.data);
+  //       const res = response.data.data;
+  //       setProfileImg(res.cdn_file_link);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   window.addEventListener("scroll", () => {
+  //     setheaderFix(window.scrollY > 50);
+  //   });
+  // }, []);
 
   //const [searchBut, setSearchBut] = useState(false);
   var path = window.location.pathname.split("/");

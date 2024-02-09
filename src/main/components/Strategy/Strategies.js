@@ -4,6 +4,7 @@ import { Form, Badge, Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logout from "src/main/layouts/nav/Logout";
+import Footer from "src/main/layouts/Footer";
 import { Checkbox} from "@material-ui/core";
 import { RadioButton, RadioButtonGroup , Radio} from '@material-ui/core';
 import { FaPlus, FaMinus } from 'react-icons/fa';
@@ -712,7 +713,8 @@ const Strategies = () => {
   }, [finalNetPremium]);
 
  return (
-    <div className="container mw-100 mt-5">
+  <div className="d-flex flex-column min-vh-100">
+    <div className="container mw-100 mt-5 flex-grow-1">
       <div className="card">
         <div className="card-header">
           <div className="col-lg-4">
@@ -868,7 +870,7 @@ const Strategies = () => {
           ))}
         </div>
         {/* Display the final net premium */}
-        <div className="row mt-5">
+        <div className="row mt-4">
           <div className="col-md-4">
             <table className="table responsive striped bordered">
               <tbody>
@@ -900,12 +902,29 @@ const Strategies = () => {
             </tbody>
           </table>
         </div>
-      </div>         
         <div className="col-lg-4">
-        <span className="btn info-box text-start style-1" onClick={handleShowModal}>
-        <Button>Set Params</Button>
-        </span>
-      </div>     
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <span className="btn info-box text-start style-1" onClick={handleShowModal}>
+            <Button>Set Params</Button>
+          </span>
+        </div>    
+        </div> 
+    </div>
+    <div className="footer-container">
+      <div className="row">
+        <div className="col-xl-6 col-xl-6 mt-auto text-center">
+          <Footer />
+        </div>
+      </div>
+    </div>
         <Modal
           className="fade bd-example-modal-lg"
           show={largeModal}
@@ -1070,7 +1089,6 @@ const Strategies = () => {
         {/* </div> */}
         </Modal.Body>
       </Modal>
-
   </div>
   );
 };
