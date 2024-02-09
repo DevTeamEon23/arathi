@@ -264,67 +264,52 @@ def get_ltp_price(
 
     except HTTPException as e:
         return e
-    
 
-@service.websocket("/get_realtime_data/{symbol}")
-async def websocket_endpoint(symbol: str, expiry: str, strike: str, option_type: str, access_token: str, source: str = 'WEB'):
+
+@service.get("/get_spot/{symbol}")
+def fetch_spot_price(access_token: str):
     try:
-        # Step 1: Get instrument data
-        instrument_data = get_inst_str(symbol, access_token, source)
+        q_url = f'https://algozy.rathi.com:3000/apimarketdata/instruments/quotes'
+        q_payload = {
+            'instruments': [{'exchangeSegment': 1, 'exchangeInstrumentID': 26000}],
+            'xtsMessageCode': 1502, "publishFormat": "JSON"
+        }
+        q_header = {'authorization': access_token}
 
-        # Assuming instrument_data contains the necessary information, extract the relevant part
-        strike_api_response = instrument_data['data']['result']
+        while True:
+            q_response = requests.post(url=q_url, headers=q_header, json=q_payload)
 
-        # Define the target display name
-        target_display_name = f"{symbol} {expiry} {option_type} {strike}"
+            if q_response.status_code == 200:
+                q_data = q_response.json()
 
-        # Step 2: Filter the response based on the target display name
-        matching_instrument = next(
-            (instrument for instrument in strike_api_response if instrument.get("DisplayName") == target_display_name), None
-        )
+                # Check if 'result', 'listQuotes', and the list itself are present in the response
+                if 'result' in q_data and 'listQuotes' in q_data['result'] and q_data['result']['listQuotes']:
+                    list_quotes_json = json.loads(q_data['result']['listQuotes'][0])
 
-        if matching_instrument:
-            exchange_instrument_id = matching_instrument.get("ExchangeInstrumentID")
+                    # Check if 'Touchline' and 'LastTradedPrice' are present in the list quotes JSON
+                    if 'Touchline' in list_quotes_json and 'LastTradedPrice' in list_quotes_json['Touchline']:
+                        spot_price = list_quotes_json['Touchline']['LastTradedPrice']
 
-            while True:
-                try:
-                    # Step 3: Get real-time data using the exchange_instrument_id
-                    q_url = f'https://algozy.rathi.com:3000/apimarketdata/instruments/quotes'
-                    q_payload = {
-                        'instruments': [{'exchangeSegment': 2, 'exchangeInstrumentID': exchange_instrument_id}],
-                        'xtsMessageCode': 1502,
-                        'publishFormat': 'JSON'
-                    }
-                    q_header = {'authorization': access_token}
-                    q_response = requests.post(url=q_url, headers=q_header, json=q_payload)
+                        # Assuming strike prices are integers
+                        strike_interval = 50
+                        num_strikes = 40
 
-                    if q_response.status_code == 200:
-                        q_data = q_response.json()
-                        # Check if 'result', 'listQuotes', and the list itself are present in the response
-                        if 'result' in q_data and 'listQuotes' in q_data['result'] and q_data['result']['listQuotes']:
-                            list_quotes_json = json.loads(q_data['result']['listQuotes'][0])
+                        # Generate 40 upper and 40 lower strikes
+                        lower_strikes = list(range(int(spot_price // 100 * 100), int(spot_price // 100 * 100 - strike_interval * num_strikes), -strike_interval))
+                        upper_strikes = list(range(int(spot_price // 100 * 100 + strike_interval), int(spot_price // 100 * 100 + strike_interval * (num_strikes + 1)), strike_interval))
 
-                            # Check if 'Touchline' is present in the list quotes JSON
-                            if 'Touchline' in list_quotes_json:
-                                touchline_data = list_quotes_json['Touchline']
+                        print(f"Spot Price: {int(spot_price)}, Lower Strikes: {lower_strikes}, Upper Strikes: {upper_strikes}")
 
-                                ltp = touchline_data.get('LastTradedPrice')
-                                bid_info = touchline_data.get('BidInfo')
-                                ask_info = touchline_data.get('AskInfo')
+                        # Return the spot price, lower strikes, and upper strikes
+                        return {'SpotPrice': int(spot_price), 'LowerStrikes': lower_strikes, 'UpperStrikes': upper_strikes}
+                    else:
+                        raise HTTPException(status_code=500, detail="Error in extracting LastTradedPrice from quote.")
+                else:
+                    raise HTTPException(status_code=500, detail="Error in fetching listQuotes from quote.")
+            else:
+                raise HTTPException(status_code=q_response.status_code, detail="Error in fetching quote.")
 
-                                # Send real-time data to the WebSocket client
-                                await websocket.send_json({
-                                    'LastTradedPrice': ltp,
-                                    'BidInfo': bid_info,
-                                    'AskInfo': ask_info
-                                })
+            time.sleep(1)
 
-                    await asyncio.sleep(1)  # Wait for 1 second before fetching the next update
-                except Exception as e:
-                    logging.error(f"Error in WebSocket loop: {e}")
-
-        else:
-            raise HTTPException(status_code=404, detail="Instrument not found for the given criteria.")
-
-    except HTTPException as e:
-        await websocket.send_json({'error': str(e)})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {e}")
