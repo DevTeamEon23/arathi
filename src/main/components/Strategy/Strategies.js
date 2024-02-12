@@ -27,7 +27,7 @@ const Strategies = () => {
   const [getAllExpiryData, setGetAllExpiryData] = useState([]);
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedType, setSelectedType] = useState({ value: "CE", label: "CE" });
   const [ltpSpread, setLtpSpread] = useState(0);
   const [legs, setLegs] = useState([]);
   const [tradeOption, setTradeOption] = useState('buy');
@@ -311,6 +311,7 @@ const Strategies = () => {
         expiryOptions: [],
         selectedExpiry: null,
         selectedStrike: null,
+        selectedType: { value: "CE", label: "CE" },
         type: "BUY",
         lot: { value: "1", label: "1" },
         price: "",
@@ -398,48 +399,7 @@ const Strategies = () => {
     const updatedLegs = [...legs];
     updatedLegs[index].askInfo = e.target.value;
     setLegs(updatedLegs);
-  };
-  const refreshLegTypes = async () => {
-    try {
-      const jwtAccessToken = localStorage.getItem('jwt_access_token');
-      const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
-  
-      const refreshPromises = legs.map(async (leg, index) => {
-        if (leg.selectedType?.value === "CE" || leg.selectedType?.value === "PE") {
-          if (leg.selectedOptionSymbol) {
-            const ltpUrl = `http://127.0.0.1:8081/lms-service/get_ltp_price/${leg.selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
-  
-            const ltpResponse = await axios.get(ltpUrl, {
-              params: {
-                symbol: leg.selectedOptionSymbol.value,
-                expiry: leg.selectedExpiry?.value,
-                strike: leg.selectedStrike?.value,
-                type: leg.selectedType.value,
-              },
-              headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
-            });
-  
-            if (ltpResponse.status === 200) {
-              const ltpPrice = ltpResponse.data?.LastTradedPrice;
-              const updatedLegs = [...legs];
-              updatedLegs[index].price = ltpPrice;
-              updatedLegs[index].premium = calculatePremium(leg.lot.value, ltpPrice);
-              setLegs(updatedLegs);
-            } else {
-              console.error('Error fetching LTP data:', ltpResponse.statusText);
-              toast.error('Failed to fetch LTP!');
-            }
-          }
-        }
-      });
-  
-      await Promise.all(refreshPromises);
-    } catch (error) {
-      console.error('Error processing LTP response:', error);
-      toast.error('Failed to fetch LTP!');
-    }
-  };
-  
+  };  
 
   const calculatePremium = (lots, price) => {
     const lotSize = 50; // 1 lot = 50 shares
