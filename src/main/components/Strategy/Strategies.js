@@ -27,7 +27,7 @@ const Strategies = () => {
   const [getAllExpiryData, setGetAllExpiryData] = useState([]);
   const [expiryOptions, setExpiryOptions] = useState([]);
   const [getAllStrikesData, setGetAllStrikesData] = useState([]);
-  const [selectedType, setSelectedType] = useState({ value: "CE", label: "CE" });
+  const [selectedType, setSelectedType] = useState(null);
   const [ltpSpread, setLtpSpread] = useState(0);
   const [legs, setLegs] = useState([]);
   const [tradeOption, setTradeOption] = useState('buy');
