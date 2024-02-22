@@ -425,8 +425,8 @@ const Strategies = () => {
       const jwtAccessToken = localStorage.getItem('jwt_access_token');
       const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
 
-      const instrumentsUrl = `http://127.0.0.1:8081/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
-      const expiryUrl = `http://127.0.0.1:8081/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
+      const instrumentsUrl = `http://127.0.0.1:8000/lms-service/instruments/${selectedOption.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+      const expiryUrl = `http://127.0.0.1:8000/lms-service/expiry/${selectedOption.value}?exchangeSegment=2&series=OPTIDX`;
 
       const [expiryResponse, instrumentsResponse] = await Promise.all([
         axios.get(expiryUrl, { headers: { "Auth-Token": jwtAccessToken } }),
@@ -671,6 +671,50 @@ const Strategies = () => {
   useEffect(() => {
     calculateLtpSpread();
   }, [finalNetPremium]);
+
+  useEffect(() => {
+    const pollingInterval = setInterval(async () => {
+      legs.forEach(async (leg, index) => {
+        try {
+          const jwtAccessToken = localStorage.getItem('jwt_access_token');
+          const jwtXtsAccessToken = localStorage.getItem('xts_access_token');
+  
+          // Check if selectedOptionSymbol is not null before accessing its properties
+          if (selectedOptionSymbol && selectedOptionSymbol.value) {
+            const ltpUrl = `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+  
+            const ltpResponse = await axios.get(ltpUrl, {
+              params: {
+                symbol: selectedOptionSymbol.value,
+                expiry: leg.selectedExpiry?.value,
+                strike: leg.selectedStrike?.value,
+                type: leg.selectedType.value,
+              },
+              headers: { "Auth-Token": jwtAccessToken, "Content-Type": "application/json" },
+            });
+  
+            if (ltpResponse.status === 200) {
+              const updatedLegs = [...legs];
+              updatedLegs[index].price = ltpResponse.data?.LastTradedPrice;
+              updatedLegs[index].bidInfo = ltpResponse.data.BidInfo || "";
+              updatedLegs[index].askInfo = ltpResponse.data.AskInfo || "";
+              updatedLegs[index].premium = calculatePremium(leg.lot.value, ltpResponse.data?.LastTradedPrice);
+              setLegs(updatedLegs);
+            } else {
+              console.error('Error fetching LTP data:', ltpResponse.statusText);
+              toast.error('Failed to fetch LTP!');
+            }
+          }
+        } catch (error) {
+          console.error('Error processing LTP response:', error);
+          toast.error('Failed to fetch LTP!');
+        }
+      });
+    }, 1000);
+  
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(pollingInterval);
+  }, [legs, selectedOptionSymbol?.value]); 
 
  return (
   <div className="d-flex flex-column min-vh-100">
