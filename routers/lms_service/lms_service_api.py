@@ -247,10 +247,14 @@ def get_ltp_price(
                         ltp = list_quotes_json['Touchline']['LastTradedPrice']
                         bid_info = list_quotes_json['Touchline']['BidInfo']
                         ask_info = list_quotes_json['Touchline']['AskInfo']
+                        bid_orders = list_quotes_json['Touchline']['BidInfo']
+                        ask_orders = list_quotes_json['Touchline']['AskInfo']
 
                         bid_price = bid_info['Price']
                         ask_price = ask_info['Price']
-                        return {'LastTradedPrice': ltp, 'BidInfo': bid_price, 'AskInfo': ask_price}
+                        bid_order = bid_orders['TotalOrders']
+                        ask_order = ask_orders['TotalOrders']
+                        return {'LastTradedPrice': ltp, 'BidInfo': bid_price, 'AskInfo': ask_price, 'BidTotalOrders': bid_order, 'AskTotalOrders': ask_order}
                     else:
                         raise HTTPException(status_code=500, detail="Error in extracting LastTradedPrice from quote.")
                 else:
