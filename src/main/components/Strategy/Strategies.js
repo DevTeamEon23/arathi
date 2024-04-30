@@ -681,7 +681,7 @@ const Strategies = () => {
   
           // Check if selectedOptionSymbol is not null before accessing its properties
           if (selectedOptionSymbol && selectedOptionSymbol.value) {
-            const ltpUrl = `http://127.0.0.1:8081/lms-service/get_ltp_price/${selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
+            const ltpUrl = `http://127.0.0.1:8000/lms-service/get_ltp_price/${selectedOptionSymbol.value}?access_token=${jwtXtsAccessToken}&source=WEB`;
   
             const ltpResponse = await axios.get(ltpUrl, {
               params: {
